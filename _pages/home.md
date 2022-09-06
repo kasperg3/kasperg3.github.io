@@ -1,0 +1,36 @@
+---
+permalink: /
+layout: splash
+title: Kasper Rømer Grøntved
+header: 
+    overlay_color: "#000"
+    overlay_filter: "0.5"
+    overlay_image: /assets/home/DSC02074.JPG
+excerpt: "Phd-Fellow @ SDU Biorobotics, MMMI, University of Southern Denmark"
+intro: 
+  - excerpt: 'This page is meant as a Blog for my current projects, both personal and ongoing academic projects. I will mainly focus on topics related to my work as a Ph.D. student in multi robot systems. 
+Especially coverage planning and multi robot control in search and rescue (SAR) operations.'
+feature_row:
+  - image_path: /assets/home/feat1-1.jpg
+    title: "Placeholder 1"
+    excerpt: "Sample text 1 with **markdown** formatting."
+    url: "posts"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
+  - image_path: /assets/home/feat1-2.jpg
+    title: "Placeholder 2"
+    excerpt: "This is some sample content that goes here with **Markdown** formatting."
+    url: "publications"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
+  - image_path: /assets/home/feat1-3.jpg
+    title: "Placeholder 3"
+    excerpt: "This is some sample content that goes here with **Markdown** formatting."
+    url: "cv"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
+---
+{% include feature_row id="intro" type="center" %}
+
+{% include feature_row %}
+ 
