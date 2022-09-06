@@ -13,7 +13,7 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Kasper Grøntved
+title:  Home
 email:
 description: >- # this means to ignore newlines until "baseurl:"
   Write an awesome description for your new site here. You can edit this
@@ -28,10 +28,11 @@ search: true
 markdown: kramdown
 remote_theme: mmistakes/minimal-mistakes
 # Outputting
-permalink: /:cv/
+permalink: /:categories/:title/
 paginate: 5 # amount of posts to show
 paginate_path: /page:num/
-timezone: CET # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+search: true
 
 include:
   - _pages
@@ -54,17 +55,21 @@ plugins:
   - jekyll-sitemap
   - jekyll-gist
   - jekyll-feed
+  - jekyll-archives
   - jemoji
   - jekyll-include-cache
 
 author:
   name   : "Kasper Rømer Grøntved"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "'Phd-Fellow @ SDU Biorobotics, MMMI, University of Southern Denmark"
+  bio    : "Phd-Fellow @ SDU Biorobotics, MMMI, University of Southern Denmark"
   links:
-    - label: "Email"
+  # Icons https://aksakalli.github.io/jekyll-doc-theme/docs/font-awesome/
+    - label: "Odense, Denmark"
+      icon: "fas fa-fw fa-map-marker"
+    - label: "kang@mmmi.sdu.dk"
       icon: "fas fa-fw fa-envelope"
-      url: "kang@mmmi.sdu.dk"
+      url: "mailto:kang@mmmi.sdu.dk"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       url: "https://blog.grontved.dk"
@@ -77,6 +82,9 @@ author:
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
       url: "https://www.linkedin.com/in/kaspergrontved/"
+    # - label: "Google scholar"
+    # - label: ""
+
 
 footer:
   links:
@@ -92,7 +100,6 @@ footer:
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
       url: "https://www.linkedin.com/in/kaspergrontved/"
-    . label
 
 defaults:
   # _posts
@@ -117,6 +124,6 @@ defaults:
 # category_archive:
 #   type: liquid
 #   path: /categories/
-tag_archive:
-  type: liquid
-  path: /tags/
+# tag_archive:
+#   type: liquid
+#   path: /tags/
