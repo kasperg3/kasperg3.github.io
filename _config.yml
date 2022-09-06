@@ -28,10 +28,10 @@ search: true
 markdown: kramdown
 remote_theme: mmistakes/minimal-mistakes
 # Outputting
-permalink: /:categories/:title/
+permalink: /:cv/
 paginate: 5 # amount of posts to show
 paginate_path: /page:num/
-timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone: CET # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
 include:
   - _pages
@@ -60,8 +60,11 @@ plugins:
 author:
   name   : "Kasper Rømer Grøntved"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "My awesome biography constrained to a sentence or two goes here."
+  bio    : "'Phd-Fellow @ SDU Biorobotics, MMMI, University of Southern Denmark"
   links:
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope"
+      url: "kang@mmmi.sdu.dk"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       url: "https://blog.grontved.dk"
@@ -89,6 +92,7 @@ footer:
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
       url: "https://www.linkedin.com/in/kaspergrontved/"
+    . label
 
 defaults:
   # _posts
