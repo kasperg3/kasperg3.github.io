@@ -60,6 +60,12 @@ plugins:
   - jemoji
   - jekyll-include-cache
 
+analytics:
+  provider: "google-gtag"
+  google:
+    tracking_id: "G-HRNQPVRSVC"
+    anonymize_ip: false # default
+
 author:
   name   : "Kasper Rømer Grøntved"
   avatar : "/assets/images/bio-photo.jpg"
