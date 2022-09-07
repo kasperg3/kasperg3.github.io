@@ -4,6 +4,39 @@ title: "CV"
 classes: wide
 ---
 
-Tempor velit sint sunt ipsum tempor enim ad qui ullamco. Est dolore anim ad velit duis dolore minim sunt aliquip amet commodo labore. Ut eu pariatur aute ea aute excepteur laborum. Esse ea esse excepteur minim mollit qui cillum excepteur ex dolore magna. Labore deserunt fugiat incididunt incididunt sint ea. Consequat dolore aute laboris quis proident quis non et est consectetur ex eiusmod sit culpa.
+## Summary
+I am a researcher by trade and it shines through in everything I do; efficiency and execution are key. I am eager to develop
+tomorrow's robotic applications. I am intrigued by the challenges within robotics and the implementation of large-scale
+multi-robot systems in real-world scenarios.
 
-Cupidatat ea do et in excepteur in. Ad nostrud ut est esse eu duis ea sunt eiusmod. Aliquip tempor veniam sint elit fugiat. Velit incididunt laboris amet incididunt labore dolore irure velit excepteur commodo deserunt laborum. Consectetur eu fugiat veniam veniam Lorem labore magna eiusmod. Ea occaecat reprehenderit pariatur consectetur minim labore ut aliquip.
+If this sounds good to you, please reach out and many thanks for your interrest. 
+
+[Download CV]({{ site.url }}/assets/cv/cv.pdf){: .btn .btn--primary}
+
+<!-- ## Experience
+
+##### **Systems Engineer**
+*A2I Systems, Jun. 2020 to may 2022*
+
+
+##### **Student Programmer**
+*A2I Systems, Nov. 2018 to Jun. 2020*
+
+
+## Education
+
+### *University of Southern Denmark*
+*2022 to present* - PhD candidate in Swarm Robotics
+
+**Supervisors: Ander L. Christensen, Ulrik Pagh Schultz**
+
+* Thesis Title: Cooperative Control of Multirobot Systems in Real-World Applications
+
+##### University of Southern Denmark
+
+##### University of Southern Denmark
+
+
+
+
+**Master degree** -->
