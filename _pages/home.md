@@ -6,7 +6,7 @@ header:
     overlay_color: "#000"
     overlay_filter: "0.5"
     overlay_image: /assets/home/DSC02074.JPG
-excerpt: "Phd-Fellow @ SDU Biorobotics, MMMI, University of Southern Denmark"
+excerpt: "Phd-Candidate @ SDU Biorobotics, MMMI, University of Southern Denmark"
 intro: 
   - excerpt: 'This page is meant as a Blog for my current projects, both personal and ongoing academic projects. I will mainly focus on topics related to my work as a Ph.D. student in multi robot systems. 
 Especially coverage planning and multi robot control in search and rescue (SAR) operations.'

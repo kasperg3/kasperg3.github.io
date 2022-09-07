@@ -13,7 +13,7 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title:  Home
+title:  KGR
 email:
 description: >- # this means to ignore newlines until "baseurl:"
   This page is meant as a Blog for my current project, both personal and ongoing academic projects. I will mainly focus on topics related to my work as a Ph.D. student in multi robot systems. 
@@ -32,6 +32,8 @@ paginate: 5 # amount of posts to show
 paginate_path: /page:num/
 timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 search: true
+logo: "/assets/images/logo_transparent_small.png"
+google_site_verification: "UFukRJULFZJ5IWqTTilGWHzNl-E5wh7aGMUICEMmUiU"
 
 include:
   - _pages
@@ -61,7 +63,7 @@ plugins:
 author:
   name   : "Kasper Rømer Grøntved"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "Phd-Fellow @ SDU Biorobotics, MMMI, University of Southern Denmark"
+  bio    : "Phd-Candidate @ SDU Biorobotics, MMMI, University of Southern Denmark"
   links:
   # Icons https://aksakalli.github.io/jekyll-doc-theme/docs/font-awesome/
     - label: "Odense, Denmark"
@@ -112,6 +114,8 @@ defaults:
       comments: true
       share: true
       related: true
+      show_date: true
+      date_format: "%Y-%m-%d"
   # _pages
   - scope:
       path: "_pages"
