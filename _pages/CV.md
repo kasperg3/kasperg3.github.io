@@ -4,12 +4,6 @@ title: "CV"
 classes: wide
 ---
 
-## Summary
-I am a researcher by trade and it shines through in everything I do; efficiency and execution are key. I am eager to develop
-tomorrow's robotic applications. I am intrigued by the challenges within robotics and the implementation of large-scale
-multi-robot systems in real-world scenarios.
-
-If this sounds good to you, please reach out and many thanks for your interrest. 
 
 [Download CV]({{ site.url }}/assets/cv/cv.pdf){: .btn .btn--primary}
 
