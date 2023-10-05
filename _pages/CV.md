@@ -5,7 +5,7 @@ classes: wide
 ---
 
 
-[Download CV](https://{{ site.url }}/assets/cv/cv.pdf){: .btn .btn--primary}
+[Download CV]({{ site.url }}/assets/cv/cv.pdf){: .btn .btn--primary}
 
 <!-- ## Experience
 
