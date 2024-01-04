@@ -1,7 +1,7 @@
 ---
 permalink: /publications/
 title: "Publications"
-layout: posts
+layout: page
 toc: true
 ---
 
