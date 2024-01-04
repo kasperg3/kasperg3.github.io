@@ -69,7 +69,7 @@ analytics:
 author:
   name   : "Kasper Rømer Grøntved"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "Phd-Candidate @ SDU Biorobotics, MMMI, University of Southern Denmark"
+  bio    : "Phd-Candidate @ UAS Center, MMMI, University of Southern Denmark"
   links:
   # Icons https://aksakalli.github.io/jekyll-doc-theme/docs/font-awesome/
     - label: "Odense, Denmark"
