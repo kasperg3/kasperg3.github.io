@@ -2,7 +2,6 @@
 permalink: /publications/
 title: "Publications"
 layout: single
-classes: wide
 toc: true
 ---
 
@@ -10,7 +9,7 @@ toc: true
 ## Publications
 
 <details>
-    <summary>Anders Lyhne Christensen, Kasper Andreas Rømer Grøntved, Maria-Theresa Oanh Hoang, Niels van Berkel, Mikael Skov, Alea Scovill, Gareth Edwards, Kenneth Richard Geipel, Lars Dalgaard, Ulrik Pagh Schultz Lundquist, Ioanna Constantiou, Christiane Lehrer, Timothy Merritt, **The HERD Project: Human-Multi-Robot Interaction in Search & Rescue and in Farming**;  in Adjunct Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, 2022
+    <summary>Anders Lyhne Christensen, Kasper Andreas Rømer Grøntved, Maria-Theresa Oanh Hoang, Niels van Berkel, Mikael Skov, Alea Scovill, Gareth Edwards, Kenneth Richard Geipel, Lars Dalgaard, Ulrik Pagh Schultz Lundquist, Ioanna Constantiou, Christiane Lehrer, Timothy Merritt, <b>The HERD Project: Human-Multi-Robot Interaction in Search & Rescue and in Farming</b>;  in Adjunct Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, 2022
     </summary>
     <br>
     <b>Abstract:</b> Large-scale multi-robot systems have numerous potential real-world applications. It is, however, still unclear how a human operator can effectively engage and control a system composed of multiple autonomous robots, especially in unstructured and outdoor environments. This paper reports on ongoing work in the project HERD --- Human-AI Collaboration: Engaging and Controlling Swarms of Robots and Drones, in which we focus on two concrete use cases from industrial partners, namely farming and search \& rescue. One of the industrial partners, Agro Intelligence ApS, currently sells autonomous farming robots, while the other, Robotto ApS, develops autonomous drone-based monitoring solutions for emergency responders. Both partners aim to scale their technologies to multi-robot/multi-drone operations. In this paper, we present the two use cases, their differences and similarities, challenges and preliminary results.
