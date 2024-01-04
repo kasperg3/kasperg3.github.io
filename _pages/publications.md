@@ -3,6 +3,7 @@ permalink: /publications/
 title: "Publications"
 classes: 
   - wide
+  - small
 categories:
   - blog
 toc: false
