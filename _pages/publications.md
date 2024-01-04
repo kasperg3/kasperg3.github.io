@@ -1,7 +1,10 @@
 ---
 permalink: /publications/
 title: "Publications"
-classes: wide
+classes: 
+  - wide
+categories:
+  - blog
 toc: false
 ---
 
