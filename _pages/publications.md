@@ -1,10 +1,11 @@
 ---
 permalink: /publications/
 title: "Publications"
-layout: single
+layout: posts
 toc: true
 ---
 
+You can also find me on <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&hl" target="_blank"><font color="brown">Google Scholar</font></a>.
 
 ## Publications
 
@@ -24,6 +25,7 @@ toc: true
 
 
 ## Book chapters
+
 <details>
     <summary>M.-T. O. Hoang, K. A. R. Grøntved, N. van Berkel, M. B. Skov, A. L. Christensen, and T. Merritt, <b>Drone swarms to support search and rescue operations: Opportunities and challenges</b>; Cultural Robotics: Social Robots and Their Emergent Cultural Ecologies, pp. 163–176, 2023.</summary>
     <br>
@@ -32,9 +34,11 @@ toc: true
 </details>
 
 ## Thesis and Technical Reports
+
 Master thesis: *"Multi-Agent Decentralised Coordination using CNRL for Industrial Applications"*
 
 Bachelor thesis: *"Semantic segmentation using a deep neural network for pose estimation of a rigid object"*
 
 ## Work in progress
+
 K. A. R. Grøntved, U. Schultz, A. L. Christensen (On-going), Thesis title: *Cooperative Control of Multirobot Systems in Real-World Applications*
