@@ -1,7 +1,8 @@
 ---
 permalink: /publications/
 title: "Publications"
-toc: true
+classes: wide
+toc: false
 ---
 
 You can also find me on <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&hl" target="_blank"><font color="brown">Google Scholar</font></a>.
@@ -14,14 +15,13 @@ You can also find me on <a href="https://scholar.google.com/citations?user=NuJ_4
     <br>
     <b>Abstract:</b> Large-scale multi-robot systems have numerous potential real-world applications. It is, however, still unclear how a human operator can effectively engage and control a system composed of multiple autonomous robots, especially in unstructured and outdoor environments. This paper reports on ongoing work in the project HERD --- Human-AI Collaboration: Engaging and Controlling Swarms of Robots and Drones, in which we focus on two concrete use cases from industrial partners, namely farming and search \& rescue. One of the industrial partners, Agro Intelligence ApS, currently sells autonomous farming robots, while the other, Robotto ApS, develops autonomous drone-based monitoring solutions for emergency responders. Both partners aim to scale their technologies to multi-robot/multi-drone operations. In this paper, we present the two use cases, their differences and similarities, challenges and preliminary results.
 </details>
-
+<br>
 <details>
     <summary>K. A. R. Grøntved, U. P. Schultz, and A. L. Christensen, <b>Decentralized multi-uav trajectory task allocation in search and rescue applications</b>; 21st International Conference on Advanced Robotics, IEEE 2023</summary>
     <br>
     <b>Abstract:</b> Multi-UAV systems have significant potential to enhance search and rescue~(SAR) operations, since a search area can be covered faster than current approaches when multiple UAVs operate in parallel. While recent advancements within the field of multi-robot coverage planning have yielded promising results, current algorithms are predominately centralized. In this paper, we present a generalization of the well-known decentralized consensus-based bundle algorithm~(CBBA), that enables efficient task allocation in multi-UAV SAR operations. The generalized algorithm considers tasks as trajectories between two points where the traversal direction for each task is optimized in the task allocation process. We carry out a series of simulation-based experiments on benchmark problems and compare our results to a state-of-the-art centralized solution. We find that our novel decentralized approach yields times to completion similar to those achieved with a centralized coverage path planning approach, with only $1.9\%$ overhead cost. We furthermore find that our approach performs $6\%$ better than point allocations while scaling well with the number of UAVs involved in the search effort.
-
 </details>
-
+<br>
 
 ## Book chapters
 
