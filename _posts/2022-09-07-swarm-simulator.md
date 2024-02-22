@@ -110,7 +110,7 @@ By applying these equations to each boid in the flock, you can simulate the emer
 
 It's important to note that the specific implementation of these equations may vary depending on the programming language and framework you are using. The equations provided here are a general representation of the Boids model and can be adapted to fit your specific project requirements.
 
-![Swarm Simulator GIF](path/to/your/gif.gif)
+![Swarm Simulator GIF](https://github.com/kasperg3/swarm-simulator/blob/05baaef59854bbf492a60b6396906defa26ba226/assets/BoidsExample.gif)
 
 ## Conclusion
 In conclusion, Swarm Simulator presents a versatile platform for studying multi-agent systems, enabling users to explore various algorithms and observe emergent behaviors within simulated environments. By leveraging this framework, researchers and developers can gain insights into swarm intelligence and its applications across diverse domains.
