@@ -72,35 +72,47 @@ public:
   void draw() override;
 }
 ```
+To describe the Boids equations, we need to understand the concept of Boids. Boids is an artificial life program that simulates the flocking behavior of birds. It was developed by Craig Reynolds in 1986 and has since been used in various applications, including computer graphics, robotics, and simulation.
 
+The Boids model defines three main rules that govern the behavior of individual agents (or "boids") within a flock:
 
-**cohesion:**
+Separation: Each boid tries to maintain a minimum distance from its neighbors to avoid collisions. This rule ensures that boids do not get too close to each other and helps prevent overcrowding.
 
-$$c_i=\sum_{v_j \in V_i} \frac{p_j}{m}$$
+Alignment: Each boid tries to align its velocity with the average velocity of its neighbors. This rule promotes cohesion within the flock and ensures that boids move in a similar direction.
 
-**allignment:**
+Cohesion: Each boid tries to move towards the center of mass of its neighbors. This rule encourages boids to stay together as a group and prevents them from getting too dispersed.
 
-$$\vec{m}_i=\sum_{v b_j \in v_i} \frac{\vec{v}_j}{m}$$
+These three rules are typically implemented using mathematical equations that calculate the desired velocity of each boid based on its current position and the positions of its neighbors. The equations can be summarized as follows:
 
-$$\vec{k}_i=c_i-p_i$$
-
-**Separation:**
+Separation equation:
 
 $$\vec{s}_i=-\sum_{\forall \mathbf{b}_j \in v_i}\left(p_i-p_j\right)$$
 
+Calculate the separation vector by summing the normalized vectors pointing away from nearby boids.
+Scale the separation vector by a separation factor to control the strength of the separation behavior.
+Add the separation vector to the boid's current velocity.
+Alignment equation:
+$$\vec{m}_i=\sum_{v b_j \in v_i} \frac{\vec{v}_j}{m}$$
 
-<figure class="third">
-	<img src="/assets/posts/swarm-simulator/cohesion.png">
-	<img src="/assets/posts/swarm-simulator/separation.png">
-	<img src="/assets/posts/swarm-simulator/alignment.gif">
-	<figcaption>Boid algorithm components</figcaption>
-</figure>
-<figure class="third">
-	<img src="/assets/posts/swarm-simulator/neighborhood.gif">
-	<figcaption>Boid algorithm components</figcaption>
-</figure>
+$$\vec{k}_i=c_i-p_i$$
+Calculate the average velocity vector of nearby boids.
+Scale the average velocity vector by an alignment factor to control the strength of the alignment behavior.
+Add the scaled average velocity vector to the boid's current velocity.
+Cohesion equation:
 
-TODO Ref the figures, papers and libraries used!
+$$c_i=\sum_{v_j \in V_i} \frac{p_j}{m}$$
+
+Calculate the center of mass (centroid) of nearby boids.
+Calculate the vector pointing from the boid's current position to the centroid.
+Scale the centroid vector by a cohesion factor to control the strength of the cohesion behavior.
+Add the scaled centroid vector to the boid's current velocity.
+By applying these equations to each boid in the flock, you can simulate the emergent behavior of flocking, where boids exhibit collective motion patterns such as alignment, cohesion, and separation.
+
+It's important to note that the specific implementation of these equations may vary depending on the programming language and framework you are using. The equations provided here are a general representation of the Boids model and can be adapted to fit your specific project requirements.
+
+![Swarm Simulator GIF](path/to/your/gif.gif)
 
 ## Conclusion
-All in all, the 
+In conclusion, Swarm Simulator presents a versatile platform for studying multi-agent systems, enabling users to explore various algorithms and observe emergent behaviors within simulated environments. By leveraging this framework, researchers and developers can gain insights into swarm intelligence and its applications across diverse domains.
+
+[Check out the code at my GitHub](https://github.com/kasperg3/swarm-simulator)
