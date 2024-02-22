@@ -85,15 +85,6 @@ You can also find me on <a href="https://scholar.google.com/citations?user=NuJ_4
 
 </details>
 
-## Supervision
-
-
-<details>
-    <summary></summary>
-    <br>
-    <b>Abstract:</b> 
-</details>
-
 ## Thesis and Technical Reports
 
 Master thesis: *"Multi-Agent Decentralised Coordination using CNRL for Industrial Applications"*
