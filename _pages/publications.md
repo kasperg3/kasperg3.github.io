@@ -13,50 +13,23 @@ You can also find me on <a href="https://scholar.google.com/citations?user=NuJ_4
 
 ## Publications
 
-<!-- 
-@inproceedings{grontved2024Automated,
-title = "Automated Task Generation for Multi-Drone Search and Rescue Operations",
-author = "Gr{\o}ntved, {Kasper Andreas R{\o}mer} and Anders Christensen and Maria-Theresa Bahodi",
-year = "2024",
-month = jun,
-day = "28",
-language = "Dansk",
-journal = "Distributed Computing and Artificial Intelligence, 21st International Conference",
-}
+### 2025
 
+<details>
+    <summary>Kasper Andreas Rømer Grøntved, Alejandro Jarabo-Peñas, Sid Reid, Edouard George Alain Rolland, Matthew Watson, Arthur Richards, Steve Bullock and Anders Lyhne Christensen, <b>SAREnv: An Open-Source Dataset and Benchmark Tool for Informed Wilderness Search and Rescue using UAVs</b>; 2025 International Conference on Unmanned Aircraft Systems (ICUAS)
+    </summary>
+    <br>
+    <b>Abstract:</b> Unmanned Aerial Vehicles~(UAVs) play an increasingly vital role in wilderness Search and Rescue~(SAR) operations by enhancing situational awareness and extending the capabilities of human teams. Yet, a lack of standardized benchmarks has impeded the systematic evaluation of single- and multi-agent path-planning algorithms. This paper introduces an open-source dataset and evaluation framework to address this gap. The framework comprises 60 geospatial scenarios across four distinct European environments, featuring high-resolution probability maps. We present a lost person probabilistic model derived from statistical models of lost person behavior. We provide a suite of tools for evaluating search paths against five baseline methods: Spiral, Concentric Circles, Pizza Zigzag, Greedy, and Random Exploration, using three quantitative metrics: Accumulated Probability of Detection, Time-Discounted Probability of Detection, and Lost Person Discovery Score. We provide an evaluation framework to facilitate the comparative analysis of single- and multi-agent path planning algorithms, supporting both the baseline methods presented and custom user-defined path generators. By providing a structured and extensible framework, this work establishes a foundation for the rigorous and reproducible assessment of UAV search strategies in complex wilderness environments.
+</details>
+<br>
 
-@inproceedings{grontved2024DSL,
-    author    = {Kasper A. R. Grøntved and Jes Hundevadt Jepsen and Anders Lyhne Christensen and Kjeld Jensen and Ulrik Pagh Schultz Lundquist and Miguel~Campusano},
-    title     = {Towards Autonomous Multi-UAV U-space Operation Planning},
-    year      = { 2024 },
-    booktitle={International Conference on Unmanned Aircraft Systems (ICUAS)}, 
-    note      = {Under review},
-}
-
-@inproceedings{christensen2022herd,
-  title={The HERD Project: Human-Multi-Robot Interaction in Search \& Rescue and in Farming},
-  author={Christensen, Anders Lyhne and Gr{\o}ntved, Kasper Andreas R{\o}mer and Hoang, Maria-Theresa Oanh and van Berkel, Niels and Skov, Mikael and Scovill, Alea and Edwards, Gareth and Geipel, Kenneth Richard and Dalgaard, Lars and Lundquist, Ulrik Pagh Schultz and others},
-  booktitle={Adjunct Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems},
-  year={2022},
-}
-
-@inproceedings{grontved2022icar,
-  title={Decentralized Multi-UAV Trajectory Task Allocation in Search and Rescue Applications},
-  author={Gr{\o}ntved, Kasper Andreas R{\o}mer and  Schultz, Ulrik Pagh and Christensen, Anders Lyhne},
-  booktitle={21st International Conference on Advanced Robotics},
-  year={2023},
-  organization={IEEE}
-}
-
-@article{hoang2023drone,
-  title={Drone Swarms to Support Search and Rescue Operations: Opportunities and Challenges},
-  author={Hoang, Maria-Theresa Oanh and Gr{\o}ntved, Kasper Andreas R{\o}mer and van Berkel, Niels and Skov, Mikael B and Christensen, Anders Lyhne and Merritt, Timothy},
-  journal={Cultural Robotics: Social Robots and Their Emergent Cultural Ecologies},
-  pages={163--176},
-  year={2023},
-  publisher={Springer}
-} -->
-
+<details>
+    <summary>Kasper A. R. Grøntved, Robert Ladigl and Anders Lyhne Christensen, <b>Communication for UAV Swarms: an Open-source, Low-cost Solution Based on ESP-NOW</b>; 2025 International Conference on Unmanned Aircraft Systems (ICUAS)
+    </summary>
+    <br>
+    <b>Abstract:</b> Multi-UAV systems typically require complex infrastructure to deploy in real-world scenarios, limiting their accessibility and scalability. In addition, current research often relies on custom solutions or proprietary hardware to facilitate inter-UAV communication. In this paper, we propose an open-source, low-cost, plug-and-play solution to enable decentralized UAV-to-UAV communication over 2.4GHz Wi-Fi using a connectionless protocol. Our approach simplifies the deployment of decentralized systems by allowing UAVs to easily exchange any type of binary data, seamlessly interfacing with ROS2. The solution uses an ad-hoc style network that allows UAVs to join or leave dynamically without requiring centralized governance or a priori configuration. We describe the architecture of the system, assess the network performance in an outdoor environment using UAVs, and evaluate the system's ability to share information as a swarm through hardware-in-the-loop (HITL) and experiments using UAVs. Our results show that the proposed system facilitates connectivity and is able to transmit mission-critical data for real-world UAV operations. HITL experiments show that a decentralized planning algorithm running on three simulated UAVs can effectively reach consensus on decentralized task allocation. We have made the code public and thus provide a viable solution for researchers seeking to implement decentralized UAV swarms using cost-effective commercial-off-the-shelf (COTS) hardware and minimal infrastructure.
+</details>
+<br>
 
 ### 2024
 
