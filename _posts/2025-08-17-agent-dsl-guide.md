@@ -1,6 +1,6 @@
 ---
 title: "Agent-DSL: Defining Safe and Intelligent Robot Behavior"
-date: 2025-08-17
+date: 2025-08-13
 permalink: /posts/2025/08/agent-dsl-guide/
 tags:
   - domain-specific-language
@@ -9,6 +9,8 @@ tags:
   - ROS2
   - PX4
   - operations-planning
+classes: 
+  - wide
 ---
 
 ## The Final Piece: Intelligent Operation Management

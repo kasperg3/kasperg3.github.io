@@ -1,6 +1,6 @@
 ---
 title: "Building Robot Communication Networks with SwarmTalk"
-date: 2025-08-15
+date: 2025-08-13
 permalink: /posts/2025/08/swarmtalk-guide/
 tags:
   - communication
@@ -9,6 +9,8 @@ tags:
   - UAV
   - swarm-robotics
   - ESP-NOW
+classes: 
+  - wide
 ---
 
 ## The Foundation of Robot Teamwork

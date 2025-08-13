@@ -31,7 +31,7 @@ permalink: /:categories/:title/
 paginate: 5 # amount of posts to show
 paginate_path: /page:num/
 timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-search: true
+future: true # Allow posts with future dates to be published
 logo: "/assets/images/logo_transparent_small.png"
 google_site_verification: "UFukRJULFZJ5IWqTTilGWHzNl-E5wh7aGMUICEMmUiU"
 

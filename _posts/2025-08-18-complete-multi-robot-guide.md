@@ -1,6 +1,6 @@
 ---
 title: "Complete Guide to Multi-Robot Systems: From Planning to Deployment"
-date: 2025-08-18
+date: 2025-08-13
 permalink: /posts/2025/08/complete-multi-robot-guide/
 tags:
   - tutorial-series
@@ -8,6 +8,8 @@ tags:
   - robotics-stack
   - getting-started
   - overview
+classes: 
+  - wide
 ---
 
 ## Welcome to Advanced Multi-Robot Systems

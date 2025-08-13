@@ -8,6 +8,8 @@ tags:
   - python
   - robotics
   - UAV
+classes: 
+  - wide
 ---
 
 ## Introduction to Coverage Path Planning

@@ -1,6 +1,6 @@
 ---
 title: "Multi-Robot Coordination with TrajAllocPy: From Solo to Swarm"
-date: 2025-08-14
+date: 2025-08-13
 permalink: /posts/2025/08/trajallocpy-guide/
 tags:
   - multi-robot
@@ -8,6 +8,8 @@ tags:
   - swarm-robotics
   - python
   - CBBA
+classes: 
+  - wide
 ---
 
 ## From Single Robot to Robot Teams

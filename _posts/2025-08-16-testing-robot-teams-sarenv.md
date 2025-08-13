@@ -1,6 +1,6 @@
 ---
 title: "Evaluating Robot Teams with SARenv: Realistic Search and Rescue Scenarios"
-date: 2025-08-16
+date: 2025-08-13
 permalink: /posts/2025/08/sarenv-guide/
 tags:
   - search-and-rescue
@@ -9,6 +9,8 @@ tags:
   - UAV
   - benchmarking
   - testing
+classes: 
+  - wide
 ---
 
 ## From Simulation to Reality: Testing Your Robot Teams
