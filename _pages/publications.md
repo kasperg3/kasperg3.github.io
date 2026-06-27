@@ -87,6 +87,6 @@ Master thesis: *"Multi-Agent Decentralised Coordination using CNRL for Industria
 
 Bachelor thesis: *"Semantic segmentation using a deep neural network for pose estimation of a rigid object"*
 
-## Work in progress
+## PhD Thesis
 
-K. A. R. Grøntved, U. Schultz, A. L. Christensen (On-going), Thesis title: *Cooperative Control of Multirobot Systems in Real-World Applications*
+K. A. R. Grøntved, U. Schultz, A. L. Christensen, *Cooperative Control of Multirobot Systems in Real-World Applications*, University of Southern Denmark
