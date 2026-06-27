@@ -15,9 +15,10 @@
 # in the templates via {{ site.myvariable }}.
 title:  KGR
 email:
-description: >- # this means to ignore newlines until "baseurl:"
-  This page is meant as a Blog for my current project, both personal and ongoing academic projects. I will mainly focus on topics related to my work as a Ph.D. student in multi robot systems. 
-  Especially coverage planning and multi robot control in search and resque (SAR) operations.
+description: >-
+  Personal page covering robotics research, AI engineering, and hobby projects.
+  PhD in multi-robot systems and UAVs from the University of Southern Denmark,
+  now building AI tools and agents at Colourbox.
 github_username: kasperg3
 linkedin_username: kaspergrontved
 minimal_mistakes_skin: default
@@ -69,14 +70,11 @@ analytics:
 author:
   name   : "Kasper Rømer Grøntved"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "Phd-Candidate @ UAS Center, MMMI, University of Southern Denmark"
+  bio    : "PhD in Multi-Robot Systems (SDU) · AI Engineer at Colourbox · Building tools for humans and machines"
   links:
   # Icons https://aksakalli.github.io/jekyll-doc-theme/docs/font-awesome/
     - label: "Odense, Denmark"
       icon: "fas fa-fw fa-map-marker"
-    - label: "kang@mmmi.sdu.dk"
-      icon: "fas fa-fw fa-envelope"
-      url: "mailto:kang@mmmi.sdu.dk"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       url: "https://www.grontved.xyz"
