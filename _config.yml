@@ -75,6 +75,9 @@ author:
   # Icons https://aksakalli.github.io/jekyll-doc-theme/docs/font-awesome/
     - label: "Odense, Denmark"
       icon: "fas fa-fw fa-map-marker"
+    - label: "Google Scholar"
+      icon: "fas fa-fw fa-graduation-cap"
+      url: "https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&hl=en"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       url: "https://www.grontved.xyz"
