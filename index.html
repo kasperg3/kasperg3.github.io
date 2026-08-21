@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kasper Rømer Grøntved — multi-robot systems &amp; AI engineering</title>
-<meta name="description" content="PhD in multi-robot systems from SDU, now building AI agent tooling at Colourbox. Publications, CV, open-source projects and talks.">
+<title>Kasper Rømer Grøntved — AI engineering, multimodal search, EU data sovereignty</title>
+<meta name="description" content="AI engineer at Colourbox building multimodal search on European infrastructure. PhD in multi-robot systems from SDU. Publications, CV, open-source projects and talks.">
 <meta name="google-site-verification" content="UFukRJULFZJ5IWqTTilGWHzNl-E5wh7aGMUICEMmUiU">
 <link rel="canonical" href="https://www.grontved.xyz/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Kasper Rømer Grøntved">
-<meta property="og:description" content="PhD in multi-robot systems, now building AI agent tooling at Colourbox.">
+<meta property="og:description" content="AI engineer at Colourbox. Multimodal search, EU data sovereignty, and a PhD in multi-robot systems.">
 <meta property="og:url" content="https://www.grontved.xyz/">
 <meta property="og:image" content="https://www.grontved.xyz/assets/img/field-drone.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -21,7 +21,7 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Person","name":"Kasper Rømer Grøntved",
  "alternateName":"Kasper Andreas Rømer Grøntved","url":"https://www.grontved.xyz",
- "jobTitle":"AI Engineer","worksFor":{"@type":"Organization","name":"Colourbox"},
+ "jobTitle":"AI Engineer","knowsAbout":["Multimodal search","Machine learning infrastructure","Multi-robot systems","Data sovereignty"],"worksFor":{"@type":"Organization","name":"Colourbox"},
  "alumniOf":{"@type":"CollegeOrUniversity","name":"University of Southern Denmark"},
  "address":{"@type":"PostalAddress","addressLocality":"Odense","addressCountry":"DK"},
  "sameAs":["https://github.com/kasperg3","https://www.linkedin.com/in/kaspergrontved/",
@@ -51,11 +51,13 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 <div class="wrap">
   <div class="hero">
     <p class="eyebrow">Odense, Denmark</p>
-    <h1>I build systems that <em>coordinate</em> — robots in a field, agents in a codebase.</h1>
-    <p class="lede">PhD in multi-robot systems from the <strong>University of Southern Denmark</strong>, where
-    I worked on decentralized task allocation and coverage planning for UAV swarms in wilderness search
-    and rescue. Now at <strong>Colourbox</strong>, building AI agent tooling — coding assistants, unified
-    model APIs, and the inference infrastructure underneath them.</p>
+    <h1>The AI handling Europe's data should <em>run</em> in Europe.</h1>
+    <p class="lede">I build and run the machine learning systems behind commercial search at
+    <strong>Colourbox</strong> — search that understands the actual content of images, video, audio and
+    documents, hosted end to end on European infrastructure and kept inside EU jurisdiction. Before
+    that, a <strong>PhD in multi-robot systems</strong> at the University of Southern Denmark on how one
+    operator can command a swarm of drones, with a research stay at
+    <strong>Carnegie Mellon's Robotics Institute</strong>.</p>
     <div class="hero-actions">
       <a class="btn primary" href="/publications.html">Publications</a>
       <a class="btn" href="/cv.html">CV</a>
@@ -71,17 +73,21 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <div class="sec-head"><h2>Currently</h2></div>
     <div class="grid two">
       <div class="prose">
-        <p class="sec-note" style="margin:0">Two threads, and they turn out to be the same problem.
-        Coordinating a swarm of UAVs over a search area and coordinating a swarm of language-model
-        agents over a codebase are both questions about decomposing work, allocating it without a
-        central bottleneck, and knowing when to stop.</p>
-        <h3>AI agents &amp; LLM tooling</h3>
-        <p>Agent frameworks, multimodal RAG pipelines, a unified API across model providers, and
-        vLLM infrastructure — the toolkit an engineering org actually needs before "add AI" means
-        anything.</p>
-        <h3>Autonomous robotics</h3>
-        <p>Still maintaining the Python libraries from my PhD: decentralized multi-robot task
-        allocation, coverage path planning, and a benchmark for wilderness search and rescue.</p>
+        <p class="sec-note" style="margin:0">My background is robotics. What that work taught me was
+        the harder, less glamorous question behind any intelligent system: how do you get it running
+        reliably, at scale, in production — and on infrastructure you actually control?</p>
+        <h3>Search that understands content</h3>
+        <p>Moving commercial search past keywords toward genuine semantic and multimodal
+        understanding — models that read images, video, audio and documents rather than the metadata
+        someone typed next to them.</p>
+        <h3>Sovereign by architecture</h3>
+        <p>The models powering all of it run on self-hosted, EU-based infrastructure, so customer data
+        and AI processing never leave European jurisdiction. For the people Colourbox serves that is
+        both a matter of trust and a real competitive advantage — and it means favouring right-sized,
+        sovereign architecture over dependence on non-EU providers.</p>
+        <h3>Robotics, still</h3>
+        <p>I maintain the Python libraries from the PhD: decentralized multi-robot task allocation,
+        coverage path planning, and the SAREnv benchmark, which other groups are now building on.</p>
       </div>
       <figure>
         <img src="/assets/img/field-drone.jpg" alt="UAV field trial at dusk" loading="lazy" width="1800" height="1200" style="border-radius:16px">
@@ -150,15 +156,15 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         </div>
       </a>
 
-      <div class="card">
-        <span class="tag">Benchmark · Dataset</span>
-        <h3>SARenv</h3>
+      <a class="card" href="https://doi.org/10.3390/drones9090628">
+        <span class="tag">Benchmark · Dataset · Drones 2025</span>
+        <h3>SAREnv</h3>
         <p>An open dataset and evaluation framework for informed wilderness search and rescue: 60
-        geospatial scenarios across four European environments, a lost-person probability model, five
-        baseline search strategies, and three scoring metrics. Built so path-planning papers can
-        finally be compared to each other.</p>
-        <div class="foot"><span class="pill">MDPI Sensors · in review</span><span class="pill">60 scenarios</span></div>
-      </div>
+        geospatial scenarios across four European environments, a lost-person probability model,
+        baseline search strategies, and scoring metrics. Built so path-planning papers can finally be
+        compared to each other — groups at Bristol are now extending it with student projects.</p>
+        <div class="foot"><span class="pill">Drones 9(9):628 · 2025</span><span class="pill">60 scenarios</span></div>
+      </a>
 
       <a class="card" href="https://github.com/kasperg3/HopDatabase">
         <span class="tag">Web · Scraping · Beer</span>
@@ -207,7 +213,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <p class="sec-title">Recent publications</p>
     <div class="grid two">
       <div class="card">
-        <span class="tag">2025 · MDPI Sensors <span class="status">In review</span></span>
+        <span class="tag">2025 · Drones 9(9):628</span>
         <h3>SAREnv: An Open-Source Dataset and Benchmark Tool for Informed Wilderness Search and Rescue using UAVs</h3>
         <p>Grøntved, Jarabo-Peñas, Reid, Rolland, Watson, Richards, Bullock, Christensen</p>
       </div>
@@ -224,8 +230,8 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <div class="card">
         <span class="tag">Thesis · SDU</span>
         <h3>Cooperative Control of Multirobot Systems in Real-World Applications</h3>
-        <p>PhD thesis, University of Southern Denmark. Supervised by Anders Lyhne Christensen and
-        Ulrik Pagh Schultz Lundquist.</p>
+        <p>PhD thesis, University of Southern Denmark, defended 2025. Supervised by Anders Lyhne
+        Christensen and Ulrik Pagh Schultz Lundquist.</p>
       </div>
     </div>
   </div>
@@ -237,7 +243,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <div class="wrap">
     <div class="col">
       <strong style="font:600 16px/1 var(--sans)">Kasper Rømer Grøntved</strong>
-      <p class="fine">AI engineer and robotics researcher. Odense, Denmark.</p>
+      <p class="fine">Machine learning for search, run on European infrastructure. Odense, Denmark.</p>
     </div>
     <div class="col">
       <a href="/publications.html">Publications</a>
