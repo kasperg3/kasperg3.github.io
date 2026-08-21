@@ -1784,6 +1784,50 @@ Why I care: if this can ride on the lexical search we already run, the increment
 </section>
 
 <!-- ============ evaluation · 2 · shortlist then verify ============ -->
+<!-- ==================== agentic search · the embedder's dilemma ==================== -->
+<section class="slide" data-t="The embedder's dilemma">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agentic search · cost</div>
+  <h1 class="t sm">The embedder's dilemma</h1>
+  <p class="sub">Agents don't search once. When a workflow fans out <strong>fifty queries where a person
+  issued one</strong>, cost per query stops being a rounding error and becomes the architecture.</p>
+  <div class="body">
+    <div class="cols" style="align-items:flex-start;flex:none">
+      <figure style="flex:0 0 960px;min-height:0">
+        <img class="zoom" src="assets/dilemma-cost.webp" alt="Cost versus MTEB(LLM) score across 36 models: embedding models occupy the cheap end of the Pareto frontier, LLMs sit one to three orders of magnitude further right">
+        <figcaption>Figure 1 from El Assadi, Muennighoff &amp; Lee,
+          <a href="https://arxiv.org/abs/2608.12875"><em>The Embedder's Dilemma</em></a> · COLM 2026.
+          Note the log scale on cost.</figcaption>
+      </figure>
+      <div class="stack grow" style="gap:16px">
+        <div class="card solid">
+          <span class="num">0.4</span>
+          <h3>points apart</h3>
+          <p>Best LLM (Gemini 3.1 Pro, 77.6) against best embedding model (77.2), over 37 tasks. In
+          aggregate, tied.</p>
+        </div>
+        <div class="card dark">
+          <span class="num">1,431×</span>
+          <h3>the cost of closing it</h3>
+          <p>USD 154 against USD 0.11 per benchmark pass — and 2.5–736× slower on the same GPU.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card accent" style="margin-top:24px">
+      <h3>Our read</h3>
+      <p>Embeddings on Triton carry the agent fan-out; vLLM is reserved for the reasoning-heavy step
+      that actually needs it. <span class="todo">Add our agent-driven query volume.</span></p>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2608.12875">The Embedder's Dilemma: LLMs Are Better, but at What Cost? · El Assadi, Muennighoff &amp; Lee, COLM 2026</a></li>
+    <li><a href="https://github.com/embeddings-benchmark/embedders-dilemma">Code, datasets and results</a></li>
+    <li><a href="https://mteb-leaderboard.hf.space/">MTEB leaderboard</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Three things worth saying out loud beyond the numbers on screen. First, where it flips: LLMs genuinely lead on reasoning-heavy retrieval, embedding models lead on classification, and the two match on clustering, STS and pair classification — so this is a routing decision, not a winner. Second, reasoning tokens are 28–81% of LLM inference cost, and in their ablation lower reasoning budgets preserved or even improved retrieval quality — which is a knob we control because we host the serving stack. Third, the Pareto frontier holds the leading embedding models plus exactly one LLM, and that LLM buys 0.4 points for three orders of magnitude. For an agentic caller issuing many queries per task, that trade is not close.</div>
+</section>
+
 <section class="slide" data-t="Shortlist on MTEB, decide on our data">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The practical take</div>

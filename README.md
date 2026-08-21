@@ -128,6 +128,18 @@ Swipe and scroll wheel also advance.
 `.chip`, `pre.code` (with `.k` `.s` `.c` spans), `figure` + `figcaption`, `.quote` + `.by`.
 **Footer** — `.slide-foot`; slide numbers inject themselves.
 
+### Layout gotchas
+
+Three that have each cost a debugging round:
+
+- **Never put `flex:0 0 NNNpx` on a child of a column container** (`.stack`, or anything
+  `flex-direction:column`). In a column, flex-basis sets *height*, and the slide overflows.
+- **`figure img` needs `min-height:0`** (it has it in `deck.css`). Without it, an image in a flex
+  column overflows the moment a `<figcaption>` shares the box.
+- **A `.cols` row followed by a sibling inside `.body` needs `flex:none`.** `.body` is a column flex
+  container, so it will shrink the `.cols` box while the cards inside keep their height — they then
+  paint over whatever follows. The stage-overflow scanner cannot see this one, only your eyes can.
+
 ## Theming
 
 Colour and type tokens live in the `:root` block at the top of both `site/site.css` and
