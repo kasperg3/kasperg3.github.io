@@ -104,7 +104,7 @@ h1.t.sm{font-size:50px}
 .card h3{font:600 26px/1.3 var(--sans);color:var(--ink-2);margin-bottom:12px}
 .card p{font:400 21px/1.55 var(--sans);color:var(--muted)}
 .card .num{font:700 64px/1 var(--serif);color:var(--accent);display:block;margin-bottom:10px}
-.card .cap{font:500 15px/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:14px}
+.card .cap,.rung .cap{font:500 15px/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:14px}
 
 /* ---------- bits ---------- */
 ul.bullets{list-style:none;display:flex;flex-direction:column;gap:20px}
@@ -251,6 +251,47 @@ body.notes-open #notes,body.toc-open #toc{transform:none}
 :root[data-theme="dark"] #hud button{background:rgba(255,255,255,.07);color:#cdd6e0}
 :root[data-theme="dark"] .drawer{background:#141a20}
 :root[data-theme="dark"] #hud .dd-flag{background:rgba(255,255,255,.07)}
+
+/* ---------- corpus illustration: what we store and serve ---------- */
+.corpus{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;min-height:0}
+.asset{background:var(--card-solid);border:1px solid var(--hair-soft);border-radius:16px;
+       padding:15px 15px 17px;box-shadow:var(--shadow);
+       display:flex;flex-direction:column;gap:11px;min-height:0}
+.asset .thumb{flex:1 1 auto;min-height:0;border-radius:10px;background:var(--canvas);
+              border:1px solid var(--hair);overflow:hidden}
+.asset .thumb svg{display:block;width:100%;height:100%}
+.asset h4{font:600 20px/1.25 var(--sans);color:var(--ink-2)}
+.asset .mods{display:flex;flex-wrap:wrap;gap:6px}
+.mod{font:600 12px/1 var(--sans);letter-spacing:.09em;text-transform:uppercase;
+     padding:6px 9px;border-radius:6px;background:var(--accent-faint);color:var(--accent);
+     white-space:nowrap}
+.mod.b{background:rgba(44,95,158,.13);color:var(--accent-3)}
+.mod.c{background:rgba(180,83,31,.13);color:var(--accent-2)}
+.slide.active .corpus .asset{animation:rise .5s cubic-bezier(.16,1,.3,1) both}
+.slide.active .corpus .asset:nth-child(1){animation-delay:.10s}
+.slide.active .corpus .asset:nth-child(2){animation-delay:.18s}
+.slide.active .corpus .asset:nth-child(3){animation-delay:.26s}
+.slide.active .corpus .asset:nth-child(4){animation-delay:.34s}
+.slide.active .corpus .asset:nth-child(5){animation-delay:.42s}
+.slide.active .corpus .asset:nth-child(6){animation-delay:.50s}
+
+/* ---------- openness ladder ---------- */
+.ladder{display:flex;align-items:stretch;gap:0}
+.rung{flex:1;padding:28px 30px;border:1px solid var(--hair-soft);border-right:none;
+      background:var(--card);display:flex;flex-direction:column;gap:10px}
+.rung:first-child{border-radius:18px 0 0 18px}
+.rung:last-child{border-right:1px solid var(--hair-soft);border-radius:0 18px 18px 0}
+.rung.strike{background:repeating-linear-gradient(135deg,transparent 0 12px,
+             rgba(180,83,31,.07) 12px 24px);border-color:rgba(180,83,31,.3)}
+.rung h3{font:600 25px/1.3 var(--sans);color:var(--ink-2)}
+.rung p{font:400 19px/1.5 var(--sans);color:var(--muted)}
+.rung .have{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+.rung .have span{font:500 17px/1.4 var(--sans);color:var(--muted);
+                 padding-left:24px;position:relative}
+.rung .have span::before{position:absolute;left:0;font-weight:700}
+.rung .have span.y::before{content:"\2713";color:var(--good)}
+.rung .have span.n::before{content:"\2715";color:var(--bad)}
+.rung .cap{margin-top:auto;padding-top:14px}
 
 /* ---------- print / export to PDF ---------- */
 @media print{
