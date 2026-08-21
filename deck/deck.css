@@ -56,7 +56,7 @@ body{background:#e9e6e0;font-family:var(--sans);color:var(--ink);overflow:hidden
   padding:92px 116px 108px;
   display:none;flex-direction:column;align-items:stretch}
 .slide.active{display:flex}
-.slide .notes{display:none}
+.slide .notes,.slide .sources{display:none}
 .slide.active h1{animation:reveal .6s cubic-bezier(.16,1,.3,1) both}
 @keyframes reveal{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 .slide.active .body>*{animation:rise .55s cubic-bezier(.16,1,.3,1) both;animation-delay:.12s}
@@ -112,6 +112,15 @@ pre.code{background:var(--dark);color:#dbe4ee;border-radius:16px;padding:30px 34
 pre.code .c{color:#7a8899}
 pre.code .k{color:#7fd1c6}
 pre.code .s{color:#e0b072}
+/* links on a slide — never leave these to browser defaults */
+.slide a{color:var(--accent);text-decoration:underline;
+         text-decoration-color:var(--accent-faint);text-decoration-thickness:1.5px;
+         text-underline-offset:3px}
+.slide a:hover{text-decoration-color:var(--accent)}
+.slide figcaption a,.slide .derived a{color:inherit;text-decoration-color:var(--hair)}
+.slide figcaption a:hover,.slide .derived a:hover{color:var(--accent)}
+.slide.section a,.card.dark a{color:#8fd8ce;text-decoration-color:rgba(143,216,206,.4)}
+
 figure{display:flex;flex-direction:column;gap:14px;min-height:0}
 figure img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px}
 figure img.zoom{cursor:zoom-in}
@@ -119,6 +128,13 @@ figcaption{font:400 17px/1.45 var(--sans);color:var(--faint)}
 .quote{font:600 italic 44px/1.34 var(--serif);color:var(--ink);max-width:1400px}
 .quote+.by{font:500 20px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;
            color:var(--faint);margin-top:32px}
+
+/* placeholder marker — real numbers still to come from the source deck */
+.todo{border-bottom:2px dotted var(--accent-2);color:var(--accent-2);font-weight:500}
+.draft-flag{position:absolute;top:34px;right:116px;font:600 11px/1 var(--sans);letter-spacing:.2em;
+            text-transform:uppercase;color:var(--accent-2);border:1px solid var(--accent-2);
+            border-radius:999px;padding:7px 13px}
+.slide.section .draft-flag{color:#e0a06a;border-color:#e0a06a}
 
 /* ---------- special slide kinds ---------- */
 .title-slide{justify-content:center;padding:120px}
@@ -152,6 +168,13 @@ figcaption{font:400 17px/1.45 var(--sans);color:var(--faint)}
             color:var(--ink-2);font-size:15px}
 #hud button:disabled{opacity:.3;cursor:default}
 #hud button:hover:not(:disabled){background:#fff;color:var(--accent)}
+#hud button{position:relative}
+#hud .badge{position:absolute;top:-4px;right:-4px;min-width:15px;height:15px;border-radius:8px;
+            background:var(--accent);color:#fff;font:600 10px/15px var(--sans);text-align:center;
+            padding:0 3px}
+#hud .dd-flag{font:600 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;
+              color:var(--accent-2);border:1px solid var(--accent-2);border-radius:999px;
+              padding:6px 10px;background:rgba(255,255,255,.8)}
 #ctr{font-family:var(--mono);padding:0 6px;min-width:70px;text-align:center}
 
 /* ---------- drawers (notes / contents) ---------- */
@@ -180,6 +203,26 @@ body.notes-open #notes,body.toc-open #toc{transform:none}
 .toc-list .row.cur{background:var(--accent-faint);color:var(--accent);font-weight:600}
 .toc-list .row .n{font-family:var(--mono);font-size:13px;color:var(--faint);min-width:26px}
 
+/* sources drawer */
+#sources{width:460px}
+#sources .rt{font:600 21px/1.35 var(--sans);color:var(--ink-2);margin:22px 0 6px}
+#sources .rc{font:500 12px/1.5 var(--mono);letter-spacing:.05em;color:var(--faint);
+             text-transform:uppercase;margin-bottom:20px}
+#sources .refs{list-style:none;display:flex;flex-direction:column;gap:2px}
+#sources .refs li{border-bottom:1px solid var(--hair-soft);padding:15px 0}
+#sources .refs li:last-child{border-bottom:0}
+#sources .refs a{font:400 16px/1.5 var(--sans);color:var(--ink);text-decoration:none;
+                 display:flex;gap:10px;align-items:baseline}
+#sources .refs a::before{content:"↗";color:var(--accent);font-size:12px;flex:none}
+#sources .refs a:hover{color:var(--accent);text-decoration:underline}
+#sources .refs li:not(:has(a)){font:400 16px/1.5 var(--sans);color:var(--muted)}
+
+/* attribution strip on a derived deck */
+.derived{position:absolute;left:116px;bottom:52px;font:400 14px/1.4 var(--sans);color:var(--faint);
+         max-width:900px}
+.derived a{color:var(--accent-soft)}
+.slide.section .derived{color:rgba(255,255,255,.45)}
+
 /* ---------- lightbox ---------- */
 #lightbox{position:fixed;inset:0;background:rgba(12,14,18,.92);z-index:60;display:none;
           align-items:center;justify-content:center;padding:60px;cursor:zoom-out}
@@ -196,6 +239,7 @@ body.notes-open #notes,body.toc-open #toc{transform:none}
 :root[data-theme="dark"] body{background:#080b0e}
 :root[data-theme="dark"] #hud button{background:rgba(255,255,255,.07);color:#cdd6e0}
 :root[data-theme="dark"] .drawer{background:#141a20}
+:root[data-theme="dark"] #hud .dd-flag{background:rgba(255,255,255,.07)}
 
 /* ---------- print / export to PDF ---------- */
 @media print{
@@ -204,7 +248,124 @@ body.notes-open #notes,body.toc-open #toc{transform:none}
   #viewport{position:static;display:block}
   #stage{transform:none!important;width:1920px;height:auto}
   #hud,#progress,.drawer,#lightbox{display:none!important}
+  .slide .sources{display:none!important}
   .slide{position:relative;display:flex!important;page-break-after:always;
          width:1920px;height:1080px;animation:none!important}
   .slide *{animation:none!important}
+}
+
+/* ============================================================
+   ANIMATION KIT
+   Two ideas, both pure CSS, both gated on .slide.active so they
+   replay every time you land on the slide.
+
+   1. Ambient loops — infinite, slow, decorative. Negative
+      animation-delay desynchronises siblings without a wait.
+   2. Delay ladders — one diagram revealed in stages, so the
+      audience reads it in the order you explain it.
+
+   Shared easing: cubic-bezier(.16,1,.3,1) — a hard ease-out.
+   ============================================================ */
+
+/* ---------- 1 · animated title ---------- */
+.title-slide h1 .word{display:inline-block;margin-right:.28em}
+.title-slide.active h1{animation:none}
+.title-slide.active h1 .word{animation:wordIn .82s cubic-bezier(.16,1,.3,1) both}
+.title-slide.active h1 .word:nth-child(2){animation-delay:.09s}
+.title-slide.active h1 .word:nth-child(3){animation-delay:.18s}
+.title-slide.active h1 .word.accent{color:var(--accent)}
+@keyframes wordIn{from{opacity:0;transform:translate3d(-30px,22px,0)}
+                  to{opacity:1;transform:translate3d(0,0,0)}}
+.title-slide.active .sub{animation:riseIn .7s .34s cubic-bezier(.16,1,.3,1) both}
+.title-slide.active .meta{animation:riseIn .7s .46s cubic-bezier(.16,1,.3,1) both}
+@keyframes riseIn{from{opacity:0;transform:translate3d(0,18px,0)}
+                  to{opacity:1;transform:translate3d(0,0,0)}}
+
+/* ---------- 1b · title scene: text column + decoration column ---------- */
+/* No absolute positioning — the decoration gets its own column so it can
+   never sit on top of the headline. */
+.title-slide .scene{flex:1;display:flex;align-items:center;gap:56px;min-height:0}
+.title-slide .lockup{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.title-slide .scene h1{font-size:88px;max-width:none}
+.title-slide .scene .sub{margin-top:24px}
+
+.signal{flex:0 0 520px;height:520px;position:relative;pointer-events:none}
+.signal svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.signal svg path{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;
+                 stroke-dasharray:10 22;opacity:.5}
+.title-slide.active .signal svg path{animation:trace 3.8s linear infinite}
+.title-slide.active .signal svg path.slow{animation-delay:-1.8s;opacity:.28}
+@keyframes trace{to{stroke-dashoffset:-64}}
+.signal .dots{position:absolute;top:18%;bottom:18%;right:4%;width:46%;
+              display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;
+              gap:14px;transform:rotate(-5deg)}
+.signal .dots i{border-radius:5px;background:var(--accent);opacity:.16;min-height:12px}
+.signal .dots i:nth-child(3n){opacity:.32}
+.signal .dots i:nth-child(7n){opacity:.48}
+.title-slide.active .signal .dots{animation:drift 8s cubic-bezier(.16,1,.3,1) infinite}
+@keyframes drift{0%,100%{transform:rotate(-5deg) translate3d(0,0,0)}
+                 50%{transform:rotate(-3.5deg) translate3d(0,-14px,0)}}
+
+/* ---------- 2 · staged pipeline ---------- */
+/* ONE grid, two rows. Because both lanes are rows of the same grid, every
+   stage shares a column and therefore lines up, even though the query lane
+   has 4 tokens and the document lane has 6. */
+.pipe{display:grid;grid-template-columns:repeat(11,max-content) auto;
+      align-items:center;gap:24px 18px;justify-content:start}
+.slide.active .body>.pipe{animation:none}   /* don't double-animate with .body>* */
+
+.pipe-box{background:var(--card);border:1px solid var(--hair-soft);border-radius:13px;
+          padding:14px 18px;display:flex;flex-direction:column;gap:3px}
+.pipe-box small{font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;
+                color:var(--faint)}
+.pipe-box strong{font:600 22px/1.1 var(--mono);color:var(--ink)}
+.pipe-tokens{display:flex;gap:8px}
+.pipe-tok{font:500 16px/1 var(--mono);color:var(--accent);background:var(--accent-faint);
+          border:1px solid var(--accent-faint);border-radius:8px;padding:11px 12px}
+.pipe-enc{font:600 17px/1 var(--sans);color:#e9edf2;background:var(--dark);
+          border-radius:10px;padding:16px 20px;white-space:nowrap}
+.pipe-vecs{display:flex;gap:7px}
+.pipe-vec{display:flex;flex-direction:column;gap:3px}
+.pipe-vec i{width:24px;height:7px;border-radius:3px;background:var(--accent);opacity:.4}
+.pipe-vec.one i{opacity:1;width:32px}
+.pipe-arrow{width:30px;height:2px;background:var(--hair);position:relative;justify-self:center}
+.pipe-arrow::after{content:"";position:absolute;right:-1px;top:-4px;width:0;height:0;
+                   border-left:7px solid var(--hair);border-top:5px solid transparent;
+                   border-bottom:5px solid transparent}
+.pipe-arrow i{position:absolute;left:0;top:-3px;width:8px;height:8px;border-radius:50%;
+              background:var(--accent);opacity:0}
+.pipe-pool{font:600 14px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;
+           color:var(--accent-2);border:1px dashed var(--accent-2);border-radius:10px;
+           padding:14px 15px;white-space:nowrap}
+
+/* the score: column 12, spanning both lanes, because it comes from both */
+.pipe-out{grid-column:12;grid-row:1 / span 2;display:flex;align-items:center;gap:16px;
+          margin-left:24px;align-self:stretch}
+.pipe-out .rail{width:3px;align-self:stretch;background:var(--accent);border-radius:2px;
+                transform-origin:center}
+.pipe-out .val{font:600 21px/1.25 var(--sans);color:var(--ink)}
+.pipe-out .val small{display:block;font:500 12px/1.6 var(--mono);color:var(--faint);
+                     letter-spacing:.08em;text-transform:uppercase}
+
+/* delay ladder — each stage lands after the one you just explained */
+.slide.active .pipe-arrow i{animation:dash .72s var(--d,.08s) cubic-bezier(.16,1,.3,1) both}
+.slide.active .pipe-tokens{animation:stageIn .6s .16s cubic-bezier(.16,1,.3,1) both}
+.slide.active .pipe-enc{animation:stageIn .6s .3s cubic-bezier(.16,1,.3,1) both}
+.slide.active .pipe-vecs{animation:stageIn .6s .44s cubic-bezier(.16,1,.3,1) both}
+.slide.active .pipe-pool{animation:pool .62s .6s cubic-bezier(.16,1,.3,1) both}
+.slide.active .pipe-vec.one{animation:resolve .58s .78s cubic-bezier(.16,1,.3,1) both}
+.slide.active .pipe-out .rail{animation:railY .54s .96s cubic-bezier(.16,1,.3,1) both}
+.slide.active .pipe-out .val{animation:stageIn .54s 1.14s cubic-bezier(.16,1,.3,1) both}
+@keyframes dash{0%{opacity:0;transform:translateX(0) scale(.7)}25%{opacity:1}
+                100%{opacity:0;transform:translateX(30px) scale(1)}}
+@keyframes stageIn{from{opacity:0;transform:translate3d(-14px,0,0)}
+                   to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes pool{from{opacity:.35;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes resolve{from{opacity:.4;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
+@keyframes railY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+
+/* ---------- respect the OS setting ---------- */
+@media (prefers-reduced-motion: reduce){
+  .slide.active *,.slide.active *::before,.slide.active *::after{
+    animation:none!important;transition:none!important}
 }

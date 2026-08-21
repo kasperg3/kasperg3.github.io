@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-14 -14 1348 568" width="1348" height="568" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#b4531f"/>
+    </marker>
+  </defs>
+
+  <text x="24" y="30" font-size="14" font-weight="600" fill="#57616d" letter-spacing="2">QUERY TOKENS</text>
+  <text x="596" y="30" font-size="14" font-weight="600" fill="#57616d" letter-spacing="2">ONE ASSET · 6 × 4 PATCHES</text>
+  <text x="1334" y="30" font-size="13" font-weight="600" fill="#b4531f" text-anchor="end">outlined = best patch for that token</text>
+
+  <!-- tokens, ordered top-to-bottom to match their target rows: no crossings -->
+  <g font-size="18" font-weight="500">
+    <rect x="24" y="60"  width="206" height="50" rx="10" fill="rgba(31,111,104,.12)" stroke="rgba(31,111,104,.42)"/>
+    <text x="44" y="91"  fill="#15181d">copy space</text>
+    <rect x="24" y="164" width="206" height="50" rx="10" fill="rgba(31,111,104,.12)" stroke="rgba(31,111,104,.42)"/>
+    <text x="44" y="195" fill="#15181d">laughing</text>
+    <rect x="24" y="268" width="206" height="50" rx="10" fill="rgba(31,111,104,.12)" stroke="rgba(31,111,104,.42)"/>
+    <text x="44" y="299" fill="#15181d">office</text>
+    <rect x="24" y="372" width="206" height="50" rx="10" fill="rgba(31,111,104,.12)" stroke="rgba(31,111,104,.42)"/>
+    <text x="44" y="403" fill="#15181d">wide shot</text>
+  </g>
+
+  <!-- the asset -->
+  <rect x="590" y="46" width="744" height="392" rx="14" fill="rgba(21,24,29,.04)" stroke="rgba(21,24,29,.12)"/>
+  <g stroke="#fff" stroke-width="2">
+    <!-- row 1 (y 56) : sky / empty space -->
+    <rect x="600"  y="56"  width="116" height="90" fill="#c9d6df"/>
+    <rect x="722"  y="56"  width="116" height="90" fill="#b7c8d4"/>
+    <rect x="844"  y="56"  width="116" height="90" fill="#e4ecf1"/>
+    <rect x="966"  y="56"  width="116" height="90" fill="#eef3f6"/>
+    <rect x="1088" y="56"  width="116" height="90" fill="#f2f6f8"/>
+    <rect x="1210" y="56"  width="114" height="90" fill="#eef3f6"/>
+    <!-- row 2 (y 152) : the two faces -->
+    <rect x="600"  y="152" width="116" height="90" fill="#d8a98b"/>
+    <rect x="722"  y="152" width="116" height="90" fill="#c9906f"/>
+    <rect x="844"  y="152" width="116" height="90" fill="#b0c3d0"/>
+    <rect x="966"  y="152" width="116" height="90" fill="#9fb6c6"/>
+    <rect x="1088" y="152" width="116" height="90" fill="#e6ecf0"/>
+    <rect x="1210" y="152" width="114" height="90" fill="#eef3f6"/>
+    <!-- row 3 (y 248) : desks -->
+    <rect x="600"  y="248" width="116" height="90" fill="#8fa6b5"/>
+    <rect x="722"  y="248" width="116" height="90" fill="#7e97a8"/>
+    <rect x="844"  y="248" width="116" height="90" fill="#6e879a"/>
+    <rect x="966"  y="248" width="116" height="90" fill="#8aa2b1"/>
+    <rect x="1088" y="248" width="116" height="90" fill="#dfe7ec"/>
+    <rect x="1210" y="248" width="114" height="90" fill="#eaf0f3"/>
+    <!-- row 4 (y 344) : foreground -->
+    <rect x="600"  y="344" width="116" height="84" fill="#5d7386"/>
+    <rect x="722"  y="344" width="116" height="84" fill="#526b7e"/>
+    <rect x="844"  y="344" width="116" height="84" fill="#4a6376"/>
+    <rect x="966"  y="344" width="116" height="84" fill="#566e80"/>
+    <rect x="1088" y="344" width="116" height="84" fill="#d7e1e7"/>
+    <rect x="1210" y="344" width="114" height="84" fill="#e4ebef"/>
+  </g>
+
+  <!-- connectors: token N -> row N, so nothing crosses -->
+  <g fill="none" stroke="#b4531f" stroke-width="2.5" stroke-linecap="round" marker-end="url(#tip)">
+    <path d="M236 85  C420 85  900 101 1082 101"/>
+    <path d="M236 189 C400 189 600 197 716 197"/>
+    <path d="M236 293 C420 293 700 293 838 293"/>
+    <path d="M236 397 C420 397 700 386 838 386"/>
+  </g>
+
+  <!-- the winning patches -->
+  <g fill="none" stroke="#b4531f" stroke-width="4">
+    <rect x="1088" y="56"  width="116" height="90" rx="3"/>
+    <rect x="722"  y="152" width="116" height="90" rx="3"/>
+    <rect x="844"  y="248" width="116" height="90" rx="3"/>
+    <rect x="844"  y="344" width="116" height="84" rx="3"/>
+  </g>
+  <text x="1146" y="107" font-size="13" font-weight="700" fill="#b4531f" text-anchor="middle">empty</text>
+
+  <!-- formula -->
+  <g transform="translate(24,462)">
+    <rect x="0" y="0" width="1310" height="76" rx="12" fill="rgba(31,111,104,.07)" stroke="rgba(31,111,104,.25)"/>
+    <text x="20" y="31" font-size="17" font-weight="600" fill="#15181d">
+      score = Σ over query tokens of  max over the asset's patches
+    </text>
+    <text x="20" y="57" font-size="15" fill="#57616d">
+      "copy space" has no caption and no tag to match — but it has patches, and those patches are empty. That is what a pooled vector loses.
+    </text>
+  </g>
+</svg>

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Late Interaction · A Primer</title>
+<meta name="description" content="Why single-vector dense retrieval compresses away the clues a query needs, and how late interaction keeps them. Adapted from Amélie Chatelain's Late Interaction Field Guide.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/deck/deck.css">
+</head>
+<body>
+
+<div id="viewport"><div id="stage">
+
+<!-- ============ 1 · title ============ -->
+<section class="slide title-slide active" data-t="Late Interaction · A Primer">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Retrieval architectures</div>
+  <div class="scene">
+    <div class="lockup">
+      <h1><span class="word">Late</span><span class="word">interaction,</span><span class="word accent">up close</span></h1>
+      <p class="sub">What becomes possible when every token — or every image patch — gets a voice.</p>
+    </div>
+    <div class="signal" aria-hidden="true">
+      <svg viewBox="0 0 520 520">
+        <path d="M40 200 C150 192 210 165 330 152"/>
+        <path d="M64 250 C170 258 232 288 372 292"/>
+        <path class="slow" d="M50 224 C180 218 246 118 392 126"/>
+        <path class="slow" d="M60 272 C176 278 250 386 340 392"/>
+      </svg>
+      <div class="dots">
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </div>
+  </div>
+  <div class="meta"><span>Kasper Rømer Grøntved</span><span>Colourbox</span><span>~25 min</span></div>
+  <p class="derived">Adapted, with attribution, from
+    <strong>Amélie Chatelain's <em>Multi-vector Search: A Late Interaction Field Guide</em></strong>.
+    Press <strong>r</strong> on any slide for its sources.</p>
+  <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search · A Late Interaction Field Guide — Amélie Chatelain (original lecture)</a></li>
+    <li><a href="https://docs.google.com/presentation/d/15mTKxaVCpWEGt5zp8OnBeXnSvkdmQgz4raiyWv7E9Rc/edit?usp=sharing">Original Multi-vector Search slide deck</a></li>
+    <li><a href="https://maven.com/search-school/ai-powered-search">AI-Powered Search · Modern Retrieval for Humans &amp; Agents</a></li>
+  </ul>
+  <div class="notes">Open by saying plainly that this section is adapted from Amélie Chatelain's field guide, and that the original goes much deeper. Then get to the puzzle fast.</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="slide" data-t="Resetting the baseline">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Orientation</div>
+  <h1 class="t">Resetting the baseline</h1>
+  <p class="sub">Single-vector dense search uses <strong>one</strong> fixed-size embedding for the query,
+  and one for each indexed unit.</p>
+  <div class="body">
+    <div class="pipe" role="img" aria-label="Single-vector retrieval. The query splits into four tokens, passes an encoder, produces four embeddings, and pools into one vector. The document splits into six tokens, passes an encoder, produces six embeddings, and pools into one vector. The two pooled vectors produce a single similarity score.">
+      <div class="pipe-box"><small>query</small><strong>q</strong></div>
+      <span class="pipe-arrow" style="--d:0.06s"><i></i></span>
+      <div class="pipe-tokens"><span class="pipe-tok">q1</span><span class="pipe-tok">q2</span><span class="pipe-tok">q3</span><span class="pipe-tok">q4</span></div>
+      <span class="pipe-arrow" style="--d:0.20s"><i></i></span>
+      <div class="pipe-enc">Encoder</div>
+      <span class="pipe-arrow" style="--d:0.34s"><i></i></span>
+      <div class="pipe-vecs"><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span></div>
+      <span class="pipe-arrow" style="--d:0.50s"><i></i></span>
+      <div class="pipe-pool">pool</div>
+      <span class="pipe-arrow" style="--d:0.68s"><i></i></span>
+      <div class="pipe-vecs"><span class="pipe-vec one"><i></i><i></i><i></i><i></i></span></div>
+      <div class="pipe-box"><small>document</small><strong>d</strong></div>
+      <span class="pipe-arrow" style="--d:0.10s"><i></i></span>
+      <div class="pipe-tokens"><span class="pipe-tok">d1</span><span class="pipe-tok">d2</span><span class="pipe-tok">d3</span><span class="pipe-tok">d4</span><span class="pipe-tok">d5</span><span class="pipe-tok">d6</span></div>
+      <span class="pipe-arrow" style="--d:0.24s"><i></i></span>
+      <div class="pipe-enc">Encoder</div>
+      <span class="pipe-arrow" style="--d:0.38s"><i></i></span>
+      <div class="pipe-vecs"><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span></div>
+      <span class="pipe-arrow" style="--d:0.54s"><i></i></span>
+      <div class="pipe-pool">pool</div>
+      <span class="pipe-arrow" style="--d:0.72s"><i></i></span>
+      <div class="pipe-vecs"><span class="pipe-vec one"><i></i><i></i><i></i><i></i></span></div>
+      <div class="pipe-out">
+        <span class="rail"></span>
+        <span class="val">one similarity<small>pool(q) · pool(d)</small></span>
+      </div>
+    </div>
+
+
+    <div class="cols" style="margin-top:44px">
+      <div class="card grow">
+        <h3>Encoded independently</h3>
+        <p>Query and document never meet during encoding — so the whole document side is prepared
+        offline, and query time is one similarity search.</p>
+      </div>
+      <div class="card dark grow">
+        <h3>But it makes one strong bet</h3>
+        <p>That <strong>pool</strong> step preserved every clue a future query might care about — decided
+        before anyone knew what would be asked.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">Keep this tight. It is a shared-vocabulary slide, not an argument. The argument starts next.</div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="slide" data-t="Why does Claude Code use grep?">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
+  <h1 class="t">Why does Claude Code use <span class="grad">grep</span>?</h1>
+  <p class="sub">If we have strong language models <em>and</em> strong embedding models, why does a
+  frontier coding agent still reach for lexical search?</p>
+  <div class="body center">
+    <pre class="code" style="max-width:1100px"><span class="c">$</span> grep -rn <span class="s">"refresh_token"</span> auth/</pre>
+    <p class="sub" style="margin-top:40px;text-align:center">"Grep is all you need" came back into fashion
+    for a reason. It is worth understanding which reason.</p>
+  </div>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">Ask the room to guess before advancing. Most people answer "infra" — which is half right, and the other half is the interesting half.</div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="slide" data-t="Grep is hard to beat">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
+  <h1 class="t">Grep is hard to beat — and not only on infra</h1>
+  <div class="body">
+    <div class="cols">
+      <div class="card" style="flex:1">
+        <h3>The boring infra reasons</h3>
+        <ul class="bullets" style="margin-top:16px">
+          <li>Zero infrastructure — works on any machine</li>
+          <li>No model to deploy</li>
+          <li>No index to maintain</li>
+          <li>Privacy by default</li>
+        </ul>
+      </div>
+      <div class="card accent" style="flex:1">
+        <h3>But also: why it sticks</h3>
+        <ul class="bullets" style="margin-top:16px">
+          <li><strong>Lexical matching is extremely strong for code.</strong></li>
+          <li><strong>Granularity is non-negotiable</strong> — exact symbols, paths, functions and
+            error strings all matter.</li>
+          <li><strong>Code is highly formatted data</strong>, which grep can exploit.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card solid" style="margin-top:34px">
+      <h3>So the bar for a learned retriever is high</h3>
+      <p>It has to earn its keep by <strong>adding semantics without losing exact local clues</strong> —
+      and justify deploying a model and maintaining an index on top.</p>
+    </div>
+  </div>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">The right-hand column is the part people underrate. Spend your time there.</div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="slide" data-t="One vector has to carry every clue">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The bottleneck</div>
+  <h1 class="t">One vector has to carry every clue</h1>
+  <p class="sub">A single query can hold several <em>independent</em> relevance constraints.</p>
+  <div class="body">
+    <div class="card solid" style="text-align:center;padding:38px">
+      <p style="font:600 italic 36px/1.35 var(--serif);color:var(--ink)">"What's the backoff for OAuth
+      token refreshes after a 429?"</p>
+    </div>
+    <div class="chips" style="justify-content:center;margin-top:32px">
+      <span class="chip on">RetryPolicy</span><span class="chip on">HTTP 429</span>
+      <span class="chip on">refresh_token()</span><span class="chip on">auth/session.py</span>
+    </div>
+    <div class="cols" style="margin-top:34px;align-items:center">
+      <div class="card dark grow">
+        <h3>↓ compressed into</h3>
+        <p style="font:500 22px/1.4 var(--mono);color:#7fd1c6;margin-top:10px">[ single vector · dim d ]</p>
+      </div>
+      <div class="card grow" style="border-color:var(--accent-2)">
+        <h3 style="color:var(--accent-2)">→ diluted signal</h3>
+        <p>The pooled vector must decide what to preserve <strong>before it knows</strong> which detail
+        the query will care about.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">This is not "a semantic question about authentication" — it is five constraints that all have to survive. This is the bottleneck to keep referring back to.</div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="slide" data-t="Just increase the dimension?">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
+  <h1 class="t">Just increase the dimension?</h1>
+  <p class="sub">The obvious instinct — and a clean result showing why it doesn't resolve the structural
+  problem.</p>
+  <div class="body">
+    <div class="cols">
+      <div class="stack" style="flex:0 0 600px">
+        <ul class="bullets">
+          <li><strong>LIMIT</strong> builds a toy corpus from random attributes and names; documents
+            hold combinations of them, and queries ask for those combinations.</li>
+          <li><strong>It looks artificial — and it isn't.</strong> Product search has exactly this
+            shape.</li>
+          <li><strong>The question it poses:</strong> can one point encode every useful combination of
+            evidence?</li>
+        </ul>
+        <div class="card">
+          <div class="chips">
+            <span class="chip">gaming monitor</span><span class="chip">27"</span><span class="chip">140 Hz</span>
+          </div>
+          <p style="margin-top:12px">Three constraints that must <em>all</em> survive the encoding.</p>
+        </div>
+      </div>
+      <div class="grow" style="display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:0">
+        <div class="cols" style="gap:20px;min-height:0;flex:0 0 auto;align-items:center">
+          <figure class="grow" style="min-height:0">
+            <img class="zoom" src="/knowledge/_shared/figures/limit-docs.svg" alt="LIMIT construction: documents holding combinations of attributes and names">
+          </figure>
+          <figure class="grow" style="min-height:0">
+            <img class="zoom" src="/knowledge/_shared/figures/limit-matrix.svg" alt="LIMIT relevance matrix: every query-document combination">
+          </figure>
+        </div>
+        <p style="font:400 15px/1.45 var(--sans);color:var(--faint)">Figures: Amélie Chatelain,
+          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
+          Field Guide</em></a>, from data in Weller et al.,
+          <a href="https://arxiv.org/abs/2508.21038">LIMIT</a></p>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2508.21038">On the Theoretical Limitations of Embedding-Based Retrieval · Weller et al., 2025</a></li>
+  </ul>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">The paper also proves a mathematical capacity limit; skip that here and stay with the intuition.</div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="slide" data-t="Bigger vectors plateau">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
+  <h1 class="t">Bigger vectors plateau</h1>
+  <p class="sub">More dimensions help — to a point. They do not change the structure of the problem.</p>
+  <div class="body">
+    <div class="cols">
+      <figure class="grow" style="min-height:0">
+        <img class="zoom" src="/knowledge/_shared/figures/dimension-curves.svg" alt="Recall against embedding dimension: dense models climb then plateau, far below the lexical reference">
+        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Multi-vector Search: A Late Interaction Field Guide</em></a>, from data in Weller et al., <a href="https://arxiv.org/abs/2508.21038">LIMIT</a></figcaption>
+      </figure>
+      <div class="stack" style="flex:0 0 480px">
+        <div class="card"><h3>It improves — then flattens</h3>
+          <p>More room buys real gains up to a point, then a visible ceiling. Capacity and structure
+          are not the same thing.</p></div>
+        <div class="card dark"><h3>And it gets expensive</h3>
+          <p>Large <code>d</code> across a catalogue our size is an index cost we pay on every asset,
+          forever.</p></div>
+        <div class="card accent"><p style="font-size:20px"><strong>More capacity ≠ preserving local
+          evidence.</strong></p></div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2508.21038">On the Theoretical Limitations of Embedding-Based Retrieval · Weller et al., 2025</a></li>
+  </ul>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">Land the one-line version: capacity is not structure.</div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="slide" data-t="Exact match is a gift, but it's sparse">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Is grep all we need?</div>
+  <h1 class="t sm">Exact match is a gift — but it's sparse</h1>
+  <p class="sub">The wrong conclusion would be that BM25 is all we need.</p>
+  <div class="body">
+    <div class="cols">
+      <figure class="grow" style="min-height:0">
+        <img class="zoom" src="/knowledge/_shared/figures/vocab-mismatch.svg" alt="BM25 performance collapsing on the synonym variant of the LIMIT corpus">
+        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction Field Guide</em></a>, from data in Weller et al., <a href="https://arxiv.org/abs/2508.21038">LIMIT</a></figcaption>
+      </figure>
+      <div class="stack" style="flex:0 0 640px">
+      <div class="card solid">
+        <h3>Vocabulary mismatch is alive and well</h3>
+        <p>Lexical retrieval breaks the moment the user says <code>auth</code> and the code says
+        <code>credentials</code>.</p>
+        <p style="margin-top:14px">On LIMIT's synonym variant, BM25 collapses. Exact matching is
+        only a gift when the vocabulary happens to line up.</p>
+      </div>
+      <div class="card dark">
+        <h3>So we want both</h3>
+        <p><strong>Exact-ish local evidence</strong>, which lexical search gives us free —
+        <strong>and soft semantic matching</strong>, which dense retrieval gives us free.</p>
+        <p style="margin-top:12px">At the same time. That is the whole ask.</p>
+      </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2508.21038">On the Theoretical Limitations of Embedding-Based Retrieval · Weller et al., 2025</a></li>
+  </ul>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">Be explicit that this is not a pro-lexical slide. It sets up the "we want both" framing that late interaction answers.</div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="slide" data-t="But wait — what's this?">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
+  <h1 class="t">But wait — what's this?</h1>
+  <p class="sub">One line on that chart doesn't behave like the ordinary dense models.</p>
+  <div class="body">
+    <div class="cols">
+      <figure class="grow" style="min-height:0">
+        <img class="zoom" src="/knowledge/_shared/figures/dimension-curves.svg" alt="The same chart, with one line behaving unlike the other dense models">
+        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Multi-vector Search: A Late Interaction Field Guide</em></a></figcaption>
+      </figure>
+      <div class="stack" style="flex:0 0 500px">
+        <div class="card solid">
+          <span class="num" style="font-size:34px">GTE-ModernColBERT</span>
+          <p style="margin-top:12px">One line here does not behave like the others.</p>
+        </div>
+        <div class="card">
+          <h3>Is it just a huge pooled vector?</h3>
+          <p style="font:600 24px/1.3 var(--serif);color:var(--accent);margin-top:10px">No. It uses a
+          different retrieval paradigm.</p>
+        </div>
+        <div class="card dark">
+          <p>So instead of squeezing more into one vector — keep multiple local vectors, and delay
+          their interaction until the query arrives.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">This is the hinge of the talk. Pause before turning the page.</div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="slide" data-t="Late interaction sits in the middle">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Escaping the ceiling</div>
+  <h1 class="t">Late interaction sits in the middle</h1>
+  <p class="sub">It keeps the bi-encoder's offline document encoding, but lets the query interact with
+  local document vectors during scoring.</p>
+  <div class="body">
+    <figure style="flex:1;align-items:center;justify-content:center">
+      <img class="zoom" src="assets/spectrum.svg" alt="Bi-encoder, late interaction and cross-encoder compared">
+    </figure>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT</a></li>
+    <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction</a></li>
+  </ul>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">The key words are "don't pool" and "delay". Everything deployable about this approach comes from documents still being encoded offline.</div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="slide" data-t="Reintroducing MaxSim">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The operator</div>
+  <h1 class="t">Reintroducing MaxSim</h1>
+  <p class="sub">For every query token, find its best-matching document token — then sum those best
+  matches.</p>
+  <div class="body">
+    <figure style="flex:1;align-items:center;justify-content:center;min-height:0">
+      <img class="zoom" src="/knowledge/_shared/figures/maxsim-heatmap.svg" alt="Query-token by document-token similarity heatmap, with the best match per query token highlighted">
+      <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction Field Guide</em></a></figcaption>
+    </figure>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT</a></li>
+  </ul>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">Read the heatmap row by row: each row is a query token, each column a document token. For each row MaxSim keeps only the best cell, then sums. Under mean pooling, a rare high-signal term like OAuth contributes far less than it should.</div>
+</section>
+
+<!-- ============ 12 ============ -->
+<section class="slide" data-t="The useful overlap">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this lands</div>
+  <h1 class="t">The useful overlap</h1>
+  <p class="sub">Multi-vector search sits where the two things we wanted actually meet.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card"><h3>Lexical search</h3>
+        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Exact granularity</p>
+        <p style="margin-top:10px">Local clues survive intact. Semantics do not.</p></div>
+      <div class="card"><h3>Dense search</h3>
+        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Soft semantic matching</p>
+        <p style="margin-top:10px">Meaning survives pooling. Local clues may not.</p></div>
+      <div class="card accent" style="border-color:var(--accent);border-width:2px">
+        <h3 style="color:var(--accent)">Multi-vector search</h3>
+        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Both, at a price</p>
+        <p style="margin-top:10px">Late interaction tries to keep exact local evidence <em>and</em> soft
+        semantic matching — for more storage and more scoring work.</p></div>
+    </div>
+    <div class="card solid" style="margin-top:34px">
+      <h3>Where the original lecture goes next</h3>
+      <p><strong>Code retrieval</strong> makes granularity impossible to ignore ·
+      <strong>multimodal document retrieval</strong> makes compression impossible to ignore · then the
+      production objections: storage, latency, updates and the model ecosystem.</p>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Continue with the full field guide — Amélie Chatelain</a></li>
+  </ul>
+  <div class="slide-foot">Late interaction · a primer</div>
+  <div class="notes">End by pointing people at the original for the field cases and production objections. This primer deliberately stops here.</div>
+</section>
+
+</div></div>
+<script src="/deck/deck.js"></script>
+</body>
+</html>

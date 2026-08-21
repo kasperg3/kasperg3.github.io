@@ -6,9 +6,15 @@
 
    Keys: → / space / PageDown  next        ← / PageUp  previous
          Home / End            first/last  n  speaker notes
-         o or g                contents    f  fullscreen
-         t                     light/dark  p  print (export PDF)
+         o or g                contents    r  sources for this slide
+         f                     fullscreen  t  light/dark
+         p                     print (export PDF)
          Esc                   close panels
+
+   Per-slide extras (all optional, all hidden on the slide itself):
+     <div class="notes">…</div>        speaker notes            → n
+     <ul class="sources"><li><a href="…">Label</a></li></ul>   → r
+     class="slide deep-dive"          optional/skippable slide → badge in the HUD
    ============================================================ */
 (() => {
 const stage  = document.getElementById('stage');
@@ -20,8 +26,10 @@ const DECK_TITLE = document.title;
 document.body.insertAdjacentHTML('beforeend', `
 <div id="progress"></div>
 <div id="hud">
+  <span class="dd-flag" hidden>Deep dive</span>
   <button id="tocBtn"  title="Contents (o)">☰</button>
   <button id="noteBtn" title="Speaker notes (n)">✎</button>
+  <button id="srcBtn"  title="Sources (r)">❝<span class="badge" hidden></span></button>
   <button id="prevBtn" title="Previous (←)">‹</button>
   <span id="ctr"></span>
   <button id="nextBtn" title="Next (→)">›</button>
@@ -33,10 +41,16 @@ document.body.insertAdjacentHTML('beforeend', `
   <div class="nt"></div><div class="nb"></div>
 </aside>
 <aside class="drawer" id="toc"></aside>
+<aside class="drawer" id="sources">
+  <button class="drawer-close" data-close="sources">×</button>
+  <div class="tk">Sources</div><h2>References</h2>
+  <div class="rt"></div><div class="rc"></div><ul class="refs"></ul>
+</aside>
 <div id="lightbox"><img alt=""></div>`);
 
 const notesEl = document.getElementById('notes');
 const tocEl   = document.getElementById('toc');
+const srcEl   = document.getElementById('sources');
 const lightbox = document.getElementById('lightbox');
 
 /* ---------- scale the 1920x1080 stage to fit ---------- */
@@ -44,6 +58,8 @@ function fit(){
   let w = innerWidth, h = innerHeight;
   if (document.body.classList.contains('notes-open')) {
     if (innerWidth >= 1200) w -= 480; else h -= Math.min(innerHeight * .42, 320);
+  } else if (document.body.classList.contains('sources-open')) {
+    if (innerWidth >= 1200) w -= 460; else h -= Math.min(innerHeight * .42, 320);
   } else if (document.body.classList.contains('toc-open') && innerWidth >= 1200) {
     w -= 440;
   }
@@ -93,9 +109,28 @@ function show(i){
   const n = slides[cur].querySelector('.notes');
   notesEl.querySelector('.nt').textContent = slides[cur].dataset.t || '';
   notesEl.querySelector('.nb').textContent = n ? n.textContent.trim() : '(no notes)';
+  renderSources();
+  const dd = document.querySelector('#hud .dd-flag');
+  dd.hidden = !slides[cur].classList.contains('deep-dive');
   if (document.body.classList.contains('toc-open')) buildToc();
 }
 window.show = show;
+
+/* ---------- per-slide sources ---------- */
+function slideRefs(i){
+  return [...(slides[i].querySelectorAll('.sources li') || [])];
+}
+function renderSources(){
+  const refs = slideRefs(cur);
+  const badge = document.querySelector('#srcBtn .badge');
+  badge.hidden = !refs.length;
+  badge.textContent = refs.length;
+  srcEl.querySelector('.rt').textContent = slides[cur].dataset.t || '';
+  srcEl.querySelector('.rc').textContent = refs.length
+    ? `${refs.length} source${refs.length === 1 ? '' : 's'} attached to this slide`
+    : 'No source attached to this slide';
+  srcEl.querySelector('.refs').innerHTML = refs.map(li => `<li>${li.innerHTML}</li>`).join('');
+}
 
 /* ---------- contents drawer, grouped by .section slides ---------- */
 function buildToc(){
@@ -122,7 +157,7 @@ function buildToc(){
 function panel(name, on){
   const cls = name + '-open';
   const want = on === undefined ? !document.body.classList.contains(cls) : on;
-  document.body.classList.remove('notes-open', 'toc-open');
+  document.body.classList.remove('notes-open', 'toc-open', 'sources-open');
   if (want) { document.body.classList.add(cls); if (name === 'toc') buildToc(); }
   fit();
 }
@@ -154,6 +189,7 @@ document.addEventListener('click', e => {
   else if (id === 'nextBtn') show(cur + 1);
   else if (id === 'tocBtn')  panel('toc');
   else if (id === 'noteBtn') panel('notes');
+  else if (id === 'srcBtn')  panel('sources');
   else if (id === 'fsBtn')   toggleFullscreen();
 });
 function toggleFullscreen(){
@@ -170,6 +206,7 @@ addEventListener('keydown', e => {
     case 'End':  show(slides.length - 1); break;
     case 'n': case 'N': panel('notes'); break;
     case 'o': case 'O': case 'g': case 'G': panel('toc'); break;
+    case 'r': case 'R': panel('sources'); break;
     case 't': case 'T': toggleTheme(); break;
     case 'p': case 'P': print(); break;
     case 'f': case 'F': toggleFullscreen(); break;

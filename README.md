@@ -13,9 +13,9 @@ index.html              landing page (hero, current work, projects, talks, resea
 publications.html       full publication list with abstracts
 cv.html                 CV in HTML  ·  assets/cv/cv.pdf is the downloadable version
 404.html
-talks/index.html        talk index + how the deck engine works
-talks/<slug>/index.html one deck = one HTML file
-talks/_template/        copy this to start a new deck
+knowledge/index.html    knowledge-dissemination index (featured + archive)
+knowledge/<slug>/index.html  one deck = one HTML file
+knowledge/_template/    copy this to start a new deck
 site/site.css           shared design system for the site pages
 deck/deck.css           slide styles, same tokens as site.css
 deck/deck.js            slide runtime (~200 lines, vanilla JS)
@@ -25,7 +25,7 @@ sitemap.xml robots.txt CNAME .nojekyll
 ```
 
 `.nojekyll` matters: without it GitHub Pages runs Jekyll and ignores files starting
-with `_`, which would break `talks/_template/`.
+with `_`, which would break `knowledge/_template/`.
 
 ## Local preview
 
@@ -36,12 +36,12 @@ python3 -m http.server 8000
 
 Use a server, not `file://` — pages reference assets with absolute paths (`/deck/deck.css`).
 
-## Adding a talk
+## Adding a deck
 
 ```bash
-cp -r talks/_template talks/my-new-talk
-# edit talks/my-new-talk/index.html
-# add a card to talks/index.html, and optionally to index.html
+cp -r knowledge/_template knowledge/my-new-talk
+# edit knowledge/my-new-talk/index.html
+# add a card to knowledge/index.html (Featured or Archive)
 # add the URL to sitemap.xml
 ```
 
@@ -49,7 +49,7 @@ cp -r talks/_template talks/my-new-talk
 
 Slides are `<section class="slide">` elements inside a fixed **1920×1080** `#stage`.
 `deck.js` scales that stage with a single CSS transform so it fills any window, shows one
-slide at a time, and syncs the index to the URL hash — `…/my-talk/#7` deep-links to slide 7.
+slide at a time, and syncs the index to the URL hash — `…/my-deck/#7` deep-links to slide 7.
 Because the canvas is a fixed pixel size you design in absolute px and it renders
 identically on a laptop, a projector, and a phone.
 
@@ -59,8 +59,14 @@ Rules the engine relies on:
 - the **first** slide also gets `class="… active"`
 - `data-t` feeds the contents drawer and the browser tab title
 - `<div class="notes">…</div>` inside a slide is speaker-only (press `n`)
+- `<ul class="sources"><li><a href="…">Label</a></li></ul>` inside a slide becomes its citation list
+  (press `r`); the HUD shows a count badge when the current slide has any
+- `class="slide deep-dive"` marks an optional slide — the HUD shows a "Deep dive" badge so you know
+  it is safe to skip when short on time
 - `class="slide section"` marks a divider and starts a new contents group
 - `<img class="zoom">` becomes click-to-enlarge
+- `<span class="todo">` marks placeholder content in a draft deck; `<div class="draft-flag">Draft</div>`
+  puts a badge in the slide corner
 
 ### Presenter keys
 
@@ -71,6 +77,7 @@ Rules the engine relies on:
 | `Home` / `End` | first / last slide |
 | `n` | speaker notes |
 | `o` or `g` | contents |
+| `r` | sources for the current slide |
 | `f` | fullscreen |
 | `t` | light / dark |
 | `p` | print → PDF, one slide per page |
@@ -97,9 +104,32 @@ palette, add `<style>:root{--accent:#7a3ea1}</style>` to that deck's `<head>`.
 Dark mode: the site follows `prefers-color-scheme`; decks toggle with `t` and remember
 the choice in `localStorage`.
 
+## Animation
+
+Two patterns, both pure CSS in `deck/deck.css`, both gated on `.slide.active` so they replay every
+time you land on the slide. Shared easing throughout: `cubic-bezier(.16,1,.3,1)`.
+
+**Staggered title.** Split the headline into words and they cascade in:
+
+```html
+<h1><span class="word">Late</span><span class="word">interaction,</span>
+    <span class="word accent">up close</span></h1>
+```
+
+**Ambient loop.** A decorative `.signal` block (traced SVG paths + a drifting dot grid) runs
+infinitely on title slides. Sibling paths get `.slow`, which applies a *negative* `animation-delay`
+so they desynchronise immediately instead of waiting a cycle.
+
+**Delay ladder.** The `.pipe` diagram reveals itself in stages — tokens at `.16s`, encoder `.3s`,
+embeddings `.44s`, pool `.6s`, pooled vector `.78s`, score rail `.96s`, label `1.14s` — so the
+audience reads it in the order you explain it. Per-arrow timing comes from an inline
+`style="--d:.34s"`. See `knowledge/late-interaction-primer/` slide 2.
+
+Everything is disabled under `@media (prefers-reduced-motion: reduce)`.
+
 ## Charts
 
-Hand-written inline SVG (see `talks/decentralized-task-allocation/assets/tasks.svg`). Stays
+Hand-written inline SVG (see `knowledge/decentralized-task-allocation/assets/tasks.svg`). Stays
 crisp at projector resolution, needs no JS, and uses the same palette tokens.
 
 ## Images

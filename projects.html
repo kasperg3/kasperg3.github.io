@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Projects — Kasper Rømer Grøntved</title>
+<meta name="description" content="Open-source libraries and tools: decentralized multi-robot task allocation, coverage path planning, UAV communication, and the SAREnv search and rescue benchmark.">
+<link rel="canonical" href="https://www.grontved.xyz/projects.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/site.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><i></i><i></i></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/">Kasper <span>Grøntved</span></a>
+    <nav class="main">
+      <a href="/projects.html" aria-current="page">Projects</a>
+      <a href="/knowledge/">Knowledge</a>
+      <a href="/publications.html">Publications</a>
+      <a href="/cv.html">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="hero lead">
+    <p class="eyebrow">Open source</p>
+    <h1>Projects</h1>
+    <p class="lede">Libraries and tools from the PhD and after. Everything here is public.</p>
+    <div class="inline-links">
+      <a href="https://github.com/kasperg3?tab=repositories">All repositories</a>
+    </div>
+  </div>
+
+  <section style="padding-top:0;border:0">
+    <div class="grid two">
+
+      <a class="card media" href="https://github.com/kasperg3/trajallocpy">
+        <img src="/assets/img/trajallocpy.webp" alt="Animated trajectory allocation across multiple agents" loading="lazy" width="640" height="480">
+        <div class="inner">
+          <span class="tag">Python · Multi-agent</span>
+          <h3>TrajAllocPy</h3>
+          <p>Decentralized trajectory task allocation for multi-robot area coverage. A generalization of
+          the consensus-based bundle algorithm that treats tasks as directed trajectories and optimizes
+          traversal direction during allocation.</p>
+          <div class="foot"><span class="pill">ICAR 2023</span><span class="pill">CBBA</span></div>
+        </div>
+      </a>
+
+      <a class="card media" href="https://github.com/kasperg3/trajgenpy">
+        <img src="/assets/img/trajgenpy.webp" alt="Extracted map features over an aerial region" loading="lazy" width="1200" height="624">
+        <div class="inner">
+          <span class="tag">Python · Geospatial</span>
+          <h3>TrajGenPy</h3>
+          <p>Turns map features into flyable coverage tasks. Pulls geometry from OpenStreetMap,
+          decomposes a region, and generates trajectories that prioritize the terrain where lost
+          people are actually found — ditches, tree lines, water edges.</p>
+          <div class="foot"><span class="pill">Coverage planning</span><span class="pill">OSM</span></div>
+        </div>
+      </a>
+
+      <a class="card media" href="https://github.com/kasperg3/swarmtalk">
+        <img src="/assets/img/swarmtalk.webp" alt="Simulated swarm flocking behaviour" loading="lazy" width="640" height="369">
+        <div class="inner">
+          <span class="tag">C++ · ESP-NOW · ROS 2</span>
+          <h3>SwarmTalk</h3>
+          <p>Decentralized UAV-to-UAV communication over 2.4 GHz using a connectionless protocol on
+          commodity ESP hardware. UAVs join and leave without central governance or a-priori config,
+          and it speaks ROS 2 directly.</p>
+          <div class="foot"><span class="pill">ICUAS 2025</span><span class="pill">COTS hardware</span></div>
+        </div>
+      </a>
+
+      <a class="card media" href="https://github.com/kasperg3/DDICP">
+        <img src="/assets/img/ddicp.png" alt="Coverage plan across eight allocated tasks" loading="lazy" width="640" height="480">
+        <div class="inner">
+          <span class="tag">Multi-UAV · Planning</span>
+          <h3>DDICP</h3>
+          <p>Dynamic decentralized informative coverage planning. Multi-UAV area coverage that adapts
+          the plan as information arrives, rather than committing to a sweep computed on the ground.</p>
+          <div class="foot"><span class="pill">Real-world trials</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="https://github.com/namurproject/SAREnv">
+        <span class="tag">Benchmark · Dataset · Drones 2025</span>
+        <h3>SAREnv</h3>
+        <p>An open dataset and evaluation framework for informed wilderness search and rescue: 60
+        geospatial scenarios across four European environments, a lost-person probability model,
+        baseline search strategies, and scoring metrics. Built so path-planning papers can finally be
+        compared to each other — groups at Bristol are now extending it with student projects.</p>
+        <div class="foot"><span class="pill">Drones 9(9):628</span><span class="pill">60 scenarios</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/kasperg3/HopDatabase">
+        <span class="tag">Web · Scraping · Beer</span>
+        <h3>HopDatabase</h3>
+        <p>500+ hop varieties, scraped and normalized into something you can actually compare across —
+        alpha acids, oil composition, substitutions. Built because choosing hops from vendor PDFs is
+        miserable, and because I brew.</p>
+        <div class="foot"><span class="pill">Side project</span></div>
+      </a>
+
+    </div>
+  </section>
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="col">
+      <strong style="font:600 16px/1 var(--sans)">Kasper Rømer Grøntved</strong>
+      <p class="fine">Machine learning for search, run on European infrastructure. Odense, Denmark.</p>
+    </div>
+    <div class="col">
+      <a href="/projects.html">Projects</a>
+      <a href="/publications.html">Publications</a>
+      <a href="/cv.html">CV</a>
+      <a href="/knowledge/">Knowledge</a>
+    </div>
+    <div class="col">
+      <a href="https://github.com/kasperg3">GitHub</a>
+      <a href="https://www.linkedin.com/in/kaspergrontved/">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Google Scholar</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

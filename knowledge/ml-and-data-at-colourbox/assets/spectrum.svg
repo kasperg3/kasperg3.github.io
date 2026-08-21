@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 470" width="1400" height="470" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#2c5f9e" stop-opacity=".13"/>
+      <stop offset=".5" stop-color="#1f6f68" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#b4531f" stop-opacity=".13"/>
+    </linearGradient>
+  </defs>
+  <rect x="30" y="26" width="1340" height="86" rx="20" fill="url(#g)"/>
+  <text x="52" y="62" font-size="15" font-weight="600" fill="#57616d" letter-spacing="2">CHEAPER · MORE SCALABLE</text>
+  <text x="1348" y="62" font-size="15" font-weight="600" fill="#57616d" letter-spacing="2" text-anchor="end">MORE EXPRESSIVE · SLOWER</text>
+  <path d="M52 88 L1340 88" stroke="#57616d" stroke-width="1.5" stroke-dasharray="6 7" opacity=".5"/>
+
+  <!-- bi-encoder -->
+  <g>
+    <rect x="30" y="152" width="410" height="288" rx="18" fill="#fff" stroke="rgba(21,24,29,.12)"/>
+    <text x="60" y="196" font-size="21" font-weight="600" fill="#15181d">Bi-encoder</text>
+    <text x="60" y="222" font-size="15" fill="#2c5f9e" font-weight="500">one vector per document</text>
+    <g transform="translate(60,250)">
+      <rect x="0" y="0" width="140" height="30" rx="7" fill="rgba(44,95,158,.14)"/>
+      <text x="70" y="20" font-size="13" text-anchor="middle" fill="#2c5f9e" font-weight="600">query → [ d ]</text>
+      <rect x="180" y="0" width="140" height="30" rx="7" fill="rgba(44,95,158,.14)"/>
+      <text x="250" y="20" font-size="13" text-anchor="middle" fill="#2c5f9e" font-weight="600">doc → [ d ]</text>
+      <text x="160" y="20" font-size="15" text-anchor="middle" fill="#57616d">·</text>
+    </g>
+    <text x="60" y="330" font-size="15" fill="#57616d">Encoded independently, so the whole</text>
+    <text x="60" y="352" font-size="15" fill="#57616d">index is built offline. One dot product</text>
+    <text x="60" y="374" font-size="15" fill="#57616d">per candidate at query time.</text>
+    <text x="60" y="412" font-size="14" fill="#b4531f" font-weight="500">Compresses every clue into one point.</text>
+  </g>
+
+  <!-- late interaction -->
+  <g>
+    <rect x="470" y="132" width="460" height="308" rx="18" fill="#fff" stroke="#1f6f68" stroke-width="2"/>
+    <text x="500" y="176" font-size="21" font-weight="600" fill="#15181d">Late interaction</text>
+    <text x="500" y="202" font-size="15" fill="#1f6f68" font-weight="500">one vector per token or patch</text>
+    <g transform="translate(500,228)">
+      <g fill="rgba(31,111,104,.20)">
+        <rect x="0" y="0" width="26" height="26" rx="5"/><rect x="32" y="0" width="26" height="26" rx="5"/>
+        <rect x="64" y="0" width="26" height="26" rx="5"/><rect x="96" y="0" width="26" height="26" rx="5"/>
+      </g>
+      <text x="140" y="19" font-size="14" fill="#57616d">query tokens</text>
+      <g fill="rgba(31,111,104,.38)" transform="translate(0,40)">
+        <rect x="0" y="0" width="26" height="26" rx="5"/><rect x="32" y="0" width="26" height="26" rx="5"/>
+        <rect x="64" y="0" width="26" height="26" rx="5"/><rect x="96" y="0" width="26" height="26" rx="5"/>
+        <rect x="128" y="0" width="26" height="26" rx="5"/><rect x="160" y="0" width="26" height="26" rx="5"/>
+      </g>
+      <text x="200" y="59" font-size="14" fill="#57616d">document tokens</text>
+    </g>
+    <text x="500" y="342" font-size="15" fill="#57616d">Documents still encoded offline, but the</text>
+    <text x="500" y="364" font-size="15" fill="#57616d">interaction is <tspan font-weight="600" fill="#15181d">delayed</tspan> until the query lands.</text>
+    <text x="500" y="400" font-size="16" fill="#1f6f68" font-weight="600">MaxSim: per query token, take its best</text>
+    <text x="500" y="422" font-size="16" fill="#1f6f68" font-weight="600">document match — then sum.</text>
+  </g>
+
+  <!-- cross-encoder -->
+  <g>
+    <rect x="960" y="152" width="410" height="288" rx="18" fill="#fff" stroke="rgba(21,24,29,.12)"/>
+    <text x="990" y="196" font-size="21" font-weight="600" fill="#15181d">Cross-encoder</text>
+    <text x="990" y="222" font-size="15" fill="#b4531f" font-weight="500">joint encoding, full attention</text>
+    <g transform="translate(990,250)">
+      <rect x="0" y="0" width="320" height="30" rx="7" fill="rgba(180,83,31,.14)"/>
+      <text x="160" y="20" font-size="13" text-anchor="middle" fill="#b4531f" font-weight="600">[ query ⊕ document ] → score</text>
+    </g>
+    <text x="990" y="330" font-size="15" fill="#57616d">Deepest interaction, best quality —</text>
+    <text x="990" y="352" font-size="15" fill="#57616d">and all of that work happens at query</text>
+    <text x="990" y="374" font-size="15" fill="#57616d">time, for every candidate.</text>
+    <text x="990" y="412" font-size="14" fill="#b4531f" font-weight="500">Reranking only. Never first-stage.</text>
+  </g>
+</svg>

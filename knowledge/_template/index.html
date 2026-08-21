@@ -15,13 +15,17 @@
 
 <div id="viewport"><div id="stage">
 
-<!-- Every slide: class="slide", a data-t title (used by contents + tab title),
-     and an optional <div class="notes"> for speaker notes (press n).
+<!-- Every slide: class="slide", a data-t title (used by contents + tab title).
+     Optional per-slide extras, all hidden on the slide itself:
+       <div class="notes">…</div>                              speaker notes   → n
+       <ul class="sources"><li><a href="…">…</a></li></ul>     citations       → r
+       class="slide deep-dive"                                 skippable slide → HUD badge
      The first slide needs class="active". -->
 
 <section class="slide title-slide active" data-t="New Talk Title">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Kasper Grøntved · 2026</div>
-  <h1>New talk <span class="grad">title</span></h1>
+  <!-- wrap words in <span class="word"> for the staggered reveal; .accent tints one -->
+  <h1><span class="word">New</span><span class="word">talk</span><span class="word accent">title</span></h1>
   <p class="sub">One sentence that says why anyone should stay in the room.</p>
   <div class="meta"><span>Kasper Grøntved</span><span>Venue</span><span>30 min</span></div>
   <div class="notes">Opening line goes here.</div>
@@ -52,8 +56,12 @@
       </div>
     </div>
   </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/0000.00000">Paper or link backing this slide</a></li>
+    <li>A source with no URL is fine too — it just renders as text.</li>
+  </ul>
   <div class="slide-foot">New talk title</div>
-  <div class="notes">What to say out loud.</div>
+  <div class="notes">What to say out loud. Press n for these, r for the sources above.</div>
 </section>
 
 <section class="slide closing-slide" data-t="Takeaways">

@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 1000 566" width="1000" height="566" font-family="Inter, system-ui, sans-serif">
+  <text x="0" y="18" font-size="13" font-weight="600" fill="#57616d" letter-spacing="2">QUERY TOKENS  ×  TOKENS ON THE ASSET (OCR'd PAGE + CAPTION)</text>
+
+  <!-- column labels: horizontal, no rotation, so nothing collides -->
+  <g font-size="14" fill="#57616d" text-anchor="middle">
+    <text x="252" y="72">Bergen</text>
+    <text x="356" y="72">jakke</text>
+    <text x="460" y="72">rød</text>
+    <text x="564" y="72">modell</text>
+    <text x="668" y="72">samtykke</text>
+    <text x="772" y="72">signert</text>
+    <text x="876" y="72">2024</text>
+  </g>
+  <!-- row labels -->
+  <g font-size="17" fill="#15181d" text-anchor="end" font-weight="500">
+    <text x="176" y="119">bergen</text>
+    <text x="176" y="187">red jacket</text>
+    <text x="176" y="255">release form</text>
+    <text x="176" y="323">2024</text>
+  </g>
+
+  <!-- cells: opacity = similarity -->
+  <g>
+    <!-- bergen -->
+    <g transform="translate(200,88)">
+      <rect width="96" height="44" rx="6" fill="#1f6f68" opacity=".92"/>
+      <rect x="104" width="96" height="44" rx="6" fill="#1f6f68" opacity=".06"/>
+      <rect x="208" width="96" height="44" rx="6" fill="#1f6f68" opacity=".05"/>
+      <rect x="312" width="96" height="44" rx="6" fill="#1f6f68" opacity=".08"/>
+      <rect x="416" width="96" height="44" rx="6" fill="#1f6f68" opacity=".05"/>
+      <rect x="520" width="96" height="44" rx="6" fill="#1f6f68" opacity=".06"/>
+      <rect x="624" width="96" height="44" rx="6" fill="#1f6f68" opacity=".10"/>
+      <rect width="96" height="44" rx="6" fill="none" stroke="#b4531f" stroke-width="3"/>
+    </g>
+    <!-- red jacket -> jakke -->
+    <g transform="translate(200,156)">
+      <rect width="96" height="44" rx="6" fill="#1f6f68" opacity=".07"/>
+      <rect x="104" width="96" height="44" rx="6" fill="#1f6f68" opacity=".66"/>
+      <rect x="208" width="96" height="44" rx="6" fill="#1f6f68" opacity=".58"/>
+      <rect x="312" width="96" height="44" rx="6" fill="#1f6f68" opacity=".22"/>
+      <rect x="416" width="96" height="44" rx="6" fill="#1f6f68" opacity=".06"/>
+      <rect x="520" width="96" height="44" rx="6" fill="#1f6f68" opacity=".05"/>
+      <rect x="624" width="96" height="44" rx="6" fill="#1f6f68" opacity=".06"/>
+      <rect x="104" width="96" height="44" rx="6" fill="none" stroke="#b4531f" stroke-width="3"/>
+    </g>
+    <!-- release form -> samtykke -->
+    <g transform="translate(200,224)">
+      <rect width="96" height="44" rx="6" fill="#1f6f68" opacity=".05"/>
+      <rect x="104" width="96" height="44" rx="6" fill="#1f6f68" opacity=".06"/>
+      <rect x="208" width="96" height="44" rx="6" fill="#1f6f68" opacity=".05"/>
+      <rect x="312" width="96" height="44" rx="6" fill="#1f6f68" opacity=".38"/>
+      <rect x="416" width="96" height="44" rx="6" fill="#1f6f68" opacity=".74"/>
+      <rect x="520" width="96" height="44" rx="6" fill="#1f6f68" opacity=".46"/>
+      <rect x="624" width="96" height="44" rx="6" fill="#1f6f68" opacity=".06"/>
+      <rect x="416" width="96" height="44" rx="6" fill="none" stroke="#b4531f" stroke-width="3"/>
+    </g>
+    <!-- 2024 -> 2024 -->
+    <g transform="translate(200,292)">
+      <rect width="96" height="44" rx="6" fill="#1f6f68" opacity=".09"/>
+      <rect x="104" width="96" height="44" rx="6" fill="#1f6f68" opacity=".05"/>
+      <rect x="208" width="96" height="44" rx="6" fill="#1f6f68" opacity=".05"/>
+      <rect x="312" width="96" height="44" rx="6" fill="#1f6f68" opacity=".06"/>
+      <rect x="416" width="96" height="44" rx="6" fill="#1f6f68" opacity=".07"/>
+      <rect x="520" width="96" height="44" rx="6" fill="#1f6f68" opacity=".18"/>
+      <rect x="624" width="96" height="44" rx="6" fill="#1f6f68" opacity=".96"/>
+      <rect x="624" width="96" height="44" rx="6" fill="none" stroke="#b4531f" stroke-width="3"/>
+    </g>
+  </g>
+
+  <!-- one full-width explainer: nothing to collide with -->
+  <g transform="translate(0,372)">
+    <rect x="0" y="0" width="920" height="150" rx="13" fill="rgba(31,111,104,.07)" stroke="rgba(31,111,104,.25)"/>
+    <text x="22" y="34" font-size="16" fill="#15181d">
+      <tspan font-weight="700" fill="#b4531f">Outlined</tspan> = the best asset-side match for that query token.
+    </text>
+    <text x="22" y="64" font-size="17" font-weight="600" fill="#15181d">
+      score = Σ over query tokens of  max over the asset's tokens
+    </text>
+    <text x="22" y="94" font-size="15" fill="#57616d">
+      <tspan font-weight="600" fill="#15181d">max</tspan> keeps a rare clue alive · <tspan font-weight="600" fill="#15181d">Σ</tspan> rewards covering several clues, not one lucky match
+    </text>
+    <text x="22" y="124" font-size="15" fill="#b4531f" font-weight="500">
+      Row 2: the customer typed English, the asset was captioned in Norwegian. Exact match scores zero.
+    </text>
+  </g>
+</svg>
