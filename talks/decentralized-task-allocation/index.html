@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Decentralized Multi-UAV Task Allocation</title>
+<meta name="description" content="Consensus-based trajectory task allocation for multi-UAV search and rescue. Talk based on the ICAR 2023 paper.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/deck/deck.css">
+</head>
+<body>
+
+<div id="viewport"><div id="stage">
+
+<!-- ===== 1 ===== -->
+<section class="slide title-slide active" data-t="Decentralized Multi-UAV Task Allocation">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> ICAR 2023 · SDU UAS Center</div>
+  <h1>Decentralized multi-UAV <span class="grad">task allocation</span></h1>
+  <p class="sub">Trajectory tasks, consensus instead of a coordinator, and what decentralization
+  actually costs you.</p>
+  <div class="meta"><span>Kasper Rømer Grøntved</span><span>Ulrik Pagh Schultz</span>
+    <span>Anders Lyhne Christensen</span></div>
+  <div class="notes">Open with the field-trial framing: the algorithm has to survive a day outdoors with intermittent radio, not just a benchmark run.</div>
+</section>
+
+<!-- ===== 2 ===== -->
+<section class="slide section" data-t="The operation, not the benchmark">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part one</div>
+  <h1>The operation, not the benchmark</h1>
+  <p class="sub">What a wilderness search actually demands of a planner.</p>
+</section>
+
+<!-- ===== 3 ===== -->
+<section class="slide" data-t="Why multiple UAVs at all">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Motivation</div>
+  <h1 class="t">Why multiple UAVs at all</h1>
+  <p class="sub">Search and rescue is a race against a survival curve. Coverage rate is the whole game.</p>
+  <div class="body">
+    <div class="cols">
+      <div class="grow">
+        <ul class="bullets">
+          <li><strong>Parallel coverage.</strong> A search area is covered faster when several UAVs fly it
+            at once — that is the entire premise, and it holds.</li>
+          <li><strong>Terrain bias matters.</strong> Lost people are found near ditches, tree lines and
+            water edges, not uniformly across a polygon.</li>
+          <li><strong>The operator is one person.</strong> Whatever the system needs, it cannot need a
+            second specialist on the ground.</li>
+        </ul>
+      </div>
+      <div class="card dark" style="flex:0 0 500px">
+        <h3>The constraint that shapes everything</h3>
+        <p>Radio links between UAVs drop. Ground stations lose sight. Aircraft abort mid-mission and
+        come home on low battery.</p>
+        <p style="margin-top:16px">A planner that assumes a reliable central coordinator is a planner
+        that assumes the easy case.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">Decentralized multi-UAV task allocation</div>
+  <div class="notes">This is the slide that justifies the rest. If they accept the comms constraint, they accept the approach.</div>
+</section>
+
+<!-- ===== 4 ===== -->
+<section class="slide" data-t="Coverage planning is mostly centralized">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> State of the field</div>
+  <h1 class="t">Coverage planning is mostly centralized</h1>
+  <p class="sub">The results are strong. The deployment assumptions are optimistic.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card"><span class="num">1</span><h3>Single point of failure</h3>
+        <p>Lose the coordinator and the fleet has no plan and no way to make one.</p></div>
+      <div class="card"><span class="num">2</span><h3>Replanning is a round trip</h3>
+        <p>Every change of circumstance has to travel to the centre and back before anyone acts.</p></div>
+      <div class="card"><span class="num">3</span><h3>Scaling is the coordinator's problem</h3>
+        <p>Adding UAVs adds load and latency exactly where you can least afford it.</p></div>
+    </div>
+  </div>
+  <div class="slide-foot">Decentralized multi-UAV task allocation</div>
+  <div class="notes">Be fair to the centralized literature here — the point is deployment context, not that the algorithms are bad.</div>
+</section>
+
+<!-- ===== 5 ===== -->
+<section class="slide section" data-t="Tasks with a direction">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
+  <h1>Tasks with a direction</h1>
+  <p class="sub">One change to the task model does most of the work.</p>
+</section>
+
+<!-- ===== 6 ===== -->
+<section class="slide" data-t="Trajectories, not points">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The task model</div>
+  <h1 class="t">Trajectories, not points</h1>
+  <p class="sub">A task is a path between two points — and <strong>which end you start from</strong> is
+  part of what the allocator decides.</p>
+  <div class="body">
+    <figure style="flex:1;align-items:center;justify-content:center">
+      <img class="zoom" src="assets/tasks.svg" alt="Point tasks compared with directed trajectory tasks">
+    </figure>
+  </div>
+  <div class="slide-foot">Decentralized multi-UAV task allocation</div>
+  <div class="notes">Point at the right panel: the arrows are the contribution. Direction changes the cost of chaining two tasks together, so it belongs inside the allocation, not after it.</div>
+</section>
+
+<!-- ===== 7 ===== -->
+<section class="slide" data-t="Generalizing CBBA">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The algorithm</div>
+  <h1 class="t">Generalizing CBBA</h1>
+  <p class="sub">The consensus-based bundle algorithm, extended so a bid covers a directed trajectory.</p>
+  <div class="body">
+    <div class="cols top">
+      <div class="grow">
+        <ul class="bullets">
+          <li><strong>Bundle construction.</strong> Each UAV greedily builds a bundle of tasks it thinks
+            it can serve cheaply, scoring both traversal directions.</li>
+          <li><strong>Consensus.</strong> Neighbours exchange bids and winning-bid timestamps; conflicts
+            resolve locally, with no coordinator in the loop.</li>
+          <li><strong>Convergence.</strong> The fleet settles on a conflict-free allocation, and any UAV
+            can leave or join and trigger a re-bid.</li>
+        </ul>
+      </div>
+      <div class="stack" style="flex:0 0 520px">
+        <div class="card accent"><h3>What stays the same</h3>
+          <p>CBBA's convergence guarantees and its communication pattern.</p></div>
+        <div class="card"><h3>What changes</h3>
+          <p>The scoring function, which now optimizes traversal direction as it bids.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">Decentralized multi-UAV task allocation</div>
+  <div class="notes">Do not walk through the pseudocode. The audience needs the shape: bid, share, resolve, repeat.</div>
+</section>
+
+<!-- ===== 8 ===== -->
+<section class="slide section" data-t="What it costs">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part three</div>
+  <h1>What it costs</h1>
+  <p class="sub">Decentralization is a trade. Here is the bill.</p>
+</section>
+
+<!-- ===== 9 ===== -->
+<section class="slide" data-t="Results on benchmark problems">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Evaluation</div>
+  <h1 class="t">Results on benchmark problems</h1>
+  <p class="sub">Simulation experiments against a state-of-the-art centralized coverage planner.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card solid"><span class="num">1.9%</span><h3>Overhead vs centralized</h3>
+        <p>Time to completion is essentially the same as the centralized planner — for that
+        overhead cost.</p><div class="cap">benchmark problems</div></div>
+      <div class="card solid"><span class="num">6%</span><h3>Better than point allocation</h3>
+        <p>Optimizing traversal direction beats treating the same coverage tasks as points.</p>
+        <div class="cap">same task set</div></div>
+      <div class="card dark"><span class="num">↗</span><h3>Scales with fleet size</h3>
+        <p>Performance holds as UAVs are added to the search effort — no coordinator to saturate.</p>
+        <div class="cap">the reason to bother</div></div>
+    </div>
+  </div>
+  <div class="slide-foot">Decentralized multi-UAV task allocation</div>
+  <div class="notes">The honest headline: you give up 1.9% and you buy out the single point of failure. Let that trade sit for a beat before moving on.</div>
+</section>
+
+<!-- ===== 10 ===== -->
+<section class="slide closing-slide" data-t="Takeaways">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Wrapping up</div>
+  <h1>Three things to take away</h1>
+  <div class="body">
+    <div class="grid-2" style="max-width:1420px">
+      <div class="card solid"><h3>1 · Model the task properly</h3>
+        <p>Direction was free information sitting outside the allocator. Moving it inside was worth 6%.</p></div>
+      <div class="card solid"><h3>2 · Decentralization is cheap here</h3>
+        <p>1.9% overhead against a centralized planner, and no coordinator to lose in the field.</p></div>
+      <div class="card solid"><h3>3 · Field constraints come first</h3>
+        <p>The comms assumption decides the architecture. Everything else follows from it.</p></div>
+      <div class="card dark"><h3>Code &amp; paper</h3>
+        <p>github.com/kasperg3/trajallocpy<br>ICAR 2023, IEEE<br>grontved.xyz/publications.html</p></div>
+    </div>
+  </div>
+  <div class="notes">Stop here. Questions usually go to comms range or to how tasks are generated in the first place — that is the TrajGenPy talk.</div>
+</section>
+
+</div></div>
+<script src="/deck/deck.js"></script>
+</body>
+</html>

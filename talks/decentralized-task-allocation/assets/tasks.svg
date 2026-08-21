@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 520" width="1240" height="520" font-family="Inter, system-ui, sans-serif">
+  <!-- left: point tasks -->
+  <g>
+    <rect x="20" y="20" width="560" height="470" rx="18" fill="rgba(21,24,29,.035)" stroke="rgba(21,24,29,.10)"/>
+    <text x="52" y="66" font-size="19" font-weight="600" fill="#15181d">Point tasks</text>
+    <text x="52" y="92" font-size="15" fill="#57616d">visit order is all the allocator chooses</text>
+    <g fill="#8c96a1">
+      <circle cx="150" cy="180" r="9"/><circle cx="270" cy="150" r="9"/><circle cx="400" cy="200" r="9"/>
+      <circle cx="180" cy="300" r="9"/><circle cx="320" cy="330" r="9"/><circle cx="450" cy="290" r="9"/>
+      <circle cx="240" cy="420" r="9"/><circle cx="410" cy="400" r="9"/>
+    </g>
+    <path d="M150 180 L270 150 L400 200 L450 290 L320 330 L180 300 L240 420 L410 400"
+          fill="none" stroke="#b4531f" stroke-width="2.5" stroke-dasharray="7 6" opacity=".85"/>
+    <text x="52" y="465" font-size="15" fill="#b4531f" font-weight="500">path between points is incidental</text>
+  </g>
+
+  <!-- right: trajectory tasks -->
+  <g>
+    <rect x="660" y="20" width="560" height="470" rx="18" fill="rgba(31,111,104,.06)" stroke="rgba(31,111,104,.28)"/>
+    <text x="692" y="66" font-size="19" font-weight="600" fill="#15181d">Trajectory tasks</text>
+    <text x="692" y="92" font-size="15" fill="#57616d">the allocator also picks traversal direction</text>
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0 0 L10 5 L0 10 z" fill="#1f6f68"/>
+      </marker>
+    </defs>
+    <g stroke="#1f6f68" stroke-width="5" stroke-linecap="round" marker-end="url(#ar)">
+      <line x1="740" y1="170" x2="900" y2="145"/>
+      <line x1="1080" y1="215" x2="940" y2="185"/>
+      <line x1="760" y1="300" x2="930" y2="285"/>
+      <line x1="1090" y1="330" x2="960" y2="360"/>
+      <line x1="800" y1="425" x2="1010" y2="410"/>
+    </g>
+    <g fill="#1f6f68" opacity=".45">
+      <circle cx="740" cy="170" r="5"/><circle cx="1080" cy="215" r="5"/><circle cx="760" cy="300" r="5"/>
+      <circle cx="1090" cy="330" r="5"/><circle cx="800" cy="425" r="5"/>
+    </g>
+    <text x="692" y="465" font-size="15" fill="#1f6f68" font-weight="500">direction is part of the decision</text>
+  </g>
+</svg>

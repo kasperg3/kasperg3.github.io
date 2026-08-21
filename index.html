@@ -1,47 +1,256 @@
----
-permalink: /
-layout: splash
-title: Kasper Rømer Grøntved
-header: 
-    overlay_color: "#000"
-    overlay_filter: "0.5"
-    overlay_image: /assets/home/DSC02074.JPG
-excerpt: "PhD in Multi-Robot Systems · AI Engineer · Open-Source Robotics & AI Tools"
-intro:
-  - excerpt: 'Robotics researcher and AI engineer with a PhD in multi-robot systems from the University of Southern Denmark. My research focused on decentralized coordination, coverage planning, and UAV swarms in search and rescue (SAR) operations. I now build AI agents, LLM tooling, and developer tools at Colourbox. This blog covers open-source projects spanning autonomous robots, multi-agent systems, and personal hacking.'
-feature_row:
-  - image_path: /assets/home/trajectory_allocation.gif
-    title: "Decentralized Trajectory Allocation"
-    excerpt: "A python package for decentralized trajectory allocation for multi robot systems."
-    url: "https://github.com/kasperg3/trajallocpy"
-    btn_label: "Code"
-    btn_class: "btn--primary"
-  - image_path: /assets/home/AC300AC70008tasks.png
-    title: "Dynamic Decentralized Informative Coverage"
-    excerpt: "Decentralized informative coverage planning for multi-UAV systems — real-world area coverage with adaptive exploration."
-    url: "https://github.com/kasperg3/DDICP"
-    btn_label: "Code"
-    btn_class: "btn--primary"
-  - image_path: /assets/home/BoidsExample.gif
-    title: "SwarmTalk"
-    excerpt: "Open-source, low-cost UAV-to-UAV communication over ESP-NOW. Published at ICUAS 2025."
-    url: "https://github.com/kasperg3/swarmtalk"
-    btn_label: "Code"
-    btn_class: "btn--primary"
-feature_row2:
-  - image_path: /assets/home/map_features.png
-    title: "Map Feature Extraction"
-    excerpt: "A python package for extracting map features from a map."
-    url: "https://github.com/kasperg3/trajgenpy"
-    btn_label: "Code"
-    btn_class: "btn--primary"
-  - image_path: /assets/images/favicon.svg
-    title: "HopDatabase"
-    excerpt: "A web tool for hop comparison and brewing analysis with 500+ hop varieties."
-    url: "/blog/hop-database/"
-    btn_label: "Read More"
-    btn_class: "btn--primary"
----
-{% include feature_row id="intro" type="center" %}
-{% include feature_row id="feature_row" type="left"%}
-{% include feature_row id="feature_row2" type="left" %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kasper Rømer Grøntved — multi-robot systems &amp; AI engineering</title>
+<meta name="description" content="PhD in multi-robot systems from SDU, now building AI agent tooling at Colourbox. Publications, CV, open-source projects and talks.">
+<meta name="google-site-verification" content="UFukRJULFZJ5IWqTTilGWHzNl-E5wh7aGMUICEMmUiU">
+<link rel="canonical" href="https://www.grontved.xyz/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kasper Rømer Grøntved">
+<meta property="og:description" content="PhD in multi-robot systems, now building AI agent tooling at Colourbox.">
+<meta property="og:url" content="https://www.grontved.xyz/">
+<meta property="og:image" content="https://www.grontved.xyz/assets/img/field-drone.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/site.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"Kasper Rømer Grøntved",
+ "alternateName":"Kasper Andreas Rømer Grøntved","url":"https://www.grontved.xyz",
+ "jobTitle":"AI Engineer","worksFor":{"@type":"Organization","name":"Colourbox"},
+ "alumniOf":{"@type":"CollegeOrUniversity","name":"University of Southern Denmark"},
+ "address":{"@type":"PostalAddress","addressLocality":"Odense","addressCountry":"DK"},
+ "sameAs":["https://github.com/kasperg3","https://www.linkedin.com/in/kaspergrontved/",
+           "https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&hl=en"]}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/">Kasper <span>Grøntved</span></a>
+    <nav class="main">
+      <a href="/#work">Work</a>
+      <a href="/talks/">Talks</a>
+      <a href="/publications.html">Publications</a>
+      <a href="/cv.html">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<div class="wrap">
+  <div class="hero">
+    <p class="eyebrow">Odense, Denmark</p>
+    <h1>I build systems that <em>coordinate</em> — robots in a field, agents in a codebase.</h1>
+    <p class="lede">PhD in multi-robot systems from the <strong>University of Southern Denmark</strong>, where
+    I worked on decentralized task allocation and coverage planning for UAV swarms in wilderness search
+    and rescue. Now at <strong>Colourbox</strong>, building AI agent tooling — coding assistants, unified
+    model APIs, and the inference infrastructure underneath them.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="/publications.html">Publications</a>
+      <a class="btn" href="/cv.html">CV</a>
+      <a class="btn" href="https://github.com/kasperg3">GitHub</a>
+      <a class="btn" href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Scholar</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ now ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>Currently</h2></div>
+    <div class="grid two">
+      <div class="prose">
+        <p class="sec-note" style="margin:0">Two threads, and they turn out to be the same problem.
+        Coordinating a swarm of UAVs over a search area and coordinating a swarm of language-model
+        agents over a codebase are both questions about decomposing work, allocating it without a
+        central bottleneck, and knowing when to stop.</p>
+        <h3>AI agents &amp; LLM tooling</h3>
+        <p>Agent frameworks, multimodal RAG pipelines, a unified API across model providers, and
+        vLLM infrastructure — the toolkit an engineering org actually needs before "add AI" means
+        anything.</p>
+        <h3>Autonomous robotics</h3>
+        <p>Still maintaining the Python libraries from my PhD: decentralized multi-robot task
+        allocation, coverage path planning, and a benchmark for wilderness search and rescue.</p>
+      </div>
+      <figure>
+        <img src="/assets/img/field-drone.jpg" alt="UAV field trial at dusk" loading="lazy" width="1800" height="1200" style="border-radius:16px">
+        <figcaption style="font:400 14px/1.5 var(--sans);color:var(--faint);margin-top:12px">
+          Field trials, SDU UAS Center. Most of the research happened outdoors, in the wind.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ work ============ -->
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head"><h2>Selected work</h2>
+      <a class="more" href="https://github.com/kasperg3?tab=repositories">All repositories →</a></div>
+    <p class="sec-title">Open source</p>
+    <p class="sec-note">Libraries and tools from the PhD and after. Everything below is public and
+    installable.</p>
+    <div class="grid two">
+
+      <a class="card media" href="https://github.com/kasperg3/trajallocpy">
+        <img src="/assets/img/trajallocpy.webp" alt="Animated trajectory allocation across multiple agents" loading="lazy" width="640" height="480">
+        <div class="inner">
+          <span class="tag">Python · Multi-agent</span>
+          <h3>TrajAllocPy</h3>
+          <p>Decentralized trajectory task allocation for multi-robot area coverage. A generalization of
+          the consensus-based bundle algorithm that treats tasks as directed trajectories and optimizes
+          traversal direction during allocation.</p>
+          <div class="foot"><span class="pill">ICAR 2023</span><span class="pill">CBBA</span></div>
+        </div>
+      </a>
+
+      <a class="card media" href="https://github.com/kasperg3/trajgenpy">
+        <img src="/assets/img/trajgenpy.webp" alt="Extracted map features over an aerial region" loading="lazy" width="1200" height="624">
+        <div class="inner">
+          <span class="tag">Python · Geospatial</span>
+          <h3>TrajGenPy</h3>
+          <p>Turns map features into flyable coverage tasks. Pulls geometry from OpenStreetMap,
+          decomposes a region, and generates trajectories that prioritize the terrain where lost
+          people are actually found — ditches, tree lines, water edges.</p>
+          <div class="foot"><span class="pill">Coverage planning</span><span class="pill">OSM</span></div>
+        </div>
+      </a>
+
+      <a class="card media" href="https://github.com/kasperg3/swarmtalk">
+        <img src="/assets/img/swarmtalk.webp" alt="Simulated swarm flocking behaviour" loading="lazy" width="640" height="369">
+        <div class="inner">
+          <span class="tag">C++ · ESP-NOW · ROS 2</span>
+          <h3>SwarmTalk</h3>
+          <p>Decentralized UAV-to-UAV communication over 2.4 GHz using a connectionless protocol on
+          commodity ESP hardware. UAVs join and leave without central governance or a-priori config,
+          and it speaks ROS 2 directly.</p>
+          <div class="foot"><span class="pill">ICUAS 2025</span><span class="pill">COTS hardware</span></div>
+        </div>
+      </a>
+
+      <a class="card media" href="https://github.com/kasperg3/DDICP">
+        <img src="/assets/img/ddicp.png" alt="Coverage plan across eight allocated tasks" loading="lazy" width="640" height="480">
+        <div class="inner">
+          <span class="tag">Multi-UAV · Planning</span>
+          <h3>DDICP</h3>
+          <p>Dynamic decentralized informative coverage planning. Multi-UAV area coverage that adapts
+          the plan as information arrives, rather than committing to a sweep computed on the ground.</p>
+          <div class="foot"><span class="pill">Real-world trials</span></div>
+        </div>
+      </a>
+
+      <div class="card">
+        <span class="tag">Benchmark · Dataset</span>
+        <h3>SARenv</h3>
+        <p>An open dataset and evaluation framework for informed wilderness search and rescue: 60
+        geospatial scenarios across four European environments, a lost-person probability model, five
+        baseline search strategies, and three scoring metrics. Built so path-planning papers can
+        finally be compared to each other.</p>
+        <div class="foot"><span class="pill">MDPI Sensors · in review</span><span class="pill">60 scenarios</span></div>
+      </div>
+
+      <a class="card" href="https://github.com/kasperg3/HopDatabase">
+        <span class="tag">Web · Scraping · Beer</span>
+        <h3>HopDatabase</h3>
+        <p>500+ hop varieties, scraped and normalized into something you can actually compare across —
+        alpha acids, oil composition, substitutions. Built because choosing hops from vendor PDFs is
+        miserable, and because I brew.</p>
+        <div class="foot"><span class="pill">Side project</span></div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ talks ============ -->
+<section id="talks">
+  <div class="wrap">
+    <div class="sec-head"><h2>Talks</h2>
+      <a class="more" href="/talks/">All talks →</a></div>
+    <p class="sec-title">Slides that run in your browser</p>
+    <p class="sec-note">Every deck here is a single HTML file — no PDF export, no slide-hosting service,
+    deep-linkable to any slide. Arrow keys to advance, <code>o</code> for contents,
+    <code>p</code> to print.</p>
+    <div class="grid two">
+      <a class="card" href="/talks/decentralized-task-allocation/">
+        <span class="tag">Research talk · 30 min</span>
+        <h3>Decentralized Multi-UAV Task Allocation</h3>
+        <p>Why centralized coverage planning breaks in the field, and what a consensus-based
+        alternative costs you. Based on the ICAR 2023 paper.</p>
+        <div class="foot"><span class="pill">10 slides</span><span class="pill">Search &amp; rescue</span></div>
+      </a>
+      <div class="card" style="justify-content:center;border-style:dashed;background:transparent">
+        <h3 style="color:var(--faint)">More coming</h3>
+        <p>Talks on agent tooling and LLM infrastructure are being written up. The deck engine lives in
+        <code>/deck/</code> if you want to borrow it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ publications ============ -->
+<section id="publications">
+  <div class="wrap">
+    <div class="sec-head"><h2>Research</h2>
+      <a class="more" href="/publications.html">Full publication list →</a></div>
+    <p class="sec-title">Recent publications</p>
+    <div class="grid two">
+      <div class="card">
+        <span class="tag">2025 · MDPI Sensors <span class="status">In review</span></span>
+        <h3>SAREnv: An Open-Source Dataset and Benchmark Tool for Informed Wilderness Search and Rescue using UAVs</h3>
+        <p>Grøntved, Jarabo-Peñas, Reid, Rolland, Watson, Richards, Bullock, Christensen</p>
+      </div>
+      <div class="card">
+        <span class="tag">2025 · ICUAS</span>
+        <h3>Communication for UAV Swarms: an Open-source, Low-cost Solution Based on ESP-NOW</h3>
+        <p>Grøntved, Ladigl, Christensen</p>
+      </div>
+      <div class="card">
+        <span class="tag">2024 · ICUAS</span>
+        <h3>Towards Autonomous Multi-UAV U-space Operation Planning</h3>
+        <p>Grøntved, Jepsen, Christensen, Jensen, Schultz Lundquist, Campusano</p>
+      </div>
+      <div class="card">
+        <span class="tag">Thesis · SDU</span>
+        <h3>Cooperative Control of Multirobot Systems in Real-World Applications</h3>
+        <p>PhD thesis, University of Southern Denmark. Supervised by Anders Lyhne Christensen and
+        Ulrik Pagh Schultz Lundquist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="col">
+      <strong style="font:600 16px/1 var(--sans)">Kasper Rømer Grøntved</strong>
+      <p class="fine">AI engineer and robotics researcher. Odense, Denmark.</p>
+    </div>
+    <div class="col">
+      <a href="/publications.html">Publications</a>
+      <a href="/cv.html">CV</a>
+      <a href="/talks/">Talks</a>
+    </div>
+    <div class="col">
+      <a href="https://github.com/kasperg3">GitHub</a>
+      <a href="https://www.linkedin.com/in/kaspergrontved/">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Google Scholar</a>
+      <a href="https://instagram.com/kasperg3">Instagram</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

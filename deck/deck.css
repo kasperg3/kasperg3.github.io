@@ -1,0 +1,210 @@
+/* ============================================================
+   deck.css — a fixed-stage HTML slide engine
+   Stage is always 1920x1080; deck.js scales it to fit the window.
+   Design in absolute px and it looks identical on every screen.
+   ============================================================ */
+
+/* ---------- theme tokens: edit these, not the rules below ---------- */
+:root{
+  --canvas:#f7f5f1;          /* slide background */
+  --ink:#15181d;             /* primary text */
+  --ink-2:#2f3a44;           /* secondary heading text */
+  --muted:#5c6672;           /* body copy */
+  --faint:#96a0ab;           /* captions, meta */
+
+  --accent:#1f6f68;          /* primary accent */
+  --accent-soft:rgba(31,111,104,.72);
+  --accent-faint:rgba(31,111,104,.12);
+  --accent-2:#b4531f;        /* secondary accent / warnings */
+  --accent-3:#2c5f9e;        /* tertiary accent / data */
+
+  --hair:rgba(21,24,29,.14);
+  --hair-soft:rgba(21,24,29,.07);
+  --card:rgba(255,255,255,.72);
+  --card-solid:#fff;
+  --dark:#12161b;
+  --dark-edge:#242c35;
+
+  --good:#0f7a3d;
+  --bad:#bc2626;
+
+  --grad:linear-gradient(135deg,#15181d 0%,#2f3a44 35%,#1f6f68 62%,#15181d 100%);
+  --shadow:0 22px 70px -44px rgba(21,24,29,.42);
+  --shadow-raised:0 28px 80px -46px rgba(21,24,29,.55);
+
+  --serif:"Playfair Display",Georgia,serif;
+  --sans:Inter,system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#e9e6e0;font-family:var(--sans);color:var(--ink);overflow:hidden;
+     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* ---------- stage scaling ---------- */
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+          transition:right .3s cubic-bezier(.16,1,.3,1),bottom .3s cubic-bezier(.16,1,.3,1)}
+#stage{width:1920px;height:1080px;position:relative;flex:none;transform-origin:center center}
+
+/* ---------- slide base ---------- */
+.slide{position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 88% 12%,var(--accent-faint),transparent 28%),
+    radial-gradient(circle at 8% 90%,rgba(44,95,158,.08),transparent 30%),
+    var(--canvas);
+  padding:92px 116px 108px;
+  display:none;flex-direction:column;align-items:stretch}
+.slide.active{display:flex}
+.slide .notes{display:none}
+.slide.active h1{animation:reveal .6s cubic-bezier(.16,1,.3,1) both}
+@keyframes reveal{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.slide.active .body>*{animation:rise .55s cubic-bezier(.16,1,.3,1) both;animation-delay:.12s}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ---------- header ---------- */
+.kicker{display:flex;align-items:center;gap:14px;font:600 16px/1 var(--sans);
+        letter-spacing:.34em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:26px}
+.kicker .km{display:grid;grid-template-columns:8px 8px;gap:3px;flex:none}
+.kicker .km i{width:8px;height:8px;border-radius:2px;background:var(--accent-faint)}
+.kicker .km i:nth-child(2){background:var(--accent)}
+h1.t{font:600 62px/1.14 var(--serif);color:var(--ink);letter-spacing:-.005em;max-width:1480px}
+h1.t.sm{font-size:50px}
+.sub{font:400 26px/1.5 var(--sans);color:var(--muted);margin-top:18px;max-width:1280px}
+.sub strong{color:var(--ink);font-weight:600}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- layout helpers ---------- */
+.body{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;margin-top:44px}
+.cols{display:flex;gap:44px;align-items:stretch;min-height:0}
+.cols.top{align-items:flex-start}
+.grow{flex:1;min-width:0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.stack{display:flex;flex-direction:column;gap:22px}
+.center{align-items:center;justify-content:center;text-align:center}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--hair-soft);border-radius:18px;padding:34px 38px}
+.card.solid{background:var(--card-solid);box-shadow:var(--shadow)}
+.card.dark{background:var(--dark);border-color:var(--dark-edge);color:#e9edf2}
+.card.dark h3,.card.dark .num{color:#fff}
+.card.dark p{color:#a8b3c0}
+.card.accent{border-color:var(--accent-faint);background:var(--accent-faint)}
+.card h3{font:600 26px/1.3 var(--sans);color:var(--ink-2);margin-bottom:12px}
+.card p{font:400 21px/1.55 var(--sans);color:var(--muted)}
+.card .num{font:700 64px/1 var(--serif);color:var(--accent);display:block;margin-bottom:10px}
+.card .cap{font:500 15px/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:14px}
+
+/* ---------- bits ---------- */
+ul.bullets{list-style:none;display:flex;flex-direction:column;gap:20px}
+ul.bullets li{position:relative;padding-left:36px;font:400 25px/1.5 var(--sans);color:var(--muted)}
+ul.bullets li::before{content:"";position:absolute;left:0;top:13px;width:12px;height:12px;
+                      border-radius:3px;background:var(--accent)}
+ul.bullets li strong{color:var(--ink);font-weight:600}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;
+      border:1px solid var(--hair);font:500 17px/1 var(--sans);color:var(--ink-2);background:var(--card)}
+.chip.on{border-color:var(--accent);color:var(--accent);background:var(--accent-faint)}
+.chips{display:flex;flex-wrap:wrap;gap:12px}
+pre.code{background:var(--dark);color:#dbe4ee;border-radius:16px;padding:30px 34px;
+         font:400 21px/1.6 var(--mono);overflow:hidden;white-space:pre-wrap}
+pre.code .c{color:#7a8899}
+pre.code .k{color:#7fd1c6}
+pre.code .s{color:#e0b072}
+figure{display:flex;flex-direction:column;gap:14px;min-height:0}
+figure img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px}
+figure img.zoom{cursor:zoom-in}
+figcaption{font:400 17px/1.45 var(--sans);color:var(--faint)}
+.quote{font:600 italic 44px/1.34 var(--serif);color:var(--ink);max-width:1400px}
+.quote+.by{font:500 20px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;
+           color:var(--faint);margin-top:32px}
+
+/* ---------- special slide kinds ---------- */
+.title-slide{justify-content:center;padding:120px}
+.title-slide h1{font:700 104px/1.06 var(--serif);letter-spacing:-.02em;max-width:1500px}
+.title-slide .sub{font-size:32px;margin-top:30px}
+.title-slide .meta{margin-top:auto;display:flex;gap:40px;font:500 19px/1 var(--sans);
+                   letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.slide.section{justify-content:center;background:var(--dark)}
+.slide.section h1{font:700 88px/1.1 var(--serif);color:#fff;max-width:1400px}
+.slide.section .sub{color:#98a4b2;font-size:29px}
+.slide.section .kicker{color:rgba(255,255,255,.5)}
+.slide.section .kicker .km i{background:rgba(255,255,255,.25)}
+.slide.section .kicker .km i:nth-child(2){background:#fff}
+.closing-slide{justify-content:center}
+.closing-slide h1{font:700 76px/1.1 var(--serif)}
+
+/* ---------- per-slide footer ---------- */
+.slide-number{position:absolute;right:116px;bottom:52px;font:500 17px/1 var(--mono);color:var(--faint)}
+.slide-foot{position:absolute;left:116px;bottom:52px;font:500 15px/1 var(--sans);
+            letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.slide.section .slide-number,.slide.section .slide-foot{color:rgba(255,255,255,.4)}
+
+/* ---------- HUD ---------- */
+#progress{position:fixed;left:0;top:0;height:3px;width:100%;background:var(--accent);
+          transform-origin:left;transform:scaleX(0);transition:transform .35s cubic-bezier(.16,1,.3,1);z-index:40}
+#hud{position:fixed;right:22px;bottom:18px;display:flex;align-items:center;gap:10px;z-index:41;
+     font:500 14px/1 var(--sans);color:#5c6672;opacity:.32;transition:opacity .25s}
+#hud:hover,body.hud-show #hud{opacity:1}
+#hud button{all:unset;cursor:pointer;width:32px;height:32px;display:grid;place-items:center;
+            border-radius:9px;background:rgba(255,255,255,.8);border:1px solid var(--hair-soft);
+            color:var(--ink-2);font-size:15px}
+#hud button:disabled{opacity:.3;cursor:default}
+#hud button:hover:not(:disabled){background:#fff;color:var(--accent)}
+#ctr{font-family:var(--mono);padding:0 6px;min-width:70px;text-align:center}
+
+/* ---------- drawers (notes / contents) ---------- */
+.drawer{position:fixed;top:0;right:0;bottom:0;width:480px;background:#fff;z-index:50;
+        border-left:1px solid var(--hair);padding:40px 38px;overflow-y:auto;
+        transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+#toc{width:440px}
+body.notes-open #notes,body.toc-open #toc{transform:none}
+.drawer .tk{font:600 13px/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;
+            color:var(--accent-soft);margin-bottom:14px}
+.drawer h2{font:600 30px/1.2 var(--serif);margin-bottom:8px}
+.drawer .nt{font:600 21px/1.35 var(--sans);color:var(--ink-2);margin:22px 0 12px}
+.drawer .nb{font:400 18px/1.65 var(--sans);color:var(--muted);white-space:pre-wrap}
+.drawer-close{all:unset;cursor:pointer;position:absolute;top:22px;right:24px;font-size:26px;
+              line-height:1;color:var(--faint)}
+.drawer-close:hover{color:var(--ink)}
+.toc-section{border-bottom:1px solid var(--hair-soft);padding:6px 0}
+.toc-section summary{cursor:pointer;list-style:none;padding:12px 0;font:600 18px/1.3 var(--sans)}
+.toc-section summary::-webkit-details-marker{display:none}
+.toc-section .section-range{display:block;font:500 13px/1 var(--mono);color:var(--faint);margin-top:6px}
+.toc-section.current summary{color:var(--accent)}
+.toc-list{display:flex;flex-direction:column;gap:2px;padding:4px 0 14px}
+.toc-list .row{all:unset;cursor:pointer;display:flex;gap:14px;padding:9px 10px;border-radius:8px;
+               font:400 16px/1.35 var(--sans);color:var(--muted)}
+.toc-list .row:hover{background:var(--accent-faint);color:var(--ink)}
+.toc-list .row.cur{background:var(--accent-faint);color:var(--accent);font-weight:600}
+.toc-list .row .n{font-family:var(--mono);font-size:13px;color:var(--faint);min-width:26px}
+
+/* ---------- lightbox ---------- */
+#lightbox{position:fixed;inset:0;background:rgba(12,14,18,.92);z-index:60;display:none;
+          align-items:center;justify-content:center;padding:60px;cursor:zoom-out}
+#lightbox.open{display:flex}
+#lightbox img{max-width:100%;max-height:100%;border-radius:10px}
+
+/* ---------- dark mode ---------- */
+:root[data-theme="dark"]{
+  --canvas:#101418;--ink:#eef2f6;--ink-2:#cdd6e0;--muted:#9fabb8;--faint:#6b7883;
+  --hair:rgba(255,255,255,.16);--hair-soft:rgba(255,255,255,.08);
+  --card:rgba(255,255,255,.05);--card-solid:#171d23;--dark:#070a0d;--dark-edge:#1e262e;
+  --accent-faint:rgba(63,190,178,.14);--accent:#3fbeb2;--accent-soft:rgba(63,190,178,.8);
+}
+:root[data-theme="dark"] body{background:#080b0e}
+:root[data-theme="dark"] #hud button{background:rgba(255,255,255,.07);color:#cdd6e0}
+:root[data-theme="dark"] .drawer{background:#141a20}
+
+/* ---------- print / export to PDF ---------- */
+@media print{
+  @page{size:1920px 1080px;margin:0}
+  body{overflow:visible;background:#fff}
+  #viewport{position:static;display:block}
+  #stage{transform:none!important;width:1920px;height:auto}
+  #hud,#progress,.drawer,#lightbox{display:none!important}
+  .slide{position:relative;display:flex!important;page-break-after:always;
+         width:1920px;height:1080px;animation:none!important}
+  .slide *{animation:none!important}
+}

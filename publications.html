@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Publications — Kasper Rømer Grøntved</title>
+<meta name="description" content="Peer-reviewed publications on multi-robot coordination, UAV task allocation, coverage path planning and search and rescue.">
+<link rel="canonical" href="https://www.grontved.xyz/publications.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/site.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/">Kasper <span>Grøntved</span></a>
+    <nav class="main">
+      <a href="/#work">Work</a>
+      <a href="/talks/">Talks</a>
+      <a href="/publications.html" aria-current="page">Publications</a>
+      <a href="/cv.html">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap narrow">
+  <div class="hero">
+    <p class="eyebrow">Peer-reviewed work</p>
+    <h1>Publications</h1>
+    <p class="lede">Multi-robot coordination, UAV task allocation, coverage path planning, and
+    human–swarm interaction in search and rescue. Click any entry for the abstract.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Google Scholar</a>
+      <a class="btn" href="/assets/cv/cv.pdf">CV (PDF)</a>
+    </div>
+  </div>
+
+  <section style="padding-top:0;border:0">
+
+  <p class="pubyear">2025</p>
+
+  <details class="pub">
+    <summary><span><span class="ptitle">SAREnv: An Open-Source Dataset and Benchmark Tool for Informed
+      Wilderness Search and Rescue using UAVs<span class="status">In review</span></span>
+      <span class="pmeta">Kasper Andreas Rømer Grøntved, Alejandro Jarabo-Peñas, Sid Reid, Edouard
+      George Alain Rolland, Matthew Watson, Arthur Richards, Steve Bullock, Anders Lyhne Christensen
+      · <span class="venue">MDPI Sensors</span></span></span></summary>
+    <div class="abs"><b>Abstract</b>
+      Unmanned Aerial Vehicles (UAVs) play an increasingly vital role in wilderness Search and Rescue
+      (SAR) operations by enhancing situational awareness and extending the capabilities of human
+      teams. Yet, a lack of standardized benchmarks has impeded the systematic evaluation of single-
+      and multi-agent path-planning algorithms. This paper introduces an open-source dataset and
+      evaluation framework to address this gap. The framework comprises 60 geospatial scenarios across
+      four distinct European environments, featuring high-resolution probability maps. We present a
+      lost person probabilistic model derived from statistical models of lost person behavior. We
+      provide a suite of tools for evaluating search paths against five baseline methods — Spiral,
+      Concentric Circles, Pizza Zigzag, Greedy, and Random Exploration — using three quantitative
+      metrics: Accumulated Probability of Detection, Time-Discounted Probability of Detection, and
+      Lost Person Discovery Score. By providing a structured and extensible framework, this work
+      establishes a foundation for the rigorous and reproducible assessment of UAV search strategies
+      in complex wilderness environments.
+    </div>
+  </details>
+
+  <details class="pub">
+    <summary><span><span class="ptitle">Communication for UAV Swarms: an Open-source, Low-cost Solution
+      Based on ESP-NOW</span>
+      <span class="pmeta">Kasper A. R. Grøntved, Robert Ladigl, Anders Lyhne Christensen ·
+      <span class="venue">International Conference on Unmanned Aircraft Systems (ICUAS) 2025</span></span></span></summary>
+    <div class="abs"><b>Abstract</b>
+      Multi-UAV systems typically require complex infrastructure to deploy in real-world scenarios,
+      limiting their accessibility and scalability. In addition, current research often relies on
+      custom solutions or proprietary hardware to facilitate inter-UAV communication. In this paper,
+      we propose an open-source, low-cost, plug-and-play solution to enable decentralized UAV-to-UAV
+      communication over 2.4 GHz Wi-Fi using a connectionless protocol. Our approach simplifies the
+      deployment of decentralized systems by allowing UAVs to easily exchange any type of binary data,
+      seamlessly interfacing with ROS 2. The solution uses an ad-hoc style network that allows UAVs to
+      join or leave dynamically without requiring centralized governance or a priori configuration. We
+      describe the architecture of the system, assess the network performance in an outdoor environment
+      using UAVs, and evaluate the system's ability to share information as a swarm through
+      hardware-in-the-loop (HITL) experiments. HITL experiments show that a decentralized planning
+      algorithm running on three simulated UAVs can effectively reach consensus on decentralized task
+      allocation.
+      <div class="links"><a href="https://github.com/kasperg3/swarmtalk">Code on GitHub →</a></div>
+    </div>
+  </details>
+
+  <p class="pubyear">2024</p>
+
+  <details class="pub">
+    <summary><span><span class="ptitle">Automated Task Generation for Multi-Drone Search and Rescue
+      Operations</span>
+      <span class="pmeta">Kasper A. R. Grøntved, Maria-Therese Bahodi, Anders Lyhne Christensen ·
+      <span class="venue">21st International Conference on Distributed Computing and Artificial
+      Intelligence (DCAI)</span></span></span></summary>
+    <div class="abs"><b>Abstract</b>
+      Drones are currently an indispensable tool for emergency response teams performing wilderness
+      Search And Rescue (SAR), as they can cover large and possibly inaccessible areas efficiently.
+      It is, however, still unclear how a drone operator can effectively engage and control a system
+      composed of multiple autonomous robots, especially in unstructured and outdoor environments.
+      This paper reports on ongoing work in the project HERD — Human-AI Collaboration: Engaging and
+      Controlling Swarms of Robots and Drones — in which we focus on how to enable an operator to
+      control multi-drone systems. We present a tool for generating tasks and plans for multiple drones
+      in wilderness SAR scenarios. The central aspect of our approach is to improve the search quality
+      by automatically generating tasks to ensure timely coverage of high-risk areas, such as ditches,
+      lake and sea banks, and beneath tree lines, where distressed people are likely to be found.
+      <div class="links"><a href="https://github.com/kasperg3/trajgenpy">Code on GitHub →</a></div>
+    </div>
+  </details>
+
+  <details class="pub">
+    <summary><span><span class="ptitle">Autonomous UAV Volcanic Plume Sampling Based on Machine Vision
+      and Path Planning</span>
+      <span class="pmeta">Edouard G. A. Rolland, Kasper A. R. Grøntved, Anders Lyhne Christensen,
+      Matthew Watson, Tom Richardson ·
+      <span class="venue">International Conference on Unmanned Aircraft Systems (ICUAS) 2024</span></span></span></summary>
+    <div class="abs"><b>Abstract</b>
+      Drones currently serve as a valuable tool for in-situ sampling of volcanic plumes, but they still
+      involve manual piloting. In this paper, we enable autonomous dual plume sampling by using a
+      machine vision model to detect eruptions. When an eruption is detected, a sampling trajectory is
+      automatically generated to intercept the plume twice to collect comparative samples. The machine
+      vision model is developed by training a YOLOv8 object detection model on a database of 1505
+      images featuring labelled plumes. The obtained average precision value of the model's plume
+      class, at 90.7%, is comparable to that of state-of-the-art models for wildfire smoke monitoring.
+      The performance of this method is assessed using a software-in-the-loop simulation of the drone
+      and a simulated plume model. Although the results confirm the efficacy of using a machine vision
+      model for triggering an onboard path-planning algorithm, they also suggest the potential for a
+      hybrid strategy that integrates visual servoing with our proposed path-planning approach.
+    </div>
+  </details>
+
+  <details class="pub">
+    <summary><span><span class="ptitle">Towards Autonomous Multi-UAV U-space Operation Planning</span>
+      <span class="pmeta">Kasper A. R. Grøntved, Jes Hundevadt Jepsen, Anders Lyhne Christensen,
+      Kjeld Jensen, Ulrik Pagh Schultz Lundquist, Miguel Campusano ·
+      <span class="venue">International Conference on Unmanned Aircraft Systems (ICUAS) 2024</span></span></span></summary>
+    <div class="abs"><b>Abstract</b>
+      One of the main challenges in the real-world adoption of multi-Uncrewed Aerial Vehicle (UAV)
+      systems lies in the specification of operations and the management of dynamic tasks in varied
+      operational contexts. In this paper, we propose a multi-UAV planning architecture to reduce the
+      level of specialized expertise necessary for handling multi-UAV systems. Furthermore, this work
+      is the first step towards designing a multi-UAV planning architecture that integrates with the
+      U-space services specified in EU regulation 2021/664. We propose two declarative languages: an
+      Agent-Language for expressing mitigation and safety objectives for individual UAVs, and an
+      Operation-Language to enable users to plan high-level multi-UAV operations based on the available
+      resources. The languages enable automatic on-the-fly re-planning if any UAVs abort the mission
+      unexpectedly. The initial result of the multi-UAV planning architecture is showcased in three
+      simulated UAVs running as Software-In-The-Loop (SITL).
+      <div class="links"><a href="https://github.com/kasperg3/u-space-mission-planning">Code on GitHub →</a></div>
+    </div>
+  </details>
+
+  <p class="pubyear">2023</p>
+
+  <details class="pub">
+    <summary><span><span class="ptitle">Decentralized Multi-UAV Trajectory Task Allocation in Search and
+      Rescue Applications</span>
+      <span class="pmeta">Kasper A. R. Grøntved, Ulrik Pagh Schultz, Anders Lyhne Christensen ·
+      <span class="venue">21st International Conference on Advanced Robotics (ICAR), IEEE</span></span></span></summary>
+    <div class="abs"><b>Abstract</b>
+      Multi-UAV systems have significant potential to enhance search and rescue (SAR) operations, since
+      a search area can be covered faster than current approaches when multiple UAVs operate in
+      parallel. While recent advancements within the field of multi-robot coverage planning have
+      yielded promising results, current algorithms are predominantly centralized. In this paper, we
+      present a generalization of the well-known decentralized consensus-based bundle algorithm (CBBA)
+      that enables efficient task allocation in multi-UAV SAR operations. The generalized algorithm
+      considers tasks as trajectories between two points where the traversal direction for each task is
+      optimized in the task allocation process. We carry out a series of simulation-based experiments
+      on benchmark problems and compare our results to a state-of-the-art centralized solution. We find
+      that our novel decentralized approach yields times to completion similar to those achieved with a
+      centralized coverage path planning approach, with only 1.9% overhead cost. We furthermore find
+      that our approach performs 6% better than point allocations while scaling well with the number of
+      UAVs involved in the search effort.
+      <div class="links"><a href="https://github.com/kasperg3/trajallocpy">Code on GitHub →</a>
+        <a href="/talks/decentralized-task-allocation/">Slides →</a></div>
+    </div>
+  </details>
+
+  <details class="pub">
+    <summary><span><span class="ptitle">Drone Swarms to Support Search and Rescue Operations:
+      Opportunities and Challenges</span>
+      <span class="pmeta">Maria-Theresa O. Hoang, Kasper A. R. Grøntved, Niels van Berkel, Mikael B.
+      Skov, Anders Lyhne Christensen, Timothy Merritt ·
+      <span class="venue">Book chapter · Cultural Robotics: Social Robots and Their Emergent Cultural
+      Ecologies, pp. 163–176</span></span></span></summary>
+    <div class="abs"><b>Abstract</b>
+      Emergency services organizations are committed to the challenging task of saving people in
+      distress and minimizing harm across a wide range of events, including accidents, natural
+      disasters, and search and rescue. Given the risks and the time pressure of these missions,
+      adopting new technologies requires careful testing and preparation. Drones have become a valuable
+      technology in recent years for emergency services teams employed to locate people across vast and
+      difficult to traverse terrains. While an individual drone can be helpful by quickly offering a
+      bird's eye view, future scenarios may allow multiple drones working together as a swarm to reduce
+      the time required to locate a person. We conducted interviews as well as initial user studies with
+      relevant stakeholders to understand the challenges and opportunities for drone swarms in the
+      context of search and rescue. We distill our findings into five key research challenges:
+      visualization, situational awareness, technical issues, team culture, and public perception.
+    </div>
+  </details>
+
+  <p class="pubyear">2022</p>
+
+  <details class="pub">
+    <summary><span><span class="ptitle">The HERD Project: Human-Multi-Robot Interaction in Search &amp;
+      Rescue and in Farming</span>
+      <span class="pmeta">Anders Lyhne Christensen, Kasper Andreas Rømer Grøntved, Maria-Theresa Oanh
+      Hoang, Niels van Berkel, Mikael Skov, Alea Scovill, Gareth Edwards, Kenneth Richard Geipel, Lars
+      Dalgaard, Ulrik Pagh Schultz Lundquist, Ioanna Constantiou, Christiane Lehrer, Timothy Merritt ·
+      <span class="venue">Adjunct Proceedings of the IEEE/RSJ International Conference on Intelligent
+      Robots and Systems (IROS)</span></span></span></summary>
+    <div class="abs"><b>Abstract</b>
+      Large-scale multi-robot systems have numerous potential real-world applications. It is, however,
+      still unclear how a human operator can effectively engage and control a system composed of
+      multiple autonomous robots, especially in unstructured and outdoor environments. This paper
+      reports on ongoing work in the project HERD — Human-AI Collaboration: Engaging and Controlling
+      Swarms of Robots and Drones — in which we focus on two concrete use cases from industrial
+      partners, namely farming and search &amp; rescue. One partner, Agro Intelligence ApS, sells
+      autonomous farming robots; the other, Robotto ApS, develops autonomous drone-based monitoring
+      solutions for emergency responders. Both partners aim to scale their technologies to
+      multi-robot/multi-drone operations. In this paper, we present the two use cases, their differences
+      and similarities, challenges and preliminary results.
+    </div>
+  </details>
+
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Theses</h2></div>
+    <dl class="kv" style="margin-top:22px">
+      <dt>PhD · 2026</dt>
+      <dd><strong>Cooperative Control of Multirobot Systems in Real-World Applications</strong><br>
+        University of Southern Denmark, UAS Center. Supervisors: Anders Lyhne Christensen,
+        Ulrik Pagh Schultz Lundquist.</dd>
+      <dt>M.Sc. · 2022</dt>
+      <dd><strong>Multi-Agent Decentralised Coordination using CNRL for Industrial Applications</strong><br>
+        M.Sc. Advanced Robotic Systems, University of Southern Denmark.</dd>
+      <dt>B.Sc. · 2018</dt>
+      <dd><strong>Semantic Segmentation using a Deep Neural Network for Pose Estimation of a Rigid
+        Object</strong><br>B.Sc. Robotic Systems, University of Southern Denmark.</dd>
+    </dl>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Supervision</h2></div>
+    <dl class="kv" style="margin-top:22px">
+      <dt>2023</dt>
+      <dd>Nicoline Louise Thomsen — <em>Robust Area Coverage by a Swarm of Unmanned Aerial
+        Vehicles</em>. M.Sc. thesis, successfully defended.</dd>
+      <dt>2023</dt>
+      <dd>Emil Månsson &amp; Kristian Damkjær Jensen — <em>Swarm Intelligence for Land-based Mobile
+        Robots Operating in a Large Environment</em>. M.Sc. thesis, successfully defended.</dd>
+    </dl>
+  </section>
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="col">
+      <strong style="font:600 16px/1 var(--sans)">Kasper Rømer Grøntved</strong>
+      <p class="fine">AI engineer and robotics researcher. Odense, Denmark.</p>
+    </div>
+    <div class="col">
+      <a href="/publications.html">Publications</a>
+      <a href="/cv.html">CV</a>
+      <a href="/talks/">Talks</a>
+    </div>
+    <div class="col">
+      <a href="https://github.com/kasperg3">GitHub</a>
+      <a href="https://www.linkedin.com/in/kaspergrontved/">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Google Scholar</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
