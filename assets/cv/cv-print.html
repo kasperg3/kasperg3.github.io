@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Kasper Rømer Grøntved">
+<meta name="description" content="Curriculum vitae of Kasper Rømer Grøntved — AI engineer at Colourbox, PhD in multi-robot systems (SDU), visiting scholar at Carnegie Mellon Robotics Institute.">
+<meta name="keywords" content="AI engineer, machine learning, multimodal search, MLOps, multi-robot systems, PhD, Odense, Denmark">
+<title>Kasper Rømer Grøntved — CV</title>
+<!--
+  Print source for assets/cv/cv.pdf. Content mirrors /cv.html.
+  Regenerate with WeasyPrint (needs network for the Google Fonts above):
+
+      weasyprint assets/cv/cv-print.html assets/cv/cv.pdf
+
+  This page is noindex and is not linked from the site; cv.html is the
+  canonical HTML CV.
+-->
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+:root{
+  --ink:#15181d;
+  --ink-2:#2b333c;
+  --muted:#414b56;
+  --faint:#7c8691;
+  --accent:#1f6f68;
+  --hair:#d8d3ca;
+  --hair-soft:#e7e3db;
+  --serif:"Playfair Display",Georgia,serif;
+  --sans:Inter,"Liberation Sans",sans-serif;
+  --mono:"IBM Plex Mono","Liberation Mono",monospace;
+}
+
+@page{
+  size:A4;
+  margin:15mm 16mm 14mm;
+  @bottom-left{
+    content:"Kasper Rømer Grøntved · Curriculum vitae";
+    font:400 7pt/1 var(--sans); color:#9aa3ad; letter-spacing:.04em;
+  }
+  @bottom-right{
+    content:counter(page) " / " counter(pages);
+    font:500 7pt/1 var(--mono); color:#9aa3ad;
+  }
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:10pt}
+body{
+  font-family:var(--sans); font-size:8.9pt; line-height:1.5;
+  color:var(--muted); background:#fff;
+  hyphens:none;
+}
+a{color:inherit;text-decoration:none}
+em{font-style:italic}
+
+/* ---------- masthead ---------- */
+.masthead{display:flex;align-items:flex-start;gap:9mm;padding-bottom:5mm}
+.mast-text{flex:1}
+.eyebrow{
+  font:600 6.8pt/1 var(--sans); letter-spacing:.28em; text-transform:uppercase;
+  color:var(--accent); margin-bottom:2.6mm;
+}
+h1{
+  font:700 25pt/1.02 var(--serif); letter-spacing:-.02em; color:var(--ink);
+}
+.role{
+  font:500 10.2pt/1.35 var(--sans); color:var(--accent); margin-top:2.4mm;
+}
+.lede{
+  font-size:9.1pt; line-height:1.52; color:var(--muted);
+  margin-top:2.8mm; max-width:118mm;
+}
+.portrait{
+  width:26mm;height:26mm;border-radius:50%;object-fit:cover;
+  border:0.5pt solid var(--hair); flex:none;
+}
+.contact{
+  border-top:1.6pt solid var(--accent);
+  padding:2.3mm 0 0;
+  font:500 7.5pt/1.5 var(--mono); color:var(--ink-2); letter-spacing:.01em;
+}
+.contact .sep{color:var(--accent);padding:0 .55em}
+.contact .lbl{color:var(--faint);font-weight:400}
+
+/* ---------- sections ---------- */
+section{padding-top:4.6mm}
+h2{
+  font:600 7.6pt/1 var(--sans); letter-spacing:.2em; text-transform:uppercase;
+  color:var(--accent);
+  border-top:0.5pt solid var(--hair); padding-top:3mm; margin-bottom:3.4mm;
+}
+section:first-of-type{padding-top:5.4mm}
+section:first-of-type h2{border-top:0;padding-top:0}
+h2 .more{
+  float:right; font:400 7pt/1 var(--mono); letter-spacing:.02em;
+  text-transform:none; color:var(--faint);
+}
+
+/* ---------- entry rows ---------- */
+.row{display:flex;gap:6mm;break-inside:avoid;page-break-inside:avoid;margin-bottom:4mm}
+.row:last-child{margin-bottom:0}
+.rail{
+  flex:none; width:31mm;
+  font:500 7.1pt/1.5 var(--mono); letter-spacing:.02em;
+  color:var(--faint); padding-top:1.2mm; white-space:nowrap;
+}
+.body{flex:1}
+.what{font:600 10pt/1.35 var(--sans);color:var(--ink)}
+.where{color:var(--accent);font-weight:500}
+.body p{margin-top:1.5mm;max-width:130mm;orphans:2;widows:2}
+.body p + p{margin-top:1.5mm}
+
+/* ---------- key / value ---------- */
+.kv .rail{
+  text-transform:uppercase; letter-spacing:.07em; font-size:6.9pt;
+  padding-top:1mm; white-space:normal;
+}
+.kv .row{margin-bottom:2.6mm}
+.kv .body{color:var(--muted)}
+.sep{color:var(--faint);padding:0 .12em}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="mast-text">
+    <p class="eyebrow">Curriculum vitae</p>
+    <h1>Kasper Rømer Grøntved</h1>
+    <p class="role">AI Engineer · Colourbox</p>
+    <p class="lede">AI engineer working on machine learning systems for commercial search, hosted on
+    European infrastructure. PhD in multi-robot systems from the University of Southern Denmark,
+    with a research stay at Carnegie Mellon's Robotics Institute.</p>
+  </div>
+  <img class="portrait" src="../img/portrait.jpg" alt="">
+</div>
+
+<div class="contact">
+  <span class="lbl">Odense, Denmark</span><span class="sep">·</span>grontved.xyz<span
+  class="sep">·</span>github.com/kasperg3<span
+  class="sep">·</span>linkedin.com/in/kaspergrontved<span
+  class="sep">·</span>scholar.google.com
+</div>
+
+<!-- =============== experience =============== -->
+<section>
+  <h2>Experience</h2>
+
+  <div class="row">
+    <div class="rail">Jun 2026 — now</div>
+    <div class="body">
+      <div class="what">AI Engineer · <span class="where">Colourbox</span></div>
+      <p>Building the machine learning systems behind Colourbox's commercial search products, hosted
+      end to end on European infrastructure and kept within EU data residency.</p>
+      <p>Search that understands the actual content of images, video, audio and documents — moving
+      beyond keywords toward genuine semantic and multimodal understanding. The models powering it
+      run on self-hosted, EU-based infrastructure, so customer data and AI processing never leave
+      European jurisdiction. Favouring sovereign, right-sized architecture over unnecessary
+      complexity or reliance on non-EU providers.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="rail">Sep 2025 — Jun 2026</div>
+    <div class="body">
+      <div class="what">MLOps · <span class="where">Esoft</span></div>
+      <p>In-house machine learning models and pipelines for real estate image processing at
+      production scale — classification, segmentation, object detection and generative models
+      running on GPU clusters under real SLAs, across thousands of orders a day.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="rail">May 2022 — Aug 2025</div>
+    <div class="body">
+      <div class="what">PhD Researcher · <span class="where">SDU UAS Center, University of Southern Denmark</span></div>
+      <p>PhD on human–multi-robot interaction as part of the HERD project — Human-AI Collaboration:
+      Engaging and Controlling Swarms of Robots and Drones — funded by Innovation Fund Denmark.</p>
+      <p>Researched how a single operator can engage with and control swarms of autonomous robots
+      and drones in unstructured, outdoor environments, with real-world use cases alongside industry
+      partners in agriculture and search &amp; rescue. Contributed decentralized trajectory task
+      allocation, coverage path planning, single-console swarm control, and UAV-to-UAV
+      communication, all validated in outdoor field trials. Position granted out of 42 applicants.
+      Six peer-reviewed publications; two M.Sc. theses supervised.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="rail">Sep 2024 — Dec 2024</div>
+    <div class="body">
+      <div class="what">Visiting Scholar · <span class="where">Carnegie Mellon University Robotics Institute</span></div>
+      <p>Research stay in Pittsburgh, Pennsylvania, during the PhD.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="rail">Jun 2020 — May 2022</div>
+    <div class="body">
+      <div class="what">Systems Engineer · <span class="where">a2i systems A/S</span></div>
+      <p>A self-learning pricing platform used by fuel, EV-charging and convenience-retail sites
+      internationally. Worked across machine learning and operations to keep a real-time,
+      data-driven AI product running reliably in production, supporting the models that forecast
+      customer behaviour and optimize pricing in dynamic markets — early grounding in taking AI from
+      prototype to dependable, large-scale operation.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="rail">Nov 2018 — Jun 2020</div>
+    <div class="body">
+      <div class="what">Student Programmer · <span class="where">a2i systems A/S</span></div>
+      <p>Alongside the B.Sc. and M.Sc. programmes. Linux system administration and Git.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =============== education =============== -->
+<section>
+  <h2>Education</h2>
+
+  <div class="row">
+    <div class="rail">2022 — 2025</div>
+    <div class="body">
+      <div class="what">PhD · <span class="where">University of Southern Denmark</span></div>
+      <p><em>Cooperative Control of Multirobot Systems in Real-World Applications.</em>
+      Defended 2025. Supervisors: Anders Lyhne Christensen, Ulrik Pagh Schultz Lundquist.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="rail">2018 — 2022</div>
+    <div class="body">
+      <div class="what">M.Sc. Advanced Robotic Systems · <span class="where">University of Southern Denmark</span></div>
+      <p><em>Multi-Agent Decentralised Coordination using CNRL for Industrial Applications.</em></p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="rail">2015 — 2018</div>
+    <div class="body">
+      <div class="what">B.Sc. Robotic Systems · <span class="where">University of Southern Denmark</span></div>
+      <p><em>Semantic Segmentation using a Deep Neural Network for Pose Estimation of a Rigid
+      Object.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- =============== skills =============== -->
+<section class="kv">
+  <h2>Skills</h2>
+
+  <div class="row">
+    <div class="rail">Languages</div>
+    <div class="body">Python <span class="sep">·</span> C / C++ <span class="sep">·</span> Rust
+      <span class="sep">·</span> TypeScript <span class="sep">·</span> Bash
+      <span class="sep">·</span> Java <span class="sep">·</span> SQL <span class="sep">·</span> LaTeX</div>
+  </div>
+  <div class="row">
+    <div class="rail">AI &amp; ML</div>
+    <div class="body">Multimodal and semantic search <span class="sep">·</span> embeddings and
+      retrieval <span class="sep">·</span> LLM agent frameworks <span class="sep">·</span> vLLM
+      serving <span class="sep">·</span> PyTorch <span class="sep">·</span> computer vision
+      (classification, segmentation, detection) <span class="sep">·</span> generative models
+      <span class="sep">·</span> model evaluation</div>
+  </div>
+  <div class="row">
+    <div class="rail">MLOps</div>
+    <div class="body">Self-hosted GPU clusters <span class="sep">·</span> model serving under SLA
+      <span class="sep">·</span> data pipelines and versioning <span class="sep">·</span>
+      EU-resident infrastructure and GDPR-constrained architecture</div>
+  </div>
+  <div class="row">
+    <div class="rail">Robotics</div>
+    <div class="body">ROS / ROS 2 <span class="sep">·</span> multi-agent task allocation
+      <span class="sep">·</span> coverage path planning <span class="sep">·</span> FreeRTOS
+      <span class="sep">·</span> SITL &amp; HITL simulation <span class="sep">·</span> geospatial
+      processing</div>
+  </div>
+  <div class="row">
+    <div class="rail">Infrastructure</div>
+    <div class="body">Docker <span class="sep">·</span> Unix systems and Linux administration
+      <span class="sep">·</span> Git <span class="sep">·</span> CI/CD <span class="sep">·</span>
+      data engineering</div>
+  </div>
+  <div class="row">
+    <div class="rail">Spoken</div>
+    <div class="body">Danish (native) <span class="sep">·</span> English (fluent — reading, writing,
+      speaking)</div>
+  </div>
+  <div class="row">
+    <div class="rail">Certifications</div>
+    <div class="body">Certified A1/A3 drone pilot <span class="sep">·</span> Drone Pilot Assistant</div>
+  </div>
+</section>
+
+<!-- =============== research output =============== -->
+<section class="kv">
+  <h2>Research output <span class="more">grontved.xyz/publications.html</span></h2>
+
+  <div class="row">
+    <div class="rail">Journal &amp; chapters</div>
+    <div class="body">Drones 9(9):628, 2025 (SAREnv) <span class="sep">·</span> book chapter in
+      Cultural Robotics, Springer, 2023</div>
+  </div>
+  <div class="row">
+    <div class="rail">Conferences</div>
+    <div class="body">ICUAS 2025 <span class="sep">·</span> DCAI 2024 <span class="sep">·</span>
+      ICUAS 2024 (×2) <span class="sep">·</span> ICAR 2023 <span class="sep">·</span>
+      IROS 2022 (adjunct)</div>
+  </div>
+  <div class="row">
+    <div class="rail">Funded projects</div>
+    <div class="body">HERD — Human-AI Collaboration: Engaging and Controlling Swarms of Robots and
+      Drones <span class="sep">·</span> DIREC (Innovation Fund Denmark) <span class="sep">·</span>
+      NAMUR (Independent Research Fund Denmark) <span class="sep">·</span> WildDrone MSCA Doctoral
+      Network (EU Horizon Europe)</div>
+  </div>
+  <div class="row">
+    <div class="rail">Supervision</div>
+    <div class="body">Three M.Sc. students across two theses, both successfully defended in 2023</div>
+  </div>
+  <div class="row">
+    <div class="rail">Open source</div>
+    <div class="body">TrajAllocPy <span class="sep">·</span> TrajGenPy <span class="sep">·</span>
+      SwarmTalk <span class="sep">·</span> DDICP <span class="sep">·</span> SAREnv
+      <span class="sep">·</span> HopDatabase</div>
+  </div>
+</section>
+
+</body>
+</html>

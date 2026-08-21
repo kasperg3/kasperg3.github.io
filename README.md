@@ -20,12 +20,46 @@ site/site.css           shared design system for the site pages
 deck/deck.css           slide styles, same tokens as site.css
 deck/deck.js            slide runtime (~200 lines, vanilla JS)
 assets/img/             web-optimized images
-assets/cv/cv.pdf
+assets/cv/cv.pdf        downloadable CV (generated — see below)
+assets/cv/cv-print.html the print source the PDF is rendered from
+blog/ posts/ hop-database/   redirect stubs for the retired blog (see below)
+publications/ cv/         redirect stubs for the old Jekyll nav URLs
 sitemap.xml robots.txt CNAME .nojekyll
 ```
 
 `.nojekyll` matters: without it GitHub Pages runs Jekyll and ignores files starting
 with `_`, which would break `knowledge/_template/`.
+
+## Legacy URL redirects
+
+The site used to be Jekyll with a blog under the permalink pattern `/:categories/:title/`.
+The eight posts are gone and two pages changed address, but the old URLs are still linked to
+and indexed, so each one keeps a tiny stub at its old path: `blog/`, `posts/`,
+`hop-database/`, `publications/` and `cv/`. Every stub is a single
+`index.html` with a `meta refresh`, `location.replace()`, a `canonical` link to the target,
+`robots: noindex`, and a visible fallback link for anyone with JS off. An HTML comment at the
+top of each names the page or post it replaces.
+
+| Old URL | Now goes to |
+| --- | --- |
+| `/posts/` (blog index) | `/` |
+| `/blog/swarm-simulator/` | `/knowledge/` |
+| `/hop-database/` and `/blog/hop-database/` | `/projects.html` |
+| `/posts/2025/08/trajgenpy-guide/` | `/projects.html` |
+| `/posts/2025/08/trajallocpy-guide/` | `/projects.html` |
+| `/posts/2025/08/swarmtalk-guide/` | `/projects.html` |
+| `/posts/2025/08/sarenv-guide/` | `/projects.html` |
+| `/posts/2025/08/agent-dsl-guide/` | `/knowledge/` |
+| `/posts/2025/08/complete-multi-robot-guide/` | `/knowledge/decentralized-task-allocation/` |
+| `/publications/` (old nav) | `/publications.html` |
+| `/cv/` (old nav) | `/cv.html` |
+
+GitHub Pages serves static files only — there is no server-side redirect and no `.htaccess`,
+which is why these are client-side stubs rather than 301s. They are deliberately **not** in
+`sitemap.xml`: they are `noindex` and exist only to catch inbound traffic.
+
+That is the complete set — every `permalink:` in the last Jekyll commit (`8f9351a`) is either
+covered above, still valid (`/404.html`, `/`), or a post URL listed in the table.
 
 ## Local preview
 
@@ -146,6 +180,20 @@ im.resize((w, round(im.height*w/im.width)), Image.LANCZOS).save(
 ```
 
 Animations belong in WebP, not GIF — a 15 MB GIF here became a 363 KB animated WebP.
+
+## Regenerating the CV PDF
+
+`assets/cv/cv.pdf` is generated from `assets/cv/cv-print.html` (a print-only variant of
+`cv.html`, marked `noindex` and not linked from the site) using WeasyPrint, which honours real
+CSS so the PDF uses the site's own tokens and webfonts:
+
+```bash
+uv tool install weasyprint          # once
+weasyprint assets/cv/cv-print.html assets/cv/cv.pdf
+```
+
+Edit `cv.html` and `cv-print.html` together, then regenerate. `site/site.css` also carries an
+`@media print` block, so `cv.html` prints cleanly straight from the browser.
 
 ## Deploy
 

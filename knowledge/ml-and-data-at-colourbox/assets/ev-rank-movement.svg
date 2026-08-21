@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 648" width="1040" height="648" font-family="Inter, system-ui, sans-serif" role="img" aria-label="Slope chart. Thirteen retrieval models ranked by BEIR nDCG at 10 on the left, and by decontaminated BEIR on the right. Every late interaction model moves up or holds its rank; most dense models move down.">
+<text x="400" y="34" font-size="16" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="middle" letter-spacing="2">BEIR</text>
+<text x="400" y="62" font-size="19" font-weight="600" fill="#15181d" text-anchor="middle">nDCG@10 · original rank</text>
+<text x="878" y="34" font-size="16" font-family="IBM Plex Mono, monospace" fill="#1f6f68" text-anchor="middle" letter-spacing="2">DECONTAMINATED BEIR</text>
+<text x="878" y="62" font-size="19" font-weight="600" fill="#15181d" text-anchor="middle">nDCG@10 · new rank</text>
+<path d="M400 90 L400 562" stroke="#15181d" stroke-width="1" opacity=".16"/>
+<path d="M878 90 L878 562" stroke="#15181d" stroke-width="1" opacity=".16"/>
+<path d="M400 141 L878 215" stroke="#15181d" stroke-width="1.8" opacity=".16" fill="none"/>
+<path d="M400 178 L878 326" stroke="#15181d" stroke-width="1.8" opacity=".16" fill="none"/>
+<path d="M400 252 L878 289" stroke="#15181d" stroke-width="1.8" opacity=".16" fill="none"/>
+<path d="M400 326 L878 437" stroke="#15181d" stroke-width="1.8" opacity=".16" fill="none"/>
+<path d="M400 363 L878 474" stroke="#15181d" stroke-width="1.8" opacity=".16" fill="none"/>
+<path d="M400 400 L878 511" stroke="#15181d" stroke-width="1.8" opacity=".16" fill="none"/>
+<path d="M400 437 L878 400" stroke="#15181d" stroke-width="1.8" opacity=".16" fill="none"/>
+<path d="M400 548 L878 548" stroke="#15181d" stroke-width="1.8" opacity=".16" fill="none"/>
+<path d="M400 104 L878 104" stroke="#1f6f68" stroke-width="2.8" opacity=".92" fill="none"/>
+<path d="M400 215 L878 178" stroke="#1f6f68" stroke-width="2.8" opacity=".92" fill="none"/>
+<path d="M400 289 L878 141" stroke="#1f6f68" stroke-width="2.8" opacity=".92" fill="none"/>
+<path d="M400 474 L878 252" stroke="#1f6f68" stroke-width="2.8" opacity=".92" fill="none"/>
+<path d="M400 511 L878 363" stroke="#1f6f68" stroke-width="2.8" opacity=".92" fill="none"/>
+<text x="292" y="110" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="600" fill="#1f6f68" text-anchor="end">LateOn</text>
+<text x="372" y="110" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">57.22</text>
+<path d="M400 96 L408 104 L400 112 L392 104 Z" fill="#f7f5f1" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="292" y="147" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="400" fill="#57616d" text-anchor="end">pplx-embed-v1-0.6b</text>
+<text x="372" y="147" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">56.70</text>
+<circle cx="400" cy="141" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="292" y="184" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="400" fill="#57616d" text-anchor="end">DenseOn</text>
+<text x="372" y="184" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">56.20</text>
+<circle cx="400" cy="178" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="292" y="221" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="600" fill="#1f6f68" text-anchor="end">pplx-embed-v1-late-0.6b</text>
+<text x="372" y="221" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">56.11</text>
+<path d="M400 207 L408 215 L400 223 L392 215 Z" fill="#f7f5f1" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="292" y="258" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="400" fill="#57616d" text-anchor="end">jina-v5-text-nano</text>
+<text x="372" y="258" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">56.08</text>
+<circle cx="400" cy="252" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="292" y="295" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="600" fill="#1f6f68" text-anchor="end">ColBERT-Zero</text>
+<text x="372" y="295" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">55.82</text>
+<path d="M400 281 L408 289 L400 297 L392 289 Z" fill="#f7f5f1" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="292" y="332" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="400" fill="#57616d" text-anchor="end">arctic-embed-l-v2</text>
+<text x="372" y="332" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">55.55</text>
+<circle cx="400" cy="326" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="292" y="369" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="400" fill="#57616d" text-anchor="end">Qwen3-Embedding-0.6B</text>
+<text x="372" y="369" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">55.33</text>
+<circle cx="400" cy="363" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="292" y="406" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="400" fill="#57616d" text-anchor="end">GTE-ModernBERT</text>
+<text x="372" y="406" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">55.19</text>
+<circle cx="400" cy="400" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="292" y="443" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="400" fill="#57616d" text-anchor="end">harrier-oss-v1-0.6b</text>
+<text x="372" y="443" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">55.04</text>
+<circle cx="400" cy="437" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="292" y="480" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="600" fill="#1f6f68" text-anchor="end">GTE-ModernColBERT</text>
+<text x="372" y="480" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">54.22</text>
+<path d="M400 466 L408 474 L400 482 L392 474 Z" fill="#f7f5f1" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="292" y="517" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="600" fill="#1f6f68" text-anchor="end">colbert-small</text>
+<text x="372" y="517" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">53.79</text>
+<path d="M400 503 L408 511 L400 519 L392 511 Z" fill="#f7f5f1" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="292" y="554" font-size="18" font-family="IBM Plex Mono, monospace" font-weight="400" fill="#57616d" text-anchor="end">modernbert-embed-base</text>
+<text x="372" y="554" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">52.89</text>
+<circle cx="400" cy="548" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<path d="M878 96 L886 104 L878 112 L870 104 Z" fill="#1f6f68" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="900" y="110" font-size="17" font-family="IBM Plex Mono, monospace" fill="#1f6f68" font-weight="600">#1</text>
+<text x="1032" y="110" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">61.36</text>
+<path d="M878 133 L886 141 L878 149 L870 141 Z" fill="#1f6f68" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="900" y="147" font-size="17" font-family="IBM Plex Mono, monospace" fill="#1f6f68" font-weight="600">#2</text>
+<text x="1032" y="147" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">59.95</text>
+<path d="M878 170 L886 178 L878 186 L870 178 Z" fill="#1f6f68" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="900" y="184" font-size="17" font-family="IBM Plex Mono, monospace" fill="#1f6f68" font-weight="600">#3</text>
+<text x="1032" y="184" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">59.84</text>
+<circle cx="878" cy="215" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="900" y="221" font-size="17" font-family="IBM Plex Mono, monospace" fill="#57616d" font-weight="400">#4</text>
+<text x="1032" y="221" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">59.67</text>
+<path d="M878 244 L886 252 L878 260 L870 252 Z" fill="#1f6f68" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="900" y="258" font-size="17" font-family="IBM Plex Mono, monospace" fill="#1f6f68" font-weight="600">#5</text>
+<text x="1032" y="258" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">59.29</text>
+<circle cx="878" cy="289" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="900" y="295" font-size="17" font-family="IBM Plex Mono, monospace" fill="#57616d" font-weight="400">#6</text>
+<text x="1032" y="295" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">58.83</text>
+<circle cx="878" cy="326" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="900" y="332" font-size="17" font-family="IBM Plex Mono, monospace" fill="#57616d" font-weight="400">#7</text>
+<text x="1032" y="332" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">58.81</text>
+<path d="M878 355 L886 363 L878 371 L870 363 Z" fill="#1f6f68" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="900" y="369" font-size="17" font-family="IBM Plex Mono, monospace" fill="#1f6f68" font-weight="600">#8</text>
+<text x="1032" y="369" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">58.05</text>
+<circle cx="878" cy="400" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="900" y="406" font-size="17" font-family="IBM Plex Mono, monospace" fill="#57616d" font-weight="400">#9</text>
+<text x="1032" y="406" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">57.98</text>
+<circle cx="878" cy="437" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="900" y="443" font-size="17" font-family="IBM Plex Mono, monospace" fill="#57616d" font-weight="400">#10</text>
+<text x="1032" y="443" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">57.92</text>
+<circle cx="878" cy="474" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="900" y="480" font-size="17" font-family="IBM Plex Mono, monospace" fill="#57616d" font-weight="400">#11</text>
+<text x="1032" y="480" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">56.96</text>
+<circle cx="878" cy="511" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="900" y="517" font-size="17" font-family="IBM Plex Mono, monospace" fill="#57616d" font-weight="400">#12</text>
+<text x="1032" y="517" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">56.63</text>
+<circle cx="878" cy="548" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="900" y="554" font-size="17" font-family="IBM Plex Mono, monospace" fill="#57616d" font-weight="400">#13</text>
+<text x="1032" y="554" font-size="17" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="end">55.61</text>
+<path d="M455 588 L462 595 L455 602 L448 595 Z" fill="#1f6f68" stroke="#1f6f68" stroke-width="1.6"/>
+<text x="472" y="600" font-size="17" fill="#57616d">late interaction</text>
+<circle cx="640" cy="595" r="5.5" fill="#f7f5f1" stroke="#15181d" stroke-opacity=".3" stroke-width="1.6"/>
+<text x="656" y="600" font-size="17" fill="#57616d">dense</text>
+<text x="639" y="634" font-size="16" font-family="IBM Plex Mono, monospace" fill="#8c96a1" text-anchor="middle">decontaminating removes training-set overlap — compare ranks, not raw scores</text>
+</svg>
