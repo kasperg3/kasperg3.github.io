@@ -1451,8 +1451,9 @@ Our numbers have the same shape with patches instead of tokens — I need to put
           <p>Run only on the survivors — where we are willing to pay full price per asset.</p></div>
         <div class="card dark" style="padding:22px 30px">
           <p><strong style="color:#fff">The trade-off is one question:</strong> how many assets reach
-          exact MaxSim? Stage&nbsp;1 can be centroids (PLAID), fixed-dimensional encodings (MUVERA),
-          sparse keys, or the model's own token retrieval (XTR).</p></div>
+          exact MaxSim? Stage&nbsp;1 is whatever is cheap enough to run over everything — an
+          approximate index like <strong style="color:#fff">HNSW</strong>, sparse keys, or a coarse
+          clustering. That is what the next slides are about.</p></div>
       </div>
     </div>
   </div>
@@ -1474,164 +1475,72 @@ I have deliberately left the stage widths blank. Her illustrative numbers were 9
 The last card matters for the next slides: there is more than one way to build stage one.</div>
 </section>
 
-<!-- ============ 37 · engineering block · 3 ============ -->
-<section class="slide" data-t="PLAID: coarse first, exact for survivors">
+
+
+<!-- ============ 37 · vector store · what a vector database is ============ -->
+<section class="slide" data-t="So what is a vector database?">
   <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Candidate generation</div>
-  <h1 class="t sm">PLAID: the compression <em>is</em> the candidate generator</h1>
-  <p class="sub">Offline, ColBERTv2-style compression picks a shared set of centroids and stores each
-  token as <strong>centroid ID + a 1–2 bit/dim residual</strong>. PLAID notices that the same structure
-  can narrow the search.</p>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
+  <h1 class="t">So what <em>is</em> a vector database?</h1>
+  <p class="sub">The honest answer: an approximate nearest-neighbour index, a filter engine, and all
+  the boring database things wrapped around them.</p>
   <div class="body">
-    <div class="cols" style="gap:16px">
-      <div class="card" style="flex:1;padding:22px 24px">
-        <p style="font:500 15px/1 var(--mono);color:var(--accent);letter-spacing:.1em">01</p>
-        <h3 style="font-size:23px;margin-top:8px">Score centroids</h3>
-        <p style="font-size:19px">Every query token against the shared codebook — not against the
-        corpus.</p>
+    <div class="grid-3">
+      <div class="card solid">
+        <span class="num">1</span>
+        <h3>Why not just a loop?</h3>
+        <p>Cosine against every vector is <code>O(N·d)</code> and completely fine at ten thousand
+        assets. At a hundred million patch vectors it is the arithmetic from two slides ago.</p>
+        <p style="margin-top:12px">An approximate index trades a little recall for a lot of time —
+        <strong>HNSW</strong> descends a navigable graph instead of scanning the corpus.</p>
       </div>
-      <div class="card" style="flex:1;padding:22px 24px">
-        <p style="font:500 15px/1 var(--mono);color:var(--accent);letter-spacing:.1em">02</p>
-        <h3 style="font-size:23px;margin-top:8px">Gather candidates</h3>
-        <p style="font-size:19px">Pull assets from each token's top-<code>nprobe</code> centroid
-        lists.</p>
+      <div class="card solid">
+        <span class="num">2</span>
+        <h3>Filtering is the hard part</h3>
+        <p><em>"Similar to this — but only this tenant's, only landscape, only shot after 2024."</em></p>
+        <p style="margin-top:12px">Filter <strong>after</strong> the search and you can get nothing
+        back. Filter <strong>before</strong> it and you have thrown away the index. Making that fast is
+        most of what separates a vector database from a vector library.</p>
       </div>
-      <div class="card" style="flex:1;padding:22px 24px">
-        <p style="font:500 15px/1 var(--mono);color:var(--accent);letter-spacing:.1em">03</p>
-        <h3 style="font-size:23px;margin-top:8px">Approximate MaxSim</h3>
-        <p style="font-size:19px">Score assets as bags of centroids. Nothing is decompressed yet.</p>
-      </div>
-      <div class="card" style="flex:1;padding:22px 24px">
-        <p style="font:500 15px/1 var(--mono);color:var(--accent);letter-spacing:.1em">04</p>
-        <h3 style="font-size:23px;margin-top:8px">Prune hard</h3>
-        <p style="font-size:19px">Keep a shortlist of <code>ndocs</code> candidates and drop the
-        rest.</p>
-      </div>
-      <div class="card solid" style="flex:1;padding:22px 24px;border-color:var(--accent)">
-        <p style="font:500 15px/1 var(--mono);color:var(--accent);letter-spacing:.1em">05</p>
-        <h3 style="font-size:23px;margin-top:8px;color:var(--accent)">Full-score survivors</h3>
-        <p style="font-size:19px">Decompress residuals, rebuild real vectors, run exact MaxSim.</p>
+      <div class="card solid">
+        <span class="num">3</span>
+        <h3>And then the boring things</h3>
+        <p>Persistence, snapshots, replication, and add, update and delete <em>without</em> rebuilding
+        the index.</p>
+        <p style="margin-top:12px">A DAM changes all day — a tenant uploads a shoot, retags a folder,
+        deletes a campaign. Rebuild-from-scratch is not on the table.</p>
       </div>
     </div>
-    <div class="cols" style="margin-top:30px">
-      <div class="card accent grow">
-        <h3>One artefact, two jobs</h3>
-        <p>The centroid codebook was built to shrink the index. PLAID reuses it to narrow the search —
-        so the storage work we already have to do is also what buys back the latency.</p>
-      </div>
-      <div class="card dark grow">
-        <h3>What the paper reports</h3>
-        <p><strong style="color:#7fd1c6">Up to 7× on GPU and 45× on CPU</strong> lower latency than
-        vanilla ColBERTv2, at the same quality. On our own L40S nodes we see
-        <span class="todo">~4×</span> — measure again before quoting it anywhere.</p>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2205.09707">PLAID: An Efficient Engine for Late Interaction Retrieval · Santhanam et al., 2022</a></li>
-    <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction</a></li>
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Walk the five steps left to right, but the point is the two cards underneath.
-
-Remember ColBERTv2 compression: decompose token vectors into a shared centroid codebook plus a small residual. That was a storage trick. PLAID's insight is that centroids are shared across the corpus, so centroid-level interactions are a cheap way to find promising assets. Residuals and real vectors are only consulted for survivors.
-
-So one artefact does two jobs: it saves storage and it narrows the search. That is why this is the first thing to try rather than a bespoke system.
-
-The 7× GPU / 45× CPU figure is from the 2022 paper against vanilla ColBERTv2 at the same quality. I am not going to translate that into a Colourbox latency claim until we have run it on our own metal.
-
-If someone asks about MUVERA: same funnel, different stage one — it maps a multi-vector set to a single fixed-dimensional encoding so ordinary dense ANN can do candidate generation.</div>
-</section>
-
-<!-- ============ 38 · engineering block · 4 ============ -->
-<section class="slide" data-t="From research idea to system">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Lineage</div>
-  <h1 class="t">From research idea to system</h1>
-  <p class="sub">A compression trick becomes a candidate generator, then a fast backend, then something
-  with a REST API and CRUD — which is the version we could actually put behind the DAM.</p>
-  <div class="body">
-    <svg viewBox="0 0 1680 62" width="100%" style="flex:none;height:62px" role="img"
-         aria-label="Timeline with four points: 2021, 2022, 2025 and 2025.">
-      <line x1="70" y1="20" x2="1610" y2="20" stroke="var(--ink)" stroke-opacity=".14" stroke-width="2"/>
-      <g fill="var(--accent)">
-        <circle cx="210" cy="20" r="7"/><circle cx="630" cy="20" r="7"/>
-        <circle cx="1050" cy="20" r="7"/><circle cx="1470" cy="20" r="8"/>
-      </g>
-      <g font-family="IBM Plex Mono,monospace" font-size="19" fill="var(--faint)" text-anchor="middle">
-        <text x="210" y="54">2021</text><text x="630" y="54">2022</text>
-        <text x="1050" y="54">2025</text><text x="1470" y="54">2025</text>
-      </g>
-    </svg>
-    <div class="grid-4" style="margin-top:22px">
-      <div class="card">
-        <h3>ColBERTv2</h3>
-        <p>Compressed late-interaction vectors.</p>
-        <p style="margin-top:12px;color:var(--accent);font:500 20px/1.4 var(--mono)">6–10× smaller index</p>
-        <div class="cap">via residual compression</div>
-      </div>
-      <div class="card">
-        <h3>PLAID</h3>
-        <p>Centroid-based candidate generation.</p>
-        <p style="margin-top:12px;color:var(--accent);font:500 20px/1.4 var(--mono)">7× GPU · 45× CPU</p>
-        <div class="cap">vs vanilla ColBERTv2</div>
-      </div>
-      <div class="card">
-        <h3>FastPlaid</h3>
-        <p>High-performance backend, Rust and GPU.</p>
-        <p style="margin-top:12px;color:var(--accent);font:500 20px/1.4 var(--mono)">up to +554% QPS</p>
-        <div class="cap">vs PLAID</div>
-      </div>
-      <div class="card solid" style="border-color:var(--accent);border-width:2px">
-        <h3 style="color:var(--accent)">NextPlaid</h3>
-        <p>Production API and CRUD support.</p>
-        <p style="margin-top:12px;color:var(--accent);font:500 20px/1.4 var(--mono)">add · delete · filter</p>
-        <div class="cap">REST API · CPU-first</div>
-      </div>
-    </div>
-    <div class="cols" style="margin-top:28px">
+    <div class="cols" style="margin-top:28px;flex:none">
       <div class="card grow">
-        <h3>Two knobs, one budget</h3>
-        <p><code>n_ivf_probe</code> widens candidate generation; <code>n_full_scores</code> spends more
-        exact MaxSim. Turn either up and recall improves and the query costs more — that is the funnel,
-        exposed as configuration. Our budget per search:
-        <span class="todo">250 ms p95</span>, of which <span class="todo">~120 ms</span> is
-        retrieval.</p>
+        <h3>Library or database?</h3>
+        <p><code>faiss</code> and <code>hnswlib</code> are the index. Qdrant, Milvus, Weaviate, Vespa
+        and <code>pgvector</code> are the database around it. Reach for a library when the corpus fits
+        in one process and never changes — otherwise you will slowly write a database yourself.</p>
       </div>
       <div class="card dark grow">
-        <h3>Why CRUD is the interesting column</h3>
-        <p>A DAM index is never static — customers upload, retag and delete all day. An engine that
-        only supports rebuild-from-scratch is a research artefact; add, delete and metadata filtering
-        are what make it a product. WARP does the same job for XTR-style retrieval.</p>
+        <h3>It is the funnel again</h3>
+        <p>Every one of these systems is the funnel from the previous slide wearing a product name:
+        a cheap index narrows the corpus, a candidate set survives, and something expensive rescores
+        only what is left.</p>
       </div>
     </div>
   </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2 · Santhanam et al., 2021</a></li>
-    <li><a href="https://arxiv.org/abs/2205.09707">PLAID · Santhanam et al., 2022</a></li>
-    <li><a href="https://github.com/lightonai/fast-plaid">FastPlaid · LightOn</a></li>
-    <li><a href="https://github.com/lightonai/next-plaid">NextPlaid · LightOn</a></li>
-    <li><a href="https://arxiv.org/abs/2501.17788">WARP: An Efficient Engine for Multi-Vector Retrieval</a></li>
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
-  </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The reason to show a lineage rather than a paper is that this stopped being research. ColBERTv2 compresses the index. PLAID turns that compression into candidate generation. FastPlaid rewrites the backend in Rust with GPU support. NextPlaid adds the boring production things — REST, filtering, add and delete.
+  <div class="notes">Pitch this at someone who has used a database but never an ANN index. The three cards are deliberately in cost order: the loop is obvious, the filter is the part people underestimate, and the boring column is the one that decides whether you can actually run it.
 
-That last column is the one I care about most. Our DAM index is never static: a tenant uploads a shoot, retags a folder, deletes a campaign. Anything that can only be rebuilt from scratch is unusable for us regardless of how fast its queries are.
+The filtering point deserves a beat. Post-filtering is the naive implementation and it silently destroys recall — you ask for the top 100 nearest and then discard the 98 that belong to other tenants. Pre-filtering is correct but a naive implementation degrades to a scan. Everything interesting in these systems is about making a filtered ANN search stay fast.
 
-The two knobs are worth naming out loud because they make the funnel configurable rather than architectural: n_ivf_probe widens stage one, n_full_scores widens stage three.
-
-And note the CPU-first line — candidate generation on CPU keeps GPU capacity for the encoders we serve on Triton, which is where our GPU budget actually needs to go.</div>
+If someone asks "why not just pgvector": it is a completely reasonable answer at small scale and it keeps one fewer system in the stack. It gets harder when you want multivectors, tenant-partitioned filtering, and quantization on a corpus this size.</div>
 </section>
 
-<!-- ============ 39 · engineering block · where the vectors live ============ -->
+<!-- ============ 38 · engineering block · where the vectors live ============ -->
 <section class="slide" data-t="Where the vectors actually live">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
   <h1 class="t">Where the vectors actually live</h1>
-  <p class="sub">All of that funnel has to run somewhere with an API, backups and a delete endpoint.
-  For us that is <strong>Qdrant</strong>, self-hosted — and the sovereignty argument survives it.</p>
+  <p class="sub">For us that database is <strong>Qdrant</strong>, self-hosted — and it is the one
+  place where the retrieval argument and the sovereignty argument turn out to be the same argument.</p>
   <div class="body">
     <div class="grid-3">
       <div class="card solid">
@@ -1660,9 +1569,9 @@ And note the CPU-first line — candidate generation on CPU keeps GPU capacity f
       <div class="card dark grow">
         <h3>Where a dedicated service still helps</h3>
         <p>A general store is very good at all of it and best-in-class at none. When late interaction
-        is the <em>first</em> stage over a large tenant, a purpose-built engine — FastPlaid, NextPlaid,
-        WARP — still beats it on that one axis, because the whole engine is built around that one
-        index.</p>
+        is the <em>first</em> stage over a large tenant, an engine built for nothing but multi-vector
+        retrieval still beats it on that one axis — because the whole system is designed around that
+        single index instead of around five workloads.</p>
       </div>
       <div class="card grow" style="border-color:var(--accent-2)">
         <h3 style="color:var(--accent-2)">So the rule we actually apply</h3>
@@ -1689,63 +1598,63 @@ Do not oversell Qdrant against the specialised engines. On pure multi-vector fir
 
 The Berlin point is worth one sentence and no more. It is a genuine reinforcement of part two, but the substantive claim was always about self-hosting rather than the vendor's postcode.</div>
 </section>
-
-<!-- ============ 40 · engineering block · 5 ============ -->
-<section class="slide deep-dive" data-t="Sparse route: back to the inverted index">
+<!-- ============ 39 · vector store · multi-tenancy ============ -->
+<section class="slide" data-t="One collection per tenant?">
   <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Candidate generation · sparse</div>
-  <h1 class="t sm">Sparse route: back to the inverted index</h1>
-  <p class="sub">A different answer to stage one: turn token vectors into <strong>sparse keys</strong>,
-  and let a posting list — the most boring, best-understood structure in search — do the narrowing.</p>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · multi-tenancy</div>
+  <h1 class="t">One collection per tenant?</h1>
+  <p class="sub">A DAM is multi-tenant by construction, and this is the first real design decision the
+  vector store forces on us.</p>
   <div class="body">
-    <div class="cols">
-      <figure style="flex:0 0 660px;justify-content:center">
-        <img class="zoom" src="assets/eng-ssr-sparse.png" alt="Sparse late interaction: query and document token vectors are projected into a sparse neuron space, and only shared neurons contribute to the score">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a>, after <a href="https://arxiv.org/abs/2605.30120">SSR · Guo et al.</a></figcaption>
-      </figure>
-      <div class="stack grow">
-        <pre class="code" style="font-size:19px"><span class="c">sparse key      posting list</span>
-<span class="s">"f_0812"</span>   <span class="k">→</span>   asset 3 · asset 8 · asset 21
-<span class="s">"f_2044"</span>   <span class="k">→</span>   asset 1 · asset 8
-<span class="s">"f_9917"</span>   <span class="k">→</span>   asset 8 · asset 13</pre>
-        <ul class="bullets" style="gap:16px">
-          <li><strong>SMVE</strong> · post hoc, no training. Draw a few thousand random anchors, keep
-            each token's strongest projections, pool them into one sparse sketch.</li>
-          <li><strong>Latent terms</strong> · train a sparse autoencoder on the retriever to expose a
-            latent vocabulary, then index it with BM25-style machinery.</li>
-          <li><strong>SSR</strong> · project token vectors into a high-dimensional, very sparse space
-            so query and asset meet only on shared neurons — inverted indexing at neuron level.</li>
-        </ul>
-        <div class="card solid" style="border-color:var(--accent-2)">
-          <p>Same funnel, cheaper first stage: candidates from mature sparse infrastructure, then
-          MaxSim on the survivors. Attractive for us because it targets the lexical engine we already operate —
-          <span class="todo">OpenSearch 2.17</span>.</p>
-        </div>
+    <div class="grid-2">
+      <div class="card solid">
+        <h3>A collection per tenant</h3>
+        <p>Hard isolation, trivial deletes, and you can tune or reindex one customer without touching
+        anyone else.</p>
+        <p style="margin-top:14px">But every collection is its own index in memory, and a thousand
+        small graphs cost far more RAM than one large one. It is the long tail of small tenants that
+        breaks this, not the big ones.</p>
+        <div class="cap">isolation, paid for in overhead</div>
+      </div>
+      <div class="card solid">
+        <h3>One collection, tenant as a payload field</h3>
+        <p>One index, one memory footprint, and the tail costs almost nothing.</p>
+        <p style="margin-top:14px">It only works if the filter is first class — Qdrant can
+        <strong>partition the payload index by tenant</strong>, so a filtered search stays inside that
+        tenant's region of the graph instead of degrading into a scan.</p>
+        <div class="cap">the default, if filtering is real</div>
+      </div>
+    </div>
+    <div class="cols" style="margin-top:26px;flex:none">
+      <div class="card accent grow">
+        <h3>What we do</h3>
+        <p>A shared collection with a tenant-partitioned payload index, and dedicated collections only
+        for the few tenants big enough to justify one — <span class="todo">the largest 2</span>, on the
+        same threshold as the previous slide.</p>
+      </div>
+      <div class="card dark grow" style="border-color:var(--accent-2)">
+        <h3>And deletion has to be real</h3>
+        <p>When a tenant leaves, filtering them out is not deleting them. Vectors derived from personal
+        data <em>are</em> personal data, so offboarding has to remove the points — and survive a
+        snapshot restore. That is the promise from part two, at the level of an actual API call.</p>
       </div>
     </div>
   </div>
   <ul class="sources">
-    <li><a href="https://www.topk.io/blog/20260311-smve-multi-vector-retrieval">SMVE: multi-vector retrieval with sparse projections · Spisak et al., 2026</a></li>
-    <li><a href="https://arxiv.org/abs/2605.29384">Latent Terms: BM25-ready vocabularies inside dense retrievers · Clavié et al., 2026</a></li>
-    <li><a href="https://arxiv.org/abs/2605.30120">SSR: Single-Stage Sparse Coding for Efficient Multi-Vector Retrieval · Guo et al., 2026</a></li>
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
+    <li><a href="https://qdrant.tech/documentation/guides/multiple-partitions/">Qdrant · multitenancy and tenant-partitioned payload indexes</a></li>
   </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Optional slide — skip it if the room is not interested in candidate generation itself.
+  <div class="notes">This is the slide developers in the room will recognise instantly, because it is the same shared-schema-versus-schema-per-tenant argument they have already had about a relational database. Say that out loud — it makes the whole vector store feel less exotic.
 
-Reminder of what an inverted index is: organised by term, each term pointing at the list of documents containing it. Posting lists are decades of engineering we get for free.
+The deletion card is the one to land. It is easy to treat a vector as an anonymous array of floats, but it was derived from a customer's asset, and a good enough embedding is a reconstruction risk. If we tell customers their data stays in Europe and stays theirs, the delete path has to actually delete, including in backups.
 
-The idea in all three of these is the same: build sparse keys out of dense token vectors so you can map each key to the assets that contain it. SMVE is post hoc — random anchors, keep the strongest projections, no training at all. Latent terms trains a sparse autoencoder on the retriever to expose something that behaves like a vocabulary, which BM25 machinery can index. SSR learns a high-dimensional sparse representation so scoring happens on shared neurons.
-
-The details differ; the funnel does not. Cheap candidates from sparse infrastructure, richer MaxSim on a smaller set.
-
-Why I care: if this can ride on the lexical search we already run, the incremental infrastructure is close to zero. That is a very different proposition from standing up a new vector engine.</div>
+If asked about the threshold: it is not a principled number yet. It is where the memory saving stopped being worth the operational simplicity, and it should be re-measured as the corpus grows.</div>
 </section>
 
+
+
 <!-- ==================== EVAL ==================== -->
-<!-- ============ 41 · evaluation · 1 · the model zoo ============ -->
+<!-- ============ 40 · evaluation · 1 · the model zoo ============ -->
 <section class="slide" data-t="The model zoo is expanding">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Choosing a model</div>
@@ -1783,7 +1692,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">The "there are no models" objection has quietly expired. Point at the two lower lanes: multilingual and visual documents are exactly the two things we need, and they are the two youngest lanes on the chart. Two years ago this slide would have been an argument for waiting. Now it is an argument for being able to move — because whatever we pick this quarter is not what we will be running in a year.</div>
 </section>
 
-<!-- ============ 42 · agentic search · the embedder's dilemma ============ -->
+<!-- ============ 41 · agentic search · the embedder's dilemma ============ -->
 <section class="slide" data-t="The embedder's dilemma">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agentic search · cost</div>
@@ -1828,7 +1737,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">Three things worth saying out loud beyond the numbers on screen. First, where it flips: LLMs genuinely lead on reasoning-heavy retrieval, embedding models lead on classification, and the two match on clustering, STS and pair classification — so this is a routing decision, not a winner. Second, reasoning tokens are 28–81% of LLM inference cost, and in their ablation lower reasoning budgets preserved or even improved retrieval quality — which is a knob we control because we host the serving stack. Third, the Pareto frontier holds the leading embedding models plus exactly one LLM, and that LLM buys 0.4 points for three orders of magnitude. For an agentic caller issuing many queries per task, that trade is not close.</div>
 </section>
 
-<!-- ============ 43 · evaluation · 2 · shortlist then verify ============ -->
+<!-- ============ 42 · evaluation · 2 · shortlist then verify ============ -->
 <section class="slide" data-t="Shortlist on MTEB, decide on our data">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The practical take</div>
@@ -1869,7 +1778,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">Read it as rank movement, not score movement — the absolute numbers go up for everyone because the hard, contaminated queries are gone. What matters is who overtakes whom. Two models here swap eight places without a single weight changing. That is the honest state of public retrieval benchmarks, and it is the reason a leaderboard is a shortlisting tool and nothing more. The consolation prize is real though: the architecture we want for the DAM is the one that holds up best when the benchmark stops leaking.</div>
 </section>
 
-<!-- ============ 44 · evaluation · 3 · our own eval set ============ -->
+<!-- ============ 43 · evaluation · 3 · our own eval set ============ -->
 <section class="slide" data-t="Our own eval set is the instrument">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Evaluation</div>
@@ -1917,7 +1826,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">This is the slide I actually want people to leave with. Public benchmarks narrow the field to three or four candidates; after that, only our own labelled queries can tell us anything. And note the cold-start link — on a new tenant we cannot wait for click data, so the offline eval set is not a nice-to-have piece of ML hygiene, it is the only measuring instrument that exists on day one. Building it is product work, not research work.</div>
 </section>
 
-<!-- ============ 45 · evaluation · 4 · loop back to infrastructure ============ -->
+<!-- ============ 44 · evaluation · 4 · loop back to infrastructure ============ -->
 <section class="slide" data-t="Which is why we own the serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Back to infrastructure</div>
@@ -1965,7 +1874,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">Close the loop back to part three. The whole self-hosting argument was framed as sovereignty, and it is — but this is the second half of the return on it. Because we run the models, we can pull a new checkpoint on Monday, re-embed a sample of a customer's corpus on Tuesday and have a number on Wednesday. A hosted API gives you none of that: you cannot benchmark what you cannot re-index, and you cannot re-index a corpus you are not allowed to send. Sovereignty and the ability to keep improving turn out to be the same piece of infrastructure.</div>
 </section>
 
-<!-- ============ 46 ============ -->
+<!-- ============ 45 ============ -->
 <section class="slide closing-slide" data-t="Where this leaves us">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Wrapping up</div>
   <h1>Where this leaves us</h1>
@@ -1987,7 +1896,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">Stop and take questions. Expect pushback on index size for late interaction — that is the honest weak point and worth conceding directly.</div>
 </section>
 
-<!-- ============ 47 · open-ended finish ============ -->
+<!-- ============ 46 · open-ended finish ============ -->
 <section class="slide section" data-t="What all of this is for">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this goes</div>
   <h1>An agent searching a DAM<br>needs <span style="color:var(--accent)">all of it</span></h1>
