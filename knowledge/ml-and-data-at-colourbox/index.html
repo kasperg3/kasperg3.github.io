@@ -1479,6 +1479,8 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
 
 Be honest about the caveats or someone will find them. The 0.84 is the 4x setting — four rollouts in parallel at raised temperature, fused with reciprocal rank fusion — so it is buying some of that recall with test-time compute. The benchmark is their own 191 questions, half public and half written in-house, which is exactly the kind of home-ground advantage we would also have. And SID-1 itself is waitlisted, not downloadable.
 
+The number to be careful with is nDCG. The headline claim here is recall, where the gap is clear. On nDCG the two are much closer — close enough that "outperforms the frontier" would be overstating it — so quote recall, and read the table again before quoting nDCG at all.
+
 None of which weakens the point for us. The base model is open, the training method is published, and the thing that made it win was domain fit rather than scale. That is the most concrete evidence in the deck that a self-hosted retrieval model is a real option rather than a principled preference.
 
 If asked "so should we train one?" — not yet. The honest sequence is the eval set first, then measure how far a good off-the-shelf embedder gets us, and only then consider training. This slide is a reason to keep the option open, not a plan.</div>
