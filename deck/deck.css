@@ -275,6 +275,9 @@ body.notes-open #notes,body.toc-open #toc{transform:none}
 .slide.active .corpus .asset:nth-child(5){animation-delay:.42s}
 .slide.active .corpus .asset:nth-child(6){animation-delay:.50s}
 
+/* ---------- product logos ---------- */
+.brand{height:52px;width:auto;display:block;margin-bottom:18px}
+
 /* ---------- about-me portrait ---------- */
 .me-photo{width:132px;height:132px;border-radius:50%;object-fit:cover;flex:none;
           border:3px solid var(--card-solid);box-shadow:var(--shadow-raised)}
