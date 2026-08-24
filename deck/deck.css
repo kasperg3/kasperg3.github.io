@@ -70,7 +70,7 @@ body{background:#e9e6e0;font-family:var(--sans);color:var(--ink);overflow:hidden
 .kicker .km i:nth-child(2){background:var(--accent)}
 h1.t{font:600 62px/1.14 var(--serif);color:var(--ink);letter-spacing:-.005em;max-width:1480px}
 h1.t.sm{font-size:50px}
-.sub{font:400 26px/1.5 var(--sans);color:var(--muted);margin-top:18px;max-width:1280px}
+.sub{font:400 26px/1.5 var(--sans);color:var(--muted);margin-top:18px;max-width:1400px}
 .sub strong{color:var(--ink);font-weight:600}
 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
@@ -86,6 +86,36 @@ h1.t.sm{font-size:50px}
 .center{align-items:center;justify-content:center;text-align:center}
 
 /* ---------- cards ---------- */
+/* sparse slides: scale the block up so it fills the stage instead of floating
+   in a band. Opt-in per slide -- the default scale is sized for dense ones. */
+.slide.roomy .card{padding:46px 50px}
+.slide.roomy .card h3{font-size:31px;margin-bottom:14px}
+.slide.roomy .card p{font-size:25px;line-height:1.6}
+.slide.roomy .card .cap{font-size:16px}
+.slide.roomy ul.bullets li{font-size:28px}
+.slide.roomy ul.bullets{gap:26px}
+.slide.roomy .sub{font-size:28px}
+.slide.roomy .grid-2,.slide.roomy .grid-3{gap:36px}
+.slide.roomy .cols{gap:48px}
+
+/* content-heavy slides: tighten so nothing clips inside the stage */
+.slide.tight .card{padding:26px 30px}
+.slide.tight .card h3{font-size:24px;margin-bottom:8px}
+.slide.tight .card p{font-size:20px;line-height:1.5}
+.slide.tight .card .cap{font-size:14px;margin-top:9px}
+.slide.tight .stack{gap:14px}
+.slide.tight .cols{gap:32px}
+.slide.tight ul.bullets{gap:14px}
+.slide.tight ul.bullets li{font-size:22px}
+
+/* figure-heavy slides that cannot take the larger default scale */
+.slide.dense .card{padding:28px 32px}
+.slide.dense .card h3{font-size:25px;margin-bottom:9px}
+.slide.dense .card p{font-size:21px;line-height:1.5}
+.slide.dense .card .cap{font-size:14px;margin-top:10px}
+.slide.dense ul.bullets li{font-size:24px}
+.slide.dense .stack{gap:16px}
+
 .card{background:var(--card);border:1px solid var(--hair-soft);border-radius:18px;padding:34px 38px}
 .card.solid{background:var(--card-solid);box-shadow:var(--shadow)}
 .card.dark{background:var(--dark);border-color:var(--dark-edge);color:#e9edf2}
@@ -151,7 +181,7 @@ figcaption{font:400 17px/1.45 var(--sans);color:var(--faint)}
 .title-slide{justify-content:center;padding:120px}
 .title-slide h1{font:700 104px/1.06 var(--serif);letter-spacing:-.02em;max-width:1500px}
 .title-slide .sub{font-size:32px;margin-top:30px}
-.title-slide .meta{margin-top:auto;display:flex;gap:40px;font:500 19px/1 var(--sans);
+.title-slide .meta{position:absolute;left:120px;bottom:108px;display:flex;gap:40px;font:500 19px/1 var(--sans);
                    letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 .slide.section{justify-content:center;background:var(--dark)}
 .slide.section h1{font:700 88px/1.1 var(--serif);color:#fff;max-width:1400px}
@@ -370,7 +400,7 @@ body.notes-open #notes,body.toc-open #toc{transform:none}
    stage shares a column and therefore lines up, even though the query lane
    has 4 tokens and the document lane has 6. */
 .pipe{display:grid;grid-template-columns:repeat(11,max-content) auto;
-      align-items:center;gap:24px 18px;justify-content:start}
+      align-items:center;gap:34px 26px;justify-content:space-between}
 .slide.active .body>.pipe{animation:none}   /* don't double-animate with .body>* */
 
 .pipe-box{background:var(--card);border:1px solid var(--hair-soft);border-radius:13px;
