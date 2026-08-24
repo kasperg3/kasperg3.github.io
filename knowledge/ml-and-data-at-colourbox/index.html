@@ -101,15 +101,20 @@
       <div class="card solid grow">
         <h3>What does exist — and is good</h3>
         <ul class="bullets" style="margin-top:16px;gap:13px">
-          <li style="font-size:22px"><strong>Danish Foundation Models</strong> — an open Danish
-            consortium building models and, just as importantly, curating the corpora behind them.</li>
-          <li style="font-size:22px"><strong>Danish Gigaword</strong> — a deliberately broad open
-            Danish text corpus, spread across domains rather than scraped from one.</li>
-          <li style="font-size:22px"><strong>MTEB</strong> — the Scandinavian Embedding Benchmark has
-            moved into it, so the Nordic retrieval tasks and their leaderboard now sit inside MTEB
-            rather than beside it. ScandEval draws on much of the same task pool.</li>
-          <li style="font-size:22px"><strong>The Nordic Pile</strong> and the National Library of
-            Norway's <strong>NB AI-Lab</strong> — the same work, one border over.</li>
+          <li style="font-size:22px"><strong><a href="https://www.foundationmodels.dk/">Danish
+            Foundation Models</a></strong> — an open Danish consortium building models and, just as
+            importantly, curating the corpora behind them.</li>
+          <li style="font-size:22px"><strong><a href="https://gigaword.dk/">Danish Gigaword</a></strong>
+            — a deliberately broad open Danish text corpus, spread across domains rather than scraped
+            from one.</li>
+          <li style="font-size:22px"><strong><a href="https://huggingface.co/spaces/mteb/leaderboard">MTEB</a></strong>
+            — the Scandinavian Embedding Benchmark has moved into it, so the Nordic retrieval tasks and
+            their leaderboard now sit inside MTEB rather than beside it. ScandEval draws on much of the
+            same task pool.</li>
+          <li style="font-size:22px"><strong><a href="https://arxiv.org/abs/2303.17183">The Nordic
+            Pile</a></strong> and the National Library of Norway's
+            <strong><a href="https://ai.nb.no/">NB AI-Lab</a></strong> — the same work, one border
+            over.</li>
         </ul>
         <div class="cap">credit where it is due</div>
       </div>
@@ -133,6 +138,15 @@
       for us.</p>
     </div>
   </div>
+  <ul class="sources">
+    <li><a href="https://www.foundationmodels.dk/">Danish Foundation Models</a> · open Danish models and the curated corpora behind them · <a href="https://huggingface.co/danish-foundation-models">HF org</a></li>
+    <li><a href="https://gigaword.dk/">Danish Gigaword</a> · Strømberg-Derczynski et al., NoDaLiDa 2021 · <a href="https://aclanthology.org/2021.nodalida-main.46/">paper</a> · <a href="https://huggingface.co/datasets/danish-foundation-models/danish-gigaword">dataset</a></li>
+    <li><a href="https://arxiv.org/abs/2210.07316">MTEB: Massive Text Embedding Benchmark</a> · Muennighoff et al., 2022 · <a href="https://huggingface.co/spaces/mteb/leaderboard">leaderboard</a></li>
+    <li><a href="https://arxiv.org/abs/2406.02396">The Scandinavian Embedding Benchmarks</a> · Enevoldsen et al., NeurIPS 2024 · now folded into MTEB</li>
+    <li><a href="https://arxiv.org/abs/2303.17183">The Nordic Pile: A 1.2TB Nordic Dataset for Language Modeling</a> · Öhman et al., 2023</li>
+    <li><a href="https://ai.nb.no/">NB AI-Lab</a> · the National Library of Norway · <a href="https://huggingface.co/NbAiLab">HF org</a></li>
+    <li><a href="https://scandeval.com/">ScandEval</a> · Scandinavian NLU and generation benchmark</li>
+  </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be generous about the Danish projects — several people in this room will know them, and the argument is stronger if it is clearly not a complaint about Danish NLP. The point is a modality and task gap, not a language-resource gap.</div>
 </section>
@@ -150,8 +164,10 @@
         <ul class="bullets">
           <li><strong>Representative, not public.</strong> An eval drawn from our own assets measures
             the product. One drawn from a public benchmark measures the benchmark.</li>
-          <li><strong>We are the ones allowed to.</strong> Our systems, our storage, our agreements —
-            no scraping, no third-party terms, nothing crossing a border to get labelled.</li>
+          <li><strong>We are the ones allowed to.</strong> Our own systems and storage — plus data we
+            collect from sources we have actually talked to. Not an indiscriminate crawl: a
+            <strong>permissioned</strong> one, with an agreement behind each source, and nothing
+            crossing a border to get labelled.</li>
           <li><strong>And it compounds.</strong> Every labelled query becomes an asset a competitor
             cannot download. The moat is the eval set, not the model.</li>
         </ul>
@@ -244,7 +260,7 @@
             <path d="M246 31h42" stroke="var(--accent-2)" stroke-opacity=".55" stroke-width="4"/>
           </svg>
         </div>
-        <h4>Folketingets arkiver</h4>
+        <h4>Historical archives</h4>
         <div class="mods"><span class="mod c">text</span><span class="mod">scan</span><span class="mod b">ocr</span></div>
       </div>
 
