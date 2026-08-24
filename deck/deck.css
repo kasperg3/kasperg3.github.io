@@ -275,6 +275,10 @@ body.notes-open #notes,body.toc-open #toc{transform:none}
 .slide.active .corpus .asset:nth-child(5){animation-delay:.42s}
 .slide.active .corpus .asset:nth-child(6){animation-delay:.50s}
 
+/* ---------- about-me portrait ---------- */
+.me-photo{width:132px;height:132px;border-radius:50%;object-fit:cover;flex:none;
+          border:3px solid var(--card-solid);box-shadow:var(--shadow-raised)}
+
 /* ---------- openness ladder ---------- */
 .ladder{display:flex;align-items:stretch;gap:0}
 .rung{flex:1;padding:28px 30px;border:1px solid var(--hair-soft);border-right:none;

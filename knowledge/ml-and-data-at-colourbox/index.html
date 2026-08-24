@@ -24,9 +24,46 @@
   <div class="meta"><span>Kasper Rømer Grøntved</span><span>AI Engineer</span><span>Draft</span></div>
   <div class="notes">Structural draft. The flow is right; the specifics still need to come out of the source deck.</div>
 </section>
+<!-- ============ 2 · about me ============ -->
+<section class="slide" data-t="Who is talking">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Before we start</div>
+  <h1 class="t">Who is talking</h1>
+  <div class="body">
+    <div class="cols" style="align-items:center">
+      <div class="stack" style="flex:0 0 560px;gap:20px">
+        <img class="me-photo" src="assets/kasper.webp" alt="Kasper Rømer Grøntved">
+        <div>
+          <h2 style="font:600 44px/1.15 var(--serif);color:var(--ink)">Kasper Rømer Grøntved</h2>
+          <p style="font:400 25px/1.5 var(--sans);color:var(--muted);margin-top:8px">AI Engineer at
+          Colourbox · Odense</p>
+        </div>
+      </div>
+      <div class="stack grow" style="gap:18px">
+        <div class="card solid">
+          <h3>Where I come from</h3>
+          <p>A PhD in multi-robot systems at SDU, with a stay at Carnegie Mellon's Robotics Institute —
+          mostly about how one person stays in control of many autonomous things at once.</p>
+        </div>
+        <div class="card solid">
+          <h3>What I do now</h3>
+          <p>Search at Colourbox and Skyfish: a stock library anyone can browse, and a DAM where every
+          customer only ever sees their own material. Two very different search problems, one team.</p>
+        </div>
+        <div class="card accent">
+          <h3>And what I keep arguing about</h3>
+          <p>European data sovereignty — running the models on our own infrastructure rather than
+          renting someone else's. Which is most of what this talk is about.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Thirty seconds, not three minutes. The only load-bearing part is the last card: everything in this talk follows from wanting to run it ourselves.
 
-
-<!-- ============ 2 ============ -->
+The robotics background is worth one sentence because it explains the bias — coordination, autonomy and evaluation under uncertainty are the same problems wearing different clothes.</div>
+</section>
+<!-- ============ 3 ============ -->
 <section class="slide" data-t="Two products, two retrieval problems">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The landscape</div>
@@ -56,8 +93,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This distinction drives every later architecture decision — recall-oriented browsing versus precision-oriented lookup. Make it early and refer back to it.</div>
 </section>
-
-<!-- ============ 3 ============ -->
+<!-- ============ 4 ============ -->
 <section class="slide" data-t="The cold start problem">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The hard part</div>
@@ -88,8 +124,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the strategic argument for the whole ML investment. If they only remember one slide from part one, make it this one.</div>
 </section>
-
-<!-- ============ 4 · new: the open-data gap ============ -->
+<!-- ============ 5 · new: the open-data gap ============ -->
 <section class="slide" data-t="The open data isn't there either">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The starting point</div>
@@ -150,8 +185,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be generous about the Danish projects — several people in this room will know them, and the argument is stronger if it is clearly not a complaint about Danish NLP. The point is a modality and task gap, not a language-resource gap.</div>
 </section>
-
-<!-- ============ 5 · new: build it ourselves ============ -->
+<!-- ============ 6 · new: build it ourselves ============ -->
 <section class="slide" data-t="So we build the data ourselves">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The way out</div>
@@ -172,7 +206,7 @@
             cannot download. The moat is the eval set, not the model.</li>
         </ul>
       </div>
-      <div class="card dark" style="flex:0 0 640px">
+      <div class="card dark" style="flex:0 0 620px">
         <h3>But there is a prerequisite</h3>
         <p>You cannot sample representatively from a corpus you do not understand. Before any of
         this: <strong style="color:#fff">what do we actually store, in which modality, for whom, and
@@ -183,12 +217,19 @@
         <div class="cap" style="color:#6b7883">the actual first step</div>
       </div>
     </div>
+    <div class="card accent" style="margin-top:26px;flex:none">
+      <h3>And "eval set" just means a test suite for search</h3>
+      <p style="font-size:22px">A list of real queries, and for each one the asset that
+      <em>should</em> come back — plus a number saying how often it did. Same idea as the tests you
+      already write: the assertion is just <strong>"the right thing ranked first"</strong> instead of
+      <strong>"the function returned 4"</strong>. Everything after this slide depends on having
+      one.</p>
+    </div>
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of part one. Everything after it — the modality mix, the model choice, the eval design — is downstream of knowing the corpus. Say the last line slowly.</div>
 </section>
-
-<!-- ============ 6 · new: know what you store ============ -->
+<!-- ============ 7 · new: know what you store ============ -->
 <section class="slide" data-t="Know what you store and serve">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Know your corpus</div>
@@ -260,7 +301,7 @@
             <path d="M246 31h42" stroke="var(--accent-2)" stroke-opacity=".55" stroke-width="4"/>
           </svg>
         </div>
-        <h4>Historical archives</h4>
+        <h4>Historiske arkiver</h4>
         <div class="mods"><span class="mod c">text</span><span class="mod">scan</span><span class="mod b">ocr</span></div>
       </div>
 
@@ -341,8 +382,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Point at the tiles rather than reading them out. If the room is Danish, these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity, which is the argument for a representation that can hold structure — the next few slides.</div>
 </section>
-
-<!-- ============ 7 · new: the bias trap ============ -->
+<!-- ============ 8 · new: the bias trap ============ -->
 <section class="slide" data-t="The trap in our own query logs">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The tradeoff without data</div>
@@ -382,118 +422,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
 </section>
-
-<!-- ============ 8 ============ -->
-<section class="slide section" data-t="EU sovereignty">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
-  <h1>EU sovereignty</h1>
-  <p class="sub">Where the weights come from, and where they run.</p>
-</section>
-
-<!-- ============ 9 ============ -->
-<section class="slide" data-t="The open models are mostly not European">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The awkward fact</div>
-  <h1 class="t">The open models are mostly not European</h1>
-  <p class="sub">Open weights and European provenance are two different things, and it is worth being
-  precise about which one you are buying.</p>
-  <div class="body">
-    <div class="grid-3">
-      <div class="card"><h3>Where it was trained</h3>
-        <p>The strongest open vision and embedding models come overwhelmingly from US and Chinese labs.
-        That is simply the state of the field.</p>
-        <div class="cap">provenance</div></div>
-      <div class="card accent"><h3>Where it runs</h3>
-        <p>Open weights mean we can pull them onto our own hardware. Nothing leaves. This is the part
-        we fully control — and it is the part that matters legally.</p>
-        <div class="cap">what we decide</div></div>
-      <div class="card"><h3>Where the data goes</h3>
-        <p>A hosted API means customer assets cross a border and a jurisdiction on every request. Open
-        weights on EU infrastructure means they never do.</p>
-        <div class="cap">the actual question</div></div>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Be honest here — pretending there are EU-native models at frontier quality for every task would not survive questions. The defensible claim is about processing and data residency, not about the weights' passport.</div>
-</section>
-
-
-<!-- ============ 10 ============ -->
-<section class="slide" data-t="Why customers keep asking">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The commercial case</div>
-  <h1 class="t">Why customers keep asking</h1>
-  <p class="sub">Sovereignty started as a procurement checkbox. It is turning into a reason people
-  switch vendor.</p>
-  <div class="body">
-    <div class="cols">
-      <div class="grow">
-        <ul class="bullets">
-          <li><strong>Public sector and regulated industries ask first.</strong> For them it is not a
-            preference, it is a condition of signing.</li>
-          <li><strong>Being EU-owned is part of the answer.</strong> Not just EU-hosted — the company
-            holding the data is itself under European jurisdiction, with no foreign parent to compel.</li>
-          <li><strong>The frequency is rising.</strong> It now appears in roughly <span class="todo">1 in 3</span> public-sector
-            RFPs we see, against <span class="todo">1 in 10</span> two years ago.</li>
-        </ul>
-      </div>
-      <div class="card solid" style="flex:0 0 500px">
-        <span class="num">→</span>
-        <h3>From cost to advantage</h3>
-        <p>Self-hosting was originally the expensive path. When customers start requiring it, the
-        infrastructure we already built stops being overhead and becomes the differentiator.</p>
-        <div class="cap">the strategic turn</div>
-      </div>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Anecdotes land better than assertions here. Bring one real customer conversation if it can be shared.</div>
-</section>
-
-<!-- ============ 11 ============ -->
-<section class="slide section" data-t="Architecture and self-hosted inference">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part three</div>
-  <h1>Architecture and self-hosted inference</h1>
-  <p class="sub">What it actually takes to run this ourselves.</p>
-</section>
-
-<!-- ============ 12 ============ -->
-<section class="slide" data-t="The serving stack">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure</div>
-  <h1 class="t">The serving stack</h1>
-  <p class="sub">Two engines, two different jobs. Picking per workload rather than standardising on one
-  is the whole trick.</p>
-  <div class="body">
-    <div class="grid-2">
-      <div class="card solid">
-        <h3>Triton Inference Server</h3>
-        <p>The workhorse for <strong>vision and embedding models</strong>: dynamic batching, multiple
-        frameworks behind one endpoint, ensemble pipelines so preprocessing and inference live in the
-        same request.</p>
-        <p style="margin-top:14px">Right choice when the model is small, the traffic is bursty, and
-        throughput per GPU is what you are optimising.</p>
-        <div class="cap">indexing · embedding · classification</div>
-      </div>
-      <div class="card solid">
-        <h3>vLLM</h3>
-        <p>The workhorse for <strong>generative and VLM workloads</strong>: paged attention, continuous
-        batching, an OpenAI-compatible surface so application code does not care where the model lives.</p>
-        <p style="margin-top:14px">Right choice when sequences are long, output is autoregressive, and
-        KV cache is the binding constraint.</p>
-        <div class="cap">captioning · extraction · reasoning</div>
-      </div>
-    </div>
-    <p class="sub" style="margin-top:32px">Both run on our own GPUs — <span class="todo">2 nodes × 4 NVIDIA L40S</span> — inside EU data
-    centres.</p>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Resist a stack-diagram-with-fourteen-boxes. The point is that engine choice follows workload shape, and both stay on our metal.</div>
-</section>
-
-<!-- ============ 13 · transplanted from the primer · slide 2 ============ -->
+<!-- ============ 9 · transplanted from the primer · slide 2 ============ -->
 <section class="slide" data-t="Resetting the baseline">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Orientation</div>
@@ -546,6 +475,78 @@
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Keep this tight. It is a shared-vocabulary slide, not an argument. The argument starts next.</div>
+</section>
+<!-- ============ 10 ============ -->
+<section class="slide section" data-t="EU sovereignty">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
+  <h1>EU sovereignty</h1>
+  <p class="sub">Where the weights come from, and where they run.</p>
+</section>
+<!-- ============ 11 ============ -->
+<section class="slide" data-t="The open models are mostly not European">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The awkward fact</div>
+  <h1 class="t">The open models are mostly not European</h1>
+  <p class="sub">Open weights and European provenance are two different things, and it is worth being
+  precise about which one you are buying.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card"><h3>Where it was trained</h3>
+        <p>The strongest open vision and embedding models come overwhelmingly from US and Chinese labs.
+        That is simply the state of the field.</p>
+        <div class="cap">provenance</div></div>
+      <div class="card accent"><h3>Where it runs</h3>
+        <p>Open weights mean we can pull them onto our own hardware. Nothing leaves. This is the part
+        we fully control — and it is the part that matters legally.</p>
+        <div class="cap">what we decide</div></div>
+      <div class="card"><h3>Where the data goes</h3>
+        <p>A hosted API means customer assets cross a border and a jurisdiction on every request. Open
+        weights on EU infrastructure means they never do.</p>
+        <div class="cap">the actual question</div></div>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Be honest here — pretending there are EU-native models at frontier quality for every task would not survive questions. The defensible claim is about processing and data residency, not about the weights' passport.</div>
+</section>
+<!-- ============ 12 ============ -->
+<section class="slide" data-t="Why customers keep asking">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The commercial case</div>
+  <h1 class="t">Why customers keep asking</h1>
+  <p class="sub">Sovereignty started as a procurement checkbox. It is turning into a reason people
+  switch vendor.</p>
+  <div class="body">
+    <div class="cols">
+      <div class="grow">
+        <ul class="bullets">
+          <li><strong>Public sector and regulated industries ask first.</strong> For them it is not a
+            preference, it is a condition of signing.</li>
+          <li><strong>Being EU-owned is part of the answer.</strong> Not just EU-hosted — the company
+            holding the data is itself under European jurisdiction, with no foreign parent to compel.</li>
+          <li><strong>The frequency is rising.</strong> It now appears in roughly <span class="todo">1 in 3</span> public-sector
+            RFPs we see, against <span class="todo">1 in 10</span> two years ago.</li>
+        </ul>
+      </div>
+      <div class="card solid" style="flex:0 0 500px">
+        <span class="num">→</span>
+        <h3>From cost to advantage</h3>
+        <p>Self-hosting was originally the expensive path. When customers start requiring it, the
+        infrastructure we already built stops being overhead and becomes the differentiator.</p>
+        <div class="cap">the strategic turn</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Anecdotes land better than assertions here. Bring one real customer conversation if it can be shared.</div>
+</section>
+<!-- ============ 13 ============ -->
+<section class="slide section" data-t="How retrieval actually works">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part three</div>
+  <h1>How retrieval actually works</h1>
+  <p class="sub">From one vector per asset to many — and why that choice decides what a search can
+  find.</p>
 </section>
 <!-- ============ 14 · transplanted from the primer · slide 3 ============ -->
 <section class="slide" data-t="Why do DAM users still search by filename?">
@@ -784,7 +785,6 @@ The example worth saying out loud is the multilingual one: the customer types En
 
 The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
 </section>
-
 <!-- ============ 21 · transplanted from the primer · slide 12 ============ -->
 <section class="slide" data-t="The useful overlap">
   <div class="draft-flag">Draft</div>
@@ -834,7 +834,6 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <h1>Search in our systems</h1>
   <p class="sub">Where each of these actually ends up.</p>
 </section>
-
 <!-- ============ 23 ============ -->
 <section class="slide" data-t="Stock: visual retrieval">
   <div class="draft-flag">Draft</div>
@@ -866,7 +865,6 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Tie this back to slide 3: recall-oriented product, recall-oriented architecture.</div>
 </section>
-
 <!-- ============ 24 ============ -->
 <section class="slide" data-t="DAM: mixed modality, mostly visual">
   <div class="draft-flag">Draft</div>
@@ -903,9 +901,6 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">The PDF-as-image point is the one people find surprising — it is worth an extra beat, and it is where late interaction has the clearest case.</div>
 </section>
-
-<!-- ==================== MULTIMODAL ==================== -->
-
 <!-- ============ 25 · mm 2 · the painting ============ -->
 <section class="slide" data-t="A picture is worth a thousand words · the painting">
   <div class="draft-flag">Draft</div>
@@ -953,7 +948,6 @@ A traditional text pipeline cannot touch an image without a captioning model in 
 
 Bring it home: this is our metadata situation with the labels changed. Contributor keywords on stock, near-nothing on a new DAM tenant. Direct visual retrieval keeps regions of the asset available for matching instead of forcing everything through a text bottleneck first.</div>
 </section>
-
 <!-- ============ 26 · mm 3 · the map ============ -->
 <section class="slide" data-t="A picture is worth a thousand words · the map">
   <div class="draft-flag">Draft</div>
@@ -1002,10 +996,6 @@ The last card is the one worth pausing on. We tend to treat OCR and captioning a
 
 Note in passing that this happens to be an EU policy report — the kind of document a public-sector tenant would want indexed without it leaving European infrastructure.</div>
 </section>
-
-
-
-
 <!-- ============ 27 · merged · from tokens to patches + we can see the match ============ -->
 <section class="slide" data-t="From tokens to patches · ColPali">
   <div class="draft-flag">Draft</div>
@@ -1061,7 +1051,6 @@ Then make the room commit before advancing. Read the query out, ask which region
 
 The explainability point in the dark card is not decoration — DAM customers ask for it, and a single pooled vector fundamentally cannot give it to them.</div>
 </section>
-
 <!-- ============ 28 · mm 9 · patch match: 2008 ============ -->
 <section class="slide" data-t="Query-to-patch matches · 2008">
   <div class="draft-flag">Draft</div>
@@ -1105,17 +1094,6 @@ The explainability point in the dark card is not decoration — DAM customers as
 
 Say the quiet part: nobody trained this model on "highlight the axis". The localisation falls out of keeping one vector per patch and never pooling them. Interpretability here is a free side effect of the architecture, not a feature someone bolted on.</div>
 </section>
-
-
-
-
-
-
-
-
-
-<!-- ==================== ENGINEERING ==================== -->
-<!-- ============ engineering block · 1 ============ -->
 <!-- ============ 29 · adapted from her slide 36 ============ -->
 <section class="slide section" data-t="So why isn't this everywhere yet?">
   <div class="draft-flag">Draft</div>
@@ -1138,7 +1116,6 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   </ul>
   <div class="notes">Breath slide. Name the three objections, then say plainly that we have already conceded storage — the next slides are about speed and ecosystem, which are the ones with real answers.</div>
 </section>
-
 <!-- ============ 30 · engineering block · 1 ============ -->
 <section class="slide" data-t="Naive MaxSim is doomed">
   <div class="draft-flag">Draft</div>
@@ -1192,7 +1169,6 @@ The important reframe: no serious system implements exact MaxSim over the whole 
 
 Our numbers have the same shape with patches instead of tokens — I need to put the real ones in here before presenting.</div>
 </section>
-
 <!-- ============ 31 · engineering block · 2 ============ -->
 <section class="slide" data-t="Every fast system is a funnel">
   <div class="draft-flag">Draft</div>
@@ -1262,66 +1238,53 @@ I have deliberately left the stage widths blank. Her illustrative numbers were 9
 
 The last card matters for the next slides: there is more than one way to build stage one.</div>
 </section>
-
-
-
 <!-- ============ 32 · vector store · what a vector database is ============ -->
 <section class="slide" data-t="So what is a vector database?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
-  <h1 class="t">So what <em>is</em> a vector database?</h1>
-  <p class="sub">The honest answer: an approximate nearest-neighbour index, a filter engine, and all
-  the boring database things wrapped around them.</p>
+  <h1 class="t">You don't build that funnel. You configure it.</h1>
+  <p class="sub">Every stage we just drew already exists as a feature of a modern vector database —
+  which is most of what one <em>is</em>.</p>
   <div class="body">
     <div class="grid-3">
       <div class="card solid">
-        <span class="num">1</span>
-        <h3>Why not just a loop?</h3>
-        <p>Cosine against every vector is <code>O(N·d)</code> and completely fine at ten thousand
-        assets. At a hundred million patch vectors it is the arithmetic from two slides ago.</p>
-        <p style="margin-top:12px">An approximate index trades a little recall for a lot of time —
-        <strong>HNSW</strong> descends a navigable graph instead of scanning the corpus.</p>
+        <div class="cap" style="margin:0 0 12px">stage 1 · narrow</div>
+        <h3>An approximate index</h3>
+        <p>Cosine against every vector is <code>O(N·d)</code> — fine at ten thousand assets, hopeless at
+        a hundred million. <strong>HNSW</strong> descends a navigable graph instead of scanning, trading
+        a little recall for a lot of time.</p>
       </div>
       <div class="card solid">
-        <span class="num">2</span>
-        <h3>Filtering is the hard part</h3>
-        <p><em>"Similar to this — but only this tenant's, only landscape, only shot after 2024."</em></p>
-        <p style="margin-top:12px">Filter <strong>after</strong> the search and you can get nothing
-        back. Filter <strong>before</strong> it and you have thrown away the index. Making that fast is
-        most of what separates a vector database from a vector library.</p>
+        <div class="cap" style="margin:0 0 12px">stage 2 · shortlist</div>
+        <h3>Sparse keys and filters</h3>
+        <p>Learned-sparse vectors cut it down further, and so does <em>"only this tenant's, only
+        landscape, only after 2024"</em>. Making a <strong>filtered</strong> search stay fast is the
+        part people underestimate.</p>
       </div>
       <div class="card solid">
-        <span class="num">3</span>
-        <h3>And then the boring things</h3>
-        <p>Persistence, snapshots, replication, and add, update and delete <em>without</em> rebuilding
-        the index.</p>
-        <p style="margin-top:12px">A DAM changes all day — a tenant uploads a shoot, retags a folder,
-        deletes a campaign. Rebuild-from-scratch is not on the table.</p>
+        <div class="cap" style="margin:0 0 12px">stage 3 · rescore</div>
+        <h3>Late interaction on the survivors</h3>
+        <p>Multivectors with a <strong>MaxSim comparator</strong> — the expensive scoring from earlier,
+        run only on what is left. Approximate first, exact last.</p>
       </div>
     </div>
-    <div class="cols" style="margin-top:28px;flex:none">
-      <div class="card grow">
-        <h3>Library or database?</h3>
-        <p><code>faiss</code> and <code>hnswlib</code> are the index. Qdrant, Milvus, Weaviate, Vespa
-        and <code>pgvector</code> are the database around it. Reach for a library when the corpus fits
-        in one process and never changes — otherwise you will slowly write a database yourself.</p>
-      </div>
-      <div class="card dark grow">
-        <h3>It is the funnel again</h3>
-        <p>Every one of these systems is the funnel from the previous slide wearing a product name:
-        a cheap index narrows the corpus, a candidate set survives, and something expensive rescores
-        only what is left.</p>
-      </div>
+    <div class="card dark" style="margin-top:28px;flex:none">
+      <h3>Library or database?</h3>
+      <p><code>faiss</code> and <code>hnswlib</code> are the index. Qdrant, Milvus, Weaviate, Vespa and
+      <code>pgvector</code> are the database around it — filters, persistence, replication, and add,
+      update and delete without a rebuild. A DAM changes all day, so that second list is what decides
+      whether you can actually run it.</p>
     </div>
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Pitch this at someone who has used a database but never an ANN index. The three cards are deliberately in cost order: the loop is obvious, the filter is the part people underestimate, and the boring column is the one that decides whether you can actually run it.
+  <div class="notes">The point of this slide is relief, not detail: the funnel from the previous slide sounds like a research architecture, and it is actually a config file. Say that plainly.
 
-The filtering point deserves a beat. Post-filtering is the naive implementation and it silently destroys recall — you ask for the top 100 nearest and then discard the 98 that belong to other tenants. Pre-filtering is correct but a naive implementation degrades to a scan. Everything interesting in these systems is about making a filtered ANN search stay fast.
+Map the three cards onto the three stages out loud — they are deliberately in the same order and use the same words.
 
-If someone asks "why not just pgvector": it is a completely reasonable answer at small scale and it keeps one fewer system in the stack. It gets harder when you want multivectors, tenant-partitioned filtering, and quantization on a corpus this size.</div>
+The filtering line deserves one beat. Post-filtering is the naive implementation and it silently destroys recall: you ask for the hundred nearest and then throw away the ninety-eight belonging to other tenants. Everything interesting in these systems is about making a filtered approximate search stay fast.
+
+If someone asks "why not just pgvector" — completely reasonable at small scale, and one fewer system to run. It gets harder when you want multivectors and quantization on a corpus this size.</div>
 </section>
-
 <!-- ============ 33 · engineering block · where the vectors live ============ -->
 <section class="slide" data-t="Where the vectors actually live">
   <div class="draft-flag">Draft</div>
@@ -1386,63 +1349,39 @@ Do not oversell Qdrant against the specialised engines. On pure multi-vector fir
 
 The Berlin point is worth one sentence and no more. It is a genuine reinforcement of part two, but the substantive claim was always about self-hosting rather than the vendor's postcode.</div>
 </section>
-<!-- ============ 34 · vector store · multi-tenancy ============ -->
-<section class="slide" data-t="One collection per tenant?">
+<!-- ============ 34 ============ -->
+<section class="slide" data-t="The serving stack">
   <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · multi-tenancy</div>
-  <h1 class="t">One collection per tenant?</h1>
-  <p class="sub">A DAM is multi-tenant by construction, and this is the first real design decision the
-  vector store forces on us.</p>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure</div>
+  <h1 class="t">The serving stack</h1>
+  <p class="sub">Two engines, two different jobs. Picking per workload rather than standardising on one
+  is the whole trick.</p>
   <div class="body">
     <div class="grid-2">
       <div class="card solid">
-        <h3>A collection per tenant</h3>
-        <p>Hard isolation, trivial deletes, and you can tune or reindex one customer without touching
-        anyone else.</p>
-        <p style="margin-top:14px">But every collection is its own index in memory, and a thousand
-        small graphs cost far more RAM than one large one. It is the long tail of small tenants that
-        breaks this, not the big ones.</p>
-        <div class="cap">isolation, paid for in overhead</div>
+        <h3>Triton Inference Server</h3>
+        <p>The workhorse for <strong>vision and embedding models</strong>: dynamic batching, multiple
+        frameworks behind one endpoint, ensemble pipelines so preprocessing and inference live in the
+        same request.</p>
+        <p style="margin-top:14px">Right choice when the model is small, the traffic is bursty, and
+        throughput per GPU is what you are optimising.</p>
+        <div class="cap">indexing · embedding · classification</div>
       </div>
       <div class="card solid">
-        <h3>One collection, tenant as a payload field</h3>
-        <p>One index, one memory footprint, and the tail costs almost nothing.</p>
-        <p style="margin-top:14px">It only works if the filter is first class — Qdrant can
-        <strong>partition the payload index by tenant</strong>, so a filtered search stays inside that
-        tenant's region of the graph instead of degrading into a scan.</p>
-        <div class="cap">the default, if filtering is real</div>
+        <h3>vLLM</h3>
+        <p>The workhorse for <strong>generative and VLM workloads</strong>: paged attention, continuous
+        batching, an OpenAI-compatible surface so application code does not care where the model lives.</p>
+        <p style="margin-top:14px">Right choice when sequences are long, output is autoregressive, and
+        KV cache is the binding constraint.</p>
+        <div class="cap">captioning · extraction · reasoning</div>
       </div>
     </div>
-    <div class="cols" style="margin-top:26px;flex:none">
-      <div class="card accent grow">
-        <h3>What we do</h3>
-        <p>A shared collection with a tenant-partitioned payload index, and dedicated collections only
-        for the few tenants big enough to justify one — <span class="todo">the largest 2</span>, on the
-        same threshold as the previous slide.</p>
-      </div>
-      <div class="card dark grow" style="border-color:var(--accent-2)">
-        <h3>And deletion has to be real</h3>
-        <p>When a tenant leaves, filtering them out is not deleting them. Vectors derived from personal
-        data <em>are</em> personal data, so offboarding has to remove the points — and survive a
-        snapshot restore. That is the promise from part two, at the level of an actual API call.</p>
-      </div>
-    </div>
+    <p class="sub" style="margin-top:32px">Both run on our own GPUs — <span class="todo">2 nodes × 4 NVIDIA L40S</span> — inside EU data
+    centres.</p>
   </div>
-  <ul class="sources">
-    <li><a href="https://qdrant.tech/documentation/guides/multiple-partitions/">Qdrant · multitenancy and tenant-partitioned payload indexes</a></li>
-  </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This is the slide developers in the room will recognise instantly, because it is the same shared-schema-versus-schema-per-tenant argument they have already had about a relational database. Say that out loud — it makes the whole vector store feel less exotic.
-
-The deletion card is the one to land. It is easy to treat a vector as an anonymous array of floats, but it was derived from a customer's asset, and a good enough embedding is a reconstruction risk. If we tell customers their data stays in Europe and stays theirs, the delete path has to actually delete, including in backups.
-
-If asked about the threshold: it is not a principled number yet. It is where the memory saving stopped being worth the operational simplicity, and it should be re-measured as the corpus grows.</div>
+  <div class="notes">Resist a stack-diagram-with-fourteen-boxes. The point is that engine choice follows workload shape, and both stay on our metal.</div>
 </section>
-
-
-
-<!-- ==================== EVAL ==================== -->
-
 <!-- ============ 35 · agentic search · the embedder's dilemma ============ -->
 <section class="slide" data-t="The embedder's dilemma">
   <div class="draft-flag">Draft</div>
@@ -1487,8 +1426,6 @@ If asked about the threshold: it is not a principled number yet. It is where the
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Three things worth saying out loud beyond the numbers on screen. First, where it flips: LLMs genuinely lead on reasoning-heavy retrieval, embedding models lead on classification, and the two match on clustering, STS and pair classification — so this is a routing decision, not a winner. Second, reasoning tokens are 28–81% of LLM inference cost, and in their ablation lower reasoning budgets preserved or even improved retrieval quality — which is a knob we control because we host the serving stack. Third, the Pareto frontier holds the leading embedding models plus exactly one LLM, and that LLM buys 0.4 points for three orders of magnitude. For an agentic caller issuing many queries per task, that trade is not close.</div>
 </section>
-
-
 <!-- ============ 36 · evaluation · 3 · our own eval set ============ -->
 <section class="slide" data-t="Our own eval set is the instrument">
   <div class="draft-flag">Draft</div>
@@ -1536,7 +1473,6 @@ If asked about the threshold: it is not a principled number yet. It is where the
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide I actually want people to leave with. Public benchmarks narrow the field to three or four candidates; after that, only our own labelled queries can tell us anything. And note the cold-start link — on a new tenant we cannot wait for click data, so the offline eval set is not a nice-to-have piece of ML hygiene, it is the only measuring instrument that exists on day one. Building it is product work, not research work.</div>
 </section>
-
 <!-- ============ 37 · evaluation · 4 · loop back to infrastructure ============ -->
 <section class="slide" data-t="Which is why we own the serving stack">
   <div class="draft-flag">Draft</div>
@@ -1584,8 +1520,6 @@ If asked about the threshold: it is not a principled number yet. It is where the
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Close the loop back to part three. The whole self-hosting argument was framed as sovereignty, and it is — but this is the second half of the return on it. Because we run the models, we can pull a new checkpoint on Monday, re-embed a sample of a customer's corpus on Tuesday and have a number on Wednesday. A hosted API gives you none of that: you cannot benchmark what you cannot re-index, and you cannot re-index a corpus you are not allowed to send. Sovereignty and the ability to keep improving turn out to be the same piece of infrastructure.</div>
 </section>
-
-
 <!-- ============ 38 · open-ended finish ============ -->
 <section class="slide section" data-t="What all of this is for">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this goes</div>
