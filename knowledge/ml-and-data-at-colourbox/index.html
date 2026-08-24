@@ -1427,7 +1427,64 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Three things worth saying out loud beyond the numbers on screen. First, where it flips: LLMs genuinely lead on reasoning-heavy retrieval, embedding models lead on classification, and the two match on clustering, STS and pair classification — so this is a routing decision, not a winner. Second, reasoning tokens are 28–81% of LLM inference cost, and in their ablation lower reasoning budgets preserved or even improved retrieval quality — which is a knob we control because we host the serving stack. Third, the Pareto frontier holds the leading embedding models plus exactly one LLM, and that LLM buys 0.4 points for three orders of magnitude. For an agentic caller issuing many queries per task, that trade is not close.</div>
 </section>
-<!-- ============ 36 · evaluation · 3 · our own eval set ============ -->
+
+<!-- ============ 36 · agentic search · the counter-example ============ -->
+<section class="slide tight" data-t="And then someone trained a small one">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agentic search · the counter-example</div>
+  <h1 class="t">And then someone trained a small one</h1>
+  <p class="sub">SID-1 is an open <strong>14B</strong> base, RL-trained end to end for exactly one job —
+  agentic retrieval. On its own benchmark it out-recalls the frontier models it costs a fraction of.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card solid">
+        <div class="cap" style="margin:0 0 12px">what it is</div>
+        <h3>Trained for one job</h3>
+        <p>Qwen3-14B, tuned with <strong>GRPO and no supervised warm-up</strong>, on synthetic multi-hop
+        questions built from document-to-document links. One model does the searching, the ranking and
+        the multi-turn reasoning.</p>
+        <p style="margin-top:12px">Nobody told it to fan out parallel searches, or to read excerpts
+        first and full documents only when it needed them. It worked both out.</p>
+      </div>
+      <div class="card solid" style="border-color:var(--accent)">
+        <span class="num">0.84</span>
+        <h3>recall, against 0.78 and 0.64</h3>
+        <p><strong>GPT-5.1 (high)</strong> manages 0.78 and <strong>Sonnet 4.5</strong> 0.64 on the same
+        191 multi-hop questions — general knowledge, finance, science, legal and email.</p>
+        <div class="cap">four rollouts, fused with RRF</div>
+      </div>
+      <div class="card dark">
+        <span class="num" style="color:#7fd1c6">24×</span>
+        <h3>faster, and far cheaper</h3>
+        <p>5.5 seconds per question against GPT-5.1's 131 — and roughly
+        <strong style="color:#fff">400× less per question</strong> than Sonnet 4.5.</p>
+        <div class="cap" style="color:#6b7883">the dilemma, from the other side</div>
+      </div>
+    </div>
+    <div class="card accent" style="margin-top:26px;flex:none">
+      <h3>Our read</h3>
+      <p>This is the previous slide answered from the other end. The frontier model is better at
+      everything in general and <em>worse at this in particular</em>, because the small one was trained
+      on the retrieval task that actually gets run. <strong>Which is the argument for owning our search
+      rather than renting it:</strong> the base is open weights and the method is published — the part
+      nobody can sell us is the corpus and the eval set we would train it against.</p>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://www.sid.ai/research/sid-1-technical-report">SID-1 Technical Report: Test-Time Compute for Retrieval</a> · SID AI, 4 December 2025</li>
+    <li><a href="https://huggingface.co/Qwen/Qwen3-14B">Qwen3-14B</a> · the open base it starts from</li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Put this straight after the embedder's dilemma, because it is the same graph read backwards. There, closing a 0.4-point gap cost 1,431×. Here, a 14B model closes the gap in the other direction by being trained on the actual task.
+
+Be honest about the caveats or someone will find them. The 0.84 is the 4x setting — four rollouts in parallel at raised temperature, fused with reciprocal rank fusion — so it is buying some of that recall with test-time compute. The benchmark is their own 191 questions, half public and half written in-house, which is exactly the kind of home-ground advantage we would also have. And SID-1 itself is waitlisted, not downloadable.
+
+None of which weakens the point for us. The base model is open, the training method is published, and the thing that made it win was domain fit rather than scale. That is the most concrete evidence in the deck that a self-hosted retrieval model is a real option rather than a principled preference.
+
+If asked "so should we train one?" — not yet. The honest sequence is the eval set first, then measure how far a good off-the-shelf embedder gets us, and only then consider training. This slide is a reason to keep the option open, not a plan.</div>
+</section>
+
+<!-- ============ 37 · evaluation · 3 · our own eval set ============ -->
 <section class="slide" data-t="Our own eval set is the instrument">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Evaluation</div>
@@ -1474,7 +1531,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide I actually want people to leave with. Public benchmarks narrow the field to three or four candidates; after that, only our own labelled queries can tell us anything. And note the cold-start link — on a new tenant we cannot wait for click data, so the offline eval set is not a nice-to-have piece of ML hygiene, it is the only measuring instrument that exists on day one. Building it is product work, not research work.</div>
 </section>
-<!-- ============ 37 · evaluation · 4 · loop back to infrastructure ============ -->
+<!-- ============ 38 · evaluation · 4 · loop back to infrastructure ============ -->
 <section class="slide" data-t="Which is why we own the serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Back to infrastructure</div>
@@ -1521,7 +1578,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Close the loop back to part three. The whole self-hosting argument was framed as sovereignty, and it is — but this is the second half of the return on it. Because we run the models, we can pull a new checkpoint on Monday, re-embed a sample of a customer's corpus on Tuesday and have a number on Wednesday. A hosted API gives you none of that: you cannot benchmark what you cannot re-index, and you cannot re-index a corpus you are not allowed to send. Sovereignty and the ability to keep improving turn out to be the same piece of infrastructure.</div>
 </section>
-<!-- ============ 38 · open-ended finish ============ -->
+<!-- ============ 39 · open-ended finish ============ -->
 <section class="slide section tight" data-t="What all of this is for">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this goes</div>
   <h1>An agent searching a DAM<br>needs <span style="color:var(--accent)">all of it</span></h1>
