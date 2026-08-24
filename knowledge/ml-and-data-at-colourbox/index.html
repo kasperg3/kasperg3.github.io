@@ -25,15 +25,8 @@
   <div class="notes">Structural draft. The flow is right; the specifics still need to come out of the source deck.</div>
 </section>
 
-<!-- ============ 2 ============ -->
-<section class="slide section" data-t="ML and data at Colourbox">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part one</div>
-  <h1>ML and data at Colourbox</h1>
-  <p class="sub">With Skyfish at its core.</p>
-</section>
 
-<!-- ============ 3 ============ -->
+<!-- ============ 2 ============ -->
 <section class="slide" data-t="Two products, two retrieval problems">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The landscape</div>
@@ -64,7 +57,7 @@
   <div class="notes">This distinction drives every later architecture decision — recall-oriented browsing versus precision-oriented lookup. Make it early and refer back to it.</div>
 </section>
 
-<!-- ============ 4 ============ -->
+<!-- ============ 3 ============ -->
 <section class="slide" data-t="The cold start problem">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The hard part</div>
@@ -96,7 +89,7 @@
   <div class="notes">This is the strategic argument for the whole ML investment. If they only remember one slide from part one, make it this one.</div>
 </section>
 
-<!-- ============ 5 · new: the open-data gap ============ -->
+<!-- ============ 4 · new: the open-data gap ============ -->
 <section class="slide" data-t="The open data isn't there either">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The starting point</div>
@@ -112,9 +105,9 @@
             consortium building models and, just as importantly, curating the corpora behind them.</li>
           <li style="font-size:22px"><strong>Danish Gigaword</strong> — a deliberately broad open
             Danish text corpus, spread across domains rather than scraped from one.</li>
-          <li style="font-size:22px"><strong>ScandEval</strong> and the <strong>Scandinavian Embedding
-            Benchmark</strong> — the closest thing we have to honest Nordic evaluation, the latter now
-            feeding into MTEB.</li>
+          <li style="font-size:22px"><strong>MTEB</strong> — the Scandinavian Embedding Benchmark has
+            moved into it, so the Nordic retrieval tasks and their leaderboard now sit inside MTEB
+            rather than beside it. ScandEval draws on much of the same task pool.</li>
           <li style="font-size:22px"><strong>The Nordic Pile</strong> and the National Library of
             Norway's <strong>NB AI-Lab</strong> — the same work, one border over.</li>
         </ul>
@@ -144,7 +137,7 @@
   <div class="notes">Be generous about the Danish projects — several people in this room will know them, and the argument is stronger if it is clearly not a complaint about Danish NLP. The point is a modality and task gap, not a language-resource gap.</div>
 </section>
 
-<!-- ============ 6 · new: build it ourselves ============ -->
+<!-- ============ 5 · new: build it ourselves ============ -->
 <section class="slide" data-t="So we build the data ourselves">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The way out</div>
@@ -179,7 +172,7 @@
   <div class="notes">This is the hinge of part one. Everything after it — the modality mix, the model choice, the eval design — is downstream of knowing the corpus. Say the last line slowly.</div>
 </section>
 
-<!-- ============ 7 · new: know what you store ============ -->
+<!-- ============ 6 · new: know what you store ============ -->
 <section class="slide" data-t="Know what you store and serve">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Know your corpus</div>
@@ -333,7 +326,7 @@
   <div class="notes">Point at the tiles rather than reading them out. If the room is Danish, these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity, which is the argument for a representation that can hold structure — the next few slides.</div>
 </section>
 
-<!-- ============ 8 · new: the bias trap ============ -->
+<!-- ============ 7 · new: the bias trap ============ -->
 <section class="slide" data-t="The trap in our own query logs">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The tradeoff without data</div>
@@ -374,7 +367,7 @@
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
 </section>
 
-<!-- ============ 9 ============ -->
+<!-- ============ 8 ============ -->
 <section class="slide section" data-t="EU sovereignty">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
@@ -382,7 +375,7 @@
   <p class="sub">Where the weights come from, and where they run.</p>
 </section>
 
-<!-- ============ 10 ============ -->
+<!-- ============ 9 ============ -->
 <section class="slide" data-t="The open models are mostly not European">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The awkward fact</div>
@@ -409,7 +402,7 @@
   <div class="notes">Be honest here — pretending there are EU-native models at frontier quality for every task would not survive questions. The defensible claim is about processing and data residency, not about the weights' passport.</div>
 </section>
 
-<!-- ============ 11 · new: what "open" actually means ============ -->
+<!-- ============ 10 · new: what "open" actually means ============ -->
 <section class="slide" data-t="Three kinds of &quot;open&quot;">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Vocabulary</div>
@@ -463,7 +456,7 @@
   <div class="notes">Flag clearly that the third column is an opinion, not a standard — someone in the room may hold the opposite view and it is a legitimate disagreement. The defensible core is the previous slide's argument: processing location and data residency, not the weights' passport.</div>
 </section>
 
-<!-- ============ 12 ============ -->
+<!-- ============ 11 ============ -->
 <section class="slide" data-t="Why customers keep asking">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The commercial case</div>
@@ -495,7 +488,7 @@
   <div class="notes">Anecdotes land better than assertions here. Bring one real customer conversation if it can be shared.</div>
 </section>
 
-<!-- ============ 13 ============ -->
+<!-- ============ 12 ============ -->
 <section class="slide section" data-t="Architecture and self-hosted inference">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part three</div>
@@ -503,7 +496,7 @@
   <p class="sub">What it actually takes to run this ourselves.</p>
 </section>
 
-<!-- ============ 14 ============ -->
+<!-- ============ 13 ============ -->
 <section class="slide" data-t="The serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure</div>
@@ -537,7 +530,7 @@
   <div class="notes">Resist a stack-diagram-with-fourteen-boxes. The point is that engine choice follows workload shape, and both stay on our metal.</div>
 </section>
 
-<!-- ============ 15 · transplanted from the primer · slide 2 ============ -->
+<!-- ============ 14 · transplanted from the primer · slide 2 ============ -->
 <section class="slide" data-t="Resetting the baseline">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Orientation</div>
@@ -591,7 +584,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Keep this tight. It is a shared-vocabulary slide, not an argument. The argument starts next.</div>
 </section>
-<!-- ============ 16 · transplanted from the primer · slide 3 ============ -->
+<!-- ============ 15 · transplanted from the primer · slide 3 ============ -->
 <section class="slide" data-t="Why do DAM users still search by filename?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
@@ -607,7 +600,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Ask the room to guess before advancing. Most people answer "infra" — which is half right, and the other half is the interesting half.</div>
 </section>
-<!-- ============ 17 · transplanted from the primer · slide 4 ============ -->
+<!-- ============ 16 · transplanted from the primer · slide 4 ============ -->
 <section class="slide" data-t="Filename search is hard to beat">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
@@ -643,7 +636,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">The right-hand column is the part people underrate. Spend your time there.</div>
 </section>
-<!-- ============ 18 · transplanted from the primer · slide 5 ============ -->
+<!-- ============ 17 · transplanted from the primer · slide 5 ============ -->
 <section class="slide" data-t="One vector has to carry every clue">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The bottleneck</div>
@@ -674,7 +667,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is not "a semantic question about authentication" — it is five constraints that all have to survive. This is the bottleneck to keep referring back to.</div>
 </section>
-<!-- ============ 19 · transplanted from the primer · slide 6 ============ -->
+<!-- ============ 18 · transplanted from the primer · slide 6 ============ -->
 <section class="slide" data-t="Just increase the dimension?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
@@ -722,7 +715,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">The paper also proves a mathematical capacity limit; skip that here and stay with the intuition.</div>
 </section>
-<!-- ============ 20 · transplanted from the primer · slide 7 ============ -->
+<!-- ============ 19 · transplanted from the primer · slide 7 ============ -->
 <section class="slide deep-dive" data-t="Bigger vectors plateau">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
@@ -752,7 +745,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Land the one-line version: capacity is not structure.</div>
 </section>
-<!-- ============ 21 · transplanted from the primer · slide 8 ============ -->
+<!-- ============ 20 · transplanted from the primer · slide 8 ============ -->
 <section class="slide" data-t="Exact match is a gift, but it's sparse">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Is exact match all we need?</div>
@@ -787,7 +780,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be explicit that this is not a pro-lexical slide. It sets up the "we want both" framing that late interaction answers.</div>
 </section>
-<!-- ============ 22 · transplanted from the primer · slide 9 ============ -->
+<!-- ============ 21 · transplanted from the primer · slide 9 ============ -->
 <section class="slide" data-t="But wait — what's this?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
@@ -819,7 +812,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of the talk. Pause before turning the page.</div>
 </section>
-<!-- ============ 23 · transplanted from the primer · slide 10 ============ -->
+<!-- ============ 22 · transplanted from the primer · slide 10 ============ -->
 <section class="slide" data-t="Late interaction sits in the middle">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Escaping the ceiling</div>
@@ -827,56 +820,39 @@
   <p class="sub">It keeps the bi-encoder's offline document encoding, but lets the query interact with
   local document vectors during scoring.</p>
   <div class="body">
-    <figure style="flex:1;align-items:center;justify-content:center">
+    <figure style="flex:1;min-height:0;align-items:center;justify-content:center">
       <img class="zoom" src="assets/spectrum.svg" alt="Bi-encoder, late interaction and cross-encoder compared">
     </figure>
+    <div class="cols" style="margin-top:26px;flex:none">
+      <div class="card accent grow">
+        <h3>That interaction has a name: <span style="color:var(--accent)">MaxSim</span></h3>
+        <p>For every <strong>query token</strong>, find its single best-matching unit of the asset —
+        then sum those best matches. One maximum per query token, no pooling and no averaging, so a
+        rare local clue survives instead of being averaged away.</p>
+      </div>
+      <div class="card grow">
+        <h3>And for us the unit is a <span class="grad">patch</span></h3>
+        <p>Text keeps one vector per token; we keep one per <strong>image patch</strong>. Same
+        operator, different unit — which is why the same retrieval path runs unchanged over photos,
+        PDF pages and video frames.</p>
+      </div>
+    </div>
   </div>
   <ul class="sources">
     <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT</a></li>
     <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction</a></li>
   </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The key words are "don't pool" and "delay". Everything deployable about this approach comes from documents still being encoded offline.</div>
-</section>
-<!-- ============ 24 · transplanted from the primer · slide 11 ============ -->
-<section class="slide" data-t="Reintroducing MaxSim">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The operator</div>
-  <h1 class="t">Reintroducing MaxSim</h1>
-  <p class="sub">For every query token, find its best-matching document token — then sum those best
-  matches.</p>
-  <div class="body">
-    <figure style="flex:1;align-items:center;justify-content:center">
-      <img class="zoom" src="assets/maxsim-tokens.svg" alt="Query tokens matched against an asset's Norwegian caption and OCR tokens, best match per row outlined">
-    </figure>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Read the heatmap row by row: each row is a query token, each column a token from the asset's caption or OCR text. For each row MaxSim keeps only the best cell, then sums. Point at row 2: the customer typed English, the asset was captioned in Norwegian. Exact match scores zero there — this is the multilingual case our customers actually live in.</div>
-</section>
-<!-- ============ 25 · our twist · MaxSim over patches ============ -->
-<section class="slide" data-t="MaxSim, over patches">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The operator, our version</div>
-  <h1 class="t">And for us, over <span class="grad">patches</span></h1>
-  <p class="sub">Same operator, different unit. For every query token, take its best-matching
-  <strong>image patch</strong> — then sum those best matches.</p>
-  <div class="body">
-    <figure style="flex:1;align-items:center;justify-content:center">
-      <img class="zoom" src="assets/maxsim-patches.svg" alt="Query tokens each matched to their best patch in a 6 by 4 patch grid over one asset">
-    </figure>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2407.01449">ColPali: Efficient Document Retrieval with Vision Language Models</a></li>
-    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Contextualized Late Interaction over BERT</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Two beats. Max keeps a rare local clue alive where mean pooling averages it away. And patches are why this generalises straight from images to PDF pages — a page is an image with structure, which is the DAM case.</div>
+  <div class="notes">The key words are "don't pool" and "delay". Everything deployable about this approach comes from documents still being encoded offline.
+
+Define MaxSim carefully here, because every later slide leans on it. Walk one query token: it looks at every unit of the asset, keeps only its best match, and contributes that one number. Sum over query tokens and that is the score.
+
+The example worth saying out loud is the multilingual one: the customer types English, the asset was captioned in Norwegian. Exact match scores zero there, and a pooled vector has already blurred it. MaxSim can still find the one unit that carries the meaning.
+
+The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
 </section>
 
-<!-- ============ 26 · transplanted from the primer · slide 12 ============ -->
+<!-- ============ 23 · transplanted from the primer · slide 12 ============ -->
 <section class="slide" data-t="The useful overlap">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this lands</div>
@@ -918,7 +894,7 @@
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">End by pointing people at the original for the field cases and production objections. This primer deliberately stops here.</div>
 </section>
-<!-- ============ 27 ============ -->
+<!-- ============ 24 ============ -->
 <section class="slide section" data-t="Search in our systems">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part four</div>
@@ -926,7 +902,7 @@
   <p class="sub">Where each of these actually ends up.</p>
 </section>
 
-<!-- ============ 28 ============ -->
+<!-- ============ 25 ============ -->
 <section class="slide" data-t="Stock: visual retrieval">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Product one</div>
@@ -958,7 +934,7 @@
   <div class="notes">Tie this back to slide 3: recall-oriented product, recall-oriented architecture.</div>
 </section>
 
-<!-- ============ 29 ============ -->
+<!-- ============ 26 ============ -->
 <section class="slide" data-t="DAM: mixed modality, mostly visual">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Product two</div>
@@ -996,19 +972,8 @@
 </section>
 
 <!-- ==================== MULTIMODAL ==================== -->
-<!-- ============ 30 · mm 1 · section ============ -->
-<section class="slide section" data-t="Field case: the evidence is in the asset">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Field case</div>
-  <h1>The evidence is in the asset, not the caption</h1>
-  <p class="sub">Text makes exact matching obvious. Visual documents make the compression problem
-  obvious — and a DAM is mostly visual documents.</p>
-  <div class="notes">This is the section where the DAM argument gets its teeth. Everything before this was about the shape of the retrieval problem; this is about what happens when the thing you are searching is a picture of a page.
 
-Adapted from Amélie Chatelain's second field case. Her framing: code makes exact-ish matches obvious, visual documents make compression obvious. Ours is the same claim with our assets in it.</div>
-</section>
-
-<!-- ============ 31 · mm 2 · the painting ============ -->
+<!-- ============ 27 · mm 2 · the painting ============ -->
 <section class="slide" data-t="A picture is worth a thousand words · the painting">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Why visual retrieval at all</div>
@@ -1056,7 +1021,7 @@ A traditional text pipeline cannot touch an image without a captioning model in 
 Bring it home: this is our metadata situation with the labels changed. Contributor keywords on stock, near-nothing on a new DAM tenant. Direct visual retrieval keeps regions of the asset available for matching instead of forcing everything through a text bottleneck first.</div>
 </section>
 
-<!-- ============ 32 · mm 3 · the map ============ -->
+<!-- ============ 28 · mm 3 · the map ============ -->
 <section class="slide" data-t="A picture is worth a thousand words · the map">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Why visual retrieval at all</div>
@@ -1105,100 +1070,9 @@ The last card is the one worth pausing on. We tend to treat OCR and captioning a
 Note in passing that this happens to be an EU policy report — the kind of document a public-sector tenant would want indexed without it leaving European infrastructure.</div>
 </section>
 
-<!-- ============ 33 · mm 4 · deep dive · the bar chart ============ -->
-<section class="slide deep-dive" data-t="The bar chart · visual evidence">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Deep dive · why visual retrieval</div>
-  <h1 class="t sm">Comparing two bars is not a text operation</h1>
-  <p class="sub">A third case, because it is the one where the text pipeline looks most obviously
-  hopeless.</p>
-  <div class="body">
-    <div class="cols">
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" style="flex:1;min-height:0" src="assets/mm-bar-chart.webp" alt="Stacked bar chart, CDER Orphan Drug Approvals by fiscal year 2005 to 2019, three coloured series per bar">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a> · page from
-          <a href="https://arxiv.org/abs/2601.08620">ViDoRe v3</a></figcaption>
-      </figure>
-      <div class="stack" style="flex:0 0 620px;gap:16px">
-        <div class="card solid">
-          <div class="cap" style="margin:0 0 10px">the query</div>
-          <p style="font:600 italic 26px/1.35 var(--serif);color:var(--ink)">"is there a rise in CDER
-          NME submissions from 2007 to 2008?"</p>
-        </div>
-        <div class="card" style="border-color:var(--accent-2)">
-          <h3 style="color:var(--accent-2)">What OCR gives us</h3>
-          <p>Axis labels and a legend. To answer the question it would have to <strong>estimate the
-          height of every bar</strong> and rebuild the chart as a table. Possible in theory, expensive
-          and brittle in practice.</p>
-        </div>
-        <div class="card dark">
-          <h3>In pixel space it is almost trivial</h3>
-          <p>The 2007 and 2008 bars sit side by side; their segments can simply be read against each
-          other, with no number ever recovered.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2601.08620">ViDoRe v3 · Loison et al., 2026</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Optional slide. Skip if time is short — the map already makes the argument.
 
-Keep this one if the room is technical, because it is the cleanest statement of the principle: chart-to-table extraction is a lossy, expensive detour around a comparison that is directly available in the image. Hold onto this chart, we are going to use it again in a minute to look inside the model.</div>
-</section>
 
-<!-- ============ 34 · mm 5 · deep dive · installation diagrams ============ -->
-<section class="slide deep-dive" data-t="Installation diagrams · visual structure">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Deep dive · why visual retrieval</div>
-  <h1 class="t sm">Sometimes the signal is the layout itself</h1>
-  <p class="sub">Partly textual, partly visual, partly <strong>structural</strong> — and the structural
-  part is the part OCR throws away.</p>
-  <div class="body">
-    <div class="cols">
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" style="flex:1;min-height:0" src="assets/mm-diagrams-page.webp" alt="A technical manual page: a grid of thirteen boxed line drawings of pipe bends and expansion joints, each with a small caption">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a> · page from
-          <a href="https://arxiv.org/abs/2601.08620">ViDoRe v3</a></figcaption>
-      </figure>
-      <div class="stack" style="flex:0 0 620px;gap:16px">
-        <div class="card solid">
-          <div class="cap" style="margin:0 0 10px">the query</div>
-          <p style="font:600 italic 26px/1.35 var(--serif);color:var(--ink)">"number of hose
-          installation diagrams · pressure systems manual"</p>
-        </div>
-        <div class="card" style="border-color:var(--accent-2)">
-          <h3 style="color:var(--accent-2)">What OCR gives us</h3>
-          <p>A bag of fragments — <code>U BEND</code>, <code>OFFSET</code>, <code>CROSS OVER</code> —
-          with no way to tell which fragments belong to <em>separate</em> diagrams. Without layout
-          detection, "how many" is unanswerable.</p>
-        </div>
-        <div class="card dark">
-          <h3>Why this one is ours</h3>
-          <p>Manuals, spec sheets, brand guidelines, storyboards — pages whose meaning is the
-          arrangement of boxes on them. Our nearest equivalent: <span class="todo">a municipal customer's lokalplan
-          appendices</span> — site plans, elevations, and cable routing, all as drawings.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2601.08620">ViDoRe v3 · Loison et al., 2026</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Optional slide. The reason to keep it is that it moves the argument from "charts" to "layout", which is the more general and more common case in a DAM.
-
-A visual page retriever can use the repeated diagram regions and their local labels directly — thirteen boxes that look alike, each with its own caption. That repetition is a first-class visual feature and it survives to scoring intact.
-
-If you can name a real Skyfish customer document type here instead of the generic list, do — it lands much harder.</div>
-</section>
-
-<!-- ============ 35 · mm 6 · document screenshot embedding ============ -->
+<!-- ============ 29 · mm 6 · document screenshot embedding ============ -->
 <section class="slide" data-t="One page, one vector">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Single-vector, but visual</div>
@@ -1259,13 +1133,13 @@ Then land the catch. We spent the whole first half of the talk arguing that pool
 Not a strawman, by the way — this is a real family of models and for many corpora it is good enough. It is the right default when the index budget is tight.</div>
 </section>
 
-<!-- ============ 36 · mm 7 · from tokens to patches ============ -->
+<!-- ============ 30 · merged · from tokens to patches + we can see the match ============ -->
 <section class="slide" data-t="From tokens to patches · ColPali">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Going multi-vector · ColPali</div>
   <h1 class="t">From tokens to patches, on a page</h1>
   <p class="sub">The operator we already built. Cut the page into a <strong>grid of patches</strong>,
-  keep one vector per patch, and let MaxSim pick the best patch per query token.</p>
+  keep one vector per patch — and we can then see <em>where</em> the score came from.</p>
   <div class="body">
     <div class="cols">
       <figure class="grow" style="min-height:0">
@@ -1275,21 +1149,28 @@ Not a strawman, by the way — this is a real family of models and for many corp
           Field Guide</em></a> · after Faysse et al.,
           <a href="https://arxiv.org/abs/2407.01449">ColPali</a></figcaption>
       </figure>
-      <div class="stack" style="flex:0 0 620px;gap:16px">
-        <div class="card solid">
-          <h3>Same idea, new geometry</h3>
-          <p>Text keeps token vectors along a <em>sequence</em>; a page keeps them across a
-          <em>two-dimensional layout</em>. Only the local unit changed.</p>
+      <div class="stack" style="flex:0 0 640px;gap:14px">
+        <div class="card solid" style="padding:22px 28px">
+          <h3 style="font-size:24px">Same idea, new geometry</h3>
+          <p style="font-size:20px">Text keeps token vectors along a <em>sequence</em>; a page keeps
+          them across a <em>two-dimensional layout</em>. Pages, photos and video frames are all patch
+          grids — one pipeline, not one per file type.</p>
         </div>
-        <div class="card accent">
-          <h3>No page-level bottleneck</h3>
-          <p>The year labels, the chart title and the legend land in different patches. They no longer
-          compete for room inside one pooled representation.</p>
+        <div class="card accent" style="padding:22px 28px">
+          <div class="cap" style="margin:0 0 8px">so let's ask one</div>
+          <p style="font:600 italic 24px/1.3 var(--serif);color:var(--ink)">"is there a rise in CDER
+          NME submissions from 2007 to 2008?"</p>
+          <div class="chips" style="margin-top:12px">
+            <span class="chip on">CDER</span><span class="chip on">NME</span>
+            <span class="chip on">2007</span><span class="chip on">2008</span>
+          </div>
+          <p style="font-size:20px;margin-top:12px">Which regions <em>should</em> it notice? Three
+          unrelated parts of one page.</p>
         </div>
-        <div class="card dark">
-          <h3>And it is one pipeline</h3>
-          <p>PDF page, photo, video frame — all patch grids. One retrieval path, not one per file
-          type.</p>
+        <div class="card dark" style="padding:22px 28px">
+          <h3 style="font-size:24px">And we can show our work</h3>
+          <p style="font-size:20px">Scoring is per query token against per patch, so the match can be
+          highlighted on the page.</p>
         </div>
       </div>
     </div>
@@ -1299,62 +1180,16 @@ Not a strawman, by the way — this is a real family of models and for many corp
     <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Contextualized Late Interaction over BERT</a></li>
   </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Short slide — we already did the work. Point back at the MaxSim-over-patches diagram from part three and say: that was this, and here it is on a real page.
+  <div class="notes">We already did the operator work back at the late-interaction slide — this is that same MaxSim, on a real page. The only genuinely new thing is the geometry: a sequence of token vectors becomes a grid of patch vectors. Same encoder-offline, same scoring, same reason it works — local evidence stays independently addressable.
 
-The only genuinely new thing is the geometry. Late interaction over text keeps a sequence of token vectors; ColPali keeps a grid of patch vectors. Same encoder-offline, same MaxSim at query time, same reason it works: local evidence stays independently addressable.
+The first card carries the strategic payoff and is worth saying explicitly, because it is what justifies the index cost: one representation for images, PDF pages and video frames means one pipeline instead of four.
 
-The third card is the strategic payoff and worth saying explicitly, because it is the argument that justifies the index cost: one representation for images, PDF pages and video frames means one pipeline instead of four.</div>
+Then make the room commit before advancing. Read the query out, ask which regions of the page they would want the retriever to look at, and let someone actually answer. The next two slides show the real heatmaps one token at a time, and the payoff is much better if people have guessed first.
+
+The explainability point in the dark card is not decoration — DAM customers ask for it, and a single pooled vector fundamentally cannot give it to them.</div>
 </section>
 
-<!-- ============ 37 · mm 8 · query-to-patch setup ============ -->
-<section class="slide" data-t="Query-to-patch matches · setup">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Interpretability</div>
-  <h1 class="t">We can see where the score came from</h1>
-  <p class="sub">Because scoring is per query token against per patch, a match can be
-  <strong>highlighted on the page</strong> — the visual equivalent of showing which words matched.</p>
-  <div class="body">
-    <div class="cols">
-      <div class="stack" style="flex:0 0 660px;gap:16px">
-        <div class="card solid">
-          <div class="cap" style="margin:0 0 12px">the query</div>
-          <p style="font:600 italic 26px/1.35 var(--serif);color:var(--ink)">"is there a rise in CDER
-          NME submissions from 2007 to 2008?"</p>
-          <div class="chips" style="margin-top:18px">
-            <span class="chip on">CDER</span><span class="chip on">NME</span>
-            <span class="chip on">2007</span><span class="chip on">2008</span>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Before we look — what should it notice?</h3>
-          <p>The <strong>two year labels</strong>, the <strong>bars above them</strong>, and the
-          <strong>title and legend</strong>. Three unrelated regions of one page.</p>
-        </div>
-        <div class="card dark">
-          <h3>Why we care commercially</h3>
-          <p>"Why did this rank first?" is a support question. Patch highlighting answers it with a
-          picture instead of a shrug.</p>
-        </div>
-      </div>
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" style="flex:1;min-height:0" src="assets/mm-bar-chart.webp" alt="The CDER bar chart again, before any match highlighting is shown">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a> · after
-          <a href="https://arxiv.org/abs/2407.01449">ColPali</a></figcaption>
-      </figure>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2407.01449">ColPali · Faysse et al., 2024</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Make the room commit before advancing. Ask which regions of this page they would want the retriever to look at, and let someone answer. The next two slides show the actual heatmaps one token at a time, and the payoff is much better if people have guessed first.
-
-The commercial framing in the bottom card is not decoration. Explainable ranking is something DAM customers ask for and something a single pooled vector fundamentally cannot give them.</div>
-</section>
-
-<!-- ============ 38 · mm 9 · patch match: 2008 ============ -->
+<!-- ============ 31 · mm 9 · patch match: 2008 ============ -->
 <section class="slide" data-t="Query-to-patch matches · 2008">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Interpretability</div>
@@ -1398,7 +1233,7 @@ The commercial framing in the bottom card is not decoration. Explainable ranking
 Say the quiet part: nobody trained this model on "highlight the axis". The localisation falls out of keeping one vector per patch and never pooling them. Interpretability here is a free side effect of the architecture, not a feature someone bolted on.</div>
 </section>
 
-<!-- ============ 39 · mm 10 · patch match: CDER ============ -->
+<!-- ============ 32 · mm 10 · patch match: CDER ============ -->
 <section class="slide" data-t="Query-to-patch matches · CDER">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Interpretability</div>
@@ -1442,164 +1277,17 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
 Say it plainly: the reason multi-vector wins here is not that it is a bigger model. It is that the score is allowed to be assembled from several unrelated places on the page, and pooling is not.</div>
 </section>
 
-<!-- ============ 40 · mm 11 · ViDoRe v3 ============ -->
-<section class="slide" data-t="Dominating · ViDoRe v3">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Benchmarks · visual retrieval</div>
-  <h1 class="t">Not just competing — <span class="grad">dominating</span></h1>
-  <p class="sub">ViDoRe v3 · model size against average nDCG@10, top twenty entries.</p>
-  <div class="body">
-    <div class="cols">
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" style="flex:1;min-height:0" src="assets/mm-vidore-scatter.webp" alt="Scatter plot of ViDoRe v3 average nDCG at 10 against model parameters on a log scale. Late interaction models occupy nearly every position in the top twenty; the handful of dense models sit several points below same-size late interaction models">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a> · from the
-          <a href="https://mteb-leaderboard.hf.space/benchmark/ViDoRe(v3)">ViDoRe v3 leaderboard</a>
-          (<a href="https://arxiv.org/abs/2601.08620">Loison et al., 2026</a>)</figcaption>
-      </figure>
-      <div class="stack" style="flex:0 0 560px;gap:16px">
-        <div class="card solid">
-          <h3>The top twenty is essentially all late interaction</h3>
-          <p>On text benchmarks these models punch above their weight. Here they own the board.</p>
-        </div>
-        <div class="card">
-          <h3>The dense survivors trail</h3>
-          <p>The few dense models on the list sit roughly <strong>5 nDCG@10</strong> below
-          late-interaction models of comparable size.</p>
-        </div>
-        <div class="card dark" style="border-color:var(--accent-2)">
-          <h3>Read it as a diagnosis</h3>
-          <p>A page holds more independent local evidence than a paragraph, so pooling costs
-          more.</p>
-          <p style="margin-top:8px">Our first pass on tenant PDFs moved
-          <span class="todo">0.71 → 0.79 nDCG@10</span> over <span class="todo">1,200</span> pages.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://mteb-leaderboard.hf.space/benchmark/ViDoRe(v3)">ViDoRe leaderboard</a></li>
-    <li><a href="https://arxiv.org/abs/2601.08620">ViDoRe v3 · Loison et al., 2026</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Two honest caveats to say out loud. First, there are simply fewer dense models built for visual document retrieval, so the population is skewed. Second, leaderboard numbers are not our numbers.
 
-But the shape still tells us something we can act on: within the same size class, the dense models lag, and they lag by more here than they do on text. That is the compression argument showing up in a benchmark rather than in a diagram.
 
-If we run ViDoRe v3 or an internal PDF-page benchmark on our own tenant data, that number belongs on this slide instead of the placeholder.</div>
-</section>
 
-<!-- ============ 41 · mm 12 · deep dive · pressure point ============ -->
-<section class="slide deep-dive" data-t="Page-level compression is a pressure point">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Deep dive · controlled comparison</div>
-  <h1 class="t">Same backbone, same data, one difference</h1>
-  <p class="sub">Leaderboards mix recipes. This is one team training both arms — the comparison that
-  actually isolates the architecture.</p>
-  <div class="body">
-    <div class="cols">
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" style="flex:1;min-height:0" src="assets/mm-pressure-point.webp" alt="Two ascending lines against backbone size on a log scale: late interaction from 58.5 to 61.9 average nDCG at 10, dense from 46.3 to 54.1, with the gap never closing">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a> · LightOn's own experiments, evaluated on eight
-          <a href="https://arxiv.org/abs/2601.08620">ViDoRe v3</a> tasks</figcaption>
-      </figure>
-      <div class="stack" style="flex:0 0 540px;gap:16px">
-        <div class="card solid">
-          <h3>Controlled</h3>
-          <p>One Qwen3.5-VL backbone family, one data recipe, eight tasks. Only the paradigm varies.</p>
-        </div>
-        <div class="card accent">
-          <h3>The gap does not close with scale</h3>
-          <p>Dense climbs 46.3 → 54.1 as the backbone grows. Late interaction starts above where dense
-          ends and stays ahead.</p>
-        </div>
-        <div class="card dark">
-          <h3>The same lesson as before</h3>
-          <p>Capacity is not structure. A bigger vision backbone does not buy back the local evidence
-          page-level pooling threw away.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
-    <li><a href="https://arxiv.org/abs/2601.08620">ViDoRe v3 · Loison et al., 2026</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Optional slide, and the most useful one in this stretch if anyone in the room is sceptical of leaderboards. Chatelain presented it as a teaser for unreleased LightOn work, so treat the exact numbers as indicative rather than published.
 
-The line to land is the third card, because it is a callback: we already saw dense recall plateau as dimension grew on LIMIT. This is the same finding in vision — scaling the backbone moves both curves up and leaves the gap intact. The deficit is structural.</div>
-</section>
-
-<!-- ============ 42 · mm 13 · section ============ -->
-<section class="slide section" data-t="Out-of-domain, long context?">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Interlude</div>
-  <h1>Out-of-domain, long context?</h1>
-  <p class="sub">Every DAM tenant's corpus is, by definition, out of domain for a public model. So this
-  interlude is not academic for us — it is the whole cold-start question again.</p>
-  <div class="notes">Deliberate detour before the production objections. Two properties of late interaction we have not argued yet: generalisation, and behaviour as documents get longer.
-
-Frame why it matters for us. We do not get to fine-tune per tenant on day one. A new customer's vocabulary — project codenames, product SKUs, internal shorthand — is out of distribution for whatever we deployed. If an architecture degrades gracefully under that shift, that is worth real money on the first search a customer runs.</div>
-</section>
-
-<!-- ============ 43 · mm 14 · 2008 still finds the right region ============ -->
-<section class="slide" data-t="'2008' still finds the right region">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The intuition · out-of-domain</div>
-  <h1 class="t">One unknown term does not poison the query</h1>
-  <p class="sub">Query: <em>"is there a rise in <span style="color:var(--accent-2)">CDER(?)
-  NME(?)</span> submissions from 2007 to <strong>2008</strong>?"</em> — suppose the model has never
-  meaningfully seen those two domain terms.</p>
-  <div class="body">
-    <div class="cols">
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" style="flex:1;min-height:0" src="assets/mm-patch-2008.webp" alt="The 2008 query token heatmap again: even with the domain terms unknown, this token still localises on the axis region">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a> · after
-          <a href="https://arxiv.org/abs/2407.01449">ColPali</a></figcaption>
-      </figure>
-      <div class="stack" style="flex:0 0 640px;gap:16px">
-        <div class="card solid" style="border-color:var(--accent-2)">
-          <h3 style="color:var(--accent-2)">Dense: one vector, one chance</h3>
-          <p>The whole query is summarised into a single point. Unfamiliar terms <strong>distort that
-          summary</strong>, and the useful clues have no independent way to contribute.</p>
-        </div>
-        <div class="card accent">
-          <h3>Late interaction: per-token routing</h3>
-          <p>If <code>CDER</code> and <code>NME</code> match nothing meaningful, they contribute little
-          and cost little. <code>2008</code> still finds its own best patch and still earns score.</p>
-        </div>
-        <div class="card dark">
-          <h3>Our version of this</h3>
-          <p>A new tenant searches <em>"Nordvik rebrand keyvisual"</em> — two of those words are
-          theirs alone.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2407.01449">ColPali · Faysse et al., 2024</a></li>
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Late Interaction Field Guide · Amélie Chatelain</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This is the architectural argument for out-of-domain robustness, and it is short. A pooled query vector has one shot at summarising the request; anything it does not understand contaminates the whole summary. Late interaction lets each token fail independently.
-
-The bottom card is the point of including this slide at all. Cold start is not only about missing metadata on the asset side — it is also about a vocabulary on the query side that no public model has seen. Graceful degradation per token is exactly the property we need on a tenant's first day.
-
-Careful not to oversell: this is an argument for degrading gracefully, not a guarantee the right page wins.</div>
-</section>
-
-<!-- ============ 44 · mm 15 · the document grows around the answer ============ -->
+<!-- ============ 33 · mm 15 · the document grows around the answer ============ -->
 <section class="slide" data-t="The document grows around the answer">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The intuition · long context</div>
   <h1 class="t">The document grows around the answer</h1>
-  <p class="sub">Turn the same intuition around: keep the query fixed and let the document get bigger.</p>
+  <p class="sub">We just watched single query tokens find their own region of a page. Turn that around:
+  keep the query fixed, and let the document grow around the answer.</p>
   <div class="body">
     <div class="cols">
       <figure class="grow" style="min-height:0">
@@ -1636,103 +1324,11 @@ Careful not to oversell: this is an argument for degrading gracefully, not a gua
 Be honest about the limits. Longer documents also bring more distractors and more chances of an accidental patch match, so this is not a promise that the right document wins. What late interaction gives us is an architectural reason to expect graceful degradation: the document can grow without forcing the answer into an ever more crowded summary.</div>
 </section>
 
-<!-- ============ 45 · mm 16 · two shifts, text ============ -->
-<section class="slide" data-t="Late interaction holds up under two shifts">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Evidence · text retrieval</div>
-  <h1 class="t">Late interaction holds up under two shifts</h1>
-  <p class="sub">Held-out languages stress the <strong>query</strong>. Long documents stress the
-  <strong>document</strong>. Both at once is the interesting cell.</p>
-  <div class="body">
-    <div class="cols">
-      <div class="stack" style="flex:0 0 700px;gap:16px">
-        <ul class="bullets">
-          <li><strong>Two models, one recipe.</strong> Same backbone, same training data, nine
-            languages — one dense, one late interaction.</li>
-          <li><strong>Evaluated on MIRACL and MLDR</strong>, split into languages the retrieval training
-            saw and languages it did not.</li>
-          <li><strong>On seen languages late interaction is already ahead;</strong> on held-out
-            languages the advantage grows — and it grows most on the long-document benchmark.</li>
-        </ul>
-        <div class="card dark">
-          <h3>Why this is our slide, not just theirs</h3>
-          <p>Our customers are Nordic and European. Assets get captioned in Norwegian and searched in
-          English, or the other way round — <span class="todo">46% da, 21% en, 14% no, 9% de, 10%
-          mixed</span>.</p>
-        </div>
-      </div>
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" style="flex:1;min-height:0" src="assets/mm-miracl-mldr.webp" alt="Grouped bars of mean lift over dense in nDCG at 10. On MIRACL, +6.0 for seen languages against +10.2 for held-out. On MLDR long documents, +22.7 seen against +30.6 held-out">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a> · LightOn multilingual DenseOn vs LateOn, lift over dense (nDCG@10)</figcaption>
-      </figure>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://huggingface.co/blog/lightonai/denseon-lateon">DenseOn and LateOn · LightOn</a></li>
-    <li><a href="https://arxiv.org/abs/2210.09984">MIRACL: A Multilingual Retrieval Dataset</a></li>
-    <li><a href="https://arxiv.org/abs/2402.03216">MLDR, in BGE M3-Embedding · Chen et al., 2024</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The controlled comparison people should remember. Same backbone, same data recipe, one architectural difference — so the gap is attributable.
 
-Read the chart as two stories. MIRACL: +6.0 lift on languages seen in retrieval training, +10.2 on held-out ones. MLDR, which is multilingual and long-document: +22.7 becomes +30.6. The advantage is bigger wherever the setting is harder.
-
-The honest caveat is that this leans on the backbone, mmBERT, having been pre-trained broadly. Late interaction does not create multilingual ability from nothing; it preserves more of what the backbone already had.
-
-Then bring it home. Multilingual is not a nice-to-have for us — it is Tuesday. A Norwegian caption and an English query is the normal case in the DAM.</div>
-</section>
-
-<!-- ============ 46 · mm 17 · same pattern, new benchmark ============ -->
-<section class="slide" data-t="The same pattern survives a new benchmark">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Evidence · visual retrieval</div>
-  <h1 class="t">The same pattern on an unseen benchmark</h1>
-  <p class="sub">A natural experiment: ViDoRe v3 was published <em>after</em> both models shipped.</p>
-  <div class="body">
-    <div class="cols">
-      <div class="stack" style="flex:0 0 680px;gap:16px">
-        <ul class="bullets">
-          <li><strong>Nomic shipped a matched pair</strong> of multimodal 3B retrievers — same backbone,
-            same data recipe, one dense and one multi-vector.</li>
-          <li><strong>On the benchmarks that existed at release</strong> — ViDoRe v1 and v2 — the
-            multi-vector model was ahead, but only modestly: +2.9 and +2.4.</li>
-          <li><strong>On v3, harder and unseen by both, the gap becomes +11.5.</strong> Other dense
-            retrievers that looked fine on v1 and v2 also fell off sharply.</li>
-        </ul>
-        <div class="card accent">
-          <h3>What we should take from it</h3>
-          <p>Public benchmark leads shrink when the distribution moves. Late interaction's lead
-          <em>grew</em> — and a DAM tenant's corpus is a distribution shift by definition.</p>
-        </div>
-      </div>
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" style="flex:1;min-height:0" src="assets/mm-nomic-vidore.webp" alt="Paired bars for Nomic 3B dense against ColNomic 3B multi-vector: 87.1 against 90.0 on ViDoRe v1, 58.8 against 61.2 on v2, and 44.3 against 55.8 on v3, where the gap widens to 11.5">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a> · from the Nomic model cards (v1, v2 · NDCG@5) and the
-          <a href="https://mteb-leaderboard.hf.space/benchmark/ViDoRe(v3)">ViDoRe v3 leaderboard</a>
-          (NDCG@10)</figcaption>
-      </figure>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://huggingface.co/nomic-ai/colnomic-embed-multimodal-3b">ColNomic Embed Multimodal 3B · model card</a></li>
-    <li><a href="https://huggingface.co/nomic-ai/nomic-embed-multimodal-3b">Nomic Embed Multimodal 3B · model card</a></li>
-    <li><a href="https://mteb-leaderboard.hf.space/benchmark/ViDoRe(v3)">ViDoRe leaderboard</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Note the axis caveat before anyone else does: v1 and v2 are NDCG@5 from the model cards, v3 is NDCG@10 from the leaderboard. The comparison that matters is dense against multi-vector within each group, not across groups.
-
-The story is the trend. Two models from the same family, same recipe. On the easier benchmarks that existed at release, the multi-vector model wins by two or three points. On a harder benchmark that arrived afterwards and neither was tuned for, it wins by 11.5.
-
-This is the last piece of the DAM argument. Every new tenant is an unseen benchmark. If a paradigm's advantage widens rather than narrows when the distribution moves, that is worth paying an index multiplier for — which is exactly the bill we already conceded earlier.</div>
-</section>
 
 <!-- ==================== ENGINEERING ==================== -->
 <!-- ============ engineering block · 1 ============ -->
-<!-- ============ 47 · adapted from her slide 36 ============ -->
+<!-- ============ 34 · adapted from her slide 36 ============ -->
 <section class="slide section" data-t="So why isn't this everywhere yet?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> From evidence to production</div>
@@ -1755,7 +1351,7 @@ This is the last piece of the DAM argument. Every new tenant is an unseen benchm
   <div class="notes">Breath slide. Name the three objections, then say plainly that we have already conceded storage — the next slides are about speed and ecosystem, which are the ones with real answers.</div>
 </section>
 
-<!-- ============ 48 · engineering block · 1 ============ -->
+<!-- ============ 35 · engineering block · 1 ============ -->
 <section class="slide" data-t="Naive MaxSim is doomed">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The speed objection</div>
@@ -1809,7 +1405,7 @@ The important reframe: no serious system implements exact MaxSim over the whole 
 Our numbers have the same shape with patches instead of tokens — I need to put the real ones in here before presenting.</div>
 </section>
 
-<!-- ============ 49 · engineering block · 2 ============ -->
+<!-- ============ 36 · engineering block · 2 ============ -->
 <section class="slide" data-t="Every fast system is a funnel">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Making it work</div>
@@ -1878,7 +1474,7 @@ I have deliberately left the stage widths blank. Her illustrative numbers were 9
 The last card matters for the next slides: there is more than one way to build stage one.</div>
 </section>
 
-<!-- ============ 50 · engineering block · 3 ============ -->
+<!-- ============ 37 · engineering block · 3 ============ -->
 <section class="slide" data-t="PLAID: coarse first, exact for survivors">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Candidate generation</div>
@@ -1948,7 +1544,7 @@ The 7× GPU / 45× CPU figure is from the 2022 paper against vanilla ColBERTv2 a
 If someone asks about MUVERA: same funnel, different stage one — it maps a multi-vector set to a single fixed-dimensional encoding so ordinary dense ANN can do candidate generation.</div>
 </section>
 
-<!-- ============ 51 · engineering block · 4 ============ -->
+<!-- ============ 38 · engineering block · 4 ============ -->
 <section class="slide" data-t="From research idea to system">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Lineage</div>
@@ -2029,7 +1625,72 @@ The two knobs are worth naming out loud because they make the funnel configurabl
 And note the CPU-first line — candidate generation on CPU keeps GPU capacity for the encoders we serve on Triton, which is where our GPU budget actually needs to go.</div>
 </section>
 
-<!-- ============ 52 · engineering block · 5 ============ -->
+<!-- ============ 39 · engineering block · where the vectors live ============ -->
+<section class="slide" data-t="Where the vectors actually live">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
+  <h1 class="t">Where the vectors actually live</h1>
+  <p class="sub">All of that funnel has to run somewhere with an API, backups and a delete endpoint.
+  For us that is <strong>Qdrant</strong>, self-hosted — and the sovereignty argument survives it.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card solid">
+        <h3>One engine, three retrieval paths</h3>
+        <p>Dense HNSW with payload filtering, learned-sparse vectors, and <strong>multivectors with a
+        MaxSim comparator</strong>. The dense first stage and the late-interaction rerank are the same
+        system, not two we have to keep consistent.</p>
+        <div class="cap">dense · sparse · multi-vector</div>
+      </div>
+      <div class="card solid">
+        <h3>The funnel becomes a query</h3>
+        <p>Prefetch generates candidates cheaply, the outer query reranks the survivors with MaxSim,
+        and quantization keeps the index affordable — the three stages we just drew, expressed as one
+        round trip instead of three services.</p>
+        <div class="cap">prefetch → rerank, one request</div>
+      </div>
+      <div class="card accent">
+        <h3>And it stays ours</h3>
+        <p>Apache-2.0, written in Rust, one binary on our own nodes — and the company behind it is
+        Berlin-based. Sovereignty here is not a clause in someone's data-processing addendum; it is a
+        process we start ourselves.</p>
+        <div class="cap">back to part two</div>
+      </div>
+    </div>
+    <div class="cols" style="margin-top:28px;flex:none">
+      <div class="card dark grow">
+        <h3>Where a dedicated service still helps</h3>
+        <p>A general store is very good at all of it and best-in-class at none. When late interaction
+        is the <em>first</em> stage over a large tenant, a purpose-built engine — FastPlaid, NextPlaid,
+        WARP — still beats it on that one axis, because the whole engine is built around that one
+        index.</p>
+      </div>
+      <div class="card grow" style="border-color:var(--accent-2)">
+        <h3 style="color:var(--accent-2)">So the rule we actually apply</h3>
+        <p>General store by default; a dedicated engine only when the multi-vector index is measurably
+        the bottleneck and the workload justifies operating a second system. Today that threshold sits
+        around <span class="todo">the largest 2 tenants</span>.</p>
+        <div class="cap">two systems is a cost, not a feature</div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://qdrant.tech/documentation/concepts/vectors/#multivectors">Qdrant · multivectors and the MaxSim comparator</a></li>
+    <li><a href="https://qdrant.tech/documentation/concepts/hybrid-queries/">Qdrant · Query API, prefetch and fusion</a></li>
+    <li><a href="https://qdrant.tech/documentation/guides/quantization/">Qdrant · scalar, product and binary quantization</a></li>
+    <li><a href="https://github.com/lightonai/next-plaid">NextPlaid · LightOn</a></li>
+    <li><a href="https://arxiv.org/abs/2501.17788">WARP: An Efficient Engine for Multi-Vector Retrieval</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">This is the slide that turns the previous three from an architecture lecture into something we operate. The funnel is not ours to invent — it is prefetch plus rerank in a query body.
+
+The reason one engine matters more than raw benchmark speed: a DAM index is mutable all day, and every extra store is another thing to keep consistent with the assets, another backup story, another delete path to get right under GDPR. Two systems is a real operational cost and should be earned.
+
+Do not oversell Qdrant against the specialised engines. On pure multi-vector first-stage throughput a purpose-built engine wins, and if that ever becomes our bottleneck we should use one — for that tenant, not for the whole product.
+
+The Berlin point is worth one sentence and no more. It is a genuine reinforcement of part two, but the substantive claim was always about self-hosting rather than the vendor's postcode.</div>
+</section>
+
+<!-- ============ 40 · engineering block · 5 ============ -->
 <section class="slide deep-dive" data-t="Sparse route: back to the inverted index">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Candidate generation · sparse</div>
@@ -2084,7 +1745,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
 </section>
 
 <!-- ==================== EVAL ==================== -->
-<!-- ============ 53 · evaluation · 1 · the model zoo ============ -->
+<!-- ============ 41 · evaluation · 1 · the model zoo ============ -->
 <section class="slide" data-t="The model zoo is expanding">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Choosing a model</div>
@@ -2122,7 +1783,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">The "there are no models" objection has quietly expired. Point at the two lower lanes: multilingual and visual documents are exactly the two things we need, and they are the two youngest lanes on the chart. Two years ago this slide would have been an argument for waiting. Now it is an argument for being able to move — because whatever we pick this quarter is not what we will be running in a year.</div>
 </section>
 
-<!-- ============ 54 · agentic search · the embedder's dilemma ============ -->
+<!-- ============ 42 · agentic search · the embedder's dilemma ============ -->
 <section class="slide" data-t="The embedder's dilemma">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agentic search · cost</div>
@@ -2167,7 +1828,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">Three things worth saying out loud beyond the numbers on screen. First, where it flips: LLMs genuinely lead on reasoning-heavy retrieval, embedding models lead on classification, and the two match on clustering, STS and pair classification — so this is a routing decision, not a winner. Second, reasoning tokens are 28–81% of LLM inference cost, and in their ablation lower reasoning budgets preserved or even improved retrieval quality — which is a knob we control because we host the serving stack. Third, the Pareto frontier holds the leading embedding models plus exactly one LLM, and that LLM buys 0.4 points for three orders of magnitude. For an agentic caller issuing many queries per task, that trade is not close.</div>
 </section>
 
-<!-- ============ 55 · evaluation · 2 · shortlist then verify ============ -->
+<!-- ============ 43 · evaluation · 2 · shortlist then verify ============ -->
 <section class="slide" data-t="Shortlist on MTEB, decide on our data">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The practical take</div>
@@ -2208,7 +1869,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">Read it as rank movement, not score movement — the absolute numbers go up for everyone because the hard, contaminated queries are gone. What matters is who overtakes whom. Two models here swap eight places without a single weight changing. That is the honest state of public retrieval benchmarks, and it is the reason a leaderboard is a shortlisting tool and nothing more. The consolation prize is real though: the architecture we want for the DAM is the one that holds up best when the benchmark stops leaking.</div>
 </section>
 
-<!-- ============ 56 · evaluation · 3 · our own eval set ============ -->
+<!-- ============ 44 · evaluation · 3 · our own eval set ============ -->
 <section class="slide" data-t="Our own eval set is the instrument">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Evaluation</div>
@@ -2256,7 +1917,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">This is the slide I actually want people to leave with. Public benchmarks narrow the field to three or four candidates; after that, only our own labelled queries can tell us anything. And note the cold-start link — on a new tenant we cannot wait for click data, so the offline eval set is not a nice-to-have piece of ML hygiene, it is the only measuring instrument that exists on day one. Building it is product work, not research work.</div>
 </section>
 
-<!-- ============ 57 · evaluation · 4 · loop back to infrastructure ============ -->
+<!-- ============ 45 · evaluation · 4 · loop back to infrastructure ============ -->
 <section class="slide" data-t="Which is why we own the serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Back to infrastructure</div>
@@ -2304,7 +1965,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">Close the loop back to part three. The whole self-hosting argument was framed as sovereignty, and it is — but this is the second half of the return on it. Because we run the models, we can pull a new checkpoint on Monday, re-embed a sample of a customer's corpus on Tuesday and have a number on Wednesday. A hosted API gives you none of that: you cannot benchmark what you cannot re-index, and you cannot re-index a corpus you are not allowed to send. Sovereignty and the ability to keep improving turn out to be the same piece of infrastructure.</div>
 </section>
 
-<!-- ============ 58 ============ -->
+<!-- ============ 46 ============ -->
 <section class="slide closing-slide" data-t="Where this leaves us">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Wrapping up</div>
   <h1>Where this leaves us</h1>
@@ -2326,7 +1987,7 @@ Why I care: if this can ride on the lexical search we already run, the increment
   <div class="notes">Stop and take questions. Expect pushback on index size for late interaction — that is the honest weak point and worth conceding directly.</div>
 </section>
 
-<!-- ============ 59 · open-ended finish ============ -->
+<!-- ============ 47 · open-ended finish ============ -->
 <section class="slide section" data-t="What all of this is for">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this goes</div>
   <h1>An agent searching a DAM<br>needs <span style="color:var(--accent)">all of it</span></h1>
