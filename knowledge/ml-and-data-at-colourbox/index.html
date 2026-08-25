@@ -342,40 +342,167 @@ The chips are the map for the next half hour. Say we come back to this exact que
   <div class="notes">Tie this back to slide 3: recall-oriented product, recall-oriented architecture.</div>
 </section>
 <!-- ============ 10 ============ -->
-<section class="slide" data-t="DAM: mixed modality, mostly visual">
+<section class="slide tight" data-t="DAM: mixed modality, mostly visual">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Product two</div>
   <h1 class="t">DAM: mixed modality, mostly visual</h1>
   <p class="sub">Images, video, PDFs and a long tail of everything else — inside one search box, over
   one customer's own material.</p>
   <div class="body">
-    <div class="grid-4">
-      <div class="card"><h3>Images</h3><p>The bulk of it, and the best-understood case. Same visual
-        encoders as stock, different precision expectations.</p></div>
-      <div class="card"><h3>Video</h3><p>Sampled to frames, which turns one asset into many vectors and
-        makes the temporal question — <em>which moment?</em> — unavoidable.</p></div>
-      <div class="card"><h3>PDFs</h3><p>Where visual document retrieval pays off: page images rather
-        than extracted text, so layout, tables and figures stay searchable.</p></div>
-      <div class="card dark"><h3>Everything else</h3><p>Office files, audio, archives, formats one
-        customer cares about deeply and nobody else has. The long tail is real.</p></div>
+    <div class="corpus">
+
+      <div class="asset">
+        <div class="thumb">
+          <svg viewBox="0 0 320 200" role="img" aria-label="A zoning map divided into coloured districts by a road and a watercourse">
+            <rect width="320" height="200" fill="var(--canvas)"/>
+            <path d="M14 14h114v72H14z" fill="var(--accent)" opacity=".24"/>
+            <path d="M146 14h160v46H146z" fill="var(--accent-3)" opacity=".22"/>
+            <path d="M146 70h72v116h-72z" fill="var(--accent-2)" opacity=".18"/>
+            <path d="M228 70h78v58h-78z" fill="var(--accent)" opacity=".14"/>
+            <path d="M14 96h114v90H14z" fill="var(--accent-3)" opacity=".12"/>
+            <path d="M228 138h78v48h-78z" fill="var(--accent-2)" opacity=".10"/>
+            <path d="M0 91h320M137 0v200" stroke="var(--ink)" stroke-opacity=".26" stroke-width="7"/>
+            <path d="M0 91h320M137 0v200" stroke="var(--canvas)" stroke-width="1.6" stroke-dasharray="9 9"/>
+            <path d="M258 12l6 22 6-22-6 5z" fill="var(--ink)" opacity=".5"/>
+          </svg>
+        </div>
+        <h4>Kommuneplaner</h4>
+        <div class="mods"><span class="mod b">geo</span><span class="mod">image</span><span class="mod c">text</span></div>
+      </div>
+
+      <div class="asset">
+        <div class="thumb">
+          <svg viewBox="0 0 320 200" role="img" aria-label="A site plan with hatched building footprints, a dashed boundary and dimension lines">
+            <rect width="320" height="200" fill="var(--canvas)"/>
+            <rect x="16" y="30" width="288" height="152" fill="none" stroke="var(--accent-3)" stroke-opacity=".55" stroke-width="1.4" stroke-dasharray="7 6"/>
+            <g stroke="var(--ink)" stroke-opacity=".55" stroke-width="1.6" fill="none">
+              <rect x="40" y="56" width="86" height="60"/><rect x="152" y="56" width="58" height="34"/>
+              <rect x="152" y="112" width="128" height="52"/><rect x="40" y="136" width="70" height="28"/>
+            </g>
+            <g stroke="var(--ink)" stroke-opacity=".26" stroke-width="1.1">
+              <path d="M44 116l82-56M60 116l66-45M76 116l50-34M92 116l34-23M108 116l18-12"/>
+              <path d="M156 164l124-50M180 164l100-40M204 164l76-31M228 164l52-21M252 164l28-11"/>
+            </g>
+            <g stroke="var(--accent-2)" stroke-opacity=".7" stroke-width="1.3">
+              <path d="M40 18h86M40 13v10M126 13v10"/>
+            </g>
+            <text x="72" y="12" font-size="11" font-family="var(--sans)" fill="var(--accent-2)">24,0 m</text>
+          </svg>
+        </div>
+        <h4>Lokalplaner</h4>
+        <div class="mods"><span class="mod b">drawing</span><span class="mod">pdf</span><span class="mod c">text</span></div>
+      </div>
+
+      <div class="asset">
+        <div class="thumb">
+          <svg viewBox="0 0 320 200" role="img" aria-label="Two dense columns of archive text under a heading, with a stamp in the margin">
+            <rect width="320" height="200" fill="var(--canvas)"/>
+            <rect x="24" y="20" width="150" height="11" rx="3" fill="var(--ink)" opacity=".55"/>
+            <rect x="24" y="38" width="94" height="7" rx="3" fill="var(--muted)" opacity=".5"/>
+            <path d="M24 56h272" stroke="var(--ink)" stroke-opacity=".22" stroke-width="1.4"/>
+            <g fill="var(--muted)" opacity=".38">
+              <rect x="24" y="68" width="126" height="6" rx="3"/><rect x="24" y="82" width="126" height="6" rx="3"/>
+              <rect x="24" y="96" width="126" height="6" rx="3"/><rect x="24" y="110" width="110" height="6" rx="3"/>
+              <rect x="24" y="128" width="126" height="6" rx="3"/><rect x="24" y="142" width="126" height="6" rx="3"/>
+              <rect x="24" y="156" width="92" height="6" rx="3"/>
+              <rect x="170" y="68" width="126" height="6" rx="3"/><rect x="170" y="82" width="126" height="6" rx="3"/>
+              <rect x="170" y="96" width="104" height="6" rx="3"/><rect x="170" y="114" width="126" height="6" rx="3"/>
+              <rect x="170" y="128" width="126" height="6" rx="3"/><rect x="170" y="142" width="126" height="6" rx="3"/>
+              <rect x="170" y="156" width="118" height="6" rx="3"/>
+            </g>
+            <rect x="236" y="16" width="62" height="30" rx="4" fill="none" stroke="var(--accent-2)" stroke-opacity=".6" stroke-width="1.5"/>
+            <path d="M246 31h42" stroke="var(--accent-2)" stroke-opacity=".55" stroke-width="4"/>
+          </svg>
+        </div>
+        <h4>Historiske arkiver</h4>
+        <div class="mods"><span class="mod c">text</span><span class="mod">scan</span><span class="mod b">ocr</span></div>
+      </div>
+
+      <div class="asset">
+        <div class="thumb">
+          <svg viewBox="0 0 320 200" role="img" aria-label="A technical drawing of a bolted flange with numbered callouts and a small parts table">
+            <rect width="320" height="200" fill="var(--canvas)"/>
+            <g stroke="var(--ink)" stroke-opacity=".5" stroke-width="1.6" fill="none">
+              <circle cx="96" cy="100" r="58"/><circle cx="96" cy="100" r="26"/>
+            </g>
+            <g fill="var(--accent-3)" opacity=".55">
+              <circle cx="96" cy="56" r="6"/><circle cx="140" cy="100" r="6"/>
+              <circle cx="96" cy="144" r="6"/><circle cx="52" cy="100" r="6"/>
+            </g>
+            <g stroke="var(--accent-2)" stroke-opacity=".6" stroke-width="1.2" fill="none">
+              <path d="M137 71l30-22M155 100h22"/>
+            </g>
+            <g fill="var(--accent-2)" opacity=".85" font-size="12" font-family="var(--sans)">
+              <text x="170" y="48">1</text><text x="181" y="104">2</text>
+            </g>
+            <g stroke="var(--ink)" stroke-opacity=".28" stroke-width="1.2" fill="none">
+              <rect x="204" y="128" width="98" height="52"/>
+              <path d="M204 145h98M204 162h98M240 128v52"/>
+            </g>
+          </svg>
+        </div>
+        <h4>Teknisk dokumentation</h4>
+        <div class="mods"><span class="mod b">drawing</span><span class="mod">pdf</span><span class="mod c">table</span></div>
+      </div>
+
+      <div class="asset">
+        <div class="thumb">
+          <svg viewBox="0 0 320 200" role="img" aria-label="A photograph of hills under a sun, with a figure in the foreground">
+            <rect width="320" height="200" fill="var(--accent-3)" opacity=".16"/>
+            <circle cx="242" cy="52" r="20" fill="var(--accent-2)" opacity=".45"/>
+            <path d="M0 132l78-52 68 44 52-30 122 62v44H0z" fill="var(--accent)" opacity=".34"/>
+            <path d="M0 160l104-40 96 34 120-22v68H0z" fill="var(--accent)" opacity=".5"/>
+            <g fill="var(--ink)" opacity=".45">
+              <circle cx="78" cy="140" r="8"/><path d="M70 152h16l6 34H64z"/>
+            </g>
+          </svg>
+        </div>
+        <h4>Produkt- og feltbilleder</h4>
+        <div class="mods"><span class="mod">image</span><span class="mod b">exif</span><span class="mod c">caption</span></div>
+      </div>
+
+      <div class="asset">
+        <div class="thumb">
+          <svg viewBox="0 0 320 200" role="img" aria-label="A video frame with a play button above an audio waveform">
+            <rect width="320" height="200" fill="var(--canvas)"/>
+            <rect x="16" y="16" width="288" height="112" rx="6" fill="var(--dark)" opacity=".82"/>
+            <path d="M144 60l40 24-40 24z" fill="#fff" opacity=".82"/>
+            <g fill="var(--accent)" opacity=".62">
+              <rect x="20" y="152" width="5" height="14" rx="2.5"/><rect x="32" y="146" width="5" height="26" rx="2.5"/>
+              <rect x="44" y="138" width="5" height="42" rx="2.5"/><rect x="56" y="150" width="5" height="18" rx="2.5"/>
+              <rect x="68" y="142" width="5" height="34" rx="2.5"/><rect x="80" y="134" width="5" height="50" rx="2.5"/>
+              <rect x="92" y="148" width="5" height="22" rx="2.5"/><rect x="104" y="140" width="5" height="38" rx="2.5"/>
+              <rect x="116" y="152" width="5" height="14" rx="2.5"/><rect x="128" y="144" width="5" height="30" rx="2.5"/>
+              <rect x="140" y="136" width="5" height="46" rx="2.5"/><rect x="152" y="150" width="5" height="18" rx="2.5"/>
+              <rect x="164" y="142" width="5" height="34" rx="2.5"/><rect x="176" y="148" width="5" height="22" rx="2.5"/>
+              <rect x="188" y="138" width="5" height="42" rx="2.5"/><rect x="200" y="152" width="5" height="14" rx="2.5"/>
+              <rect x="212" y="144" width="5" height="30" rx="2.5"/><rect x="224" y="140" width="5" height="38" rx="2.5"/>
+              <rect x="236" y="150" width="5" height="18" rx="2.5"/><rect x="248" y="142" width="5" height="34" rx="2.5"/>
+              <rect x="260" y="148" width="5" height="22" rx="2.5"/><rect x="272" y="138" width="5" height="42" rx="2.5"/>
+              <rect x="284" y="152" width="5" height="14" rx="2.5"/><rect x="296" y="146" width="5" height="26" rx="2.5"/>
+            </g>
+          </svg>
+        </div>
+        <h4>Inspektions- og mødevideo</h4>
+        <div class="mods"><span class="mod">video</span><span class="mod b">frames</span><span class="mod c">transcript</span></div>
+      </div>
+
     </div>
-    <div class="cols" style="margin-top:30px">
-      <div class="card accent grow">
-        <h3>The unifying move</h3>
-        <p>Treat almost all of it as a <strong>visual</strong> retrieval problem and the DAM stops
-        needing one pipeline per file type. A PDF page is an image with structure; a video is a
-        sequence of them.</p>
-      </div>
-      <div class="card solid grow" style="border-color:var(--accent)">
-        <h3 style="color:var(--accent)">And this is where patches pay</h3>
-        <p>Once every asset is patches, MaxSim applies unchanged — and the DAM is precisely the product
-        where a near miss is a failure. <strong>This is where late interaction earns its index
-        cost.</strong></p>
-      </div>
+    <div class="card accent" style="margin-top:20px;flex:none">
+      <h3>The unifying move</h3>
+      <p>Six things one customer calls "our files", and six different failure modes — only one of which
+      is solved by reading a caption. Treat almost all of it as a <strong>visual</strong> retrieval
+      problem and the DAM stops needing one pipeline per file type: a PDF page is an image with
+      structure, a video is a sequence of them. Once every asset is patches, <strong>MaxSim applies
+      unchanged</strong> — and the DAM is precisely the product where a near miss is a failure.</p>
     </div>
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The PDF-as-image point is the one people find surprising — it is worth an extra beat, and it is where late interaction has the clearest case.</div>
+  <div class="notes">Point at the tiles rather than reading them out. If the room is Danish these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity — this is what a customer means by "our files".
+
+Two of them are worth an extra beat. PDFs are the surprise: page images rather than extracted text, so layout, tables and figures stay searchable — and it is where late interaction has the clearest case. Video is the other: sampled to frames, one asset becomes many vectors and the temporal question, which moment, becomes unavoidable.
+
+And there is always a long tail — office files, audio, archives, formats one customer cares about deeply and nobody else has. That tail is real and it is why "one pipeline per file type" loses.</div>
 </section>
 <!-- ============ 11 · mm 2 · the painting ============ -->
 <section class="slide" data-t="A picture is worth a thousand words · the painting">
@@ -1059,7 +1186,7 @@ If someone asks "why not just pgvector" — completely reasonable at small scale
   <p class="sub">For us that database is <strong>Qdrant</strong>, self-hosted — and it is the one
   place where the retrieval argument and the sovereignty argument turn out to be the same argument.</p>
   <div class="body">
-    <svg viewBox="0 0 1680 604" width="100%" style="flex:none;height:604px" role="img" aria-label="The full path. Assets are embedded by models served on Triton and upserted into Qdrant. Inside Qdrant one query fans out to three prefetch arms — dense HNSW, sparse BM25 and late interaction — which are fused and then reranked with MaxSim on the survivors. The top hits go back to an agent served on vLLM, which answers from them."><g font-family="var(--sans)"><rect x="40" y="8" width="230" height="70" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="155" y="39" text-anchor="middle" font-size="23" font-weight="700" fill="var(--ink)">Assets</text><text x="155" y="65" text-anchor="middle" font-size="15" fill="var(--muted)">images &#183; PDF pages &#183; frames</text><rect x="360" y="8" width="290" height="70" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="505" y="39" text-anchor="middle" font-size="23" font-weight="700" fill="var(--ink)">Triton</text><text x="505" y="65" text-anchor="middle" font-size="15" fill="var(--muted)">embedding + vision models</text><path d="M282 43 H344" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M353 43 l-9 -6 v12 z" fill="var(--ink)" fill-opacity=".4"/><text x="313" y="29" text-anchor="middle" font-size="15" font-weight="600" fill="var(--faint)">embed</text><path d="M505 78 V132" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M505 141 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="520" y="112" text-anchor="start" font-size="15" font-weight="600" fill="var(--faint)">upsert vectors</text><rect x="40" y="150" width="1180" height="410" rx="20" fill="var(--accent-faint)" fill-opacity=".55" stroke="var(--accent)" stroke-opacity=".5"/><text x="72" y="194" text-anchor="start" font-size="27" font-weight="700" fill="var(--ink)">Qdrant</text><text x="72" y="218" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">self-hosted, on our own nodes</text><text x="72" y="268" text-anchor="start" font-size="14" font-weight="700" fill="var(--accent)">PREFETCH</text><rect x="250" y="246" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="276" font-size="20" font-weight="700" fill="var(--ink)">Dense &#183; HNSW</text><text x="270" y="300" font-size="15" fill="var(--muted)">semantic similarity, payload-filtered</text><rect x="250" y="330" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="360" font-size="20" font-weight="700" fill="var(--ink)">Sparse &#183; BM25</text><text x="270" y="384" font-size="15" fill="var(--muted)">exact tokens: filenames, product codes</text><rect x="250" y="414" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="444" font-size="20" font-weight="700" fill="var(--ink)">Late interaction</text><text x="270" y="468" font-size="15" fill="var(--muted)">multivectors, MaxSim over patches</text><path d="M1220 520 H196" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 520 V283" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 283 l-6 9 h12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 283 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 283 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 367 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 367 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 451 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 451 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><text x="720" y="544" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent-3)">one query, three arms in one request</text><path d="M720 283 C770 283 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 367 C770 367 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 451 C770 451 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M781 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".55"/><circle cx="810" cy="367" r="29" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="810" y="373" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">fuse</text><rect x="900" y="315" width="300" height="104" rx="14" fill="var(--card-solid)" stroke="var(--accent-2)"/><text x="1050" y="363" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)">Rerank</text><text x="1050" y="389" text-anchor="middle" font-size="15" fill="var(--muted)">MaxSim on the survivors</text><path d="M839 367 H891" stroke="var(--accent-2)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M900 367 l-9 -6 v12 z" fill="var(--accent-2)" fill-opacity=".7"/><text x="1050" y="441" text-anchor="middle" font-size="14" font-weight="600" fill="var(--accent-2)">the expensive score, last</text><rect x="1310" y="176" width="330" height="46" rx="12" fill="none" stroke="var(--accent-3)" stroke-opacity=".45" stroke-dasharray="5 4"/><text x="1475" y="205" text-anchor="middle" font-size="16" font-weight="600" fill="var(--accent-3)">a user question</text><path d="M1475 222 V292" stroke="var(--accent-3)" stroke-opacity=".45" stroke-width="2" fill="none"/><path d="M1475 301 l-6 -9 h12 z" fill="var(--accent-3)" fill-opacity=".45"/><rect x="1310" y="302" width="330" height="96" rx="14" fill="var(--card-solid)" stroke="var(--accent-3)"/><text x="1475" y="346" text-anchor="middle" font-size="24" font-weight="700" fill="var(--ink)">Agent</text><text x="1475" y="372" text-anchor="middle" font-size="15" fill="var(--muted)">served on vLLM</text><rect x="1400" y="480" width="240" height="84" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="1520" y="518" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)">Answer</text><text x="1520" y="544" text-anchor="middle" font-size="15" fill="var(--muted)">grounded in the hits</text><path d="M1200 367 H1301" stroke="var(--accent)" stroke-opacity=".8" stroke-width="2" fill="none"/><path d="M1310 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".8"/><text x="1255" y="353" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">top-k hits</text><path d="M1360 398 V520 H1220" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><text x="1300" y="470" text-anchor="start" font-size="15" font-weight="600" fill="var(--accent-3)">search</text><path d="M1560 398 V471" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M1560 480 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="1575" y="445" text-anchor="start" font-size="15" font-weight="600" fill="var(--faint)">answer</text><text x="690" y="50" text-anchor="start" font-size="14" font-weight="600" fill="var(--faint)">INDEX TIME &#183; OFFLINE, ONCE PER ASSET</text><text x="1640" y="50" text-anchor="end" font-size="14" font-weight="600" fill="var(--faint)">QUERY TIME &#183; ON EVERY QUESTION</text></g></svg>
+    <svg viewBox="0 0 1680 604" width="100%" style="flex:none;height:604px" role="img" aria-label="The full path. Assets are embedded by models served on Triton and upserted into Qdrant. Inside Qdrant one query fans out to three prefetch arms — dense HNSW, sparse BM25 and late interaction — which are fused and then reranked with MaxSim on the survivors. The top hits go back to an agent served on vLLM, which answers from them."><g font-family="var(--sans)"><rect x="40" y="8" width="272" height="88" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="176" y="40" text-anchor="middle" font-size="23" font-weight="700" fill="var(--ink)">Assets</text><rect x="88" y="56" width="32" height="26" rx="5" fill="none" stroke="var(--muted)" stroke-width="1.6"/><circle cx="97" cy="64" r="3.4" fill="var(--muted)"/><path d="M91 78 l9 -10 6 6 5 -5 6 9 z" fill="var(--muted)"/><rect x="146" y="55" width="26" height="28" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M152 62 h14 M152 68 h14 M152 74 h8" stroke="var(--muted)" stroke-width="1.6"/><rect x="202" y="57" width="34" height="24" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M210 57 v24 M228 57 v24" stroke="var(--muted)" stroke-width="1.4"/><rect x="374" y="8" width="316" height="88" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><image href="assets/nvidia.webp" x="398" y="36" width="44" height="29"/><text x="462" y="48" text-anchor="start" font-size="23" font-weight="700" fill="var(--ink)">Triton</text><text x="462" y="72" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">embedding + vision models</text><path d="M324 52 H366" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M375 52 l-9 -6 v12 z" fill="var(--ink)" fill-opacity=".4"/><text x="345" y="38" text-anchor="middle" font-size="15" font-weight="600" fill="var(--faint)">embed</text><path d="M532 96 V132" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M532 141 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="548" y="122" text-anchor="start" font-size="15" font-weight="600" fill="var(--faint)">upsert vectors</text><rect x="40" y="150" width="1180" height="410" rx="20" fill="var(--accent-faint)" fill-opacity=".55" stroke="var(--accent)" stroke-opacity=".5"/><image href="assets/qdrant.svg" x="72" y="170" width="34" height="39"/><text x="120" y="196" text-anchor="start" font-size="27" font-weight="700" fill="var(--ink)">Qdrant</text><text x="120" y="219" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">self-hosted, on our own nodes</text><text x="72" y="268" text-anchor="start" font-size="14" font-weight="700" fill="var(--accent)">PREFETCH</text><rect x="250" y="246" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="276" font-size="20" font-weight="700" fill="var(--ink)">Dense &#183; HNSW</text><text x="270" y="300" font-size="15" fill="var(--muted)">semantic similarity, payload-filtered</text><rect x="250" y="330" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="360" font-size="20" font-weight="700" fill="var(--ink)">Sparse &#183; BM25</text><text x="270" y="384" font-size="15" fill="var(--muted)">exact tokens: filenames, product codes</text><rect x="250" y="414" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="444" font-size="20" font-weight="700" fill="var(--ink)">Late interaction</text><text x="270" y="468" font-size="15" fill="var(--muted)">multivectors, MaxSim over patches</text><path d="M1220 520 H196" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 520 V283" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 283 l-6 9 h12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 283 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 283 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 367 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 367 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 451 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 451 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><text x="720" y="544" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent-3)">one query, three arms in one request</text><path d="M720 283 C770 283 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 367 C770 367 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 451 C770 451 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M781 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".55"/><circle cx="810" cy="367" r="29" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="810" y="373" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">fuse</text><rect x="900" y="315" width="300" height="104" rx="14" fill="var(--card-solid)" stroke="var(--accent-2)"/><text x="1050" y="363" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)">Rerank</text><text x="1050" y="389" text-anchor="middle" font-size="15" fill="var(--muted)">MaxSim on the survivors</text><path d="M839 367 H891" stroke="var(--accent-2)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M900 367 l-9 -6 v12 z" fill="var(--accent-2)" fill-opacity=".7"/><text x="1050" y="441" text-anchor="middle" font-size="14" font-weight="600" fill="var(--accent-2)">the expensive score, last</text><rect x="1310" y="176" width="330" height="46" rx="12" fill="none" stroke="var(--accent-3)" stroke-opacity=".45" stroke-dasharray="5 4"/><text x="1475" y="205" text-anchor="middle" font-size="16" font-weight="600" fill="var(--accent-3)">a user question</text><path d="M1475 222 V292" stroke="var(--accent-3)" stroke-opacity=".45" stroke-width="2" fill="none"/><path d="M1475 301 l-6 -9 h12 z" fill="var(--accent-3)" fill-opacity=".45"/><rect x="1310" y="302" width="330" height="96" rx="14" fill="var(--card-solid)" stroke="var(--accent-3)"/><image href="assets/vllm.webp" x="1338" y="330" width="42" height="42"/><text x="1398" y="344" text-anchor="start" font-size="24" font-weight="700" fill="var(--ink)">Agent</text><text x="1398" y="370" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">served on vLLM</text><rect x="1400" y="480" width="240" height="84" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="1520" y="518" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)">Answer</text><text x="1520" y="544" text-anchor="middle" font-size="15" fill="var(--muted)">grounded in the hits</text><path d="M1200 367 H1301" stroke="var(--accent)" stroke-opacity=".8" stroke-width="2" fill="none"/><path d="M1310 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".8"/><text x="1255" y="353" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">top-k hits</text><path d="M1360 398 V520 H1220" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><text x="1300" y="470" text-anchor="start" font-size="15" font-weight="600" fill="var(--accent-3)">search</text><path d="M1560 398 V471" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M1560 480 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="1575" y="445" text-anchor="start" font-size="15" font-weight="600" fill="var(--faint)">answer</text><text x="742" y="50" text-anchor="start" font-size="14" font-weight="600" fill="var(--faint)">INDEX TIME &#183; OFFLINE, ONCE PER ASSET</text><text x="1640" y="50" text-anchor="end" font-size="14" font-weight="600" fill="var(--faint)">QUERY TIME &#183; ON EVERY QUESTION</text></g></svg>
   </div>
   <ul class="sources">
     <li><a href="https://qdrant.tech/documentation/concepts/vectors/#multivectors">Qdrant · multivectors and the MaxSim comparator</a></li>
@@ -1264,160 +1391,7 @@ The third card generalises it: the same reasoning that says Triton for embedding
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of part one. Everything after it — the modality mix, the model choice, the eval design — is downstream of knowing the corpus. Say the last line slowly.</div>
 </section>
-<!-- ============ 32 · new: know what you store ============ -->
-<section class="slide" data-t="Know what you store and serve">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Know your corpus</div>
-  <h1 class="t">Know what you store and serve</h1>
-  <p class="sub">A DAM tenant's archive is not a folder of photographs.</p>
-  <div class="body">
-    <div class="corpus">
-
-      <div class="asset">
-        <div class="thumb">
-          <svg viewBox="0 0 320 200" role="img" aria-label="A zoning map divided into coloured districts by a road and a watercourse">
-            <rect width="320" height="200" fill="var(--canvas)"/>
-            <path d="M14 14h114v72H14z" fill="var(--accent)" opacity=".24"/>
-            <path d="M146 14h160v46H146z" fill="var(--accent-3)" opacity=".22"/>
-            <path d="M146 70h72v116h-72z" fill="var(--accent-2)" opacity=".18"/>
-            <path d="M228 70h78v58h-78z" fill="var(--accent)" opacity=".14"/>
-            <path d="M14 96h114v90H14z" fill="var(--accent-3)" opacity=".12"/>
-            <path d="M228 138h78v48h-78z" fill="var(--accent-2)" opacity=".10"/>
-            <path d="M0 91h320M137 0v200" stroke="var(--ink)" stroke-opacity=".26" stroke-width="7"/>
-            <path d="M0 91h320M137 0v200" stroke="var(--canvas)" stroke-width="1.6" stroke-dasharray="9 9"/>
-            <path d="M258 12l6 22 6-22-6 5z" fill="var(--ink)" opacity=".5"/>
-          </svg>
-        </div>
-        <h4>Kommuneplaner</h4>
-        <div class="mods"><span class="mod b">geo</span><span class="mod">image</span><span class="mod c">text</span></div>
-      </div>
-
-      <div class="asset">
-        <div class="thumb">
-          <svg viewBox="0 0 320 200" role="img" aria-label="A site plan with hatched building footprints, a dashed boundary and dimension lines">
-            <rect width="320" height="200" fill="var(--canvas)"/>
-            <rect x="16" y="30" width="288" height="152" fill="none" stroke="var(--accent-3)" stroke-opacity=".55" stroke-width="1.4" stroke-dasharray="7 6"/>
-            <g stroke="var(--ink)" stroke-opacity=".55" stroke-width="1.6" fill="none">
-              <rect x="40" y="56" width="86" height="60"/><rect x="152" y="56" width="58" height="34"/>
-              <rect x="152" y="112" width="128" height="52"/><rect x="40" y="136" width="70" height="28"/>
-            </g>
-            <g stroke="var(--ink)" stroke-opacity=".26" stroke-width="1.1">
-              <path d="M44 116l82-56M60 116l66-45M76 116l50-34M92 116l34-23M108 116l18-12"/>
-              <path d="M156 164l124-50M180 164l100-40M204 164l76-31M228 164l52-21M252 164l28-11"/>
-            </g>
-            <g stroke="var(--accent-2)" stroke-opacity=".7" stroke-width="1.3">
-              <path d="M40 18h86M40 13v10M126 13v10"/>
-            </g>
-            <text x="72" y="12" font-size="11" font-family="var(--sans)" fill="var(--accent-2)">24,0 m</text>
-          </svg>
-        </div>
-        <h4>Lokalplaner</h4>
-        <div class="mods"><span class="mod b">drawing</span><span class="mod">pdf</span><span class="mod c">text</span></div>
-      </div>
-
-      <div class="asset">
-        <div class="thumb">
-          <svg viewBox="0 0 320 200" role="img" aria-label="Two dense columns of archive text under a heading, with a stamp in the margin">
-            <rect width="320" height="200" fill="var(--canvas)"/>
-            <rect x="24" y="20" width="150" height="11" rx="3" fill="var(--ink)" opacity=".55"/>
-            <rect x="24" y="38" width="94" height="7" rx="3" fill="var(--muted)" opacity=".5"/>
-            <path d="M24 56h272" stroke="var(--ink)" stroke-opacity=".22" stroke-width="1.4"/>
-            <g fill="var(--muted)" opacity=".38">
-              <rect x="24" y="68" width="126" height="6" rx="3"/><rect x="24" y="82" width="126" height="6" rx="3"/>
-              <rect x="24" y="96" width="126" height="6" rx="3"/><rect x="24" y="110" width="110" height="6" rx="3"/>
-              <rect x="24" y="128" width="126" height="6" rx="3"/><rect x="24" y="142" width="126" height="6" rx="3"/>
-              <rect x="24" y="156" width="92" height="6" rx="3"/>
-              <rect x="170" y="68" width="126" height="6" rx="3"/><rect x="170" y="82" width="126" height="6" rx="3"/>
-              <rect x="170" y="96" width="104" height="6" rx="3"/><rect x="170" y="114" width="126" height="6" rx="3"/>
-              <rect x="170" y="128" width="126" height="6" rx="3"/><rect x="170" y="142" width="126" height="6" rx="3"/>
-              <rect x="170" y="156" width="118" height="6" rx="3"/>
-            </g>
-            <rect x="236" y="16" width="62" height="30" rx="4" fill="none" stroke="var(--accent-2)" stroke-opacity=".6" stroke-width="1.5"/>
-            <path d="M246 31h42" stroke="var(--accent-2)" stroke-opacity=".55" stroke-width="4"/>
-          </svg>
-        </div>
-        <h4>Historiske arkiver</h4>
-        <div class="mods"><span class="mod c">text</span><span class="mod">scan</span><span class="mod b">ocr</span></div>
-      </div>
-
-      <div class="asset">
-        <div class="thumb">
-          <svg viewBox="0 0 320 200" role="img" aria-label="A technical drawing of a bolted flange with numbered callouts and a small parts table">
-            <rect width="320" height="200" fill="var(--canvas)"/>
-            <g stroke="var(--ink)" stroke-opacity=".5" stroke-width="1.6" fill="none">
-              <circle cx="96" cy="100" r="58"/><circle cx="96" cy="100" r="26"/>
-            </g>
-            <g fill="var(--accent-3)" opacity=".55">
-              <circle cx="96" cy="56" r="6"/><circle cx="140" cy="100" r="6"/>
-              <circle cx="96" cy="144" r="6"/><circle cx="52" cy="100" r="6"/>
-            </g>
-            <g stroke="var(--accent-2)" stroke-opacity=".6" stroke-width="1.2" fill="none">
-              <path d="M137 71l30-22M155 100h22"/>
-            </g>
-            <g fill="var(--accent-2)" opacity=".85" font-size="12" font-family="var(--sans)">
-              <text x="170" y="48">1</text><text x="181" y="104">2</text>
-            </g>
-            <g stroke="var(--ink)" stroke-opacity=".28" stroke-width="1.2" fill="none">
-              <rect x="204" y="128" width="98" height="52"/>
-              <path d="M204 145h98M204 162h98M240 128v52"/>
-            </g>
-          </svg>
-        </div>
-        <h4>Teknisk dokumentation</h4>
-        <div class="mods"><span class="mod b">drawing</span><span class="mod">pdf</span><span class="mod c">table</span></div>
-      </div>
-
-      <div class="asset">
-        <div class="thumb">
-          <svg viewBox="0 0 320 200" role="img" aria-label="A photograph of hills under a sun, with a figure in the foreground">
-            <rect width="320" height="200" fill="var(--accent-3)" opacity=".16"/>
-            <circle cx="242" cy="52" r="20" fill="var(--accent-2)" opacity=".45"/>
-            <path d="M0 132l78-52 68 44 52-30 122 62v44H0z" fill="var(--accent)" opacity=".34"/>
-            <path d="M0 160l104-40 96 34 120-22v68H0z" fill="var(--accent)" opacity=".5"/>
-            <g fill="var(--ink)" opacity=".45">
-              <circle cx="78" cy="140" r="8"/><path d="M70 152h16l6 34H64z"/>
-            </g>
-          </svg>
-        </div>
-        <h4>Produkt- og feltbilleder</h4>
-        <div class="mods"><span class="mod">image</span><span class="mod b">exif</span><span class="mod c">caption</span></div>
-      </div>
-
-      <div class="asset">
-        <div class="thumb">
-          <svg viewBox="0 0 320 200" role="img" aria-label="A video frame with a play button above an audio waveform">
-            <rect width="320" height="200" fill="var(--canvas)"/>
-            <rect x="16" y="16" width="288" height="112" rx="6" fill="var(--dark)" opacity=".82"/>
-            <path d="M144 60l40 24-40 24z" fill="#fff" opacity=".82"/>
-            <g fill="var(--accent)" opacity=".62">
-              <rect x="20" y="152" width="5" height="14" rx="2.5"/><rect x="32" y="146" width="5" height="26" rx="2.5"/>
-              <rect x="44" y="138" width="5" height="42" rx="2.5"/><rect x="56" y="150" width="5" height="18" rx="2.5"/>
-              <rect x="68" y="142" width="5" height="34" rx="2.5"/><rect x="80" y="134" width="5" height="50" rx="2.5"/>
-              <rect x="92" y="148" width="5" height="22" rx="2.5"/><rect x="104" y="140" width="5" height="38" rx="2.5"/>
-              <rect x="116" y="152" width="5" height="14" rx="2.5"/><rect x="128" y="144" width="5" height="30" rx="2.5"/>
-              <rect x="140" y="136" width="5" height="46" rx="2.5"/><rect x="152" y="150" width="5" height="18" rx="2.5"/>
-              <rect x="164" y="142" width="5" height="34" rx="2.5"/><rect x="176" y="148" width="5" height="22" rx="2.5"/>
-              <rect x="188" y="138" width="5" height="42" rx="2.5"/><rect x="200" y="152" width="5" height="14" rx="2.5"/>
-              <rect x="212" y="144" width="5" height="30" rx="2.5"/><rect x="224" y="140" width="5" height="38" rx="2.5"/>
-              <rect x="236" y="150" width="5" height="18" rx="2.5"/><rect x="248" y="142" width="5" height="34" rx="2.5"/>
-              <rect x="260" y="148" width="5" height="22" rx="2.5"/><rect x="272" y="138" width="5" height="42" rx="2.5"/>
-              <rect x="284" y="152" width="5" height="14" rx="2.5"/><rect x="296" y="146" width="5" height="26" rx="2.5"/>
-            </g>
-          </svg>
-        </div>
-        <h4>Inspektions- og mødevideo</h4>
-        <div class="mods"><span class="mod">video</span><span class="mod b">frames</span><span class="mod c">transcript</span></div>
-      </div>
-
-    </div>
-    <p class="sub" style="margin-top:22px;max-width:1600px;font-size:23px">Six things a customer calls
-    "our files". <strong>Six different failure modes</strong> — and only one of them is solved by
-    reading a caption.</p>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Point at the tiles rather than reading them out. If the room is Danish, these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity, which is the argument for a representation that can hold structure — the next few slides.</div>
-</section>
-<!-- ============ 33 · new: the bias trap ============ -->
+<!-- ============ 32 · new: the bias trap ============ -->
 <section class="slide" data-t="The trap in our own query logs">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The tradeoff without data</div>
@@ -1458,7 +1432,7 @@ The third card generalises it: the same reasoning that says Triton for embedding
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
 </section>
 
-<!-- ============ 34 · agentic search · the counter-example ============ -->
+<!-- ============ 33 · agentic search · the counter-example ============ -->
 <section class="slide tight" data-t="And then someone trained a small one">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agentic search · the counter-example</div>
@@ -1516,13 +1490,11 @@ None of which weakens the point for us. The base model is open, the training met
 If asked "so should we train one?" — not yet. The honest sequence is the eval set first, then measure how far a good off-the-shelf embedder gets us, and only then consider training. This slide is a reason to keep the option open, not a plan.</div>
 </section>
 
-<!-- ============ 35 · evaluation · 4 · loop back to infrastructure ============ -->
+<!-- ============ 34 · evaluation · 4 · loop back to infrastructure ============ -->
 <section class="slide" data-t="Which is why we own the serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Back to infrastructure</div>
   <h1 class="t sm">Which is why we own the serving stack</h1>
-  <p class="sub">Amélie's closing advice is a list of questions to ask your vector-DB vendor. On our own
-  Triton and vLLM, they are questions <strong>we answer for ourselves</strong>.</p>
   <div class="body">
     <div class="grid-3">
       <div class="card solid">
@@ -1563,7 +1535,7 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Close the loop back to part three. The whole self-hosting argument was framed as sovereignty, and it is — but this is the second half of the return on it. Because we run the models, we can pull a new checkpoint on Monday, re-embed a sample of a customer's corpus on Tuesday and have a number on Wednesday. A hosted API gives you none of that: you cannot benchmark what you cannot re-index, and you cannot re-index a corpus you are not allowed to send. Sovereignty and the ability to keep improving turn out to be the same piece of infrastructure.</div>
 </section>
-<!-- ============ 36 · open-ended finish ============ -->
+<!-- ============ 35 · open-ended finish ============ -->
 <section class="slide section tight" data-t="What all of this is for">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this goes</div>
   <h1>An agent searching a DAM<br>needs <span style="color:var(--accent)">all of it</span></h1>
