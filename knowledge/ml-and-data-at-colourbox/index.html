@@ -419,9 +419,9 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
         is choosing on taste we cannot model.</p>
         <p style="margin-top:10px"><strong>The query is visual, not lexical.</strong> Mood, composition,
         colour, copy space — none of which anyone reliably typed into a metadata field.</p>
-        <p style="margin-top:10px"><strong>So: dense, and stay dense.</strong> The compression that
-        ruins a precise lookup costs little when the target is a whole region of the space, and
-        patch-level index cost across a shared catalogue buys us almost nothing.</p>
+        <p style="margin-top:10px"><strong>And whole-asset relevance is enough.</strong> A photograph has
+        no page 74. The compression that would ruin a precise lookup costs almost nothing when the
+        target is a whole region of the space.</p>
       </div>
       <div class="card solid grow" style="border-color:var(--accent)">
         <div class="cap" style="margin:0 0 12px">product two &#183; DAM</div>
@@ -430,10 +430,11 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
         miss is a failure rather than a compromise.</p>
         <p style="margin-top:10px"><strong>The corpus is mixed, and mostly visual.</strong> Images,
         video, PDF pages and a long tail of everything else — over one customer's own material.</p>
-        <p style="margin-top:10px"><strong>So: patches, and pay for them.</strong> Treat almost all of
-        it as visual retrieval and the DAM stops needing one pipeline per file type — a PDF page is an
-        image with structure, a video is a sequence of them, and <strong>one scoring rule covers all of
-        it</strong>. Part two is where that rule gets built.</p>
+        <p style="margin-top:10px"><strong>And the answer is somewhere inside the file.</strong> A
+        hundred-page report where the figure is on page 74; a two-hour inspection video where the moment
+        is at 41 minutes. Deciding a document is <em>relevant</em> is not the same as pointing at
+        <strong>the right place inside it</strong> — and part two is about scoring that can still
+        point.</p>
       </div>
     </div>
     <div class="corpus" style="grid-template-columns:repeat(6,1fr);margin-top:18px">
@@ -581,6 +582,8 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the comparison the rest of the talk keeps referring back to, so make it land: same search box, opposite priorities. Stock wants twenty good answers and can afford compression; the DAM wants the one right answer and cannot.
+
+The last line of the DAM card is the one that sets up part two, and it is deliberately mechanism-free — no vocabulary the room has not met yet. Say the page-74 example out loud and leave it hanging; the heatmap slides later are the answer to it, and it is much more satisfying if the question was asked here first.
 
 Point at the tiles rather than reading them out. If the room is Danish these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity — this is what a customer means by "our files".
 
@@ -820,9 +823,9 @@ The example worth saying out loud is the multilingual one: the customer types En
 The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
 </section>
 <!-- ============ 19 · mm 2 · the painting ============ -->
-<section class="slide" data-t="A picture is worth a thousand words">
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Why visual retrieval at all</div>
-  <h1 class="t">A picture is worth a thousand words</h1>
+<section class="slide" data-t="A picture is worth a thousand keywords">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Why visual retrieval at all · stock</div>
+  <h1 class="t">A picture is worth a thousand keywords</h1>
   <p class="sub">Sometimes the evidence you are looking for is a clean line of text. Sometimes it is
   simply not.</p>
   <div class="body">
