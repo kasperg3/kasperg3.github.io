@@ -684,9 +684,9 @@ Two are worth an extra beat. PDFs are the surprise: page images rather than extr
   <div class="notes">Be explicit that this is not a pro-lexical slide. It sets up the "we want both" framing that late interaction answers.</div>
 </section>
 <!-- ============ 16 · transplanted from the primer · slide 9 ============ -->
-<section class="slide" data-t="But wait — what's this?">
+<section class="slide" data-t="Surely we can just increase the dimensions?">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Something on this chart</div>
-  <h1 class="t">But wait — what's this?</h1>
+  <h1 class="t">Surely we can just increase the dimensions?</h1>
   <p class="sub">Retrieval quality against embedding dimension — and one line here does not behave like
   the other dense models.</p>
   <div class="body">
@@ -745,13 +745,22 @@ Two are worth an extra beat. PDFs are the surprise: page images rather than extr
         what to keep <strong>before it knew</strong> anyone would ask.</p>
       </div>
     </div>
+    <div class="card accent" style="margin-top:30px;flex:none">
+      <h3>So what if we gave every token its own vector?</h3>
+      <p>Five constraints, five query vectors — and the asset keeping one vector per unit of itself
+      rather than one for the whole thing. Nothing gets averaged, so <strong>"copy space on the
+      left"</strong> stays its own piece of evidence, free to be matched by the part of the image that
+      actually has copy space on the left.</p>
+    </div>
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Placed here on purpose. The chart before it showed that width is not the fix; this is why — the constraints in one query are independent of each other, so pooling loses some of them no matter how many dimensions it has to play with.
 
 This is not "a semantic question about authentication" — it is five constraints that all have to survive. Read the query out and count them on your fingers.
 
-This is the bottleneck to keep referring back to, and the next slide is the answer to it.</div>
+Then pose the last card as a genuine question rather than reading it out — the room can usually see the move once the five chips are on screen. Do not name it. "One vector per token" is the whole idea, and the next slide is where it gets its name, its three-way comparison and its cost.
+
+This is the bottleneck to keep referring back to.</div>
 </section>
 <!-- ============ 18 · transplanted from the primer · slide 10 ============ -->
 <section class="slide tight" data-t="Late interaction sits in the middle">
@@ -1065,13 +1074,6 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
             <h3 style="font-size:24px">dot products, per query</h3>
             <p style="font-size:19px">At dimension 128. Not a first-stage plan under any latency budget.</p></div>
         </div>
-        <div class="card solid" style="margin-top:22px;padding:24px 28px;border-color:var(--accent-2)">
-          <h3 style="color:var(--accent-2);font-size:24px">Our version of the same multiplication</h3>
-          <p style="font-size:19px">Patches per asset instead of tokens per passage; one tenant's
-          assets instead of passages. Same shape: ~1,030 patch vectors per page × a quarter-million
-          assets in our largest tenant × 32 query tokens ≈ <strong>8 billion</strong> dot
-          products — the same verdict, one order of magnitude down.</p>
-        </div>
       </div>
     </div>
   </div>
@@ -1086,7 +1088,7 @@ Start with the honest worst case. If you take MaxSim literally — every query t
 
 The important reframe: no serious system implements exact MaxSim over the whole corpus. MaxSim is the score we are trying to arrive at, not the plan for getting there. Everything in the next few slides is about reaching a good candidate set without paying the target cost everywhere.
 
-Our numbers have the same shape with patches instead of tokens. Two of the three are structural: ~1,030 vectors per page is the ColPali-style patch grid, and 32 query tokens is her example. The asset count is ours — confirm it against the current index before presenting, but say it as an order of magnitude, because the argument is the exponent and not the digit.</div>
+If someone asks what it looks like for us, the shape is the same with patches instead of tokens and one tenant's assets instead of passages — same verdict, an order of magnitude down. Say it, do not put it on the slide: the MS MARCO example already makes the point, and our own count is the one number in it nobody can check from the room.</div>
 </section>
 <!-- ============ 25 · engineering block · 2 ============ -->
 <section class="slide tight" data-t="Every fast system is a funnel">
@@ -1135,10 +1137,7 @@ Our numbers have the same shape with patches instead of tokens. Two of the three
           Every stage is already a feature of a modern <strong style="color:#fff">vector
           database</strong>: an approximate index like <strong style="color:#fff">HNSW</strong> for
           stage&nbsp;1, sparse keys and tenant filters for stage&nbsp;2, a MaxSim comparator for
-          stage&nbsp;3.</p>
-          <p style="margin-top:10px"><code>faiss</code> is the index; a <em>database</em> is what
-          surrounds it — filters, persistence, and add, update and delete without a rebuild. A DAM
-          changes all day, so that is what decides whether you can run it at all.</p></div>
+          stage&nbsp;3.</p></div>
       </div>
     </div>
   </div>
@@ -1157,7 +1156,7 @@ So the knob is not mysterious. It is: how many assets survive long enough to rec
 
 I have deliberately left the stage widths blank. Her illustrative numbers were 9M → 100k → 1k → top-10 on MS MARCO; ours have to come from measuring recall against candidate count on our own corpus, and I would rather show nothing than show a number I made up.
 
-The last card matters for the next slide, and it is the relief beat: this sounds like a research architecture and it is actually a config file. Map the three stages onto the three database features out loud — same order, same words.
+The last card matters for the next slide, and it is the relief beat: this sounds like a research architecture and it is actually a config file. Map the three stages onto the three database features out loud — same order, same words. If the index-versus-database distinction comes up, that is the answer to give: an index does the maths, a database is what makes it operable — filters, persistence, and add, update and delete without a rebuild, which a DAM needs all day.
 
 The filtering line deserves one beat if anyone bites. Post-filtering is the naive implementation and it silently destroys recall: you ask for the hundred nearest and then throw away the ninety-eight that belong to other tenants. Everything interesting in these systems is about keeping a filtered approximate search fast.
 
@@ -1170,7 +1169,7 @@ If someone asks "why not just pgvector" — completely reasonable at small scale
   <p class="sub">For us that database is <strong>Qdrant</strong>, self-hosted — one engine holding all
   three retrieval arms, which is what keeps a mutable index consistent with the assets.</p>
   <div class="body">
-    <svg viewBox="0 0 1680 604" width="100%" style="flex:none;height:604px" role="img" aria-label="The full path. Assets are embedded by models served on Triton and upserted into Qdrant. Inside Qdrant one query fans out to three prefetch arms — dense HNSW, sparse BM25 and late interaction — which are fused and then reranked with MaxSim on the survivors. The top hits go back to an agent built on LangChain deepagents, which prompts our self-hosted vLLM inference API and answers from them."><g font-family="var(--sans)"><rect x="40" y="8" width="272" height="88" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="176" y="40" text-anchor="middle" font-size="23" font-weight="700" fill="var(--ink)">Assets</text><rect x="88" y="56" width="32" height="26" rx="5" fill="none" stroke="var(--muted)" stroke-width="1.6"/><circle cx="97" cy="64" r="3.4" fill="var(--muted)"/><path d="M91 78 l9 -10 6 6 5 -5 6 9 z" fill="var(--muted)"/><rect x="146" y="55" width="26" height="28" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M152 62 h14 M152 68 h14 M152 74 h8" stroke="var(--muted)" stroke-width="1.6"/><rect x="202" y="57" width="34" height="24" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M210 57 v24 M228 57 v24" stroke="var(--muted)" stroke-width="1.4"/><rect x="374" y="8" width="316" height="88" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><image href="assets/nvidia.webp" x="398" y="36" width="44" height="29"/><text x="462" y="48" text-anchor="start" font-size="23" font-weight="700" fill="var(--ink)">Triton</text><text x="462" y="72" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">embedding + vision models</text><path d="M324 52 H366" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M375 52 l-9 -6 v12 z" fill="var(--ink)" fill-opacity=".4"/><text x="345" y="38" text-anchor="middle" font-size="15" font-weight="600" fill="var(--faint)">embed</text><path d="M532 96 V132" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M532 141 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="548" y="122" text-anchor="start" font-size="15" font-weight="600" fill="var(--faint)">upsert vectors</text><rect x="40" y="150" width="1180" height="410" rx="20" fill="var(--accent-faint)" fill-opacity=".55" stroke="var(--accent)" stroke-opacity=".5"/><image href="assets/qdrant.svg" x="72" y="170" width="34" height="39"/><text x="120" y="196" text-anchor="start" font-size="27" font-weight="700" fill="var(--ink)">Qdrant</text><text x="120" y="219" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">self-hosted, on our own nodes</text><text x="72" y="268" text-anchor="start" font-size="14" font-weight="700" fill="var(--accent)">PREFETCH</text><rect x="250" y="246" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="276" font-size="20" font-weight="700" fill="var(--ink)">Dense &#183; HNSW</text><text x="270" y="300" font-size="15" fill="var(--muted)">semantic similarity, payload-filtered</text><rect x="250" y="330" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="360" font-size="20" font-weight="700" fill="var(--ink)">Sparse &#183; BM25</text><text x="270" y="384" font-size="15" fill="var(--muted)">exact tokens: filenames, product codes</text><rect x="250" y="414" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="444" font-size="20" font-weight="700" fill="var(--ink)">Late interaction</text><text x="270" y="468" font-size="15" fill="var(--muted)">multivectors, MaxSim over patches</text><path d="M1220 520 H196" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 520 V283" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 283 l-6 9 h12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 283 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 283 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 367 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 367 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 451 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 451 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><text x="720" y="544" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent-3)">one query, three arms in one request</text><path d="M720 283 C770 283 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 367 C770 367 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 451 C770 451 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M781 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".55"/><circle cx="810" cy="367" r="29" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="810" y="373" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">fuse</text><rect x="900" y="315" width="300" height="104" rx="14" fill="var(--card-solid)" stroke="var(--accent-2)"/><text x="1050" y="363" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)">Rerank</text><text x="1050" y="389" text-anchor="middle" font-size="15" fill="var(--muted)">MaxSim on the survivors</text><path d="M839 367 H891" stroke="var(--accent-2)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M900 367 l-9 -6 v12 z" fill="var(--accent-2)" fill-opacity=".7"/><text x="1050" y="441" text-anchor="middle" font-size="14" font-weight="600" fill="var(--accent-2)">the expensive score, last</text><rect x="1310" y="176" width="330" height="46" rx="12" fill="none" stroke="var(--accent-3)" stroke-opacity=".45" stroke-dasharray="5 4"/><text x="1475" y="205" text-anchor="middle" font-size="16" font-weight="600" fill="var(--accent-3)">a user question</text><path d="M1475 222 V292" stroke="var(--accent-3)" stroke-opacity=".45" stroke-width="2" fill="none"/><path d="M1475 301 l-6 -9 h12 z" fill="var(--accent-3)" fill-opacity=".45"/><rect x="1310" y="302" width="330" height="96" rx="14" fill="var(--card-solid)" stroke="var(--accent-3)"/><image href="assets/langchain.png" x="1338" y="328" width="44" height="44"/><text x="1400" y="344" text-anchor="start" font-size="24" font-weight="700" fill="var(--ink)">Agent</text><text x="1400" y="370" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">LangChain &#183; deepagents</text><path d="M1495 398 V415" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M1495 424 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="1512" y="418" text-anchor="start" font-size="14" font-weight="600" fill="var(--faint)">prompt + hits</text><rect x="1350" y="424" width="290" height="90" rx="14" fill="var(--card-solid)" stroke="var(--accent-3)"/><image href="assets/vllm.webp" x="1374" y="447" width="40" height="40"/><text x="1428" y="462" text-anchor="start" font-size="22" font-weight="700" fill="var(--ink)">Inference API</text><text x="1428" y="488" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">self-hosted, on vLLM</text><path d="M1495 514 V531" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M1495 540 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><rect x="1350" y="540" width="290" height="56" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="1495" y="575" text-anchor="middle" font-size="20" font-weight="700" fill="var(--ink)">Answer<tspan font-size="15" font-weight="500" fill="var(--muted)"> &#183; grounded in the hits</tspan></text><path d="M1200 367 H1301" stroke="var(--accent)" stroke-opacity=".8" stroke-width="2" fill="none"/><path d="M1310 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".8"/><text x="1255" y="353" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">top-k hits</text><path d="M1325 398 V520 H1229" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M1220 520 l9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><text x="1313" y="468" text-anchor="end" font-size="15" font-weight="600" fill="var(--accent-3)">search</text><text x="742" y="50" text-anchor="start" font-size="14" font-weight="600" fill="var(--faint)">INDEX TIME &#183; OFFLINE, ONCE PER ASSET</text><text x="1640" y="50" text-anchor="end" font-size="14" font-weight="600" fill="var(--faint)">QUERY TIME &#183; ON EVERY QUESTION</text></g></svg>
+    <svg viewBox="0 0 1680 604" width="100%" style="flex:none;height:604px" role="img" aria-label="The full path. Assets are embedded by models served on Triton and upserted into Qdrant. Inside Qdrant one query fans out to three prefetch arms — dense HNSW, sparse BM25 and late interaction — which are fused and then reranked with MaxSim on the survivors. The top hits go back to an agent built on LangChain deepagents, which prompts our self-hosted vLLM inference API and answers from them."><g font-family="var(--sans)"><path d="M1265 14 V600" stroke="var(--ink)" stroke-opacity=".22" stroke-width="2" stroke-dasharray="3 8" stroke-linecap="round" fill="none"/><rect x="40" y="8" width="272" height="88" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="176" y="40" text-anchor="middle" font-size="23" font-weight="700" fill="var(--ink)">Assets</text><rect x="88" y="56" width="32" height="26" rx="5" fill="none" stroke="var(--muted)" stroke-width="1.6"/><circle cx="97" cy="64" r="3.4" fill="var(--muted)"/><path d="M91 78 l9 -10 6 6 5 -5 6 9 z" fill="var(--muted)"/><rect x="146" y="55" width="26" height="28" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M152 62 h14 M152 68 h14 M152 74 h8" stroke="var(--muted)" stroke-width="1.6"/><rect x="202" y="57" width="34" height="24" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M210 57 v24 M228 57 v24" stroke="var(--muted)" stroke-width="1.4"/><rect x="374" y="8" width="316" height="88" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><image href="assets/nvidia.webp" x="398" y="36" width="44" height="29"/><text x="462" y="48" text-anchor="start" font-size="23" font-weight="700" fill="var(--ink)">Triton</text><text x="462" y="72" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">embedding + vision models</text><path d="M324 52 H366" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M375 52 l-9 -6 v12 z" fill="var(--ink)" fill-opacity=".4"/><text x="345" y="38" text-anchor="middle" font-size="15" font-weight="600" fill="var(--faint)">embed</text><path d="M532 96 V132" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M532 141 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="548" y="122" text-anchor="start" font-size="15" font-weight="600" fill="var(--faint)">upsert vectors</text><rect x="40" y="150" width="1180" height="410" rx="20" fill="var(--accent-faint)" fill-opacity=".55" stroke="var(--accent)" stroke-opacity=".5"/><image href="assets/qdrant.svg" x="72" y="170" width="34" height="39"/><text x="120" y="196" text-anchor="start" font-size="27" font-weight="700" fill="var(--ink)">Qdrant</text><text x="120" y="219" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">self-hosted, on our own nodes</text><text x="72" y="268" text-anchor="start" font-size="14" font-weight="700" fill="var(--accent)">PREFETCH</text><rect x="250" y="246" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="276" font-size="20" font-weight="700" fill="var(--ink)">Dense &#183; HNSW</text><text x="270" y="300" font-size="15" fill="var(--muted)">semantic similarity, payload-filtered</text><rect x="250" y="330" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="360" font-size="20" font-weight="700" fill="var(--ink)">Sparse &#183; BM25</text><text x="270" y="384" font-size="15" fill="var(--muted)">exact tokens: filenames, product codes</text><rect x="250" y="414" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="444" font-size="20" font-weight="700" fill="var(--ink)">Late interaction</text><text x="270" y="468" font-size="15" fill="var(--muted)">multivectors, MaxSim over patches</text><path d="M1220 520 H196" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 520 V283" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 283 l-6 9 h12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 283 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 283 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 367 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 367 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 451 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 451 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><text x="720" y="544" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent-3)">one query, three arms in one request</text><path d="M720 283 C770 283 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 367 C770 367 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 451 C770 451 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M781 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".55"/><circle cx="810" cy="367" r="29" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="810" y="373" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">fuse</text><rect x="900" y="315" width="300" height="104" rx="14" fill="var(--card-solid)" stroke="var(--accent-2)"/><text x="1050" y="363" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)">Rerank</text><text x="1050" y="389" text-anchor="middle" font-size="15" fill="var(--muted)">MaxSim on the survivors</text><path d="M839 367 H891" stroke="var(--accent-2)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M900 367 l-9 -6 v12 z" fill="var(--accent-2)" fill-opacity=".7"/><text x="1050" y="441" text-anchor="middle" font-size="14" font-weight="600" fill="var(--accent-2)">the expensive score, last</text><rect x="1310" y="176" width="330" height="46" rx="12" fill="none" stroke="var(--accent-3)" stroke-opacity=".45" stroke-dasharray="5 4"/><text x="1475" y="205" text-anchor="middle" font-size="16" font-weight="600" fill="var(--accent-3)">a user question</text><path d="M1475 222 V292" stroke="var(--accent-3)" stroke-opacity=".45" stroke-width="2" fill="none"/><path d="M1475 301 l-6 -9 h12 z" fill="var(--accent-3)" fill-opacity=".45"/><rect x="1310" y="302" width="330" height="96" rx="14" fill="var(--card-solid)" stroke="var(--accent-3)"/><image href="assets/langchain.png" x="1338" y="328" width="44" height="44"/><text x="1400" y="344" text-anchor="start" font-size="24" font-weight="700" fill="var(--ink)">Agent</text><text x="1400" y="370" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">LangChain &#183; deepagents</text><path d="M1495 398 V415" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M1495 424 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="1512" y="418" text-anchor="start" font-size="14" font-weight="600" fill="var(--faint)">prompt + hits</text><rect x="1350" y="424" width="290" height="90" rx="14" fill="var(--card-solid)" stroke="var(--accent-3)"/><image href="assets/vllm.webp" x="1374" y="447" width="40" height="40"/><text x="1428" y="462" text-anchor="start" font-size="22" font-weight="700" fill="var(--ink)">Inference API</text><text x="1428" y="488" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">self-hosted, on vLLM</text><path d="M1495 514 V531" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M1495 540 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><rect x="1350" y="540" width="290" height="56" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="1495" y="575" text-anchor="middle" font-size="20" font-weight="700" fill="var(--ink)">Answer<tspan font-size="15" font-weight="500" fill="var(--muted)"> &#183; grounded in the hits</tspan></text><path d="M1200 367 H1301" stroke="var(--accent)" stroke-opacity=".8" stroke-width="2" fill="none"/><path d="M1310 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".8"/><text x="1255" y="353" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">top-k hits</text><path d="M1325 398 V520 H1229" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M1220 520 l9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><text x="1313" y="468" text-anchor="end" font-size="15" font-weight="600" fill="var(--accent-3)">search</text><text x="742" y="50" text-anchor="start" font-size="14" font-weight="600" fill="var(--faint)">INDEX TIME &#183; OFFLINE, ONCE PER ASSET</text><text x="1640" y="50" text-anchor="end" font-size="14" font-weight="600" fill="var(--faint)">QUERY TIME &#183; ON EVERY QUESTION</text></g></svg>
   </div>
   <ul class="sources">
     <li><a href="https://github.com/langchain-ai/deepagents">deepagents</a> · LangChain — the agent harness in the diagram</li>
@@ -1218,40 +1217,10 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
 
 If the room is engineers, the test-suite analogy is the whole explanation: same discipline, same reason you cannot refactor without one, and the assertion is just fuzzier.</div>
 </section>
-<!-- ============ 28 ============ -->
-<section class="slide roomy" data-t="The cold start problem">
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The hard part</div>
-  <h1 class="t">The cold start problem</h1>
-  <p class="sub">A DAM tenant arrives with assets and no behavioural signal whatsoever.</p>
-  <div class="body">
-    <div class="cols">
-      <div class="grow">
-        <ul class="bullets">
-          <li><strong>No clicks, no queries, no history.</strong> Everything that makes a stock catalogue
-            rankable has to be earned over years. A new tenant has none of it on day one.</li>
-          <li><strong>Metadata is whatever they had.</strong> Filenames, inconsistent tags, empty
-            description fields — sometimes nothing but <code>IMG_4821.jpg</code>.</li>
-          <li><strong>And they judge us immediately.</strong> The first search a new customer runs is
-            the one that decides whether they trust the product.</li>
-        </ul>
-      </div>
-      <div class="card dark" style="flex:0 0 520px">
-        <h3>Why content understanding is the answer</h3>
-        <p>If the model reads the asset itself, day-one quality no longer depends on anyone having
-        labelled anything.</p>
-        <p style="margin-top:16px">That reframes search from a behavioural problem into a
-        representation problem — which is a problem we can actually solve offline, before the customer
-        ever logs in.</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This is the strategic argument for the whole ML investment. If they only remember one slide from part three, make it this one.</div>
-</section>
-<!-- ============ 29 · new: the open-data gap ============ -->
-<section class="slide" data-t="And the open data isn't there either">
+<!-- ============ 28 · new: the open-data gap ============ -->
+<section class="slide" data-t="The open data is good, and it isn't about us">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The starting point</div>
-  <h1 class="t">And the open data isn't there either</h1>
+  <h1 class="t">The open data is good, and it isn't about us</h1>
   <p class="sub">Danish and its neighbours are served by a handful of genuinely good open projects.
   None of them can tell us whether search works on <em>our</em> customers' archives.</p>
   <div class="body">
@@ -1307,7 +1276,7 @@ If the room is engineers, the test-suite analogy is the whole explanation: same 
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be generous about the Danish projects — several people in this room will know them, and the argument is stronger if it is clearly not a complaint about Danish NLP. The point is a modality and task gap, not a language-resource gap.</div>
 </section>
-<!-- ============ 30 · new: build it ourselves ============ -->
+<!-- ============ 29 · new: build it ourselves ============ -->
 <section class="slide" data-t="So we build the data ourselves">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The way out</div>
   <h1 class="t">So we build the data ourselves</h1>
@@ -1343,7 +1312,7 @@ If the room is engineers, the test-suite analogy is the whole explanation: same 
   <div class="notes">This is the hinge of part three. Everything after it — the modality mix, the model choice, the eval design — is downstream of knowing the corpus. Say the last line slowly.</div>
 </section>
 
-<!-- ============ 31 · new: the bias trap ============ -->
+<!-- ============ 30 · new: the bias trap ============ -->
 <section class="slide" data-t="The trap in our own query logs">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The tradeoff without data</div>
   <h1 class="t">The trap in our own query logs</h1>
@@ -1386,7 +1355,7 @@ If the room is engineers, the test-suite analogy is the whole explanation: same 
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
 </section>
 
-<!-- ============ 32 · evaluation · 4 · loop back to infrastructure ============ -->
+<!-- ============ 31 · evaluation · 4 · loop back to infrastructure ============ -->
 <section class="slide" data-t="Which is why we own the serving stack">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Back to infrastructure</div>
   <h1 class="t sm">Which is why we own the serving stack</h1>
@@ -1434,7 +1403,7 @@ If the room is engineers, the test-suite analogy is the whole explanation: same 
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Close the loop back to the infrastructure argument from part two. The whole self-hosting argument was framed as sovereignty, and it is — but this is the second half of the return on it. Because we run the models, we can pull a new checkpoint on Monday, re-embed a sample of a customer's corpus on Tuesday and have a number on Wednesday. A hosted API gives you none of that: you cannot benchmark what you cannot re-index, and you cannot re-index a corpus you are not allowed to send. Sovereignty and the ability to keep improving turn out to be the same piece of infrastructure.</div>
 </section>
-<!-- ============ 33 · open-ended finish ============ -->
+<!-- ============ 32 · open-ended finish ============ -->
 <section class="slide section tight" data-t="An agent searching a DAM needs all of it">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this goes</div>
   <h1>An agent searching a DAM<br>needs <span style="color:var(--accent)">all of it</span></h1>
