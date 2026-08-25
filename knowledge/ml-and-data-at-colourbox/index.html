@@ -856,7 +856,295 @@ The example worth saying out loud is the multilingual one: the customer types En
 
 The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
 </section>
-<!-- ============ 23 · transplanted from the primer · slide 12 ============ -->
+<!-- ============ 23 · adapted from her slide 36 ============ -->
+<section class="slide section" data-t="So why isn't this everywhere yet?">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> From evidence to production</div>
+  <h1>So why isn't this everywhere yet?</h1>
+  <p class="sub">The evidence is strong and the operator is simple. What stops it is engineering —
+  three objections, in the order we hit them.</p>
+  <div class="body">
+    <div class="grid-3" style="max-width:1500px">
+      <div class="card dark"><span class="num">01</span><h3>Storage</h3>
+        <p>One vector per patch, across the whole catalogue.</p></div>
+      <div class="card dark"><span class="num">02</span><h3>Speed</h3>
+        <p>Scoring is no longer one dot product per candidate.</p></div>
+      <div class="card dark"><span class="num">03</span><h3>Ecosystem</h3>
+        <p>Which model, on which engine, and can we still swap it later?</p></div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search · A Late Interaction Field Guide — Amélie Chatelain</a></li>
+  </ul>
+  <div class="notes">Breath slide. Name the three objections, then say plainly that we have already conceded storage — the next slides are about speed and ecosystem, which are the ones with real answers.</div>
+</section>
+<!-- ============ 24 · engineering block · 1 ============ -->
+<section class="slide" data-t="Naive MaxSim is doomed">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The speed objection</div>
+  <h1 class="t sm">Naive MaxSim is doomed</h1>
+  <p class="sub">Compare every query token against every unit of every asset and the arithmetic ends
+  the discussion before we get to latency.</p>
+  <div class="body">
+    <div class="cols">
+      <figure style="flex:0 0 430px;justify-content:center">
+        <img class="zoom" src="assets/eng-maxsim-all-to-all.png" alt="All-to-all comparison: every query token connected to every document token of one document">
+        <figcaption>Figure: Amélie Chatelain,
+          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
+          Field Guide</em></a>. Counts are her MS MARCO worked example.</figcaption>
+      </figure>
+      <div class="grow">
+        <div class="grid-2" style="gap:22px">
+          <div class="card" style="padding:24px 26px"><span class="num" style="font-size:38px">~32</span>
+            <h3 style="font-size:24px">query tokens</h3>
+            <p style="font-size:19px">Every query token needs its own best match on the asset side.</p></div>
+          <div class="card" style="padding:24px 26px"><span class="num" style="font-size:38px">~80</span>
+            <h3 style="font-size:24px">tokens per passage</h3>
+            <p style="font-size:19px">All token pairs get scored inside a single document.</p></div>
+          <div class="card" style="padding:24px 26px"><span class="num" style="font-size:38px">~9M</span>
+            <h3 style="font-size:24px">passages</h3>
+            <p style="font-size:19px">Then repeat that all-to-all comparison across the corpus.</p></div>
+          <div class="card dark" style="padding:24px 26px"><span class="num" style="font-size:38px">~23B</span>
+            <h3 style="font-size:24px">dot products, per query</h3>
+            <p style="font-size:19px">At dimension 128. Not a first-stage plan under any latency budget.</p></div>
+        </div>
+        <div class="card solid" style="margin-top:22px;padding:24px 28px;border-color:var(--accent-2)">
+          <h3 style="color:var(--accent-2);font-size:24px">Our version of the same multiplication</h3>
+          <p style="font-size:19px">Patches per asset instead of tokens per passage; one tenant's
+          assets instead of passages. Same shape:
+          <span class="todo">~1,030</span> patches × <span class="todo">240k</span> assets in our
+          largest tenant × 32 query tokens ≈ <span class="todo">8B</span> dot products.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
+    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Contextualized Late Interaction over BERT</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">We already conceded that late interaction costs index size and scoring time. This is where we answer how it is made to work.
+
+Start with the honest worst case. If you take MaxSim literally — every query token against every token of every document — you get roughly 32 × 80 × 9M dot products at dimension 128 for MS MARCO. About 23 billion. That is not slow, that is impossible.
+
+The important reframe: no serious system implements exact MaxSim over the whole corpus. MaxSim is the score we are trying to arrive at, not the plan for getting there. Everything in the next few slides is about reaching a good candidate set without paying the target cost everywhere.
+
+Our numbers have the same shape with patches instead of tokens — I need to put the real ones in here before presenting.</div>
+</section>
+<!-- ============ 25 · engineering block · 2 ============ -->
+<section class="slide" data-t="Every fast system is a funnel">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Making it work</div>
+  <h1 class="t">Every fast system is a funnel</h1>
+  <p class="sub">Two things change on the way down: <strong>the set shrinks, the price per asset
+  rises</strong>.</p>
+  <div class="body">
+    <div class="cols">
+      <div style="flex:0 0 620px;display:flex;flex-direction:column;justify-content:center">
+        <svg viewBox="0 0 620 470" width="100%" style="max-height:470px" role="img"
+             aria-label="A four-stage funnel. All assets are scored cheaply, a candidate set is gathered, a shortlist is pruned, and only the survivors reach exact MaxSim before results are returned.">
+          <text x="310" y="16" text-anchor="middle" fill="var(--faint)" font-family="Inter,sans-serif"
+                font-size="15" letter-spacing="2.4">THE SET · SHRINKS ↓</text>
+          <!-- bands -->
+          <path d="M20 34 H600 L560 138 H60 Z" fill="var(--accent)" fill-opacity=".08" stroke="var(--accent)" stroke-opacity=".22"/>
+          <path d="M60 138 H560 L520 242 H100 Z" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".26"/>
+          <path d="M100 242 H520 L480 346 H140 Z" fill="var(--accent)" fill-opacity=".28" stroke="var(--accent)" stroke-opacity=".3"/>
+          <path d="M140 346 H480 L440 450 H180 Z" fill="var(--accent)" stroke="var(--accent)"/>
+          <g font-family="Inter,sans-serif" text-anchor="middle">
+            <text x="310" y="80" font-size="26" font-weight="600" fill="var(--ink)">Every asset in the index</text>
+            <text x="310" y="110" font-size="17" fill="var(--muted)">cheap score · nothing decompressed</text>
+            <text x="310" y="184" font-size="26" font-weight="600" fill="var(--ink)">Candidates</text>
+            <text x="310" y="214" font-size="17" fill="var(--muted)">gathered from the cheap structure</text>
+            <text x="310" y="288" font-size="26" font-weight="600" fill="var(--ink)">Shortlist</text>
+            <text x="310" y="318" font-size="17" fill="var(--muted)">approximate MaxSim, then prune</text>
+            <text x="310" y="392" font-size="26" font-weight="600" fill="var(--canvas)">Survivors</text>
+            <text x="310" y="422" font-size="17" fill="var(--canvas)" opacity=".82">exact MaxSim</text>
+          </g>
+        </svg>
+        <p style="font:400 16px/1.5 var(--sans);color:var(--faint);margin-top:14px">Stage sizes are
+        provisional until we have measured recall against candidate count on our own corpus:
+        <span class="todo">40k → 4k → 250</span>.</p>
+      </div>
+      <div class="stack grow" style="gap:14px">
+        <p style="font:500 15px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)">
+        The scorer · cost per asset rises ↓</p>
+        <div class="card" style="padding:22px 30px"><h3>1 · Candidate generation <span class="chip">cheap</span></h3>
+          <p>A deliberately coarse score over everything. This stage decides whether the whole thing is
+          affordable.</p></div>
+        <div class="card" style="padding:22px 30px"><h3>2 · Approximate MaxSim, then prune <span class="chip">moderate</span></h3>
+          <p>A more faithful score on far fewer assets, used to throw most of them away.</p></div>
+        <div class="card solid" style="padding:22px 30px"><h3>3 · Exact MaxSim <span class="chip on">expensive</span></h3>
+          <p>Run only on the survivors — where we are willing to pay full price per asset.</p></div>
+        <div class="card dark" style="padding:22px 30px">
+          <p><strong style="color:#fff">The trade-off is one question:</strong> how many assets reach
+          exact MaxSim? Stage&nbsp;1 is whatever is cheap enough to run over everything — an
+          approximate index like <strong style="color:#fff">HNSW</strong>, sparse keys, or a coarse
+          clustering. That is what the next slides are about.</p></div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
+    <li><a href="https://arxiv.org/abs/2205.09707">PLAID: An Efficient Engine for Late Interaction Retrieval</a></li>
+    <li><a href="https://arxiv.org/abs/2405.19504">MUVERA: Multi-Vector Retrieval via Fixed Dimensional Encodings</a></li>
+    <li><a href="https://arxiv.org/abs/2304.01982">XTR: Rethinking the Role of Token Retrieval in Multi-Vector Retrieval</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">This is the pattern, and it is not exotic — it is the same funnel we already use everywhere else in search. Start broad and cheap, spend expensive scoring only on a small set.
+
+Read it top to bottom: every asset gets a coarse score, we gather candidates, we prune with an approximate MaxSim, and only the survivors get the real thing. As the set shrinks we can afford more per asset.
+
+So the knob is not mysterious. It is: how many assets survive long enough to receive exact scoring? That single number is what we tune against our latency budget.
+
+I have deliberately left the stage widths blank. Her illustrative numbers were 9M → 100k → 1k → top-10 on MS MARCO; ours have to come from measuring recall against candidate count on our own corpus, and I would rather show nothing than show a number I made up.
+
+The last card matters for the next slides: there is more than one way to build stage one.</div>
+</section>
+<!-- ============ 26 · vector store · what a vector database is ============ -->
+<section class="slide" data-t="So what is a vector database?">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
+  <h1 class="t">You don't build that funnel. You configure it.</h1>
+  <p class="sub">Every stage we just drew already exists as a feature of a modern vector database —
+  which is most of what one <em>is</em>.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card solid">
+        <div class="cap" style="margin:0 0 12px">stage 1 · narrow</div>
+        <h3>An approximate index</h3>
+        <p>Cosine against every vector is <code>O(N·d)</code> — fine at ten thousand assets, hopeless at
+        a hundred million. <strong>HNSW</strong> descends a navigable graph instead of scanning, trading
+        a little recall for a lot of time.</p>
+      </div>
+      <div class="card solid">
+        <div class="cap" style="margin:0 0 12px">stage 2 · shortlist</div>
+        <h3>Sparse keys and filters</h3>
+        <p>Learned-sparse vectors cut it down further, and so does <em>"only this tenant's, only
+        landscape, only after 2024"</em>. Making a <strong>filtered</strong> search stay fast is the
+        part people underestimate.</p>
+      </div>
+      <div class="card solid">
+        <div class="cap" style="margin:0 0 12px">stage 3 · rescore</div>
+        <h3>Late interaction on the survivors</h3>
+        <p>Multivectors with a <strong>MaxSim comparator</strong> — the expensive scoring from earlier,
+        run only on what is left. Approximate first, exact last.</p>
+      </div>
+    </div>
+    <div class="card dark" style="margin-top:28px;flex:none">
+      <h3>Library or database?</h3>
+      <p><code>faiss</code> and <code>hnswlib</code> are the index. Qdrant, Milvus, Weaviate, Vespa and
+      <code>pgvector</code> are the database around it — filters, persistence, replication, and add,
+      update and delete without a rebuild. A DAM changes all day, so that second list is what decides
+      whether you can actually run it.</p>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">The point of this slide is relief, not detail: the funnel from the previous slide sounds like a research architecture, and it is actually a config file. Say that plainly.
+
+Map the three cards onto the three stages out loud — they are deliberately in the same order and use the same words.
+
+The filtering line deserves one beat. Post-filtering is the naive implementation and it silently destroys recall: you ask for the hundred nearest and then throw away the ninety-eight belonging to other tenants. Everything interesting in these systems is about making a filtered approximate search stay fast.
+
+If someone asks "why not just pgvector" — completely reasonable at small scale, and one fewer system to run. It gets harder when you want multivectors and quantization on a corpus this size.</div>
+</section>
+<!-- ============ 27 · engineering block · where the vectors live ============ -->
+<section class="slide tight" data-t="Where the vectors actually live">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
+  <h1 class="t">Where the vectors actually live</h1>
+  <p class="sub">For us that database is <strong>Qdrant</strong>, self-hosted — and it is the one
+  place where the retrieval argument and the sovereignty argument turn out to be the same argument.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card solid">
+        <h3>One engine, three retrieval paths</h3>
+        <p>Dense HNSW with payload filtering, learned-sparse vectors, and <strong>multivectors with a
+        MaxSim comparator</strong>. The dense first stage and the late-interaction rerank are the same
+        system, not two we have to keep consistent.</p>
+        <div class="cap">dense · sparse · multi-vector</div>
+      </div>
+      <div class="card solid">
+        <h3>The funnel becomes a query</h3>
+        <p>Prefetch generates candidates cheaply, the outer query reranks the survivors with MaxSim,
+        and quantization keeps the index affordable — the three stages we just drew, expressed as one
+        round trip instead of three services.</p>
+        <div class="cap">prefetch → rerank, one request</div>
+      </div>
+      <div class="card accent">
+        <h3>And it stays ours</h3>
+        <p>Apache-2.0, written in Rust, one binary on our own nodes — and the company behind it is
+        Berlin-based. Sovereignty here is not a clause in someone's data-processing addendum; it is a
+        process we start ourselves.</p>
+        <div class="cap">sovereignty, in practice</div>
+      </div>
+    </div>
+    <div class="cols" style="margin-top:28px;flex:none">
+      <div class="card dark grow">
+        <h3>Where a dedicated service still helps</h3>
+        <p>A general store is very good at all of it and best-in-class at none. When late interaction
+        is the <em>first</em> stage over a large tenant, an engine built for nothing but multi-vector
+        retrieval still beats it on that one axis — because the whole system is designed around that
+        single index instead of around five workloads.</p>
+      </div>
+      <div class="card grow" style="border-color:var(--accent-2)">
+        <h3 style="color:var(--accent-2)">So the rule we actually apply</h3>
+        <p>General store by default; a dedicated engine only when the multi-vector index is measurably
+        the bottleneck and the workload justifies operating a second system. Today that threshold sits
+        around <span class="todo">the largest 2 tenants</span>.</p>
+        <div class="cap">two systems is a cost, not a feature</div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://qdrant.tech/documentation/concepts/vectors/#multivectors">Qdrant · multivectors and the MaxSim comparator</a></li>
+    <li><a href="https://qdrant.tech/documentation/concepts/hybrid-queries/">Qdrant · Query API, prefetch and fusion</a></li>
+    <li><a href="https://qdrant.tech/documentation/guides/quantization/">Qdrant · scalar, product and binary quantization</a></li>
+    <li><a href="https://github.com/lightonai/next-plaid">NextPlaid · LightOn</a></li>
+    <li><a href="https://arxiv.org/abs/2501.17788">WARP: An Efficient Engine for Multi-Vector Retrieval</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">This is the slide that turns the previous three from an architecture lecture into something we operate. The funnel is not ours to invent — it is prefetch plus rerank in a query body.
+
+The reason one engine matters more than raw benchmark speed: a DAM index is mutable all day, and every extra store is another thing to keep consistent with the assets, another backup story, another delete path to get right under GDPR. Two systems is a real operational cost and should be earned.
+
+Do not oversell Qdrant against the specialised engines. On pure multi-vector first-stage throughput a purpose-built engine wins, and if that ever becomes our bottleneck we should use one — for that tenant, not for the whole product.
+
+The Berlin point is worth one sentence and no more. It is a genuine reinforcement of part two, but the substantive claim was always about self-hosting rather than the vendor's postcode.</div>
+</section>
+<!-- ============ 28 ============ -->
+<section class="slide" data-t="The serving stack">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure</div>
+  <h1 class="t">The serving stack</h1>
+  <p class="sub">Two engines, two different jobs. Picking per workload rather than standardising on one
+  is the whole trick.</p>
+  <div class="body">
+    <div class="grid-2">
+      <div class="card solid">
+        <h3>Triton Inference Server</h3>
+        <p>The workhorse for <strong>vision and embedding models</strong>: dynamic batching, multiple
+        frameworks behind one endpoint, ensemble pipelines so preprocessing and inference live in the
+        same request.</p>
+        <p style="margin-top:14px">Right choice when the model is small, the traffic is bursty, and
+        throughput per GPU is what you are optimising.</p>
+        <div class="cap">indexing · embedding · classification</div>
+      </div>
+      <div class="card solid">
+        <h3>vLLM</h3>
+        <p>The workhorse for <strong>generative and VLM workloads</strong>: paged attention, continuous
+        batching, an OpenAI-compatible surface so application code does not care where the model lives.</p>
+        <p style="margin-top:14px">Right choice when sequences are long, output is autoregressive, and
+        KV cache is the binding constraint.</p>
+        <div class="cap">captioning · extraction · reasoning</div>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:32px">Both run on our own GPUs — <span class="todo">2 nodes × 4 NVIDIA L40S</span> — inside EU data
+    centres.</p>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Resist a stack-diagram-with-fourteen-boxes. The point is that engine choice follows workload shape, and both stay on our metal.</div>
+</section>
+<!-- ============ 29 · transplanted from the primer · slide 12 ============ -->
 <section class="slide" data-t="The useful overlap">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this lands</div>
@@ -898,7 +1186,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">End by pointing people at the original for the field cases and production objections. This primer deliberately stops here.</div>
 </section>
-<!-- ============ 24 ============ -->
+<!-- ============ 30 ============ -->
 <section class="slide roomy" data-t="The cold start problem">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The hard part</div>
@@ -929,7 +1217,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the strategic argument for the whole ML investment. If they only remember one slide from part one, make it this one.</div>
 </section>
-<!-- ============ 25 · new: the open-data gap ============ -->
+<!-- ============ 31 · new: the open-data gap ============ -->
 <section class="slide" data-t="The open data isn't there either">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The starting point</div>
@@ -989,7 +1277,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be generous about the Danish projects — several people in this room will know them, and the argument is stronger if it is clearly not a complaint about Danish NLP. The point is a modality and task gap, not a language-resource gap.</div>
 </section>
-<!-- ============ 26 · new: build it ourselves ============ -->
+<!-- ============ 32 · new: build it ourselves ============ -->
 <section class="slide" data-t="So we build the data ourselves">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The way out</div>
@@ -1033,7 +1321,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of part one. Everything after it — the modality mix, the model choice, the eval design — is downstream of knowing the corpus. Say the last line slowly.</div>
 </section>
-<!-- ============ 27 · new: know what you store ============ -->
+<!-- ============ 33 · new: know what you store ============ -->
 <section class="slide" data-t="Know what you store and serve">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Know your corpus</div>
@@ -1186,7 +1474,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Point at the tiles rather than reading them out. If the room is Danish, these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity, which is the argument for a representation that can hold structure — the next few slides.</div>
 </section>
-<!-- ============ 28 · new: the bias trap ============ -->
+<!-- ============ 34 · new: the bias trap ============ -->
 <section class="slide" data-t="The trap in our own query logs">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The tradeoff without data</div>
@@ -1225,294 +1513,6 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
-</section>
-<!-- ============ 29 · adapted from her slide 36 ============ -->
-<section class="slide section" data-t="So why isn't this everywhere yet?">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> From evidence to production</div>
-  <h1>So why isn't this everywhere yet?</h1>
-  <p class="sub">The evidence is strong and the operator is simple. What stops it is engineering —
-  three objections, in the order we hit them.</p>
-  <div class="body">
-    <div class="grid-3" style="max-width:1500px">
-      <div class="card dark"><span class="num">01</span><h3>Storage</h3>
-        <p>One vector per patch, across the whole catalogue.</p></div>
-      <div class="card dark"><span class="num">02</span><h3>Speed</h3>
-        <p>Scoring is no longer one dot product per candidate.</p></div>
-      <div class="card dark"><span class="num">03</span><h3>Ecosystem</h3>
-        <p>Which model, on which engine, and can we still swap it later?</p></div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search · A Late Interaction Field Guide — Amélie Chatelain</a></li>
-  </ul>
-  <div class="notes">Breath slide. Name the three objections, then say plainly that we have already conceded storage — the next slides are about speed and ecosystem, which are the ones with real answers.</div>
-</section>
-<!-- ============ 30 · engineering block · 1 ============ -->
-<section class="slide" data-t="Naive MaxSim is doomed">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The speed objection</div>
-  <h1 class="t sm">Naive MaxSim is doomed</h1>
-  <p class="sub">Compare every query token against every unit of every asset and the arithmetic ends
-  the discussion before we get to latency.</p>
-  <div class="body">
-    <div class="cols">
-      <figure style="flex:0 0 430px;justify-content:center">
-        <img class="zoom" src="assets/eng-maxsim-all-to-all.png" alt="All-to-all comparison: every query token connected to every document token of one document">
-        <figcaption>Figure: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a>. Counts are her MS MARCO worked example.</figcaption>
-      </figure>
-      <div class="grow">
-        <div class="grid-2" style="gap:22px">
-          <div class="card" style="padding:24px 26px"><span class="num" style="font-size:38px">~32</span>
-            <h3 style="font-size:24px">query tokens</h3>
-            <p style="font-size:19px">Every query token needs its own best match on the asset side.</p></div>
-          <div class="card" style="padding:24px 26px"><span class="num" style="font-size:38px">~80</span>
-            <h3 style="font-size:24px">tokens per passage</h3>
-            <p style="font-size:19px">All token pairs get scored inside a single document.</p></div>
-          <div class="card" style="padding:24px 26px"><span class="num" style="font-size:38px">~9M</span>
-            <h3 style="font-size:24px">passages</h3>
-            <p style="font-size:19px">Then repeat that all-to-all comparison across the corpus.</p></div>
-          <div class="card dark" style="padding:24px 26px"><span class="num" style="font-size:38px">~23B</span>
-            <h3 style="font-size:24px">dot products, per query</h3>
-            <p style="font-size:19px">At dimension 128. Not a first-stage plan under any latency budget.</p></div>
-        </div>
-        <div class="card solid" style="margin-top:22px;padding:24px 28px;border-color:var(--accent-2)">
-          <h3 style="color:var(--accent-2);font-size:24px">Our version of the same multiplication</h3>
-          <p style="font-size:19px">Patches per asset instead of tokens per passage; one tenant's
-          assets instead of passages. Same shape:
-          <span class="todo">~1,030</span> patches × <span class="todo">240k</span> assets in our
-          largest tenant × 32 query tokens ≈ <span class="todo">8B</span> dot products.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
-    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Contextualized Late Interaction over BERT</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">We already conceded that late interaction costs index size and scoring time. This is where we answer how it is made to work.
-
-Start with the honest worst case. If you take MaxSim literally — every query token against every token of every document — you get roughly 32 × 80 × 9M dot products at dimension 128 for MS MARCO. About 23 billion. That is not slow, that is impossible.
-
-The important reframe: no serious system implements exact MaxSim over the whole corpus. MaxSim is the score we are trying to arrive at, not the plan for getting there. Everything in the next few slides is about reaching a good candidate set without paying the target cost everywhere.
-
-Our numbers have the same shape with patches instead of tokens — I need to put the real ones in here before presenting.</div>
-</section>
-<!-- ============ 31 · engineering block · 2 ============ -->
-<section class="slide" data-t="Every fast system is a funnel">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Making it work</div>
-  <h1 class="t">Every fast system is a funnel</h1>
-  <p class="sub">Two things change on the way down: <strong>the set shrinks, the price per asset
-  rises</strong>.</p>
-  <div class="body">
-    <div class="cols">
-      <div style="flex:0 0 620px;display:flex;flex-direction:column;justify-content:center">
-        <svg viewBox="0 0 620 470" width="100%" style="max-height:470px" role="img"
-             aria-label="A four-stage funnel. All assets are scored cheaply, a candidate set is gathered, a shortlist is pruned, and only the survivors reach exact MaxSim before results are returned.">
-          <text x="310" y="16" text-anchor="middle" fill="var(--faint)" font-family="Inter,sans-serif"
-                font-size="15" letter-spacing="2.4">THE SET · SHRINKS ↓</text>
-          <!-- bands -->
-          <path d="M20 34 H600 L560 138 H60 Z" fill="var(--accent)" fill-opacity=".08" stroke="var(--accent)" stroke-opacity=".22"/>
-          <path d="M60 138 H560 L520 242 H100 Z" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".26"/>
-          <path d="M100 242 H520 L480 346 H140 Z" fill="var(--accent)" fill-opacity=".28" stroke="var(--accent)" stroke-opacity=".3"/>
-          <path d="M140 346 H480 L440 450 H180 Z" fill="var(--accent)" stroke="var(--accent)"/>
-          <g font-family="Inter,sans-serif" text-anchor="middle">
-            <text x="310" y="80" font-size="26" font-weight="600" fill="var(--ink)">Every asset in the index</text>
-            <text x="310" y="110" font-size="17" fill="var(--muted)">cheap score · nothing decompressed</text>
-            <text x="310" y="184" font-size="26" font-weight="600" fill="var(--ink)">Candidates</text>
-            <text x="310" y="214" font-size="17" fill="var(--muted)">gathered from the cheap structure</text>
-            <text x="310" y="288" font-size="26" font-weight="600" fill="var(--ink)">Shortlist</text>
-            <text x="310" y="318" font-size="17" fill="var(--muted)">approximate MaxSim, then prune</text>
-            <text x="310" y="392" font-size="26" font-weight="600" fill="var(--canvas)">Survivors</text>
-            <text x="310" y="422" font-size="17" fill="var(--canvas)" opacity=".82">exact MaxSim</text>
-          </g>
-        </svg>
-        <p style="font:400 16px/1.5 var(--sans);color:var(--faint);margin-top:14px">Stage sizes are
-        provisional until we have measured recall against candidate count on our own corpus:
-        <span class="todo">40k → 4k → 250</span>.</p>
-      </div>
-      <div class="stack grow" style="gap:14px">
-        <p style="font:500 15px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)">
-        The scorer · cost per asset rises ↓</p>
-        <div class="card" style="padding:22px 30px"><h3>1 · Candidate generation <span class="chip">cheap</span></h3>
-          <p>A deliberately coarse score over everything. This stage decides whether the whole thing is
-          affordable.</p></div>
-        <div class="card" style="padding:22px 30px"><h3>2 · Approximate MaxSim, then prune <span class="chip">moderate</span></h3>
-          <p>A more faithful score on far fewer assets, used to throw most of them away.</p></div>
-        <div class="card solid" style="padding:22px 30px"><h3>3 · Exact MaxSim <span class="chip on">expensive</span></h3>
-          <p>Run only on the survivors — where we are willing to pay full price per asset.</p></div>
-        <div class="card dark" style="padding:22px 30px">
-          <p><strong style="color:#fff">The trade-off is one question:</strong> how many assets reach
-          exact MaxSim? Stage&nbsp;1 is whatever is cheap enough to run over everything — an
-          approximate index like <strong style="color:#fff">HNSW</strong>, sparse keys, or a coarse
-          clustering. That is what the next slides are about.</p></div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
-    <li><a href="https://arxiv.org/abs/2205.09707">PLAID: An Efficient Engine for Late Interaction Retrieval</a></li>
-    <li><a href="https://arxiv.org/abs/2405.19504">MUVERA: Multi-Vector Retrieval via Fixed Dimensional Encodings</a></li>
-    <li><a href="https://arxiv.org/abs/2304.01982">XTR: Rethinking the Role of Token Retrieval in Multi-Vector Retrieval</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This is the pattern, and it is not exotic — it is the same funnel we already use everywhere else in search. Start broad and cheap, spend expensive scoring only on a small set.
-
-Read it top to bottom: every asset gets a coarse score, we gather candidates, we prune with an approximate MaxSim, and only the survivors get the real thing. As the set shrinks we can afford more per asset.
-
-So the knob is not mysterious. It is: how many assets survive long enough to receive exact scoring? That single number is what we tune against our latency budget.
-
-I have deliberately left the stage widths blank. Her illustrative numbers were 9M → 100k → 1k → top-10 on MS MARCO; ours have to come from measuring recall against candidate count on our own corpus, and I would rather show nothing than show a number I made up.
-
-The last card matters for the next slides: there is more than one way to build stage one.</div>
-</section>
-<!-- ============ 32 · vector store · what a vector database is ============ -->
-<section class="slide" data-t="So what is a vector database?">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
-  <h1 class="t">You don't build that funnel. You configure it.</h1>
-  <p class="sub">Every stage we just drew already exists as a feature of a modern vector database —
-  which is most of what one <em>is</em>.</p>
-  <div class="body">
-    <div class="grid-3">
-      <div class="card solid">
-        <div class="cap" style="margin:0 0 12px">stage 1 · narrow</div>
-        <h3>An approximate index</h3>
-        <p>Cosine against every vector is <code>O(N·d)</code> — fine at ten thousand assets, hopeless at
-        a hundred million. <strong>HNSW</strong> descends a navigable graph instead of scanning, trading
-        a little recall for a lot of time.</p>
-      </div>
-      <div class="card solid">
-        <div class="cap" style="margin:0 0 12px">stage 2 · shortlist</div>
-        <h3>Sparse keys and filters</h3>
-        <p>Learned-sparse vectors cut it down further, and so does <em>"only this tenant's, only
-        landscape, only after 2024"</em>. Making a <strong>filtered</strong> search stay fast is the
-        part people underestimate.</p>
-      </div>
-      <div class="card solid">
-        <div class="cap" style="margin:0 0 12px">stage 3 · rescore</div>
-        <h3>Late interaction on the survivors</h3>
-        <p>Multivectors with a <strong>MaxSim comparator</strong> — the expensive scoring from earlier,
-        run only on what is left. Approximate first, exact last.</p>
-      </div>
-    </div>
-    <div class="card dark" style="margin-top:28px;flex:none">
-      <h3>Library or database?</h3>
-      <p><code>faiss</code> and <code>hnswlib</code> are the index. Qdrant, Milvus, Weaviate, Vespa and
-      <code>pgvector</code> are the database around it — filters, persistence, replication, and add,
-      update and delete without a rebuild. A DAM changes all day, so that second list is what decides
-      whether you can actually run it.</p>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The point of this slide is relief, not detail: the funnel from the previous slide sounds like a research architecture, and it is actually a config file. Say that plainly.
-
-Map the three cards onto the three stages out loud — they are deliberately in the same order and use the same words.
-
-The filtering line deserves one beat. Post-filtering is the naive implementation and it silently destroys recall: you ask for the hundred nearest and then throw away the ninety-eight belonging to other tenants. Everything interesting in these systems is about making a filtered approximate search stay fast.
-
-If someone asks "why not just pgvector" — completely reasonable at small scale, and one fewer system to run. It gets harder when you want multivectors and quantization on a corpus this size.</div>
-</section>
-<!-- ============ 33 · engineering block · where the vectors live ============ -->
-<section class="slide tight" data-t="Where the vectors actually live">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
-  <h1 class="t">Where the vectors actually live</h1>
-  <p class="sub">For us that database is <strong>Qdrant</strong>, self-hosted — and it is the one
-  place where the retrieval argument and the sovereignty argument turn out to be the same argument.</p>
-  <div class="body">
-    <div class="grid-3">
-      <div class="card solid">
-        <h3>One engine, three retrieval paths</h3>
-        <p>Dense HNSW with payload filtering, learned-sparse vectors, and <strong>multivectors with a
-        MaxSim comparator</strong>. The dense first stage and the late-interaction rerank are the same
-        system, not two we have to keep consistent.</p>
-        <div class="cap">dense · sparse · multi-vector</div>
-      </div>
-      <div class="card solid">
-        <h3>The funnel becomes a query</h3>
-        <p>Prefetch generates candidates cheaply, the outer query reranks the survivors with MaxSim,
-        and quantization keeps the index affordable — the three stages we just drew, expressed as one
-        round trip instead of three services.</p>
-        <div class="cap">prefetch → rerank, one request</div>
-      </div>
-      <div class="card accent">
-        <h3>And it stays ours</h3>
-        <p>Apache-2.0, written in Rust, one binary on our own nodes — and the company behind it is
-        Berlin-based. Sovereignty here is not a clause in someone's data-processing addendum; it is a
-        process we start ourselves.</p>
-        <div class="cap">sovereignty, in practice</div>
-      </div>
-    </div>
-    <div class="cols" style="margin-top:28px;flex:none">
-      <div class="card dark grow">
-        <h3>Where a dedicated service still helps</h3>
-        <p>A general store is very good at all of it and best-in-class at none. When late interaction
-        is the <em>first</em> stage over a large tenant, an engine built for nothing but multi-vector
-        retrieval still beats it on that one axis — because the whole system is designed around that
-        single index instead of around five workloads.</p>
-      </div>
-      <div class="card grow" style="border-color:var(--accent-2)">
-        <h3 style="color:var(--accent-2)">So the rule we actually apply</h3>
-        <p>General store by default; a dedicated engine only when the multi-vector index is measurably
-        the bottleneck and the workload justifies operating a second system. Today that threshold sits
-        around <span class="todo">the largest 2 tenants</span>.</p>
-        <div class="cap">two systems is a cost, not a feature</div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://qdrant.tech/documentation/concepts/vectors/#multivectors">Qdrant · multivectors and the MaxSim comparator</a></li>
-    <li><a href="https://qdrant.tech/documentation/concepts/hybrid-queries/">Qdrant · Query API, prefetch and fusion</a></li>
-    <li><a href="https://qdrant.tech/documentation/guides/quantization/">Qdrant · scalar, product and binary quantization</a></li>
-    <li><a href="https://github.com/lightonai/next-plaid">NextPlaid · LightOn</a></li>
-    <li><a href="https://arxiv.org/abs/2501.17788">WARP: An Efficient Engine for Multi-Vector Retrieval</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This is the slide that turns the previous three from an architecture lecture into something we operate. The funnel is not ours to invent — it is prefetch plus rerank in a query body.
-
-The reason one engine matters more than raw benchmark speed: a DAM index is mutable all day, and every extra store is another thing to keep consistent with the assets, another backup story, another delete path to get right under GDPR. Two systems is a real operational cost and should be earned.
-
-Do not oversell Qdrant against the specialised engines. On pure multi-vector first-stage throughput a purpose-built engine wins, and if that ever becomes our bottleneck we should use one — for that tenant, not for the whole product.
-
-The Berlin point is worth one sentence and no more. It is a genuine reinforcement of part two, but the substantive claim was always about self-hosting rather than the vendor's postcode.</div>
-</section>
-<!-- ============ 34 ============ -->
-<section class="slide" data-t="The serving stack">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure</div>
-  <h1 class="t">The serving stack</h1>
-  <p class="sub">Two engines, two different jobs. Picking per workload rather than standardising on one
-  is the whole trick.</p>
-  <div class="body">
-    <div class="grid-2">
-      <div class="card solid">
-        <h3>Triton Inference Server</h3>
-        <p>The workhorse for <strong>vision and embedding models</strong>: dynamic batching, multiple
-        frameworks behind one endpoint, ensemble pipelines so preprocessing and inference live in the
-        same request.</p>
-        <p style="margin-top:14px">Right choice when the model is small, the traffic is bursty, and
-        throughput per GPU is what you are optimising.</p>
-        <div class="cap">indexing · embedding · classification</div>
-      </div>
-      <div class="card solid">
-        <h3>vLLM</h3>
-        <p>The workhorse for <strong>generative and VLM workloads</strong>: paged attention, continuous
-        batching, an OpenAI-compatible surface so application code does not care where the model lives.</p>
-        <p style="margin-top:14px">Right choice when sequences are long, output is autoregressive, and
-        KV cache is the binding constraint.</p>
-        <div class="cap">captioning · extraction · reasoning</div>
-      </div>
-    </div>
-    <p class="sub" style="margin-top:32px">Both run on our own GPUs — <span class="todo">2 nodes × 4 NVIDIA L40S</span> — inside EU data
-    centres.</p>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Resist a stack-diagram-with-fourteen-boxes. The point is that engine choice follows workload shape, and both stay on our metal.</div>
 </section>
 <!-- ============ 35 · agentic search · the embedder's dilemma ============ -->
 <section class="slide tight" data-t="The embedder's dilemma">
