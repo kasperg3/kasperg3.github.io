@@ -527,6 +527,293 @@ The explainability point in the dark card is not decoration — DAM customers as
 Say the quiet part: nobody trained this model on "highlight the axis". The localisation falls out of keeping one vector per patch and never pooling them. Interpretability here is a free side effect of the architecture, not a feature someone bolted on.</div>
 </section>
 <!-- ============ 14 ============ -->
+<section class="slide section" data-t="How retrieval actually works">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
+  <h1>How retrieval actually works</h1>
+  <p class="sub">From one vector per asset to many — and why that choice decides what a search can
+  find.</p>
+</section>
+<!-- ============ 15 · transplanted from the primer · slide 3 ============ -->
+<section class="slide roomy" data-t="Why do DAM users still search by filename?">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
+  <h1 class="t">Why do DAM users still search by <span class="grad">filename</span>?</h1>
+  <p class="sub">If we have strong vision models <em>and</em> strong embedding models, why does
+  every customer still type a filename into the box?</p>
+  <div class="body center">
+    <pre class="code" style="max-width:1240px;font-size:34px;line-height:1.85;padding:52px 60px"><span class="c">search</span>  <span class="s">"Q3_campaign_final_v2"</span>
+<span class="c">browse</span>  /Clients/Bergen/2024-06/</pre>
+    <p class="sub" style="margin-top:48px;text-align:center;max-width:1240px;font-size:30px">They are not being primitive. Exact match
+    came back into fashion for a reason, and it is worth understanding which reason.</p>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Ask the room to guess before advancing. Most people answer "infra" — which is half right, and the other half is the interesting half.</div>
+</section>
+<!-- ============ 16 · transplanted from the primer · slide 4 ============ -->
+<section class="slide" data-t="Filename search is hard to beat">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
+  <h1 class="t">Filename search is hard to beat — and not only on infra</h1>
+  <div class="body">
+    <div class="cols">
+      <div class="card" style="flex:1">
+        <h3>The boring infra reasons</h3>
+        <ul class="bullets" style="margin-top:16px">
+          <li>Zero infrastructure — it already ships with the product</li>
+          <li>No model to deploy</li>
+          <li>No index to maintain</li>
+          <li>Privacy by default</li>
+        </ul>
+      </div>
+      <div class="card accent" style="flex:1">
+        <h3>But also: why it sticks</h3>
+        <ul class="bullets" style="margin-top:16px">
+          <li><strong>Exact matching is extremely strong for filenames.</strong></li>
+          <li><strong>Granularity is non-negotiable</strong> — when you want
+            <code>Q3_campaign_final_v2.psd</code>, you want exactly that file.</li>
+          <li><strong>Filenames and folder trees are structured data</strong>, and structure is
+            cheap to exploit.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card solid" style="margin-top:34px">
+      <h3>So the bar for a learned retriever is high</h3>
+      <p>It has to earn its keep by <strong>adding semantics without losing exact local clues</strong> —
+      and justify deploying a model and maintaining an index on top.</p>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">The right-hand column is the part people underrate. Spend your time there.</div>
+</section>
+<!-- ============ 17 · transplanted from the primer · slide 5 ============ -->
+<section class="slide" data-t="One vector has to carry every clue">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The bottleneck</div>
+  <h1 class="t">One vector has to carry every clue</h1>
+  <p class="sub">A single query can hold several <em>independent</em> relevance constraints.</p>
+  <div class="body">
+    <div class="card solid" style="text-align:center;padding:38px">
+      <p style="font:600 italic 34px/1.35 var(--serif);color:var(--ink)">"two people laughing in a
+      bright office, wide shot, copy space on the left"</p>
+    </div>
+    <div class="chips" style="justify-content:center;margin-top:32px">
+      <span class="chip on">2 people</span><span class="chip on">laughing</span>
+      <span class="chip on">office</span><span class="chip on">wide shot</span>
+      <span class="chip on">copy space left</span>
+    </div>
+    <div class="cols" style="margin-top:34px;align-items:center">
+      <div class="card dark grow">
+        <h3>↓ compressed into</h3>
+        <p style="font:500 22px/1.4 var(--mono);color:#7fd1c6;margin-top:10px">[ single vector · dim d ]</p>
+      </div>
+      <div class="card grow" style="border-color:var(--accent-2)">
+        <h3 style="color:var(--accent-2)">→ diluted signal</h3>
+        <p>"Copy space on the left" is a fact about a <em>region</em> of the image. Pooling decided
+        what to keep <strong>before it knew</strong> anyone would ask.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">This is not "a semantic question about authentication" — it is five constraints that all have to survive. This is the bottleneck to keep referring back to.</div>
+</section>
+<!-- ============ 18 · transplanted from the primer · slide 6 ============ -->
+<section class="slide" data-t="Just increase the dimension?">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
+  <h1 class="t">Just increase the dimension?</h1>
+  <p class="sub">The obvious instinct — and a clean result showing why it doesn't resolve the structural
+  problem.</p>
+  <div class="body">
+    <div class="cols">
+      <div class="stack" style="flex:0 0 600px">
+        <ul class="bullets">
+          <li><strong>LIMIT</strong> builds a toy corpus from random attributes and names; documents
+            hold combinations of them, and queries ask for those combinations.</li>
+          <li><strong>It looks artificial — and it isn't.</strong> Product search has exactly this
+            shape.</li>
+          <li><strong>The question it poses:</strong> can one point encode every useful combination of
+            evidence?</li>
+        </ul>
+        <div class="card">
+          <div class="chips">
+            <span class="chip">gaming monitor</span><span class="chip">27"</span><span class="chip">140 Hz</span>
+          </div>
+          <p style="margin-top:12px">Three constraints that must <em>all</em> survive — exactly like subject × setting
+          × mood × framing across our catalogue.</p>
+        </div>
+      </div>
+      <div class="grow" style="display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:0">
+        <div class="cols" style="gap:20px;min-height:0;flex:0 0 auto;align-items:center">
+          <figure class="grow" style="min-height:0">
+            <img class="zoom" src="/knowledge/_shared/figures/limit-docs.svg" alt="LIMIT construction: documents holding combinations of attributes and names">
+          </figure>
+          <figure class="grow" style="min-height:0">
+            <img class="zoom" src="/knowledge/_shared/figures/limit-matrix.svg" alt="LIMIT relevance matrix: every query-document combination">
+          </figure>
+        </div>
+        <p style="font:400 15px/1.45 var(--sans);color:var(--faint)">Figures: Amélie Chatelain,
+          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
+          Field Guide</em></a>, from data in Weller et al.,
+          <a href="https://arxiv.org/abs/2508.21038">LIMIT</a></p>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2508.21038">On the Theoretical Limitations of Embedding-Based Retrieval · Weller et al., 2025</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">The paper also proves a mathematical capacity limit; skip that here and stay with the intuition.</div>
+</section>
+<!-- ============ 19 · transplanted from the primer · slide 8 ============ -->
+<section class="slide" data-t="Exact match is a gift, but it's sparse">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Is exact match all we need?</div>
+  <h1 class="t sm">Exact match is a gift — but it's sparse</h1>
+  <p class="sub">The wrong conclusion would be that BM25 is all we need.</p>
+  <div class="body">
+    <div class="cols">
+      <figure class="grow" style="min-height:0">
+        <img class="zoom" src="/knowledge/_shared/figures/vocab-mismatch.svg" alt="BM25 performance collapsing on the synonym variant of the LIMIT corpus">
+        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction Field Guide</em></a>, from data in Weller et al., <a href="https://arxiv.org/abs/2508.21038">LIMIT</a></figcaption>
+      </figure>
+      <div class="stack" style="flex:0 0 640px">
+      <div class="card solid">
+        <h3>Vocabulary mismatch is alive and well</h3>
+        <p>Exact retrieval breaks the moment the user says <em>"the beach shoot"</em> and the asset
+        is called <code>DSC02074.JPG</code>, in <code>/Uploads/2024-06/</code>, description empty.</p>
+        <p style="margin-top:14px">On LIMIT's synonym variant, BM25 collapses. Exact matching is only
+        a gift when the vocabulary lines up — and in a DAM, the uncurated folder is the default state.</p>
+      </div>
+      <div class="card dark">
+        <h3>So we want both</h3>
+        <p><strong>Exact-ish local evidence</strong>, which lexical search gives us free —
+        <strong>and soft semantic matching</strong>, which dense retrieval gives us free.</p>
+        <p style="margin-top:12px">At the same time. That is the whole ask.</p>
+      </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2508.21038">On the Theoretical Limitations of Embedding-Based Retrieval · Weller et al., 2025</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Be explicit that this is not a pro-lexical slide. It sets up the "we want both" framing that late interaction answers.</div>
+</section>
+<!-- ============ 20 · transplanted from the primer · slide 9 ============ -->
+<section class="slide" data-t="But wait — what's this?">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
+  <h1 class="t">But wait — what's this?</h1>
+  <p class="sub">One line on that dimension chart doesn't behave like the ordinary dense models.</p>
+  <div class="body">
+    <div class="cols">
+      <figure class="grow" style="min-height:0">
+        <img class="zoom" src="/knowledge/_shared/figures/dimension-curves.svg" alt="The same chart, with one line behaving unlike the other dense models">
+        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Multi-vector Search: A Late Interaction Field Guide</em></a></figcaption>
+      </figure>
+      <div class="stack" style="flex:0 0 500px">
+        <div class="card solid">
+          <span class="num" style="font-size:34px">GTE-ModernColBERT</span>
+          <p style="margin-top:12px">One line here does not behave like the others.</p>
+        </div>
+        <div class="card">
+          <h3>Is it just a huge pooled vector?</h3>
+          <p style="font:600 24px/1.3 var(--serif);color:var(--accent);margin-top:10px">No. It uses a
+          different retrieval paradigm.</p>
+        </div>
+        <div class="card dark">
+          <p>So instead of squeezing more into one vector — keep multiple local vectors, and delay
+          their interaction until the query arrives.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">This is the hinge of the talk. Pause before turning the page.</div>
+</section>
+<!-- ============ 21 · transplanted from the primer · slide 10 ============ -->
+<section class="slide" data-t="Late interaction sits in the middle">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Escaping the ceiling</div>
+  <h1 class="t">Late interaction sits in the middle</h1>
+  <p class="sub">It keeps the bi-encoder's offline document encoding, but lets the query interact with
+  local document vectors during scoring.</p>
+  <div class="body">
+    <figure style="flex:1;min-height:0;align-items:center;justify-content:center">
+      <img class="zoom" src="assets/spectrum.svg" alt="Bi-encoder, late interaction and cross-encoder compared">
+    </figure>
+    <div class="cols" style="margin-top:26px;flex:none">
+      <div class="card accent grow">
+        <h3>That interaction has a name: <span style="color:var(--accent)">MaxSim</span></h3>
+        <p>For every <strong>query token</strong>, find its single best-matching unit of the asset —
+        then sum those best matches. One maximum per query token, no pooling and no averaging, so a
+        rare local clue survives instead of being averaged away.</p>
+      </div>
+      <div class="card grow">
+        <h3>And for us the unit is a <span class="grad">patch</span></h3>
+        <p>Text keeps one vector per token; we keep one per <strong>image patch</strong>. Same
+        operator, different unit — which is why the same retrieval path runs unchanged over photos,
+        PDF pages and video frames.</p>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT</a></li>
+    <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">The key words are "don't pool" and "delay". Everything deployable about this approach comes from documents still being encoded offline.
+
+Define MaxSim carefully here, because every later slide leans on it. Walk one query token: it looks at every unit of the asset, keeps only its best match, and contributes that one number. Sum over query tokens and that is the score.
+
+The example worth saying out loud is the multilingual one: the customer types English, the asset was captioned in Norwegian. Exact match scores zero there, and a pooled vector has already blurred it. MaxSim can still find the one unit that carries the meaning.
+
+The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
+</section>
+<!-- ============ 22 · transplanted from the primer · slide 12 ============ -->
+<section class="slide" data-t="The useful overlap">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this lands</div>
+  <h1 class="t">The useful overlap</h1>
+  <p class="sub">Multi-vector search sits where the two things we wanted actually meet.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card"><h3>Lexical search</h3>
+        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Exact granularity</p>
+        <p style="margin-top:10px">Local clues survive intact. Semantics do not.</p></div>
+      <div class="card"><h3>Dense search</h3>
+        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Soft semantic matching</p>
+        <p style="margin-top:10px">Meaning survives pooling. Local clues may not.</p></div>
+      <div class="card accent" style="border-color:var(--accent);border-width:2px">
+        <h3 style="color:var(--accent)">Multi-vector search</h3>
+        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Both, at a price</p>
+        <p style="margin-top:10px">Late interaction tries to keep exact local evidence <em>and</em> soft
+        semantic matching — for more storage and more scoring work.</p></div>
+    </div>
+    <div class="cols" style="margin-top:30px">
+      <div class="card solid grow" style="border-color:var(--accent-2)">
+        <h3 style="color:var(--accent-2)">And the bill</h3>
+        <p>One vector per patch instead of one per asset — <span class="todo">~1,000×</span> the vectors
+        and <span class="todo">~8×</span> the index bytes after 2-bit residual compression — and
+        scoring is no longer a single dot product. Viable as a reranker over a
+        dense first stage; harder as the first stage itself.</p>
+      </div>
+      <div class="card dark grow">
+        <h3>So: which product?</h3>
+        <p><strong>Stock</strong> browses a shared catalogue — dense, and stay dense.
+        <strong>DAM</strong> looks for one specific asset, where a near miss is a failure. That is
+        where the patch-level index cost is worth paying.</p>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Continue with the full field guide — Amélie Chatelain</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">End by pointing people at the original for the field cases and production objections. This primer deliberately stops here.</div>
+</section>
+<!-- ============ 23 ============ -->
 <section class="slide roomy" data-t="The cold start problem">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The hard part</div>
@@ -557,7 +844,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the strategic argument for the whole ML investment. If they only remember one slide from part one, make it this one.</div>
 </section>
-<!-- ============ 15 · new: the open-data gap ============ -->
+<!-- ============ 24 · new: the open-data gap ============ -->
 <section class="slide" data-t="The open data isn't there either">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The starting point</div>
@@ -617,7 +904,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be generous about the Danish projects — several people in this room will know them, and the argument is stronger if it is clearly not a complaint about Danish NLP. The point is a modality and task gap, not a language-resource gap.</div>
 </section>
-<!-- ============ 16 · new: build it ourselves ============ -->
+<!-- ============ 25 · new: build it ourselves ============ -->
 <section class="slide" data-t="So we build the data ourselves">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The way out</div>
@@ -661,7 +948,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of part one. Everything after it — the modality mix, the model choice, the eval design — is downstream of knowing the corpus. Say the last line slowly.</div>
 </section>
-<!-- ============ 17 · new: know what you store ============ -->
+<!-- ============ 26 · new: know what you store ============ -->
 <section class="slide" data-t="Know what you store and serve">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Know your corpus</div>
@@ -814,7 +1101,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Point at the tiles rather than reading them out. If the room is Danish, these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity, which is the argument for a representation that can hold structure — the next few slides.</div>
 </section>
-<!-- ============ 18 · new: the bias trap ============ -->
+<!-- ============ 27 · new: the bias trap ============ -->
 <section class="slide" data-t="The trap in our own query logs">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The tradeoff without data</div>
@@ -854,7 +1141,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
 </section>
-<!-- ============ 19 · transplanted from the primer · slide 2 ============ -->
+<!-- ============ 28 · transplanted from the primer · slide 2 ============ -->
 <section class="slide" data-t="Resetting the baseline">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Orientation</div>
@@ -906,293 +1193,6 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Keep this tight. It is a shared-vocabulary slide, not an argument. The argument starts next.</div>
-</section>
-<!-- ============ 20 ============ -->
-<section class="slide section" data-t="How retrieval actually works">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
-  <h1>How retrieval actually works</h1>
-  <p class="sub">From one vector per asset to many — and why that choice decides what a search can
-  find.</p>
-</section>
-<!-- ============ 21 · transplanted from the primer · slide 3 ============ -->
-<section class="slide roomy" data-t="Why do DAM users still search by filename?">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
-  <h1 class="t">Why do DAM users still search by <span class="grad">filename</span>?</h1>
-  <p class="sub">If we have strong vision models <em>and</em> strong embedding models, why does
-  every customer still type a filename into the box?</p>
-  <div class="body center">
-    <pre class="code" style="max-width:1240px;font-size:34px;line-height:1.85;padding:52px 60px"><span class="c">search</span>  <span class="s">"Q3_campaign_final_v2"</span>
-<span class="c">browse</span>  /Clients/Bergen/2024-06/</pre>
-    <p class="sub" style="margin-top:48px;text-align:center;max-width:1240px;font-size:30px">They are not being primitive. Exact match
-    came back into fashion for a reason, and it is worth understanding which reason.</p>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Ask the room to guess before advancing. Most people answer "infra" — which is half right, and the other half is the interesting half.</div>
-</section>
-<!-- ============ 22 · transplanted from the primer · slide 4 ============ -->
-<section class="slide" data-t="Filename search is hard to beat">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
-  <h1 class="t">Filename search is hard to beat — and not only on infra</h1>
-  <div class="body">
-    <div class="cols">
-      <div class="card" style="flex:1">
-        <h3>The boring infra reasons</h3>
-        <ul class="bullets" style="margin-top:16px">
-          <li>Zero infrastructure — it already ships with the product</li>
-          <li>No model to deploy</li>
-          <li>No index to maintain</li>
-          <li>Privacy by default</li>
-        </ul>
-      </div>
-      <div class="card accent" style="flex:1">
-        <h3>But also: why it sticks</h3>
-        <ul class="bullets" style="margin-top:16px">
-          <li><strong>Exact matching is extremely strong for filenames.</strong></li>
-          <li><strong>Granularity is non-negotiable</strong> — when you want
-            <code>Q3_campaign_final_v2.psd</code>, you want exactly that file.</li>
-          <li><strong>Filenames and folder trees are structured data</strong>, and structure is
-            cheap to exploit.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="card solid" style="margin-top:34px">
-      <h3>So the bar for a learned retriever is high</h3>
-      <p>It has to earn its keep by <strong>adding semantics without losing exact local clues</strong> —
-      and justify deploying a model and maintaining an index on top.</p>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The right-hand column is the part people underrate. Spend your time there.</div>
-</section>
-<!-- ============ 23 · transplanted from the primer · slide 5 ============ -->
-<section class="slide" data-t="One vector has to carry every clue">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The bottleneck</div>
-  <h1 class="t">One vector has to carry every clue</h1>
-  <p class="sub">A single query can hold several <em>independent</em> relevance constraints.</p>
-  <div class="body">
-    <div class="card solid" style="text-align:center;padding:38px">
-      <p style="font:600 italic 34px/1.35 var(--serif);color:var(--ink)">"two people laughing in a
-      bright office, wide shot, copy space on the left"</p>
-    </div>
-    <div class="chips" style="justify-content:center;margin-top:32px">
-      <span class="chip on">2 people</span><span class="chip on">laughing</span>
-      <span class="chip on">office</span><span class="chip on">wide shot</span>
-      <span class="chip on">copy space left</span>
-    </div>
-    <div class="cols" style="margin-top:34px;align-items:center">
-      <div class="card dark grow">
-        <h3>↓ compressed into</h3>
-        <p style="font:500 22px/1.4 var(--mono);color:#7fd1c6;margin-top:10px">[ single vector · dim d ]</p>
-      </div>
-      <div class="card grow" style="border-color:var(--accent-2)">
-        <h3 style="color:var(--accent-2)">→ diluted signal</h3>
-        <p>"Copy space on the left" is a fact about a <em>region</em> of the image. Pooling decided
-        what to keep <strong>before it knew</strong> anyone would ask.</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This is not "a semantic question about authentication" — it is five constraints that all have to survive. This is the bottleneck to keep referring back to.</div>
-</section>
-<!-- ============ 24 · transplanted from the primer · slide 6 ============ -->
-<section class="slide" data-t="Just increase the dimension?">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
-  <h1 class="t">Just increase the dimension?</h1>
-  <p class="sub">The obvious instinct — and a clean result showing why it doesn't resolve the structural
-  problem.</p>
-  <div class="body">
-    <div class="cols">
-      <div class="stack" style="flex:0 0 600px">
-        <ul class="bullets">
-          <li><strong>LIMIT</strong> builds a toy corpus from random attributes and names; documents
-            hold combinations of them, and queries ask for those combinations.</li>
-          <li><strong>It looks artificial — and it isn't.</strong> Product search has exactly this
-            shape.</li>
-          <li><strong>The question it poses:</strong> can one point encode every useful combination of
-            evidence?</li>
-        </ul>
-        <div class="card">
-          <div class="chips">
-            <span class="chip">gaming monitor</span><span class="chip">27"</span><span class="chip">140 Hz</span>
-          </div>
-          <p style="margin-top:12px">Three constraints that must <em>all</em> survive — exactly like subject × setting
-          × mood × framing across our catalogue.</p>
-        </div>
-      </div>
-      <div class="grow" style="display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:0">
-        <div class="cols" style="gap:20px;min-height:0;flex:0 0 auto;align-items:center">
-          <figure class="grow" style="min-height:0">
-            <img class="zoom" src="/knowledge/_shared/figures/limit-docs.svg" alt="LIMIT construction: documents holding combinations of attributes and names">
-          </figure>
-          <figure class="grow" style="min-height:0">
-            <img class="zoom" src="/knowledge/_shared/figures/limit-matrix.svg" alt="LIMIT relevance matrix: every query-document combination">
-          </figure>
-        </div>
-        <p style="font:400 15px/1.45 var(--sans);color:var(--faint)">Figures: Amélie Chatelain,
-          <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction
-          Field Guide</em></a>, from data in Weller et al.,
-          <a href="https://arxiv.org/abs/2508.21038">LIMIT</a></p>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2508.21038">On the Theoretical Limitations of Embedding-Based Retrieval · Weller et al., 2025</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The paper also proves a mathematical capacity limit; skip that here and stay with the intuition.</div>
-</section>
-<!-- ============ 25 · transplanted from the primer · slide 8 ============ -->
-<section class="slide" data-t="Exact match is a gift, but it's sparse">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Is exact match all we need?</div>
-  <h1 class="t sm">Exact match is a gift — but it's sparse</h1>
-  <p class="sub">The wrong conclusion would be that BM25 is all we need.</p>
-  <div class="body">
-    <div class="cols">
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" src="/knowledge/_shared/figures/vocab-mismatch.svg" alt="BM25 performance collapsing on the synonym variant of the LIMIT corpus">
-        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction Field Guide</em></a>, from data in Weller et al., <a href="https://arxiv.org/abs/2508.21038">LIMIT</a></figcaption>
-      </figure>
-      <div class="stack" style="flex:0 0 640px">
-      <div class="card solid">
-        <h3>Vocabulary mismatch is alive and well</h3>
-        <p>Exact retrieval breaks the moment the user says <em>"the beach shoot"</em> and the asset
-        is called <code>DSC02074.JPG</code>, in <code>/Uploads/2024-06/</code>, description empty.</p>
-        <p style="margin-top:14px">On LIMIT's synonym variant, BM25 collapses. Exact matching is only
-        a gift when the vocabulary lines up — and in a DAM, the uncurated folder is the default state.</p>
-      </div>
-      <div class="card dark">
-        <h3>So we want both</h3>
-        <p><strong>Exact-ish local evidence</strong>, which lexical search gives us free —
-        <strong>and soft semantic matching</strong>, which dense retrieval gives us free.</p>
-        <p style="margin-top:12px">At the same time. That is the whole ask.</p>
-      </div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2508.21038">On the Theoretical Limitations of Embedding-Based Retrieval · Weller et al., 2025</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Be explicit that this is not a pro-lexical slide. It sets up the "we want both" framing that late interaction answers.</div>
-</section>
-<!-- ============ 26 · transplanted from the primer · slide 9 ============ -->
-<section class="slide" data-t="But wait — what's this?">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
-  <h1 class="t">But wait — what's this?</h1>
-  <p class="sub">One line on that dimension chart doesn't behave like the ordinary dense models.</p>
-  <div class="body">
-    <div class="cols">
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" src="/knowledge/_shared/figures/dimension-curves.svg" alt="The same chart, with one line behaving unlike the other dense models">
-        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Multi-vector Search: A Late Interaction Field Guide</em></a></figcaption>
-      </figure>
-      <div class="stack" style="flex:0 0 500px">
-        <div class="card solid">
-          <span class="num" style="font-size:34px">GTE-ModernColBERT</span>
-          <p style="margin-top:12px">One line here does not behave like the others.</p>
-        </div>
-        <div class="card">
-          <h3>Is it just a huge pooled vector?</h3>
-          <p style="font:600 24px/1.3 var(--serif);color:var(--accent);margin-top:10px">No. It uses a
-          different retrieval paradigm.</p>
-        </div>
-        <div class="card dark">
-          <p>So instead of squeezing more into one vector — keep multiple local vectors, and delay
-          their interaction until the query arrives.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This is the hinge of the talk. Pause before turning the page.</div>
-</section>
-<!-- ============ 27 · transplanted from the primer · slide 10 ============ -->
-<section class="slide" data-t="Late interaction sits in the middle">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Escaping the ceiling</div>
-  <h1 class="t">Late interaction sits in the middle</h1>
-  <p class="sub">It keeps the bi-encoder's offline document encoding, but lets the query interact with
-  local document vectors during scoring.</p>
-  <div class="body">
-    <figure style="flex:1;min-height:0;align-items:center;justify-content:center">
-      <img class="zoom" src="assets/spectrum.svg" alt="Bi-encoder, late interaction and cross-encoder compared">
-    </figure>
-    <div class="cols" style="margin-top:26px;flex:none">
-      <div class="card accent grow">
-        <h3>That interaction has a name: <span style="color:var(--accent)">MaxSim</span></h3>
-        <p>For every <strong>query token</strong>, find its single best-matching unit of the asset —
-        then sum those best matches. One maximum per query token, no pooling and no averaging, so a
-        rare local clue survives instead of being averaged away.</p>
-      </div>
-      <div class="card grow">
-        <h3>And for us the unit is a <span class="grad">patch</span></h3>
-        <p>Text keeps one vector per token; we keep one per <strong>image patch</strong>. Same
-        operator, different unit — which is why the same retrieval path runs unchanged over photos,
-        PDF pages and video frames.</p>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT</a></li>
-    <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The key words are "don't pool" and "delay". Everything deployable about this approach comes from documents still being encoded offline.
-
-Define MaxSim carefully here, because every later slide leans on it. Walk one query token: it looks at every unit of the asset, keeps only its best match, and contributes that one number. Sum over query tokens and that is the score.
-
-The example worth saying out loud is the multilingual one: the customer types English, the asset was captioned in Norwegian. Exact match scores zero there, and a pooled vector has already blurred it. MaxSim can still find the one unit that carries the meaning.
-
-The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
-</section>
-<!-- ============ 28 · transplanted from the primer · slide 12 ============ -->
-<section class="slide" data-t="The useful overlap">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this lands</div>
-  <h1 class="t">The useful overlap</h1>
-  <p class="sub">Multi-vector search sits where the two things we wanted actually meet.</p>
-  <div class="body">
-    <div class="grid-3">
-      <div class="card"><h3>Lexical search</h3>
-        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Exact granularity</p>
-        <p style="margin-top:10px">Local clues survive intact. Semantics do not.</p></div>
-      <div class="card"><h3>Dense search</h3>
-        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Soft semantic matching</p>
-        <p style="margin-top:10px">Meaning survives pooling. Local clues may not.</p></div>
-      <div class="card accent" style="border-color:var(--accent);border-width:2px">
-        <h3 style="color:var(--accent)">Multi-vector search</h3>
-        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Both, at a price</p>
-        <p style="margin-top:10px">Late interaction tries to keep exact local evidence <em>and</em> soft
-        semantic matching — for more storage and more scoring work.</p></div>
-    </div>
-    <div class="cols" style="margin-top:30px">
-      <div class="card solid grow" style="border-color:var(--accent-2)">
-        <h3 style="color:var(--accent-2)">And the bill</h3>
-        <p>One vector per patch instead of one per asset — <span class="todo">~1,000×</span> the vectors
-        and <span class="todo">~8×</span> the index bytes after 2-bit residual compression — and
-        scoring is no longer a single dot product. Viable as a reranker over a
-        dense first stage; harder as the first stage itself.</p>
-      </div>
-      <div class="card dark grow">
-        <h3>So: which product?</h3>
-        <p><strong>Stock</strong> browses a shared catalogue — dense, and stay dense.
-        <strong>DAM</strong> looks for one specific asset, where a near miss is a failure. That is
-        where the patch-level index cost is worth paying.</p>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Continue with the full field guide — Amélie Chatelain</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">End by pointing people at the original for the field cases and production objections. This primer deliberately stops here.</div>
 </section>
 <!-- ============ 29 · adapted from her slide 36 ============ -->
 <section class="slide section" data-t="So why isn't this everywhere yet?">
