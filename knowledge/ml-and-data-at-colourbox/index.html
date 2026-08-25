@@ -97,10 +97,10 @@ The robotics background is worth one sentence because it explains the bias — c
 </section>
 
 <!-- ============ 4 · where this is going ============ -->
-<section class="slide tight" data-t="An agent is never better than its search">
+<section class="slide tight" data-t="Your agents are only as good as your retrieval">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this is going</div>
-  <h1 class="t">An agent is never better than its <span class="grad">search</span></h1>
+  <h1 class="t">Your agents are only as good as your <span class="grad">retrieval</span></h1>
   <p class="sub">What everyone is building on top of these products is <strong>agentic search</strong>:
   a RAG application that plans, retrieves and re-retrieves over a customer's own material — images,
   drawings, scanned PDFs, video.</p>
@@ -146,8 +146,13 @@ The robotics background is worth one sentence because it explains the bias — c
       </div>
     </div>
   </div>
+  <ul class="sources">
+    <li><a href="https://hugobowne.substack.com/p/your-agents-are-only-as-good-as-your">Your Agents Are Only As Good As Your Retrieval</a> · Hugo Bowne-Anderson, 21 August 2026 — where this slide's title comes from</li>
+  </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide that gives the talk its direction, so do not rush it. Everything from here to the end is in service of the one claim in the headline.
+
+The title is Hugo Bowne-Anderson's, from a piece published a few days before this talk — worth saying so out loud, it costs one sentence and the phrasing is his. His version of the argument goes further than mine: a bad retrieval does not only produce a wrong answer, it produces a wrong *action*, because the agent has tools. One stale document can propagate through several reasoning steps and end in a deletion or a refund. Atita Arora's line in that piece is the one to borrow if anyone pushes back — evaluate retrieval before you orchestrate.
 
 For a room of developers, the useful framing is that this is the retrieval half of RAG, called repeatedly instead of once. Most people have built the single-shot version; the agentic version just turns the retrieval quality dial into the thing that decides whether the whole system works.
 
