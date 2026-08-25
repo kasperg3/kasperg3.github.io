@@ -63,40 +63,8 @@
 
 The robotics background is worth one sentence because it explains the bias — coordination, autonomy and evaluation under uncertainty are the same problems wearing different clothes.</div>
 </section>
-<!-- ============ 3 ============ -->
-<section class="slide roomy" data-t="Two products, two retrieval problems">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The landscape</div>
-  <h1 class="t">Two products, two retrieval problems</h1>
-  <p class="sub">A stock library and a DAM system look similar from the outside. The search problem
-  underneath is not the same one.</p>
-  <div class="body">
-    <div class="grid-2">
-      <div class="card solid">
-        <img class="brand cb" src="assets/colourbox.webp" alt="Colourbox">
-        <h3>Stock photo library</h3>
-        <p><strong>One shared catalogue, many unrelated buyers.</strong> Every user searches the same
-        corpus with no prior relationship to any of it. Intent is broad and visual — "two people
-        laughing in an office, lots of copy space".</p>
-        <p style="margin-top:14px">Success is <em>finding something good enough, fast</em>. There is
-        rarely one correct answer.</p>
-      </div>
-      <div class="card solid">
-        <img class="brand sf" src="assets/skyfish.webp" alt="Skyfish">
-        <h3>DAM system</h3>
-        <p><strong>One customer's own assets, and they know what's in there.</strong> The user is often
-        looking for a specific known item — a campaign shoot, a signed contract, last year's product
-        video.</p>
-        <p style="margin-top:14px">Success is <em>finding the right one</em>. A near miss is a failure,
-        not a compromise.</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This distinction drives every later architecture decision — recall-oriented browsing versus precision-oriented lookup. Make it early and refer back to it.</div>
-</section>
 
-<!-- ============ 4 · ask the room ============ -->
+<!-- ============ 3 · ask the room ============ -->
 <section class="slide section" data-t="Who here has tried agentic search?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Setting the frame</div>
@@ -107,7 +75,7 @@ The robotics background is worth one sentence because it explains the bias — c
 Do not explain anything yet. Nothing else goes on this slide; the whole point is that they answer before they know where it is going. Then advance.</div>
 </section>
 
-<!-- ============ 5 · setting the frame ============ -->
+<!-- ============ 4 · setting the frame ============ -->
 <section class="slide tight" data-t="You are all already using one">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Setting the frame</div>
@@ -166,7 +134,7 @@ The reason it works there is worth naming explicitly, because it is the thing we
 Then the turn. Our corpus is images, drawings, scanned pages and video. There is no grep for a photograph. Everything the rest of this talk is about — embeddings, late interaction, the funnel, the vector store — exists to build the tool that this agent already had for free.</div>
 </section>
 
-<!-- ============ 6 · where this is going ============ -->
+<!-- ============ 5 · where this is going ============ -->
 <section class="slide tight" data-t="Your agents are only as good as your retrieval">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Why agents amplify retrieval failure</div>
@@ -256,6 +224,39 @@ The number is worth saying precisely. A median of 24 search calls per question i
 The compounding is the part people underestimate, and it is worse for us than for a chat product, because our agents will have tools. A wrong document does not only produce a wrong sentence — it produces a wrong action, on a customer's own asset library.
 
 The chips are the map for the next half hour. Say we come back to this exact question at the end, with two papers arguing it from opposite directions.</div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="slide roomy" data-t="Two products, two retrieval problems">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The landscape</div>
+  <h1 class="t">Two products, two retrieval problems</h1>
+  <p class="sub">A stock library and a DAM system look similar from the outside. The search problem
+  underneath is not the same one.</p>
+  <div class="body">
+    <div class="grid-2">
+      <div class="card solid">
+        <img class="brand cb" src="assets/colourbox.webp" alt="Colourbox">
+        <h3>Stock photo library</h3>
+        <p><strong>One shared catalogue, many unrelated buyers.</strong> Every user searches the same
+        corpus with no prior relationship to any of it. Intent is broad and visual — "two people
+        laughing in an office, lots of copy space".</p>
+        <p style="margin-top:14px">Success is <em>finding something good enough, fast</em>. There is
+        rarely one correct answer.</p>
+      </div>
+      <div class="card solid">
+        <img class="brand sf" src="assets/skyfish.webp" alt="Skyfish">
+        <h3>DAM system</h3>
+        <p><strong>One customer's own assets, and they know what's in there.</strong> The user is often
+        looking for a specific known item — a campaign shoot, a signed contract, last year's product
+        video.</p>
+        <p style="margin-top:14px">Success is <em>finding the right one</em>. A near miss is a failure,
+        not a compromise.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">This distinction drives every later architecture decision — recall-oriented browsing versus precision-oriented lookup. Make it early and refer back to it.</div>
 </section>
 
 <!-- ============ 7 ============ -->
