@@ -371,8 +371,8 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
 <section class="slide section" data-t="Search in our systems">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part one</div>
   <h1>Search in our systems</h1>
-  <p class="sub">Two products with opposite priorities — and why most of what they hold has to be
-  searched as an image.</p>
+  <p class="sub">Two products that look alike from the outside, with opposite priorities
+  underneath.</p>
 </section>
 <!-- ============ 10 ============ -->
 <section class="slide roomy" data-t="Two products, two retrieval problems">
@@ -393,7 +393,7 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
       </div>
       <div class="card solid">
         <img class="brand sf" src="assets/skyfish.webp" alt="Skyfish">
-        <h3>DAM system</h3>
+        <h3>Digital Asset Management (DAM) system</h3>
         <p><strong>One customer's own assets, and they know what's in there.</strong> The user is often
         looking for a specific known item — a campaign shoot, a signed contract, last year's product
         video.</p>
@@ -432,8 +432,8 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
         video, PDF pages and a long tail of everything else — over one customer's own material.</p>
         <p style="margin-top:10px"><strong>So: patches, and pay for them.</strong> Treat almost all of
         it as visual retrieval and the DAM stops needing one pipeline per file type — a PDF page is an
-        image with structure, a video is a sequence of them, and <strong>the same similarity score
-        applies unchanged</strong>.</p>
+        image with structure, a video is a sequence of them, and <strong>one scoring rule covers all of
+        it</strong>. Part two is where that rule gets built.</p>
       </div>
     </div>
     <div class="corpus" style="grid-template-columns:repeat(6,1fr);margin-top:18px">
@@ -586,7 +586,240 @@ Point at the tiles rather than reading them out. If the room is Danish these are
 
 Two are worth an extra beat. PDFs are the surprise: page images rather than extracted text, so layout, tables and figures stay searchable, and it is where late interaction has the clearest case. Video is the other: sampled to frames, one asset becomes many vectors and the temporal question — which moment — becomes unavoidable. And the long tail is real: office files, audio, archives, formats one customer cares about deeply and nobody else has. That tail is why "one pipeline per file type" loses.</div>
 </section>
-<!-- ============ 12 · mm 2 · the painting ============ -->
+<!-- ============ 12 ============ -->
+<section class="slide section" data-t="How retrieval actually works">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
+  <h1>How retrieval actually works</h1>
+  <p class="sub">Why filename search is still the baseline, what beats it, why most of a DAM has to be
+  searched as an image — and what all of it costs to run.</p>
+</section>
+<!-- ============ 13 · transplanted from the primer · slide 3 ============ -->
+<section class="slide roomy" data-t="Why do DAM users still search by filename?">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
+  <h1 class="t">Why do DAM users still search by <span class="grad">filename</span>?</h1>
+  <p class="sub">If we have strong vision models <em>and</em> strong embedding models, why does
+  every customer still type a filename into the box?</p>
+  <div class="body center">
+    <pre class="code" style="max-width:1240px;font-size:34px;line-height:1.85;padding:52px 60px"><span class="c">search</span>  <span class="s">"Q3_campaign_final_v2"</span>
+<span class="c">browse</span>  /Clients/Bergen/2024-06/</pre>
+    <p class="sub" style="margin-top:48px;text-align:center;max-width:1240px;font-size:30px">They are not being primitive. Exact match
+    came back into fashion for a reason, and it is worth understanding which reason.</p>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Ask the room to guess before advancing. Most people answer "infra" — which is half right, and the other half is the interesting half.</div>
+</section>
+<!-- ============ 14 · transplanted from the primer · slide 4 ============ -->
+<section class="slide" data-t="Filename search is hard to beat — and not only on infra">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
+  <h1 class="t">Filename search is hard to beat — and not only on infra</h1>
+  <div class="body">
+    <div class="cols">
+      <div class="card" style="flex:1">
+        <h3>The boring infra reasons</h3>
+        <ul class="bullets" style="margin-top:16px">
+          <li>Zero infrastructure — it already ships with the product</li>
+          <li>No model to deploy</li>
+          <li>No index to maintain</li>
+          <li>Privacy by default</li>
+        </ul>
+      </div>
+      <div class="card accent" style="flex:1">
+        <h3>But also: why it sticks</h3>
+        <ul class="bullets" style="margin-top:16px">
+          <li><strong>Exact matching is extremely strong for filenames.</strong></li>
+          <li><strong>Granularity is non-negotiable</strong> — when you want
+            <code>Q3_campaign_final_v2.psd</code>, you want exactly that file.</li>
+          <li><strong>Filenames and folder trees are structured data</strong>, and structure is
+            cheap to exploit.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card solid" style="margin-top:34px">
+      <h3>So the bar for a learned retriever is high</h3>
+      <p>It has to earn its keep by <strong>adding semantics without losing exact local clues</strong> —
+      and justify deploying a model and maintaining an index on top.</p>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">The right-hand column is the part people underrate. Spend your time there.</div>
+</section>
+<!-- ============ 15 · transplanted from the primer · slide 8 ============ -->
+<section class="slide" data-t="Exact match is a gift — only when the vocabulary lines up">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Is exact match all we need?</div>
+  <h1 class="t sm">Exact match is a gift — only when the vocabulary lines up</h1>
+  <p class="sub">The wrong conclusion would be that BM25 is all we need.</p>
+  <div class="body">
+    <div class="cols">
+      <figure class="grow" style="min-height:0">
+        <img class="zoom" src="/knowledge/_shared/figures/vocab-mismatch.svg" alt="BM25 performance collapsing on the synonym variant of the LIMIT corpus">
+        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction Field Guide</em></a>, from data in Weller et al., <a href="https://arxiv.org/abs/2508.21038">LIMIT</a></figcaption>
+      </figure>
+      <div class="stack" style="flex:0 0 640px">
+      <div class="card solid">
+        <h3>Vocabulary mismatch is alive and well</h3>
+        <p>Exact retrieval breaks the moment the user says <em>"the beach shoot"</em> and the asset
+        is called <code>DSC02074.JPG</code>, in <code>/Uploads/2024-06/</code>, description empty.</p>
+        <p style="margin-top:14px">On the synonym variant of <strong>LIMIT</strong> — a benchmark where
+        documents carry combinations of attributes and queries ask for those combinations — BM25
+        collapses. And in a DAM the
+        uncurated folder is the default state.</p>
+      </div>
+      <div class="card dark">
+        <h3>So we want both</h3>
+        <p><strong>Exact-ish local evidence</strong>, which lexical search gives us free —
+        <strong>and soft semantic matching</strong>, which dense retrieval gives us free.</p>
+        <p style="margin-top:12px">At the same time. That is the whole ask.</p>
+      </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
+    <li><a href="https://arxiv.org/abs/2508.21038">On the Theoretical Limitations of Embedding-Based Retrieval · Weller et al., 2025</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Be explicit that this is not a pro-lexical slide. It sets up the "we want both" framing that late interaction answers.</div>
+</section>
+<!-- ============ 16 · transplanted from the primer · slide 9 ============ -->
+<section class="slide" data-t="But wait — what's this?">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Something on this chart</div>
+  <h1 class="t">But wait — what's this?</h1>
+  <p class="sub">Retrieval quality against embedding dimension — and one line here does not behave like
+  the other dense models.</p>
+  <div class="body">
+    <div class="cols">
+      <figure class="grow" style="min-height:0">
+        <img class="zoom" src="/knowledge/_shared/figures/dimension-curves.svg" alt="Retrieval quality against embedding dimension, with one line behaving unlike the other dense models">
+        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Multi-vector Search: A Late Interaction Field Guide</em></a></figcaption>
+      </figure>
+      <div class="stack" style="flex:0 0 500px">
+        <div class="card solid">
+          <span class="num" style="font-size:34px">GTE-ModernColBERT</span>
+          <p style="margin-top:12px">One line here does not behave like the others.</p>
+        </div>
+        <div class="card">
+          <h3>Is it just a huge pooled vector?</h3>
+          <p style="font:600 24px/1.3 var(--serif);color:var(--accent);margin-top:10px">No. It uses a
+          different retrieval paradigm.</p>
+        </div>
+        <div class="card dark">
+          <p>So a wider vector is not the fix. Which leaves the real question: what exactly gets lost
+          when we pool one?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">This is the hinge of the talk. Pause before turning the page.</div>
+</section>
+<!-- ============ 17 · the bottleneck, restated ============ -->
+<section class="slide" data-t="One vector has to carry every clue">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The bottleneck</div>
+  <h1 class="t">One vector has to carry every clue</h1>
+  <p class="sub">Not because the vector is too narrow — because a single query can hold several
+  <em>independent</em> constraints, and pooling has to choose between them.</p>
+  <div class="body">
+    <div class="card solid" style="text-align:center;padding:38px">
+      <p style="font:600 italic 34px/1.35 var(--serif);color:var(--ink)">"two people laughing in a
+      bright office, wide shot, copy space on the left"</p>
+    </div>
+    <div class="chips" style="justify-content:center;margin-top:32px">
+      <span class="chip on">2 people</span><span class="chip on">laughing</span>
+      <span class="chip on">office</span><span class="chip on">wide shot</span>
+      <span class="chip on">copy space left</span>
+    </div>
+    <div class="cols" style="margin-top:34px;align-items:center">
+      <div class="card dark grow">
+        <h3>↓ compressed into</h3>
+        <p style="font:500 22px/1.4 var(--mono);color:#7fd1c6;margin-top:10px">[ single vector · dim d ]</p>
+      </div>
+      <div class="card grow" style="border-color:var(--accent-2)">
+        <h3 style="color:var(--accent-2)">→ diluted signal</h3>
+        <p>"Copy space on the left" is a fact about a <em>region</em> of the image. Pooling decided
+        what to keep <strong>before it knew</strong> anyone would ask.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Placed here on purpose. The chart before it showed that width is not the fix; this is why — the constraints in one query are independent of each other, so pooling loses some of them no matter how many dimensions it has to play with.
+
+This is not "a semantic question about authentication" — it is five constraints that all have to survive. Read the query out and count them on your fingers.
+
+This is the bottleneck to keep referring back to, and the next slide is the answer to it.</div>
+</section>
+<!-- ============ 18 · transplanted from the primer · slide 10 ============ -->
+<section class="slide tight" data-t="Late interaction sits in the middle">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Escaping the ceiling</div>
+  <h1 class="t">Late interaction sits in the middle</h1>
+  <p class="sub">Three ways to score a query against a document. The difference is
+  <strong>when the two sides are allowed to meet</strong>.</p>
+  <div class="body">
+    <div class="axis">
+      <span>&larr; cheaper &middot; more scalable</span>
+      <span>more accurate &middot; expensive &rarr;</span>
+    </div>
+    <svg class="axis-rail" viewBox="0 0 1680 14" preserveAspectRatio="none" aria-hidden="true">
+      <defs><linearGradient id="axg" x1="0" x2="1">
+        <stop offset="0" stop-color="var(--accent)"/><stop offset=".5" stop-color="var(--accent-3)"/>
+        <stop offset="1" stop-color="var(--accent-2)"/></linearGradient></defs>
+      <path d="M0 7 H1680" stroke="url(#axg)" stroke-opacity=".45" stroke-width="2"/>
+      <g fill="url(#axg)"><path d="M280 0 l7 7 -7 7 -7 -7z"/><path d="M840 0 l7 7 -7 7 -7 -7z"/>
+      <path d="M1400 0 l7 7 -7 7 -7 -7z"/></g>
+    </svg>
+    <div class="arch">
+      <div class="card solid arch-p">
+        <h3>Single-vector retrieval<small>pooled dual encoder</small></h3>
+        <svg viewBox="0 0 480 284" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Single-vector retrieval. Query and document are encoded separately into token vectors, each side is pooled down to a single vector, and the score is one dot product."><g font-family="var(--sans)"><text x="118" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">QUERY</text><text x="362" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">DOCUMENT</text><rect x="92" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="118" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">q</text><rect x="336" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="362" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">d</text><path d="M118 41 L118 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 52 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 41 L362 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 52 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="82" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q1</text><rect x="121" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q2</text><rect x="82" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q3</text><rect x="121" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q4</text><rect x="306.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d1</text><rect x="345.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d2</text><rect x="384.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d3</text><rect x="306.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d4</text><rect x="345.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d5</text><rect x="384.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d6</text><path d="M118 97 L118 102" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 108 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 97 L362 102" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 108 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="62" y="111" width="112" height="27" rx="8" fill="var(--dark)"/><text x="118" y="129.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e9edf2">Encoder</text><rect x="306" y="111" width="112" height="27" rx="8" fill="var(--dark)"/><text x="362" y="129.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e9edf2">Encoder</text><path d="M118 138 L118 143" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 149 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 138 L362 143" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 149 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="83" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="83" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="83" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="102" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="102" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="102" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="121" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="121" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="121" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="140" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="140" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="140" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="308" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="308" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="308" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="327" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="327" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="327" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="346" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="346" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="346" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="365" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="365" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="365" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="384" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="384" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="384" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="403" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="403" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="403" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><path d="M118 170 L118 175" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 181 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 170 L362 175" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 181 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="93" y="183" width="50" height="19" rx="7" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3"/><text x="118" y="196.5" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing=".8" fill="var(--accent-2)">pool</text><rect x="337" y="183" width="50" height="19" rx="7" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3"/><text x="362" y="196.5" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing=".8" fill="var(--accent-2)">pool</text><path d="M118 202 L118 207" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 213 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 202 L362 207" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 213 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="107" y="217" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="107" y="222" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="107" y="227" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="351" y="217" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="351" y="222" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="351" y="227" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><path d="M118 234 C118 250 198 246 231 250" stroke="var(--accent)" stroke-opacity=".55" stroke-width="1.6" fill="none"/><path d="M362 234 C362 250 282 246 249 250" stroke="var(--accent)" stroke-opacity=".55" stroke-width="1.6" fill="none"/><circle cx="240" cy="251" r="4" fill="var(--accent)"/><text x="240" y="266" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">one dot product</text><text x="240" y="280" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--faint)">pool(q) &#183; pool(d)</text></g></svg>
+        <div class="badge off">docs encoded offline</div>
+      </div>
+      <div class="card solid arch-p on">
+        <h3>Late-interaction retrieval<small>multi-vector dual encoder</small></h3>
+        <svg viewBox="0 0 480 284" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Late-interaction retrieval. Query and document are still encoded separately and nothing is pooled: every query vector is compared against every document vector, and only its single best match counts."><g font-family="var(--sans)"><text x="118" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">QUERY</text><text x="362" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">DOCUMENT</text><rect x="92" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="118" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">q</text><rect x="336" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="362" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">d</text><path d="M118 41 L118 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 52 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 41 L362 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 52 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="82" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q1</text><rect x="121" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q2</text><rect x="82" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q3</text><rect x="121" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q4</text><rect x="306.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d1</text><rect x="345.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d2</text><rect x="384.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d3</text><rect x="306.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d4</text><rect x="345.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d5</text><rect x="384.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d6</text><path d="M118 97 L118 102" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 108 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 97 L362 102" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 108 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="62" y="111" width="112" height="27" rx="8" fill="var(--dark)"/><text x="118" y="129.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e9edf2">Encoder</text><rect x="306" y="111" width="112" height="27" rx="8" fill="var(--dark)"/><text x="362" y="129.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e9edf2">Encoder</text><path d="M118 138 L118 143" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 149 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 138 L362 143" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 149 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M133 176.5 L347 159.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 193.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 210.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 227.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 244.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 159.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 176.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 193.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 210.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 244.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 176.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 193.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 210.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 227.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 244.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 159.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 176.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 193.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 227.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 244.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 176.5" stroke="var(--accent)" stroke-width="2" stroke-opacity=".95"/><path d="M133 193.5 L347 227.5" stroke="var(--accent)" stroke-width="2" stroke-opacity=".95"/><path d="M133 210.5 L347 159.5" stroke="var(--accent)" stroke-width="2" stroke-opacity=".95"/><path d="M133 227.5 L347 210.5" stroke="var(--accent)" stroke-width="2" stroke-opacity=".95"/><rect x="103" y="170" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="187" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="204" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="221" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="153" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="170" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="187" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="204" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="221" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="238" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="241.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="241.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="241.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="241.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><text x="240" y="266" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">sum of best matches</text><text x="240" y="280" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--faint)">&#931; max &#183; nothing pooled</text></g></svg>
+        <div class="badge off">docs encoded offline</div>
+      </div>
+      <div class="card solid arch-p">
+        <h3>Full-interaction reranking<small>cross-encoder</small></h3>
+        <svg viewBox="0 0 480 284" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Full-interaction reranking. Query and document tokens enter one encoder together, so every token attends to every other token and the model emits a single score. Nothing can be precomputed."><g font-family="var(--sans)"><text x="118" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">QUERY</text><text x="362" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">DOCUMENT</text><rect x="92" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="118" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">q</text><rect x="336" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="362" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">d</text><path d="M118 41 L118 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 52 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 41 L362 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 52 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="82" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q1</text><rect x="121" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q2</text><rect x="82" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q3</text><rect x="121" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q4</text><rect x="306.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d1</text><rect x="345.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d2</text><rect x="384.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d3</text><rect x="306.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d4</text><rect x="345.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d5</text><rect x="384.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d6</text><path d="M118 97 L118 102" stroke="var(--accent-3)" stroke-width="1.6"/><path d="M118 108 l-4.5 -7 h9 z" fill="var(--accent-3)"/><path d="M362 97 L362 102" stroke="var(--accent-3)" stroke-width="1.6"/><path d="M362 108 l-4.5 -7 h9 z" fill="var(--accent-3)"/><rect x="26" y="109" width="428" height="132" rx="13" fill="var(--card-solid)" stroke="var(--accent-3)" stroke-opacity=".5"/><text x="240" y="127" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--ink)">Encoder</text><path d="M133 159.5 L347 142.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 159.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 176.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 193.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 210.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 227.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 142.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 159.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 176.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 193.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 210.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 227.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 142.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 159.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 176.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 193.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 210.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 227.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 142.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 159.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 176.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 193.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 210.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 227.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><rect x="103" y="153" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="170" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="187" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="204" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="136" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="139.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="139.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="139.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="139.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="153" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="170" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="187" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="204" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="221" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><path d="M240 241 L240 247" stroke="var(--accent-3)" stroke-width="1.6"/><path d="M240 253 l-4.5 -7 h9 z" fill="var(--accent-3)"/><rect x="176" y="255" width="128" height="25" rx="9" fill="none" stroke="var(--accent-3)" stroke-opacity=".6"/><text x="240" y="272" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--accent-3)">one score</text></g></svg>
+        <div class="badge qt">query-time only</div>
+      </div>
+    </div>
+    <div class="cols" style="margin-top:20px;flex:none">
+      <div class="card accent grow">
+        <h3>That interaction has a name: <span style="color:var(--accent)">MaxSim</span></h3>
+        <p>For every <strong>query token</strong>, keep only its best-matching unit of the asset,
+        then sum those maxima. Nothing is pooled, so a rare local clue survives.</p>
+      </div>
+      <div class="card grow">
+        <h3>And for us the unit is a <span class="grad">patch</span></h3>
+        <p>Same operator, patches instead of tokens — which is where the next few slides go.</p>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT</a></li>
+    <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction</a></li>
+  </ul>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Read the three panels left to right, and read them as the same picture drawn three times — the only thing that changes is where the query and the document are allowed to meet.
+
+Left: both sides are encoded separately, then each side is squeezed through pool down to one vector, and the score is a single dot product. Cheap, scalable, and the compression happens before anyone knows what will be asked.
+
+Middle: same two encoders, same offline document side — but nothing is pooled. Every query vector is compared against every document vector, and only the best match per query vector counts. The four bold lines are those maxima; the faint ones are the comparisons that lose.
+
+Right: there is only one encoder, and the query and the document go into it together. Every token attends to every token, which is why it scores best and why nothing can be precomputed — the badge is the whole argument, "query-time only" means you can never run this over the catalogue, only over a shortlist.
+
+The key words are "don't pool" and "delay". Everything deployable about the middle column comes from documents still being encoded offline.
+
+Define MaxSim carefully here — this is where the thing we have been calling a similarity score gets its name, and every later slide leans on it. The patch card is a promise, not a new idea: say "the unit is whatever we chose to keep vectors for", and that the next few slides show it on a real page. Do not explain the geometry here — the ColPali slide does that. Walk one query token: it looks at every unit of the asset, keeps only its best match, and contributes that one number. Sum over query tokens and that is the score.
+
+The example worth saying out loud is the multilingual one: the customer types English, the asset was captioned in Norwegian. Exact match scores zero there, and a pooled vector has already blurred it. MaxSim can still find the one unit that carries the meaning.
+
+The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
+</section>
+<!-- ============ 19 · mm 2 · the painting ============ -->
 <section class="slide" data-t="A picture is worth a thousand words">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Why visual retrieval at all</div>
   <h1 class="t">A picture is worth a thousand words</h1>
@@ -632,7 +865,7 @@ A traditional text pipeline cannot touch an image without a captioning model in 
 
 Bring it home: this is our metadata situation with the labels changed. Contributor keywords on stock, near-nothing on a new DAM tenant. Direct visual retrieval keeps regions of the asset available for matching instead of forcing everything through a text bottleneck first.</div>
 </section>
-<!-- ============ 13 · mm 3 · the map ============ -->
+<!-- ============ 20 · mm 3 · the map ============ -->
 <section class="slide tight" data-t="And in a DAM, the picture is usually a page">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Why visual retrieval at all</div>
   <h1 class="t">And in a DAM, the picture is usually a page</h1>
@@ -679,7 +912,7 @@ The last card is the one worth pausing on. We tend to treat OCR and captioning a
 
 Note in passing that this happens to be an EU policy report — the kind of document a public-sector tenant would want indexed without it leaving European infrastructure.</div>
 </section>
-<!-- ============ 14 · merged · from tokens to patches + we can see the match ============ -->
+<!-- ============ 21 · merged · from tokens to patches + we can see the match ============ -->
 <section class="slide tight" data-t="From tokens to patches, on a page">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Going multi-vector · ColPali</div>
   <h1 class="t">From tokens to patches, on a page</h1>
@@ -721,11 +954,12 @@ Note in passing that this happens to be an EU policy report — the kind of docu
     </div>
   </div>
   <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
     <li><a href="https://arxiv.org/abs/2407.01449">ColPali: Efficient Document Retrieval with Vision Language Models · Faysse et al., 2024</a></li>
     <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Contextualized Late Interaction over BERT</a></li>
   </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Deliberately do not name the operator yet. Talk about it the way slide six set it up — one similarity score, except built from the best match for each query token against each patch instead of from two pooled vectors. It gets its proper name at "Late interaction sits in the middle". The only genuinely new thing here is the geometry: a sequence of token vectors becomes a grid of patch vectors. Same encoder-offline, same scoring, same reason it works — local evidence stays independently addressable.
+  <div class="notes">MaxSim is already on the table from the late-interaction slide, so use the name freely here and spend the time on what is new. This is that same operator on a real page — the only genuinely new thing is the geometry: a sequence of token vectors becomes a grid of patch vectors. Same encoder-offline, same scoring, same reason it works — local evidence stays independently addressable.
 
 The first card carries the strategic payoff and is worth saying explicitly, because it is what justifies the index cost: one representation for images, PDF pages and video frames means one pipeline instead of four.
 
@@ -733,7 +967,7 @@ Then make the room commit before advancing. Read the query out, ask which region
 
 The explainability point in the dark card is not decoration — DAM customers ask for it, and a single pooled vector fundamentally cannot give it to them.</div>
 </section>
-<!-- ============ 15 · mm 9 · patch match: 2008 ============ -->
+<!-- ============ 22 · mm 9 · patch match: 2008 ============ -->
 <section class="slide tight" data-t="The token 2008 lands on the axis">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Interpretability</div>
   <h1 class="t">The token <span class="grad">2008</span> lands on the axis</h1>
@@ -750,7 +984,7 @@ The explainability point in the dark card is not decoration — DAM customers as
       </figure>
       <div class="stack" style="flex:0 0 560px;gap:16px">
         <div class="card solid">
-          <h3>One row of the similarity matrix</h3>
+          <h3>One row of the MaxSim matrix</h3>
           <p>This is literally what the operator does: for the query token <code>2008</code>, score
           every patch, keep the best one, contribute it to the sum.</p>
         </div>
@@ -768,241 +1002,13 @@ The explainability point in the dark card is not decoration — DAM customers as
     </div>
   </div>
   <ul class="sources">
+    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-vector Search: A Late Interaction Field Guide · Amélie Chatelain</a></li>
     <li><a href="https://arxiv.org/abs/2407.01449">ColPali · Faysse et al., 2024</a></li>
   </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">One beat per token. Here: the model has found the 2008 tick label, and it has also warmed the rest of the axis, which is the right neighbourhood.
 
 Say the quiet part: nobody trained this model on "highlight the axis". The localisation falls out of keeping one vector per patch and never pooling them. Interpretability here is a free side effect of the architecture, not a feature someone bolted on.</div>
-</section>
-<!-- ============ 16 ============ -->
-<section class="slide section" data-t="How retrieval actually works">
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
-  <h1>How retrieval actually works</h1>
-  <p class="sub">Why filename search is still the baseline, what beats it, and what it costs to
-  run.</p>
-</section>
-<!-- ============ 17 · transplanted from the primer · slide 3 ============ -->
-<section class="slide roomy" data-t="Why do DAM users still search by filename?">
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
-  <h1 class="t">Why do DAM users still search by <span class="grad">filename</span>?</h1>
-  <p class="sub">If we have strong vision models <em>and</em> strong embedding models, why does
-  every customer still type a filename into the box?</p>
-  <div class="body center">
-    <pre class="code" style="max-width:1240px;font-size:34px;line-height:1.85;padding:52px 60px"><span class="c">search</span>  <span class="s">"Q3_campaign_final_v2"</span>
-<span class="c">browse</span>  /Clients/Bergen/2024-06/</pre>
-    <p class="sub" style="margin-top:48px;text-align:center;max-width:1240px;font-size:30px">They are not being primitive. Exact match
-    came back into fashion for a reason, and it is worth understanding which reason.</p>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Ask the room to guess before advancing. Most people answer "infra" — which is half right, and the other half is the interesting half.</div>
-</section>
-<!-- ============ 18 · transplanted from the primer · slide 4 ============ -->
-<section class="slide" data-t="Filename search is hard to beat — and not only on infra">
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
-  <h1 class="t">Filename search is hard to beat — and not only on infra</h1>
-  <div class="body">
-    <div class="cols">
-      <div class="card" style="flex:1">
-        <h3>The boring infra reasons</h3>
-        <ul class="bullets" style="margin-top:16px">
-          <li>Zero infrastructure — it already ships with the product</li>
-          <li>No model to deploy</li>
-          <li>No index to maintain</li>
-          <li>Privacy by default</li>
-        </ul>
-      </div>
-      <div class="card accent" style="flex:1">
-        <h3>But also: why it sticks</h3>
-        <ul class="bullets" style="margin-top:16px">
-          <li><strong>Exact matching is extremely strong for filenames.</strong></li>
-          <li><strong>Granularity is non-negotiable</strong> — when you want
-            <code>Q3_campaign_final_v2.psd</code>, you want exactly that file.</li>
-          <li><strong>Filenames and folder trees are structured data</strong>, and structure is
-            cheap to exploit.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="card solid" style="margin-top:34px">
-      <h3>So the bar for a learned retriever is high</h3>
-      <p>It has to earn its keep by <strong>adding semantics without losing exact local clues</strong> —
-      and justify deploying a model and maintaining an index on top.</p>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The right-hand column is the part people underrate. Spend your time there.</div>
-</section>
-<!-- ============ 19 · transplanted from the primer · slide 8 ============ -->
-<section class="slide" data-t="Exact match is a gift — only when the vocabulary lines up">
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Is exact match all we need?</div>
-  <h1 class="t sm">Exact match is a gift — only when the vocabulary lines up</h1>
-  <p class="sub">The wrong conclusion would be that BM25 is all we need.</p>
-  <div class="body">
-    <div class="cols">
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" src="/knowledge/_shared/figures/vocab-mismatch.svg" alt="BM25 performance collapsing on the synonym variant of the LIMIT corpus">
-        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Late Interaction Field Guide</em></a>, from data in Weller et al., <a href="https://arxiv.org/abs/2508.21038">LIMIT</a></figcaption>
-      </figure>
-      <div class="stack" style="flex:0 0 640px">
-      <div class="card solid">
-        <h3>Vocabulary mismatch is alive and well</h3>
-        <p>Exact retrieval breaks the moment the user says <em>"the beach shoot"</em> and the asset
-        is called <code>DSC02074.JPG</code>, in <code>/Uploads/2024-06/</code>, description empty.</p>
-        <p style="margin-top:14px">On the synonym variant of <strong>LIMIT</strong> — a benchmark where
-        documents carry combinations of attributes and queries ask for those combinations — BM25
-        collapses. And in a DAM the
-        uncurated folder is the default state.</p>
-      </div>
-      <div class="card dark">
-        <h3>So we want both</h3>
-        <p><strong>Exact-ish local evidence</strong>, which lexical search gives us free —
-        <strong>and soft semantic matching</strong>, which dense retrieval gives us free.</p>
-        <p style="margin-top:12px">At the same time. That is the whole ask.</p>
-      </div>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2508.21038">On the Theoretical Limitations of Embedding-Based Retrieval · Weller et al., 2025</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Be explicit that this is not a pro-lexical slide. It sets up the "we want both" framing that late interaction answers.</div>
-</section>
-<!-- ============ 20 · transplanted from the primer · slide 9 ============ -->
-<section class="slide" data-t="But wait — what's this?">
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Something on this chart</div>
-  <h1 class="t">But wait — what's this?</h1>
-  <p class="sub">Retrieval quality against embedding dimension — and one line here does not behave like
-  the other dense models.</p>
-  <div class="body">
-    <div class="cols">
-      <figure class="grow" style="min-height:0">
-        <img class="zoom" src="/knowledge/_shared/figures/dimension-curves.svg" alt="Retrieval quality against embedding dimension, with one line behaving unlike the other dense models">
-        <figcaption>Figure: Amélie Chatelain, <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/"><em>Multi-vector Search: A Late Interaction Field Guide</em></a></figcaption>
-      </figure>
-      <div class="stack" style="flex:0 0 500px">
-        <div class="card solid">
-          <span class="num" style="font-size:34px">GTE-ModernColBERT</span>
-          <p style="margin-top:12px">One line here does not behave like the others.</p>
-        </div>
-        <div class="card">
-          <h3>Is it just a huge pooled vector?</h3>
-          <p style="font:600 24px/1.3 var(--serif);color:var(--accent);margin-top:10px">No. It uses a
-          different retrieval paradigm.</p>
-        </div>
-        <div class="card dark">
-          <p>So a wider vector is not the fix. Which leaves the real question: what exactly gets lost
-          when we pool one?</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This is the hinge of the talk. Pause before turning the page.</div>
-</section>
-<!-- ============ 21 · the bottleneck, restated ============ -->
-<section class="slide" data-t="One vector has to carry every clue">
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The bottleneck</div>
-  <h1 class="t">One vector has to carry every clue</h1>
-  <p class="sub">Not because the vector is too narrow — because a single query can hold several
-  <em>independent</em> constraints, and pooling has to choose between them.</p>
-  <div class="body">
-    <div class="card solid" style="text-align:center;padding:38px">
-      <p style="font:600 italic 34px/1.35 var(--serif);color:var(--ink)">"two people laughing in a
-      bright office, wide shot, copy space on the left"</p>
-    </div>
-    <div class="chips" style="justify-content:center;margin-top:32px">
-      <span class="chip on">2 people</span><span class="chip on">laughing</span>
-      <span class="chip on">office</span><span class="chip on">wide shot</span>
-      <span class="chip on">copy space left</span>
-    </div>
-    <div class="cols" style="margin-top:34px;align-items:center">
-      <div class="card dark grow">
-        <h3>↓ compressed into</h3>
-        <p style="font:500 22px/1.4 var(--mono);color:#7fd1c6;margin-top:10px">[ single vector · dim d ]</p>
-      </div>
-      <div class="card grow" style="border-color:var(--accent-2)">
-        <h3 style="color:var(--accent-2)">→ diluted signal</h3>
-        <p>"Copy space on the left" is a fact about a <em>region</em> of the image. Pooling decided
-        what to keep <strong>before it knew</strong> anyone would ask.</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Placed here on purpose. The chart before it showed that width is not the fix; this is why — the constraints in one query are independent of each other, so pooling loses some of them no matter how many dimensions it has to play with.
-
-This is not "a semantic question about authentication" — it is five constraints that all have to survive. Read the query out and count them on your fingers.
-
-This is the bottleneck to keep referring back to, and the next slide is the answer to it.</div>
-</section>
-<!-- ============ 22 · transplanted from the primer · slide 10 ============ -->
-<section class="slide tight" data-t="Late interaction sits in the middle">
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Escaping the ceiling</div>
-  <h1 class="t">Late interaction sits in the middle</h1>
-  <p class="sub">Three ways to score a query against a document. The difference is
-  <strong>when the two sides are allowed to meet</strong>.</p>
-  <div class="body">
-    <div class="axis">
-      <span>&larr; cheaper &middot; more scalable</span>
-      <span>more accurate &middot; expensive &rarr;</span>
-    </div>
-    <svg class="axis-rail" viewBox="0 0 1680 14" preserveAspectRatio="none" aria-hidden="true">
-      <defs><linearGradient id="axg" x1="0" x2="1">
-        <stop offset="0" stop-color="var(--accent)"/><stop offset=".5" stop-color="var(--accent-3)"/>
-        <stop offset="1" stop-color="var(--accent-2)"/></linearGradient></defs>
-      <path d="M0 7 H1680" stroke="url(#axg)" stroke-opacity=".45" stroke-width="2"/>
-      <g fill="url(#axg)"><path d="M280 0 l7 7 -7 7 -7 -7z"/><path d="M840 0 l7 7 -7 7 -7 -7z"/>
-      <path d="M1400 0 l7 7 -7 7 -7 -7z"/></g>
-    </svg>
-    <div class="arch">
-      <div class="card solid arch-p">
-        <h3>Single-vector retrieval<small>pooled dual encoder</small></h3>
-        <svg viewBox="0 0 480 284" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Single-vector retrieval. Query and document are encoded separately into token vectors, each side is pooled down to a single vector, and the score is one dot product."><g font-family="var(--sans)"><text x="118" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">QUERY</text><text x="362" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">DOCUMENT</text><rect x="92" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="118" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">q</text><rect x="336" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="362" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">d</text><path d="M118 41 L118 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 52 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 41 L362 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 52 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="82" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q1</text><rect x="121" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q2</text><rect x="82" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q3</text><rect x="121" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q4</text><rect x="306.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d1</text><rect x="345.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d2</text><rect x="384.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d3</text><rect x="306.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d4</text><rect x="345.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d5</text><rect x="384.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d6</text><path d="M118 97 L118 102" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 108 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 97 L362 102" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 108 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="62" y="111" width="112" height="27" rx="8" fill="var(--dark)"/><text x="118" y="129.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e9edf2">Encoder</text><rect x="306" y="111" width="112" height="27" rx="8" fill="var(--dark)"/><text x="362" y="129.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e9edf2">Encoder</text><path d="M118 138 L118 143" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 149 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 138 L362 143" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 149 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="83" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="83" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="83" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="102" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="102" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="102" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="121" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="121" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="121" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="140" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="140" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="140" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="308" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="308" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="308" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="327" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="327" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="327" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="346" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="346" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="346" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="365" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="365" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="365" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="384" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="384" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="384" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="403" y="153" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="403" y="158" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><rect x="403" y="163" width="13" height="3.4" rx="1.7" fill="var(--accent)" opacity=".45"/><path d="M118 170 L118 175" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 181 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 170 L362 175" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 181 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="93" y="183" width="50" height="19" rx="7" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3"/><text x="118" y="196.5" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing=".8" fill="var(--accent-2)">pool</text><rect x="337" y="183" width="50" height="19" rx="7" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3"/><text x="362" y="196.5" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing=".8" fill="var(--accent-2)">pool</text><path d="M118 202 L118 207" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 213 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 202 L362 207" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 213 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="107" y="217" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="107" y="222" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="107" y="227" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="351" y="217" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="351" y="222" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><rect x="351" y="227" width="22" height="3.4" rx="1.7" fill="var(--accent)" opacity="1"/><path d="M118 234 C118 250 198 246 231 250" stroke="var(--accent)" stroke-opacity=".55" stroke-width="1.6" fill="none"/><path d="M362 234 C362 250 282 246 249 250" stroke="var(--accent)" stroke-opacity=".55" stroke-width="1.6" fill="none"/><circle cx="240" cy="251" r="4" fill="var(--accent)"/><text x="240" y="266" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">one dot product</text><text x="240" y="280" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--faint)">pool(q) &#183; pool(d)</text></g></svg>
-        <div class="badge off">docs encoded offline</div>
-      </div>
-      <div class="card solid arch-p on">
-        <h3>Late-interaction retrieval<small>multi-vector dual encoder</small></h3>
-        <svg viewBox="0 0 480 284" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Late-interaction retrieval. Query and document are still encoded separately and nothing is pooled: every query vector is compared against every document vector, and only its single best match counts."><g font-family="var(--sans)"><text x="118" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">QUERY</text><text x="362" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">DOCUMENT</text><rect x="92" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="118" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">q</text><rect x="336" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="362" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">d</text><path d="M118 41 L118 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 52 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 41 L362 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 52 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="82" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q1</text><rect x="121" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q2</text><rect x="82" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q3</text><rect x="121" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q4</text><rect x="306.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d1</text><rect x="345.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d2</text><rect x="384.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d3</text><rect x="306.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d4</text><rect x="345.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d5</text><rect x="384.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d6</text><path d="M118 97 L118 102" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 108 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 97 L362 102" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 108 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="62" y="111" width="112" height="27" rx="8" fill="var(--dark)"/><text x="118" y="129.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e9edf2">Encoder</text><rect x="306" y="111" width="112" height="27" rx="8" fill="var(--dark)"/><text x="362" y="129.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e9edf2">Encoder</text><path d="M118 138 L118 143" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 149 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 138 L362 143" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 149 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M133 176.5 L347 159.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 193.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 210.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 227.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 244.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 159.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 176.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 193.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 210.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 193.5 L347 244.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 176.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 193.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 210.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 227.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 210.5 L347 244.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 159.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 176.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 193.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 227.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 227.5 L347 244.5" stroke="var(--ink)" stroke-opacity=".11" stroke-width=".8"/><path d="M133 176.5 L347 176.5" stroke="var(--accent)" stroke-width="2" stroke-opacity=".95"/><path d="M133 193.5 L347 227.5" stroke="var(--accent)" stroke-width="2" stroke-opacity=".95"/><path d="M133 210.5 L347 159.5" stroke="var(--accent)" stroke-width="2" stroke-opacity=".95"/><path d="M133 227.5 L347 210.5" stroke="var(--accent)" stroke-width="2" stroke-opacity=".95"/><rect x="103" y="170" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="187" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="204" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="221" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="153" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="170" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="187" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="204" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="221" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="238" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="241.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="241.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="241.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="241.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><text x="240" y="266" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">sum of best matches</text><text x="240" y="280" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--faint)">&#931; max &#183; nothing pooled</text></g></svg>
-        <div class="badge off">docs encoded offline</div>
-      </div>
-      <div class="card solid arch-p">
-        <h3>Full-interaction reranking<small>cross-encoder</small></h3>
-        <svg viewBox="0 0 480 284" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Full-interaction reranking. Query and document tokens enter one encoder together, so every token attends to every other token and the model emits a single score. Nothing can be precomputed."><g font-family="var(--sans)"><text x="118" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">QUERY</text><text x="362" y="8" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="var(--faint)">DOCUMENT</text><rect x="92" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="118" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">q</text><rect x="336" y="13" width="52" height="28" rx="9" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="362" y="33" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="700" fill="var(--ink)">d</text><path d="M118 41 L118 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M118 52 l-4.5 -7 h9 z" fill="var(--hair)"/><path d="M362 41 L362 46" stroke="var(--hair)" stroke-width="1.6"/><path d="M362 52 l-4.5 -7 h9 z" fill="var(--hair)"/><rect x="82" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q1</text><rect x="121" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q2</text><rect x="82" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="98.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q3</text><rect x="121" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="137.5" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">q4</text><rect x="306.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d1</text><rect x="345.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d2</text><rect x="384.5" y="54" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="67.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d3</text><rect x="306.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="323" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d4</text><rect x="345.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="362" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d5</text><rect x="384.5" y="76" width="33" height="19" rx="6" fill="var(--accent-faint)"/><text x="401" y="89.5" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--accent)">d6</text><path d="M118 97 L118 102" stroke="var(--accent-3)" stroke-width="1.6"/><path d="M118 108 l-4.5 -7 h9 z" fill="var(--accent-3)"/><path d="M362 97 L362 102" stroke="var(--accent-3)" stroke-width="1.6"/><path d="M362 108 l-4.5 -7 h9 z" fill="var(--accent-3)"/><rect x="26" y="109" width="428" height="132" rx="13" fill="var(--card-solid)" stroke="var(--accent-3)" stroke-opacity=".5"/><text x="240" y="127" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--ink)">Encoder</text><path d="M133 159.5 L347 142.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 159.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 176.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 193.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 210.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 159.5 L347 227.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 142.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 159.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 176.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 193.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 210.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 176.5 L347 227.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 142.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 159.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 176.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 193.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 210.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 193.5 L347 227.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 142.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 159.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 176.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 193.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 210.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><path d="M133 210.5 L347 227.5" stroke="var(--accent-3)" stroke-opacity=".18" stroke-width=".8"/><rect x="103" y="153" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="170" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="187" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="103" y="204" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="107.5" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="113.3" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="119.1" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="124.9" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="136" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="139.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="139.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="139.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="139.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="153" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="156.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="170" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="173.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="187" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="190.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="204" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="207.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="347" y="221" width="30" height="13" rx="4" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="351.5" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="357.3" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="363.1" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="368.9" y="224.4" width="2.4" height="6.2" rx="1.2" fill="var(--accent)" opacity=".75"/><path d="M240 241 L240 247" stroke="var(--accent-3)" stroke-width="1.6"/><path d="M240 253 l-4.5 -7 h9 z" fill="var(--accent-3)"/><rect x="176" y="255" width="128" height="25" rx="9" fill="none" stroke="var(--accent-3)" stroke-opacity=".6"/><text x="240" y="272" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--accent-3)">one score</text></g></svg>
-        <div class="badge qt">query-time only</div>
-      </div>
-    </div>
-    <div class="cols" style="margin-top:20px;flex:none">
-      <div class="card accent grow">
-        <h3>That interaction has a name: <span style="color:var(--accent)">MaxSim</span></h3>
-        <p>For every <strong>query token</strong>, keep only its best-matching unit of the asset,
-        then sum those maxima. Nothing is pooled, so a rare local clue survives.</p>
-      </div>
-      <div class="card grow">
-        <h3>And for us the unit is a <span class="grad">patch</span></h3>
-        <p>Same operator, patches instead of tokens — as on the ColPali page earlier.</p>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT</a></li>
-    <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Read the three panels left to right, and read them as the same picture drawn three times — the only thing that changes is where the query and the document are allowed to meet.
-
-Left: both sides are encoded separately, then each side is squeezed through pool down to one vector, and the score is a single dot product. Cheap, scalable, and the compression happens before anyone knows what will be asked.
-
-Middle: same two encoders, same offline document side — but nothing is pooled. Every query vector is compared against every document vector, and only the best match per query vector counts. The four bold lines are those maxima; the faint ones are the comparisons that lose.
-
-Right: there is only one encoder, and the query and the document go into it together. Every token attends to every token, which is why it scores best and why nothing can be precomputed — the badge is the whole argument, "query-time only" means you can never run this over the catalogue, only over a shortlist.
-
-The key words are "don't pool" and "delay". Everything deployable about the middle column comes from documents still being encoded offline.
-
-Define MaxSim carefully here — this is where the thing we have been calling a similarity score gets its name, and every later slide leans on it. The patch card is a callback, not a new idea: point at it, say "the unit is whatever we chose to keep vectors for", and move on — the geometry was already covered on the ColPali page. Walk one query token: it looks at every unit of the asset, keeps only its best match, and contributes that one number. Sum over query tokens and that is the score.
-
-The example worth saying out loud is the multilingual one: the customer types English, the asset was captioned in Norwegian. Exact match scores zero there, and a pooled vector has already blurred it. MaxSim can still find the one unit that carries the meaning.
-
-The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
 </section>
 <!-- ============ 23 · adapted from her slide 36 ============ -->
 <section class="slide section" data-t="So why isn't this everywhere yet?">
@@ -1164,6 +1170,9 @@ If someone asks "why not just pgvector" — completely reasonable at small scale
     <svg viewBox="0 0 1680 604" width="100%" style="flex:none;height:604px" role="img" aria-label="The full path. Assets are embedded by models served on Triton and upserted into Qdrant. Inside Qdrant one query fans out to three prefetch arms — dense HNSW, sparse BM25 and late interaction — which are fused and then reranked with MaxSim on the survivors. The top hits go back to an agent built on LangChain deepagents, which prompts our self-hosted vLLM inference API and answers from them."><g font-family="var(--sans)"><rect x="40" y="8" width="272" height="88" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="176" y="40" text-anchor="middle" font-size="23" font-weight="700" fill="var(--ink)">Assets</text><rect x="88" y="56" width="32" height="26" rx="5" fill="none" stroke="var(--muted)" stroke-width="1.6"/><circle cx="97" cy="64" r="3.4" fill="var(--muted)"/><path d="M91 78 l9 -10 6 6 5 -5 6 9 z" fill="var(--muted)"/><rect x="146" y="55" width="26" height="28" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M152 62 h14 M152 68 h14 M152 74 h8" stroke="var(--muted)" stroke-width="1.6"/><rect x="202" y="57" width="34" height="24" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M210 57 v24 M228 57 v24" stroke="var(--muted)" stroke-width="1.4"/><rect x="374" y="8" width="316" height="88" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><image href="assets/nvidia.webp" x="398" y="36" width="44" height="29"/><text x="462" y="48" text-anchor="start" font-size="23" font-weight="700" fill="var(--ink)">Triton</text><text x="462" y="72" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">embedding + vision models</text><path d="M324 52 H366" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M375 52 l-9 -6 v12 z" fill="var(--ink)" fill-opacity=".4"/><text x="345" y="38" text-anchor="middle" font-size="15" font-weight="600" fill="var(--faint)">embed</text><path d="M532 96 V132" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M532 141 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="548" y="122" text-anchor="start" font-size="15" font-weight="600" fill="var(--faint)">upsert vectors</text><rect x="40" y="150" width="1180" height="410" rx="20" fill="var(--accent-faint)" fill-opacity=".55" stroke="var(--accent)" stroke-opacity=".5"/><image href="assets/qdrant.svg" x="72" y="170" width="34" height="39"/><text x="120" y="196" text-anchor="start" font-size="27" font-weight="700" fill="var(--ink)">Qdrant</text><text x="120" y="219" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">self-hosted, on our own nodes</text><text x="72" y="268" text-anchor="start" font-size="14" font-weight="700" fill="var(--accent)">PREFETCH</text><rect x="250" y="246" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="276" font-size="20" font-weight="700" fill="var(--ink)">Dense &#183; HNSW</text><text x="270" y="300" font-size="15" fill="var(--muted)">semantic similarity, payload-filtered</text><rect x="250" y="330" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="360" font-size="20" font-weight="700" fill="var(--ink)">Sparse &#183; BM25</text><text x="270" y="384" font-size="15" fill="var(--muted)">exact tokens: filenames, product codes</text><rect x="250" y="414" width="470" height="74" rx="12" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="270" y="444" font-size="20" font-weight="700" fill="var(--ink)">Late interaction</text><text x="270" y="468" font-size="15" fill="var(--muted)">multivectors, MaxSim over patches</text><path d="M1220 520 H196" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 520 V283" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M196 283 l-6 9 h12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 283 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 283 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 367 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 367 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><path d="M196 451 H241" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M250 451 l-9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><text x="720" y="544" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent-3)">one query, three arms in one request</text><path d="M720 283 C770 283 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 367 C770 367 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M720 451 C770 451 740 367 772 367" stroke="var(--accent)" stroke-opacity=".55" stroke-width="2" fill="none"/><path d="M781 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".55"/><circle cx="810" cy="367" r="29" fill="var(--card-solid)" stroke="var(--accent)" stroke-opacity=".55"/><text x="810" y="373" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">fuse</text><rect x="900" y="315" width="300" height="104" rx="14" fill="var(--card-solid)" stroke="var(--accent-2)"/><text x="1050" y="363" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)">Rerank</text><text x="1050" y="389" text-anchor="middle" font-size="15" fill="var(--muted)">MaxSim on the survivors</text><path d="M839 367 H891" stroke="var(--accent-2)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M900 367 l-9 -6 v12 z" fill="var(--accent-2)" fill-opacity=".7"/><text x="1050" y="441" text-anchor="middle" font-size="14" font-weight="600" fill="var(--accent-2)">the expensive score, last</text><rect x="1310" y="176" width="330" height="46" rx="12" fill="none" stroke="var(--accent-3)" stroke-opacity=".45" stroke-dasharray="5 4"/><text x="1475" y="205" text-anchor="middle" font-size="16" font-weight="600" fill="var(--accent-3)">a user question</text><path d="M1475 222 V292" stroke="var(--accent-3)" stroke-opacity=".45" stroke-width="2" fill="none"/><path d="M1475 301 l-6 -9 h12 z" fill="var(--accent-3)" fill-opacity=".45"/><rect x="1310" y="302" width="330" height="96" rx="14" fill="var(--card-solid)" stroke="var(--accent-3)"/><image href="assets/langchain.png" x="1338" y="328" width="44" height="44"/><text x="1400" y="344" text-anchor="start" font-size="24" font-weight="700" fill="var(--ink)">Agent</text><text x="1400" y="370" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">LangChain &#183; deepagents</text><path d="M1495 398 V415" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M1495 424 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><text x="1512" y="418" text-anchor="start" font-size="14" font-weight="600" fill="var(--faint)">prompt + hits</text><rect x="1350" y="424" width="290" height="90" rx="14" fill="var(--card-solid)" stroke="var(--accent-3)"/><image href="assets/vllm.webp" x="1374" y="447" width="40" height="40"/><text x="1428" y="462" text-anchor="start" font-size="22" font-weight="700" fill="var(--ink)">Inference API</text><text x="1428" y="488" text-anchor="start" font-size="15" font-weight="500" fill="var(--muted)">self-hosted, on vLLM</text><path d="M1495 514 V531" stroke="var(--ink)" stroke-opacity=".4" stroke-width="2" fill="none"/><path d="M1495 540 l-6 -9 h12 z" fill="var(--ink)" fill-opacity=".4"/><rect x="1350" y="540" width="290" height="56" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="1495" y="575" text-anchor="middle" font-size="20" font-weight="700" fill="var(--ink)">Answer<tspan font-size="15" font-weight="500" fill="var(--muted)"> &#183; grounded in the hits</tspan></text><path d="M1200 367 H1301" stroke="var(--accent)" stroke-opacity=".8" stroke-width="2" fill="none"/><path d="M1310 367 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".8"/><text x="1255" y="353" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">top-k hits</text><path d="M1325 398 V520 H1229" stroke="var(--accent-3)" stroke-opacity=".7" stroke-width="2" fill="none"/><path d="M1220 520 l9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".7"/><text x="1313" y="468" text-anchor="end" font-size="15" font-weight="600" fill="var(--accent-3)">search</text><text x="742" y="50" text-anchor="start" font-size="14" font-weight="600" fill="var(--faint)">INDEX TIME &#183; OFFLINE, ONCE PER ASSET</text><text x="1640" y="50" text-anchor="end" font-size="14" font-weight="600" fill="var(--faint)">QUERY TIME &#183; ON EVERY QUESTION</text></g></svg>
   </div>
   <ul class="sources">
+    <li><a href="https://github.com/langchain-ai/deepagents">deepagents</a> · LangChain — the agent harness in the diagram</li>
+    <li><a href="https://github.com/triton-inference-server/server">NVIDIA Triton Inference Server</a></li>
+    <li><a href="https://github.com/vllm-project/vllm">vLLM</a> · the self-hosted inference API</li>
     <li><a href="https://qdrant.tech/documentation/concepts/vectors/#multivectors">Qdrant · multivectors and the MaxSim comparator</a></li>
     <li><a href="https://qdrant.tech/documentation/concepts/hybrid-queries/">Qdrant · Query API, prefetch and fusion</a></li>
     <li><a href="https://qdrant.tech/documentation/guides/quantization/">Qdrant · scalar, product and binary quantization</a></li>
@@ -1367,6 +1376,9 @@ If the room is engineers, the test-suite analogy is the whole explanation: same 
       same trap wearing a different hat.</p>
     </div>
   </div>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/abs/1608.04468">Unbiased Learning-to-Rank with Biased Feedback</a> · Joachims, Swaminathan &amp; Schnabel, 2016 — why logs inherit the habits of the system that produced them, and what interleaving fixes</li>
+  </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
 </section>
