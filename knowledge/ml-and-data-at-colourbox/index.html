@@ -932,7 +932,7 @@ The important reframe: no serious system implements exact MaxSim over the whole 
 Our numbers have the same shape with patches instead of tokens — I need to put the real ones in here before presenting.</div>
 </section>
 <!-- ============ 25 · engineering block · 2 ============ -->
-<section class="slide" data-t="Every fast system is a funnel">
+<section class="slide tight" data-t="Every fast system is a funnel">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Making it work</div>
   <h1 class="t">Every fast system is a funnel</h1>
@@ -976,10 +976,14 @@ Our numbers have the same shape with patches instead of tokens — I need to put
         <div class="card solid" style="padding:22px 30px"><h3>3 · Exact MaxSim <span class="chip on">expensive</span></h3>
           <p>Run only on the survivors — where we are willing to pay full price per asset.</p></div>
         <div class="card dark" style="padding:22px 30px">
-          <p><strong style="color:#fff">The trade-off is one question:</strong> how many assets reach
-          exact MaxSim? Stage&nbsp;1 is whatever is cheap enough to run over everything — an
-          approximate index like <strong style="color:#fff">HNSW</strong>, sparse keys, or a coarse
-          clustering. That is what the next slides are about.</p></div>
+          <p><strong style="color:#fff">And you don't build this funnel — you configure it.</strong>
+          Every stage is already a feature of a modern <strong style="color:#fff">vector
+          database</strong>: an approximate index like <strong style="color:#fff">HNSW</strong> for
+          stage&nbsp;1, sparse keys and tenant filters for stage&nbsp;2, a MaxSim comparator for
+          stage&nbsp;3.</p>
+          <p style="margin-top:10px"><code>faiss</code> is the index; a <em>database</em> is what
+          surrounds it — filters, persistence, and add, update and delete without a rebuild. A DAM
+          changes all day, so that is what decides whether you can run it at all.</p></div>
       </div>
     </div>
   </div>
@@ -998,56 +1002,13 @@ So the knob is not mysterious. It is: how many assets survive long enough to rec
 
 I have deliberately left the stage widths blank. Her illustrative numbers were 9M → 100k → 1k → top-10 on MS MARCO; ours have to come from measuring recall against candidate count on our own corpus, and I would rather show nothing than show a number I made up.
 
-The last card matters for the next slides: there is more than one way to build stage one.</div>
-</section>
-<!-- ============ 26 · vector store · what a vector database is ============ -->
-<section class="slide" data-t="So what is a vector database?">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
-  <h1 class="t">You don't build that funnel. You configure it.</h1>
-  <p class="sub">Every stage we just drew already exists as a feature of a modern vector database —
-  which is most of what one <em>is</em>.</p>
-  <div class="body">
-    <div class="grid-3">
-      <div class="card solid">
-        <div class="cap" style="margin:0 0 12px">stage 1 · narrow</div>
-        <h3>An approximate index</h3>
-        <p>Cosine against every vector is <code>O(N·d)</code> — fine at ten thousand assets, hopeless at
-        a hundred million. <strong>HNSW</strong> descends a navigable graph instead of scanning, trading
-        a little recall for a lot of time.</p>
-      </div>
-      <div class="card solid">
-        <div class="cap" style="margin:0 0 12px">stage 2 · shortlist</div>
-        <h3>Sparse keys and filters</h3>
-        <p>Learned-sparse vectors cut it down further, and so does <em>"only this tenant's, only
-        landscape, only after 2024"</em>. Making a <strong>filtered</strong> search stay fast is the
-        part people underestimate.</p>
-      </div>
-      <div class="card solid">
-        <div class="cap" style="margin:0 0 12px">stage 3 · rescore</div>
-        <h3>Late interaction on the survivors</h3>
-        <p>Multivectors with a <strong>MaxSim comparator</strong> — the expensive scoring from earlier,
-        run only on what is left. Approximate first, exact last.</p>
-      </div>
-    </div>
-    <div class="card dark" style="margin-top:28px;flex:none">
-      <h3>Library or database?</h3>
-      <p><code>faiss</code> and <code>hnswlib</code> are the index. Qdrant, Milvus, Weaviate, Vespa and
-      <code>pgvector</code> are the database around it — filters, persistence, replication, and add,
-      update and delete without a rebuild. A DAM changes all day, so that second list is what decides
-      whether you can actually run it.</p>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">The point of this slide is relief, not detail: the funnel from the previous slide sounds like a research architecture, and it is actually a config file. Say that plainly.
+The last card matters for the next slide, and it is the relief beat: this sounds like a research architecture and it is actually a config file. Map the three stages onto the three database features out loud — same order, same words.
 
-Map the three cards onto the three stages out loud — they are deliberately in the same order and use the same words.
-
-The filtering line deserves one beat. Post-filtering is the naive implementation and it silently destroys recall: you ask for the hundred nearest and then throw away the ninety-eight belonging to other tenants. Everything interesting in these systems is about making a filtered approximate search stay fast.
+The filtering line deserves one beat if anyone bites. Post-filtering is the naive implementation and it silently destroys recall: you ask for the hundred nearest and then throw away the ninety-eight that belong to other tenants. Everything interesting in these systems is about keeping a filtered approximate search fast.
 
 If someone asks "why not just pgvector" — completely reasonable at small scale, and one fewer system to run. It gets harder when you want multivectors and quantization on a corpus this size.</div>
 </section>
-<!-- ============ 27 · engineering block · where the vectors live ============ -->
+<!-- ============ 26 · engineering block · where the vectors live ============ -->
 <section class="slide tight" data-t="Where the vectors actually live">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
@@ -1111,7 +1072,7 @@ Do not oversell Qdrant against the specialised engines. On pure multi-vector fir
 
 The Berlin point is worth one sentence and no more. It is a genuine reinforcement of part two, but the substantive claim was always about self-hosting rather than the vendor's postcode.</div>
 </section>
-<!-- ============ 28 ============ -->
+<!-- ============ 27 ============ -->
 <section class="slide" data-t="The serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure</div>
@@ -1144,49 +1105,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Resist a stack-diagram-with-fourteen-boxes. The point is that engine choice follows workload shape, and both stay on our metal.</div>
 </section>
-<!-- ============ 29 · transplanted from the primer · slide 12 ============ -->
-<section class="slide" data-t="The useful overlap">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this lands</div>
-  <h1 class="t">The useful overlap</h1>
-  <p class="sub">Multi-vector search sits where the two things we wanted actually meet.</p>
-  <div class="body">
-    <div class="grid-3">
-      <div class="card"><h3>Lexical search</h3>
-        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Exact granularity</p>
-        <p style="margin-top:10px">Local clues survive intact. Semantics do not.</p></div>
-      <div class="card"><h3>Dense search</h3>
-        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Soft semantic matching</p>
-        <p style="margin-top:10px">Meaning survives pooling. Local clues may not.</p></div>
-      <div class="card accent" style="border-color:var(--accent);border-width:2px">
-        <h3 style="color:var(--accent)">Multi-vector search</h3>
-        <p style="font-size:23px;color:var(--ink);font-weight:500;margin-top:8px">Both, at a price</p>
-        <p style="margin-top:10px">Late interaction tries to keep exact local evidence <em>and</em> soft
-        semantic matching — for more storage and more scoring work.</p></div>
-    </div>
-    <div class="cols" style="margin-top:30px">
-      <div class="card solid grow" style="border-color:var(--accent-2)">
-        <h3 style="color:var(--accent-2)">And the bill</h3>
-        <p>One vector per patch instead of one per asset — <span class="todo">~1,000×</span> the vectors
-        and <span class="todo">~8×</span> the index bytes after 2-bit residual compression — and
-        scoring is no longer a single dot product. Viable as a reranker over a
-        dense first stage; harder as the first stage itself.</p>
-      </div>
-      <div class="card dark grow">
-        <h3>So: which product?</h3>
-        <p><strong>Stock</strong> browses a shared catalogue — dense, and stay dense.
-        <strong>DAM</strong> looks for one specific asset, where a near miss is a failure. That is
-        where the patch-level index cost is worth paying.</p>
-      </div>
-    </div>
-  </div>
-  <ul class="sources">
-    <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Continue with the full field guide — Amélie Chatelain</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">End by pointing people at the original for the field cases and production objections. This primer deliberately stops here.</div>
-</section>
-<!-- ============ 30 ============ -->
+<!-- ============ 28 ============ -->
 <section class="slide roomy" data-t="The cold start problem">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The hard part</div>
@@ -1217,7 +1136,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the strategic argument for the whole ML investment. If they only remember one slide from part one, make it this one.</div>
 </section>
-<!-- ============ 31 · new: the open-data gap ============ -->
+<!-- ============ 29 · new: the open-data gap ============ -->
 <section class="slide" data-t="The open data isn't there either">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The starting point</div>
@@ -1277,7 +1196,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be generous about the Danish projects — several people in this room will know them, and the argument is stronger if it is clearly not a complaint about Danish NLP. The point is a modality and task gap, not a language-resource gap.</div>
 </section>
-<!-- ============ 32 · new: build it ourselves ============ -->
+<!-- ============ 30 · new: build it ourselves ============ -->
 <section class="slide" data-t="So we build the data ourselves">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The way out</div>
@@ -1321,7 +1240,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of part one. Everything after it — the modality mix, the model choice, the eval design — is downstream of knowing the corpus. Say the last line slowly.</div>
 </section>
-<!-- ============ 33 · new: know what you store ============ -->
+<!-- ============ 31 · new: know what you store ============ -->
 <section class="slide" data-t="Know what you store and serve">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Know your corpus</div>
@@ -1474,7 +1393,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Point at the tiles rather than reading them out. If the room is Danish, these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity, which is the argument for a representation that can hold structure — the next few slides.</div>
 </section>
-<!-- ============ 34 · new: the bias trap ============ -->
+<!-- ============ 32 · new: the bias trap ============ -->
 <section class="slide" data-t="The trap in our own query logs">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The tradeoff without data</div>
@@ -1514,7 +1433,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
 </section>
-<!-- ============ 35 · agentic search · the embedder's dilemma ============ -->
+<!-- ============ 33 · agentic search · the embedder's dilemma ============ -->
 <section class="slide tight" data-t="The embedder's dilemma">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agentic search · cost</div>
@@ -1559,7 +1478,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="notes">Three things worth saying out loud beyond the numbers on screen. First, where it flips: LLMs genuinely lead on reasoning-heavy retrieval, embedding models lead on classification, and the two match on clustering, STS and pair classification — so this is a routing decision, not a winner. Second, reasoning tokens are 28–81% of LLM inference cost, and in their ablation lower reasoning budgets preserved or even improved retrieval quality — which is a knob we control because we host the serving stack. Third, the Pareto frontier holds the leading embedding models plus exactly one LLM, and that LLM buys 0.4 points for three orders of magnitude. For an agentic caller issuing many queries per task, that trade is not close.</div>
 </section>
 
-<!-- ============ 36 · agentic search · the counter-example ============ -->
+<!-- ============ 34 · agentic search · the counter-example ============ -->
 <section class="slide tight" data-t="And then someone trained a small one">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agentic search · the counter-example</div>
@@ -1617,7 +1536,7 @@ None of which weakens the point for us. The base model is open, the training met
 If asked "so should we train one?" — not yet. The honest sequence is the eval set first, then measure how far a good off-the-shelf embedder gets us, and only then consider training. This slide is a reason to keep the option open, not a plan.</div>
 </section>
 
-<!-- ============ 37 · evaluation · 4 · loop back to infrastructure ============ -->
+<!-- ============ 35 · evaluation · 4 · loop back to infrastructure ============ -->
 <section class="slide" data-t="Which is why we own the serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Back to infrastructure</div>
@@ -1664,7 +1583,7 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Close the loop back to part three. The whole self-hosting argument was framed as sovereignty, and it is — but this is the second half of the return on it. Because we run the models, we can pull a new checkpoint on Monday, re-embed a sample of a customer's corpus on Tuesday and have a number on Wednesday. A hosted API gives you none of that: you cannot benchmark what you cannot re-index, and you cannot re-index a corpus you are not allowed to send. Sovereignty and the ability to keep improving turn out to be the same piece of infrastructure.</div>
 </section>
-<!-- ============ 38 · open-ended finish ============ -->
+<!-- ============ 36 · open-ended finish ============ -->
 <section class="slide section tight" data-t="What all of this is for">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this goes</div>
   <h1>An agent searching a DAM<br>needs <span style="color:var(--accent)">all of it</span></h1>
