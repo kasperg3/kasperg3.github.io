@@ -586,7 +586,60 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">The right-hand column is the part people underrate. Spend your time there.</div>
 </section>
-<!-- ============ 17 · transplanted from the primer · slide 5 ============ -->
+<!-- ============ 17 · transplanted from the primer · slide 2 ============ -->
+<section class="slide" data-t="Resetting the baseline">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Orientation</div>
+  <h1 class="t">Resetting the baseline</h1>
+  <p class="sub">Single-vector dense search uses <strong>one</strong> fixed-size embedding for the query,
+  and one for each asset.</p>
+  <div class="body">
+    <div class="pipe" role="img" aria-label="Single-vector retrieval. The query splits into four tokens, passes an encoder, produces four embeddings, and pools into one vector. The document splits into six tokens, passes an encoder, produces six embeddings, and pools into one vector. The two pooled vectors produce a single similarity score.">
+      <div class="pipe-box"><small>query</small><strong>q</strong></div>
+      <span class="pipe-arrow" style="--d:0.06s"><i></i></span>
+      <div class="pipe-tokens"><span class="pipe-tok">q1</span><span class="pipe-tok">q2</span><span class="pipe-tok">q3</span><span class="pipe-tok">q4</span></div>
+      <span class="pipe-arrow" style="--d:0.20s"><i></i></span>
+      <div class="pipe-enc">Encoder</div>
+      <span class="pipe-arrow" style="--d:0.34s"><i></i></span>
+      <div class="pipe-vecs"><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span></div>
+      <span class="pipe-arrow" style="--d:0.50s"><i></i></span>
+      <div class="pipe-pool">pool</div>
+      <span class="pipe-arrow" style="--d:0.68s"><i></i></span>
+      <div class="pipe-vecs"><span class="pipe-vec one"><i></i><i></i><i></i><i></i></span></div>
+      <div class="pipe-box"><small>document</small><strong>d</strong></div>
+      <span class="pipe-arrow" style="--d:0.10s"><i></i></span>
+      <div class="pipe-tokens"><span class="pipe-tok">d1</span><span class="pipe-tok">d2</span><span class="pipe-tok">d3</span><span class="pipe-tok">d4</span><span class="pipe-tok">d5</span><span class="pipe-tok">d6</span></div>
+      <span class="pipe-arrow" style="--d:0.24s"><i></i></span>
+      <div class="pipe-enc">Encoder</div>
+      <span class="pipe-arrow" style="--d:0.38s"><i></i></span>
+      <div class="pipe-vecs"><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span></div>
+      <span class="pipe-arrow" style="--d:0.54s"><i></i></span>
+      <div class="pipe-pool">pool</div>
+      <span class="pipe-arrow" style="--d:0.72s"><i></i></span>
+      <div class="pipe-vecs"><span class="pipe-vec one"><i></i><i></i><i></i><i></i></span></div>
+      <div class="pipe-out">
+        <span class="rail"></span>
+        <span class="val">one similarity<small>pool(q) · pool(d)</small></span>
+      </div>
+    </div>
+
+    <div class="cols" style="margin-top:44px">
+      <div class="card grow">
+        <h3>Encoded independently</h3>
+        <p>Query and document never meet during encoding — so the whole document side is prepared
+        offline, and query time is one similarity search.</p>
+      </div>
+      <div class="card dark grow">
+        <h3>But it makes one strong bet</h3>
+        <p>That <strong>pool</strong> step preserved every clue a future query might care about — decided
+        before anyone knew what would be asked.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">Keep this tight. It is a shared-vocabulary slide, not an argument. The argument starts next.</div>
+</section>
+<!-- ============ 18 · transplanted from the primer · slide 5 ============ -->
 <section class="slide" data-t="One vector has to carry every clue">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The bottleneck</div>
@@ -617,7 +670,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is not "a semantic question about authentication" — it is five constraints that all have to survive. This is the bottleneck to keep referring back to.</div>
 </section>
-<!-- ============ 18 · transplanted from the primer · slide 6 ============ -->
+<!-- ============ 19 · transplanted from the primer · slide 6 ============ -->
 <section class="slide" data-t="Just increase the dimension?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
@@ -665,7 +718,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">The paper also proves a mathematical capacity limit; skip that here and stay with the intuition.</div>
 </section>
-<!-- ============ 19 · transplanted from the primer · slide 8 ============ -->
+<!-- ============ 20 · transplanted from the primer · slide 8 ============ -->
 <section class="slide" data-t="Exact match is a gift, but it's sparse">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Is exact match all we need?</div>
@@ -700,7 +753,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be explicit that this is not a pro-lexical slide. It sets up the "we want both" framing that late interaction answers.</div>
 </section>
-<!-- ============ 20 · transplanted from the primer · slide 9 ============ -->
+<!-- ============ 21 · transplanted from the primer · slide 9 ============ -->
 <section class="slide" data-t="But wait — what's this?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
@@ -732,7 +785,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of the talk. Pause before turning the page.</div>
 </section>
-<!-- ============ 21 · transplanted from the primer · slide 10 ============ -->
+<!-- ============ 22 · transplanted from the primer · slide 10 ============ -->
 <section class="slide" data-t="Late interaction sits in the middle">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Escaping the ceiling</div>
@@ -771,7 +824,7 @@ The example worth saying out loud is the multilingual one: the customer types En
 
 The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
 </section>
-<!-- ============ 22 · transplanted from the primer · slide 12 ============ -->
+<!-- ============ 23 · transplanted from the primer · slide 12 ============ -->
 <section class="slide" data-t="The useful overlap">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this lands</div>
@@ -813,7 +866,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">End by pointing people at the original for the field cases and production objections. This primer deliberately stops here.</div>
 </section>
-<!-- ============ 23 ============ -->
+<!-- ============ 24 ============ -->
 <section class="slide roomy" data-t="The cold start problem">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The hard part</div>
@@ -844,7 +897,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the strategic argument for the whole ML investment. If they only remember one slide from part one, make it this one.</div>
 </section>
-<!-- ============ 24 · new: the open-data gap ============ -->
+<!-- ============ 25 · new: the open-data gap ============ -->
 <section class="slide" data-t="The open data isn't there either">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The starting point</div>
@@ -904,7 +957,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be generous about the Danish projects — several people in this room will know them, and the argument is stronger if it is clearly not a complaint about Danish NLP. The point is a modality and task gap, not a language-resource gap.</div>
 </section>
-<!-- ============ 25 · new: build it ourselves ============ -->
+<!-- ============ 26 · new: build it ourselves ============ -->
 <section class="slide" data-t="So we build the data ourselves">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The way out</div>
@@ -948,7 +1001,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of part one. Everything after it — the modality mix, the model choice, the eval design — is downstream of knowing the corpus. Say the last line slowly.</div>
 </section>
-<!-- ============ 26 · new: know what you store ============ -->
+<!-- ============ 27 · new: know what you store ============ -->
 <section class="slide" data-t="Know what you store and serve">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Know your corpus</div>
@@ -1101,7 +1154,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Point at the tiles rather than reading them out. If the room is Danish, these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity, which is the argument for a representation that can hold structure — the next few slides.</div>
 </section>
-<!-- ============ 27 · new: the bias trap ============ -->
+<!-- ============ 28 · new: the bias trap ============ -->
 <section class="slide" data-t="The trap in our own query logs">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The tradeoff without data</div>
@@ -1140,59 +1193,6 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
-</section>
-<!-- ============ 28 · transplanted from the primer · slide 2 ============ -->
-<section class="slide" data-t="Resetting the baseline">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Orientation</div>
-  <h1 class="t">Resetting the baseline</h1>
-  <p class="sub">Single-vector dense search uses <strong>one</strong> fixed-size embedding for the query,
-  and one for each asset.</p>
-  <div class="body">
-    <div class="pipe" role="img" aria-label="Single-vector retrieval. The query splits into four tokens, passes an encoder, produces four embeddings, and pools into one vector. The document splits into six tokens, passes an encoder, produces six embeddings, and pools into one vector. The two pooled vectors produce a single similarity score.">
-      <div class="pipe-box"><small>query</small><strong>q</strong></div>
-      <span class="pipe-arrow" style="--d:0.06s"><i></i></span>
-      <div class="pipe-tokens"><span class="pipe-tok">q1</span><span class="pipe-tok">q2</span><span class="pipe-tok">q3</span><span class="pipe-tok">q4</span></div>
-      <span class="pipe-arrow" style="--d:0.20s"><i></i></span>
-      <div class="pipe-enc">Encoder</div>
-      <span class="pipe-arrow" style="--d:0.34s"><i></i></span>
-      <div class="pipe-vecs"><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span></div>
-      <span class="pipe-arrow" style="--d:0.50s"><i></i></span>
-      <div class="pipe-pool">pool</div>
-      <span class="pipe-arrow" style="--d:0.68s"><i></i></span>
-      <div class="pipe-vecs"><span class="pipe-vec one"><i></i><i></i><i></i><i></i></span></div>
-      <div class="pipe-box"><small>document</small><strong>d</strong></div>
-      <span class="pipe-arrow" style="--d:0.10s"><i></i></span>
-      <div class="pipe-tokens"><span class="pipe-tok">d1</span><span class="pipe-tok">d2</span><span class="pipe-tok">d3</span><span class="pipe-tok">d4</span><span class="pipe-tok">d5</span><span class="pipe-tok">d6</span></div>
-      <span class="pipe-arrow" style="--d:0.24s"><i></i></span>
-      <div class="pipe-enc">Encoder</div>
-      <span class="pipe-arrow" style="--d:0.38s"><i></i></span>
-      <div class="pipe-vecs"><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span><span class="pipe-vec"><i></i><i></i><i></i><i></i></span></div>
-      <span class="pipe-arrow" style="--d:0.54s"><i></i></span>
-      <div class="pipe-pool">pool</div>
-      <span class="pipe-arrow" style="--d:0.72s"><i></i></span>
-      <div class="pipe-vecs"><span class="pipe-vec one"><i></i><i></i><i></i><i></i></span></div>
-      <div class="pipe-out">
-        <span class="rail"></span>
-        <span class="val">one similarity<small>pool(q) · pool(d)</small></span>
-      </div>
-    </div>
-
-    <div class="cols" style="margin-top:44px">
-      <div class="card grow">
-        <h3>Encoded independently</h3>
-        <p>Query and document never meet during encoding — so the whole document side is prepared
-        offline, and query time is one similarity search.</p>
-      </div>
-      <div class="card dark grow">
-        <h3>But it makes one strong bet</h3>
-        <p>That <strong>pool</strong> step preserved every clue a future query might care about — decided
-        before anyone knew what would be asked.</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Keep this tight. It is a shared-vocabulary slide, not an argument. The argument starts next.</div>
 </section>
 <!-- ============ 29 · adapted from her slide 36 ============ -->
 <section class="slide section" data-t="So why isn't this everywhere yet?">
@@ -1585,54 +1585,7 @@ None of which weakens the point for us. The base model is open, the training met
 If asked "so should we train one?" — not yet. The honest sequence is the eval set first, then measure how far a good off-the-shelf embedder gets us, and only then consider training. This slide is a reason to keep the option open, not a plan.</div>
 </section>
 
-<!-- ============ 37 · evaluation · 3 · our own eval set ============ -->
-<section class="slide" data-t="Our own eval set is the instrument">
-  <div class="draft-flag">Draft</div>
-  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Evaluation</div>
-  <h1 class="t sm">A benchmark score is not a customer finding their Bergen shoot</h1>
-  <p class="sub">Every reason to distrust a public number is stronger for us than it is for the people
-  publishing them.</p>
-  <div class="body">
-    <div class="grid-2">
-      <div class="card solid">
-        <h3>Out of domain, by definition</h3>
-        <p>A DAM tenant's corpus is one company's own material — their products, their people, their
-        naming conventions. No public model has seen it, and no public benchmark resembles it. Every
-        tenant is a distribution shift.</p>
-      </div>
-      <div class="card solid">
-        <h3>Our queries are not English web text</h3>
-        <p>Danish, Norwegian and German as often as English — frequently mixed with a product code or a
-        place name in the same query. MTEB's English retrieval tasks say very little about that. From
-        our logs: <span class="todo">46% da, 21% en, 14% no, 9% de</span>.</p>
-      </div>
-      <div class="card solid">
-        <h3>Two products, two eval sets</h3>
-        <p><strong>Stock</strong> is recall over broad visual intent — did anything good come back.
-        <strong>DAM</strong> is rank-one on a known item — did <em>the</em> asset come back. One number
-        cannot answer both. Today: <span class="todo">800</span> pooled graded stock queries, and
-        <span class="todo">500</span> known-item DAM queries labelled by the tenant's own
-        librarians.</p>
-      </div>
-      <div class="card dark">
-        <h3>And on day one there are no clicks</h3>
-        <p>Cold start again: a new tenant gives us no behavioural signal to A/B against. An offline set
-        of labelled queries over their own assets is the <strong>only instrument we have</strong> before
-        the customer's first search — and the first search is the one that decides whether they trust
-        the product.</p>
-      </div>
-    </div>
-    <p class="sub" style="margin-top:30px;max-width:1600px">Public benchmarks narrow the field to three or
-    four candidates. After that, only our own labelled queries can tell us anything.</p>
-  </div>
-  <ul class="sources">
-    <li><a href="https://huggingface.co/spaces/mteb/leaderboard">MTEB leaderboard</a></li>
-    <li><a href="https://github.com/beir-cellar/beir">BEIR · zero-shot retrieval, and why zero-shot is the interesting case</a></li>
-  </ul>
-  <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This is the slide I actually want people to leave with. Public benchmarks narrow the field to three or four candidates; after that, only our own labelled queries can tell us anything. And note the cold-start link — on a new tenant we cannot wait for click data, so the offline eval set is not a nice-to-have piece of ML hygiene, it is the only measuring instrument that exists on day one. Building it is product work, not research work.</div>
-</section>
-<!-- ============ 38 · evaluation · 4 · loop back to infrastructure ============ -->
+<!-- ============ 37 · evaluation · 4 · loop back to infrastructure ============ -->
 <section class="slide" data-t="Which is why we own the serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Back to infrastructure</div>
@@ -1679,7 +1632,7 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Close the loop back to part three. The whole self-hosting argument was framed as sovereignty, and it is — but this is the second half of the return on it. Because we run the models, we can pull a new checkpoint on Monday, re-embed a sample of a customer's corpus on Tuesday and have a number on Wednesday. A hosted API gives you none of that: you cannot benchmark what you cannot re-index, and you cannot re-index a corpus you are not allowed to send. Sovereignty and the ability to keep improving turn out to be the same piece of infrastructure.</div>
 </section>
-<!-- ============ 39 · open-ended finish ============ -->
+<!-- ============ 38 · open-ended finish ============ -->
 <section class="slide section tight" data-t="What all of this is for">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this goes</div>
   <h1>An agent searching a DAM<br>needs <span style="color:var(--accent)">all of it</span></h1>
