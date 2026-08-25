@@ -1039,21 +1039,8 @@ If someone asks "why not just pgvector" — completely reasonable at small scale
         <div class="cap">sovereignty, in practice</div>
       </div>
     </div>
-    <div class="cols" style="margin-top:28px;flex:none">
-      <div class="card dark grow">
-        <h3>Where a dedicated service still helps</h3>
-        <p>A general store is very good at all of it and best-in-class at none. When late interaction
-        is the <em>first</em> stage over a large tenant, an engine built for nothing but multi-vector
-        retrieval still beats it on that one axis — because the whole system is designed around that
-        single index instead of around five workloads.</p>
-      </div>
-      <div class="card grow" style="border-color:var(--accent-2)">
-        <h3 style="color:var(--accent-2)">So the rule we actually apply</h3>
-        <p>General store by default; a dedicated engine only when the multi-vector index is measurably
-        the bottleneck and the workload justifies operating a second system. Today that threshold sits
-        around <span class="todo">the largest 2 tenants</span>.</p>
-        <div class="cap">two systems is a cost, not a feature</div>
-      </div>
+    <div style="margin-top:22px;flex:none">
+      <svg viewBox="0 0 1680 218" width="100%" style="flex:none;height:218px" role="img" aria-label="The full path. Assets are embedded by models served on Triton, the vectors are upserted into Qdrant, and at query time an agent running on vLLM searches Qdrant, gets back the top hits and answers from them."><g font-family="var(--sans)"><rect x="46" y="78" width="248" height="84" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="170" y="114" text-anchor="middle" font-size="25" font-weight="700" fill="var(--ink)">Assets</text><text x="170" y="140" text-anchor="middle" font-size="16" fill="var(--muted)">images &#183; PDF pages &#183; frames</text><rect x="364" y="78" width="248" height="84" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="488" y="114" text-anchor="middle" font-size="25" font-weight="700" fill="var(--ink)">Triton</text><text x="488" y="140" text-anchor="middle" font-size="16" fill="var(--muted)">embedding + vision models</text><rect x="682" y="78" width="248" height="84" rx="14" fill="var(--accent-faint)" stroke="var(--accent)"/><text x="806" y="114" text-anchor="middle" font-size="25" font-weight="700" fill="var(--ink)">Qdrant</text><text x="806" y="140" text-anchor="middle" font-size="16" fill="var(--muted)">dense &#183; sparse &#183; multi-vector</text><rect x="1070" y="78" width="248" height="84" rx="14" fill="var(--card-solid)" stroke="var(--accent-3)"/><text x="1194" y="114" text-anchor="middle" font-size="25" font-weight="700" fill="var(--ink)">Agent</text><text x="1194" y="140" text-anchor="middle" font-size="16" fill="var(--muted)">served on vLLM</text><rect x="1388" y="78" width="248" height="84" rx="14" fill="var(--card-solid)" stroke="var(--hair-soft)"/><text x="1512" y="114" text-anchor="middle" font-size="25" font-weight="700" fill="var(--ink)">Grounded answer</text><text x="1512" y="140" text-anchor="middle" font-size="16" fill="var(--muted)">with the assets it cited</text><path d="M300 120 L349 120" stroke="var(--ink)" stroke-opacity=".45" stroke-width="2"/><path d="M358 120 l-9 -6 v12 z" fill="var(--ink)" fill-opacity=".45"/><text x="329" y="106" text-anchor="middle" font-size="15" font-weight="600" fill="var(--faint)">embed</text><path d="M618 120 L667 120" stroke="var(--ink)" stroke-opacity=".45" stroke-width="2"/><path d="M676 120 l-9 -6 v12 z" fill="var(--ink)" fill-opacity=".45"/><text x="647" y="106" text-anchor="middle" font-size="15" font-weight="600" fill="var(--faint)">upsert</text><path d="M1064 100 L945 100" stroke="var(--accent-3)" stroke-opacity=".85" stroke-width="2"/><path d="M936 100 l9 -6 v12 z" fill="var(--accent-3)" fill-opacity=".85"/><text x="1000" y="90" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent-3)">search</text><path d="M936 142 L1055 142" stroke="var(--accent)" stroke-opacity=".85" stroke-width="2"/><path d="M1064 142 l-9 -6 v12 z" fill="var(--accent)" fill-opacity=".85"/><text x="1000" y="162" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent)">top-k hits</text><path d="M1324 120 L1373 120" stroke="var(--ink)" stroke-opacity=".45" stroke-width="2"/><path d="M1382 120 l-9 -6 v12 z" fill="var(--ink)" fill-opacity=".45"/><text x="1353" y="106" text-anchor="middle" font-size="15" font-weight="600" fill="var(--faint)">answer</text><rect x="1100" y="14" width="200" height="30" rx="10" fill="none" stroke="var(--accent-3)" stroke-opacity=".45" stroke-dasharray="5 4"/><text x="1200" y="34" text-anchor="middle" font-size="15" font-weight="600" fill="var(--accent-3)">a user question</text><path d="M1200 44 L1200 69" stroke="var(--accent-3)" stroke-opacity=".45" stroke-width="2"/><path d="M1200 78 l-6 -9 h12 z" fill="var(--accent-3)" fill-opacity=".45"/><path d="M46 182 v8 H930 v-8" stroke="var(--hair)" stroke-width="1.5" fill="none"/><text x="488" y="212" text-anchor="middle" font-size="15" font-weight="600" letter-spacing="1.6" fill="var(--faint)">INDEX TIME &#183; offline, once per asset</text><path d="M1070 182 v8 H1636 v-8" stroke="var(--hair)" stroke-width="1.5" fill="none"/><text x="1353" y="212" text-anchor="middle" font-size="15" font-weight="600" letter-spacing="1.6" fill="var(--faint)">QUERY TIME &#183; on every question</text></g></svg>
     </div>
   </div>
   <ul class="sources">
@@ -1065,6 +1052,10 @@ If someone asks "why not just pgvector" — completely reasonable at small scale
   </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide that turns the previous three from an architecture lecture into something we operate. The funnel is not ours to invent — it is prefetch plus rerank in a query body.
+
+Walk the strip left to right once. Index time happens offline and once per asset: the embedding and vision models are served on Triton, and what comes out is upserted into Qdrant. Query time is the other half: the agent runs on vLLM, and when it needs evidence it searches Qdrant and gets back the top hits — that is the retrieval step from the very first diagram in this talk, with real component names on it. The answer is grounded because the hits came back with the assets attached.
+
+Worth saying explicitly: nothing on that strip is a service we rent. Triton, Qdrant and vLLM are three processes on our own nodes.
 
 The reason one engine matters more than raw benchmark speed: a DAM index is mutable all day, and every extra store is another thing to keep consistent with the assets, another backup story, another delete path to get right under GDPR. Two systems is a real operational cost and should be earned.
 
@@ -1099,11 +1090,22 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
         <div class="cap">captioning · extraction · reasoning</div>
       </div>
     </div>
-    <p class="sub" style="margin-top:32px">Both run on our own GPUs — <span class="todo">2 nodes × 4 NVIDIA L40S</span> — inside EU data
+    <div class="card" style="margin-top:26px;flex:none;border-color:var(--accent-2)">
+      <h3 style="color:var(--accent-2)">And the same rule decides the third engine</h3>
+      <p>A general vector store is very good at all of it and best-in-class at none — an engine built
+      for nothing but multi-vector retrieval still beats Qdrant on that one axis. So: general store by
+      default, a dedicated engine only when the multi-vector index is measurably the bottleneck and the
+      workload justifies operating a second system. Today that threshold sits around
+      <span class="todo">the largest 2 tenants</span>.</p>
+      <div class="cap">two systems is a cost, not a feature</div>
+    </div>
+    <p class="sub" style="margin-top:24px">All of it on our own GPUs — <span class="todo">2 nodes × 4 NVIDIA L40S</span> — inside EU data
     centres.</p>
   </div>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">Resist a stack-diagram-with-fourteen-boxes. The point is that engine choice follows workload shape, and both stay on our metal.</div>
+  <div class="notes">The strip on the previous slide already showed where these two sit; this slide is only about why they are two engines and not one. Engine choice follows workload shape, and both stay on our metal.
+
+The third card generalises it: the same reasoning that says Triton for embeddings and vLLM for generation also says one general vector store until a dedicated multi-vector engine is measurably worth a second system. Do not oversell Qdrant against the specialised engines — on pure multi-vector first-stage throughput a purpose-built engine wins, and if that becomes our bottleneck we should use one, for that tenant rather than for the whole product.</div>
 </section>
 <!-- ============ 28 ============ -->
 <section class="slide roomy" data-t="The cold start problem">
