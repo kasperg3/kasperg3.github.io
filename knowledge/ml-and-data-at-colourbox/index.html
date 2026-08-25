@@ -95,7 +95,68 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This distinction drives every later architecture decision — recall-oriented browsing versus precision-oriented lookup. Make it early and refer back to it.</div>
 </section>
-<!-- ============ 4 ============ -->
+
+<!-- ============ 4 · where this is going ============ -->
+<section class="slide tight" data-t="An agent is never better than its search">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this is going</div>
+  <h1 class="t">An agent is never better than its <span class="grad">search</span></h1>
+  <p class="sub">What everyone is building on top of these products is <strong>agentic search</strong>:
+  a RAG application that plans, retrieves and re-retrieves over a customer's own material — images,
+  drawings, scanned PDFs, video.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card solid">
+        <span class="num">01</span>
+        <h3>It plans</h3>
+        <p>A vague request becomes concrete queries, usually several. <em>"Find the inspection shots
+        from the Bergen job"</em> is a handful of searches, not one.</p>
+      </div>
+      <div class="card solid">
+        <span class="num">02</span>
+        <h3>It retrieves</h3>
+        <p>Every one of them hits the same index our users hit — and it has to span every modality,
+        because a customer's archive does.</p>
+      </div>
+      <div class="card solid">
+        <span class="num">03</span>
+        <h3>It reads, then asks again</h3>
+        <p>It sees what came back, notices what is missing, and issues more queries. That loop is the
+        whole trick — and it can run dozens of times for one question.</p>
+      </div>
+    </div>
+    <div class="cols" style="margin-top:26px;flex:none">
+      <div class="card dark grow">
+        <h3>And that loop is exactly the ceiling</h3>
+        <p>An agent cannot reason its way to an asset the index never returned. A miss is not a wrong
+        answer it can recover from — it is an answer that <strong style="color:#fff">never had the
+        evidence</strong>, delivered in the same confident voice as a right one.</p>
+        <p style="margin-top:14px">So it inherits whatever ceiling retrieval sets, and adds latency and
+        cost on top of it.</p>
+      </div>
+      <div class="card accent grow">
+        <h3>Which is why the rest of this is retrieval</h3>
+        <p>Not because the agent part is uninteresting, but because it is the part we can least afford
+        to get wrong — and the part nobody else can build for us.</p>
+        <div class="chips" style="margin-top:18px">
+          <span class="chip on">dense embeddings</span><span class="chip on">exact match</span>
+          <span class="chip on">late interaction</span><span class="chip on">the funnel</span>
+          <span class="chip on">the vector store</span><span class="chip on">our own eval set</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">ML and data at Colourbox</div>
+  <div class="notes">This is the slide that gives the talk its direction, so do not rush it. Everything from here to the end is in service of the one claim in the headline.
+
+For a room of developers, the useful framing is that this is the retrieval half of RAG, called repeatedly instead of once. Most people have built the single-shot version; the agentic version just turns the retrieval quality dial into the thing that decides whether the whole system works.
+
+The failure mode is worth dwelling on for a moment, because it is not the obvious one. A bad retriever does not make the agent say "I could not find it" — it makes the agent answer confidently from whatever it did get. That is much harder to notice in production than an empty result, and it is why the eval slides near the end matter more than they look.
+
+The chips are the map for the next half hour. Point at them, and say we come back to this exact question at the end, with two papers that argue it from opposite directions.</div>
+</section>
+
+<!-- ============ 5 ============ -->
 <section class="slide roomy" data-t="The cold start problem">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The hard part</div>
@@ -126,7 +187,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the strategic argument for the whole ML investment. If they only remember one slide from part one, make it this one.</div>
 </section>
-<!-- ============ 5 · new: the open-data gap ============ -->
+<!-- ============ 6 · new: the open-data gap ============ -->
 <section class="slide" data-t="The open data isn't there either">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The starting point</div>
@@ -186,7 +247,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be generous about the Danish projects — several people in this room will know them, and the argument is stronger if it is clearly not a complaint about Danish NLP. The point is a modality and task gap, not a language-resource gap.</div>
 </section>
-<!-- ============ 6 · new: build it ourselves ============ -->
+<!-- ============ 7 · new: build it ourselves ============ -->
 <section class="slide" data-t="So we build the data ourselves">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The way out</div>
@@ -230,7 +291,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of part one. Everything after it — the modality mix, the model choice, the eval design — is downstream of knowing the corpus. Say the last line slowly.</div>
 </section>
-<!-- ============ 7 · new: know what you store ============ -->
+<!-- ============ 8 · new: know what you store ============ -->
 <section class="slide" data-t="Know what you store and serve">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Know your corpus</div>
@@ -383,7 +444,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Point at the tiles rather than reading them out. If the room is Danish, these are recognisable on sight; if not, the shapes still carry it. The takeaway is modality heterogeneity, which is the argument for a representation that can hold structure — the next few slides.</div>
 </section>
-<!-- ============ 8 · new: the bias trap ============ -->
+<!-- ============ 9 · new: the bias trap ============ -->
 <section class="slide" data-t="The trap in our own query logs">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The tradeoff without data</div>
@@ -423,7 +484,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide that stops someone in the room saying "just A/B it on the logs". You cannot A/B your way out of a biased instrument. Mitigations worth mentioning if asked: seeded semantic queries written against the corpus, known-item tasks constructed from asset content rather than from logs, and interleaving rather than absolute comparison.</div>
 </section>
-<!-- ============ 9 · transplanted from the primer · slide 2 ============ -->
+<!-- ============ 10 · transplanted from the primer · slide 2 ============ -->
 <section class="slide" data-t="Resetting the baseline">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Orientation</div>
@@ -477,14 +538,14 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Keep this tight. It is a shared-vocabulary slide, not an argument. The argument starts next.</div>
 </section>
-<!-- ============ 10 ============ -->
+<!-- ============ 11 ============ -->
 <section class="slide section" data-t="EU sovereignty">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
   <h1>EU sovereignty</h1>
   <p class="sub">Where the weights come from, and where they run.</p>
 </section>
-<!-- ============ 11 ============ -->
+<!-- ============ 12 ============ -->
 <section class="slide roomy" data-t="The open models are mostly not European">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The awkward fact</div>
@@ -510,7 +571,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be honest here — pretending there are EU-native models at frontier quality for every task would not survive questions. The defensible claim is about processing and data residency, not about the weights' passport.</div>
 </section>
-<!-- ============ 12 ============ -->
+<!-- ============ 13 ============ -->
 <section class="slide roomy" data-t="Why customers keep asking">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The commercial case</div>
@@ -541,7 +602,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Anecdotes land better than assertions here. Bring one real customer conversation if it can be shared.</div>
 </section>
-<!-- ============ 13 ============ -->
+<!-- ============ 14 ============ -->
 <section class="slide section" data-t="How retrieval actually works">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part three</div>
@@ -549,7 +610,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <p class="sub">From one vector per asset to many — and why that choice decides what a search can
   find.</p>
 </section>
-<!-- ============ 14 · transplanted from the primer · slide 3 ============ -->
+<!-- ============ 15 · transplanted from the primer · slide 3 ============ -->
 <section class="slide roomy" data-t="Why do DAM users still search by filename?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
@@ -565,7 +626,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Ask the room to guess before advancing. Most people answer "infra" — which is half right, and the other half is the interesting half.</div>
 </section>
-<!-- ============ 15 · transplanted from the primer · slide 4 ============ -->
+<!-- ============ 16 · transplanted from the primer · slide 4 ============ -->
 <section class="slide" data-t="Filename search is hard to beat">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The puzzle</div>
@@ -601,7 +662,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">The right-hand column is the part people underrate. Spend your time there.</div>
 </section>
-<!-- ============ 16 · transplanted from the primer · slide 5 ============ -->
+<!-- ============ 17 · transplanted from the primer · slide 5 ============ -->
 <section class="slide" data-t="One vector has to carry every clue">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The bottleneck</div>
@@ -632,7 +693,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is not "a semantic question about authentication" — it is five constraints that all have to survive. This is the bottleneck to keep referring back to.</div>
 </section>
-<!-- ============ 17 · transplanted from the primer · slide 6 ============ -->
+<!-- ============ 18 · transplanted from the primer · slide 6 ============ -->
 <section class="slide" data-t="Just increase the dimension?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
@@ -680,7 +741,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">The paper also proves a mathematical capacity limit; skip that here and stay with the intuition.</div>
 </section>
-<!-- ============ 18 · transplanted from the primer · slide 8 ============ -->
+<!-- ============ 19 · transplanted from the primer · slide 8 ============ -->
 <section class="slide" data-t="Exact match is a gift, but it's sparse">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Is exact match all we need?</div>
@@ -715,7 +776,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Be explicit that this is not a pro-lexical slide. It sets up the "we want both" framing that late interaction answers.</div>
 </section>
-<!-- ============ 19 · transplanted from the primer · slide 9 ============ -->
+<!-- ============ 20 · transplanted from the primer · slide 9 ============ -->
 <section class="slide" data-t="But wait — what's this?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Capacity isn't the fix</div>
@@ -747,7 +808,7 @@ The robotics background is worth one sentence because it explains the bias — c
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the hinge of the talk. Pause before turning the page.</div>
 </section>
-<!-- ============ 20 · transplanted from the primer · slide 10 ============ -->
+<!-- ============ 21 · transplanted from the primer · slide 10 ============ -->
 <section class="slide" data-t="Late interaction sits in the middle">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Escaping the ceiling</div>
@@ -786,7 +847,7 @@ The example worth saying out loud is the multilingual one: the customer types En
 
 The patch line is the bridge to the DAM. A page is an image with structure, so nothing about the operator has to change when we move from captions to documents.</div>
 </section>
-<!-- ============ 21 · transplanted from the primer · slide 12 ============ -->
+<!-- ============ 22 · transplanted from the primer · slide 12 ============ -->
 <section class="slide" data-t="The useful overlap">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this lands</div>
@@ -828,14 +889,14 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">End by pointing people at the original for the field cases and production objections. This primer deliberately stops here.</div>
 </section>
-<!-- ============ 22 ============ -->
+<!-- ============ 23 ============ -->
 <section class="slide section" data-t="Search in our systems">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part four</div>
   <h1>Search in our systems</h1>
   <p class="sub">Where each of these actually ends up.</p>
 </section>
-<!-- ============ 23 ============ -->
+<!-- ============ 24 ============ -->
 <section class="slide" data-t="Stock: visual retrieval">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Product one</div>
@@ -866,7 +927,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Tie this back to slide 3: recall-oriented product, recall-oriented architecture.</div>
 </section>
-<!-- ============ 24 ============ -->
+<!-- ============ 25 ============ -->
 <section class="slide" data-t="DAM: mixed modality, mostly visual">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Product two</div>
@@ -902,7 +963,7 @@ The patch line is the bridge to the DAM. A page is an image with structure, so n
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">The PDF-as-image point is the one people find surprising — it is worth an extra beat, and it is where late interaction has the clearest case.</div>
 </section>
-<!-- ============ 25 · mm 2 · the painting ============ -->
+<!-- ============ 26 · mm 2 · the painting ============ -->
 <section class="slide" data-t="A picture is worth a thousand words · the painting">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Why visual retrieval at all</div>
@@ -949,7 +1010,7 @@ A traditional text pipeline cannot touch an image without a captioning model in 
 
 Bring it home: this is our metadata situation with the labels changed. Contributor keywords on stock, near-nothing on a new DAM tenant. Direct visual retrieval keeps regions of the asset available for matching instead of forcing everything through a text bottleneck first.</div>
 </section>
-<!-- ============ 26 · mm 3 · the map ============ -->
+<!-- ============ 27 · mm 3 · the map ============ -->
 <section class="slide tight" data-t="A picture is worth a thousand words · the map">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Why visual retrieval at all</div>
@@ -997,7 +1058,7 @@ The last card is the one worth pausing on. We tend to treat OCR and captioning a
 
 Note in passing that this happens to be an EU policy report — the kind of document a public-sector tenant would want indexed without it leaving European infrastructure.</div>
 </section>
-<!-- ============ 27 · merged · from tokens to patches + we can see the match ============ -->
+<!-- ============ 28 · merged · from tokens to patches + we can see the match ============ -->
 <section class="slide tight" data-t="From tokens to patches · ColPali">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Going multi-vector · ColPali</div>
@@ -1052,7 +1113,7 @@ Then make the room commit before advancing. Read the query out, ask which region
 
 The explainability point in the dark card is not decoration — DAM customers ask for it, and a single pooled vector fundamentally cannot give it to them.</div>
 </section>
-<!-- ============ 28 · mm 9 · patch match: 2008 ============ -->
+<!-- ============ 29 · mm 9 · patch match: 2008 ============ -->
 <section class="slide tight" data-t="Query-to-patch matches · 2008">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Interpretability</div>
@@ -1095,7 +1156,7 @@ The explainability point in the dark card is not decoration — DAM customers as
 
 Say the quiet part: nobody trained this model on "highlight the axis". The localisation falls out of keeping one vector per patch and never pooling them. Interpretability here is a free side effect of the architecture, not a feature someone bolted on.</div>
 </section>
-<!-- ============ 29 · adapted from her slide 36 ============ -->
+<!-- ============ 30 · adapted from her slide 36 ============ -->
 <section class="slide section" data-t="So why isn't this everywhere yet?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> From evidence to production</div>
@@ -1117,7 +1178,7 @@ Say the quiet part: nobody trained this model on "highlight the axis". The local
   </ul>
   <div class="notes">Breath slide. Name the three objections, then say plainly that we have already conceded storage — the next slides are about speed and ecosystem, which are the ones with real answers.</div>
 </section>
-<!-- ============ 30 · engineering block · 1 ============ -->
+<!-- ============ 31 · engineering block · 1 ============ -->
 <section class="slide" data-t="Naive MaxSim is doomed">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> The speed objection</div>
@@ -1170,7 +1231,7 @@ The important reframe: no serious system implements exact MaxSim over the whole 
 
 Our numbers have the same shape with patches instead of tokens — I need to put the real ones in here before presenting.</div>
 </section>
-<!-- ============ 31 · engineering block · 2 ============ -->
+<!-- ============ 32 · engineering block · 2 ============ -->
 <section class="slide" data-t="Every fast system is a funnel">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Making it work</div>
@@ -1239,7 +1300,7 @@ I have deliberately left the stage widths blank. Her illustrative numbers were 9
 
 The last card matters for the next slides: there is more than one way to build stage one.</div>
 </section>
-<!-- ============ 32 · vector store · what a vector database is ============ -->
+<!-- ============ 33 · vector store · what a vector database is ============ -->
 <section class="slide" data-t="So what is a vector database?">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
@@ -1286,7 +1347,7 @@ The filtering line deserves one beat. Post-filtering is the naive implementation
 
 If someone asks "why not just pgvector" — completely reasonable at small scale, and one fewer system to run. It gets harder when you want multivectors and quantization on a corpus this size.</div>
 </section>
-<!-- ============ 33 · engineering block · where the vectors live ============ -->
+<!-- ============ 34 · engineering block · where the vectors live ============ -->
 <section class="slide tight" data-t="Where the vectors actually live">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure · the vector store</div>
@@ -1350,7 +1411,7 @@ Do not oversell Qdrant against the specialised engines. On pure multi-vector fir
 
 The Berlin point is worth one sentence and no more. It is a genuine reinforcement of part two, but the substantive claim was always about self-hosting rather than the vendor's postcode.</div>
 </section>
-<!-- ============ 34 ============ -->
+<!-- ============ 35 ============ -->
 <section class="slide" data-t="The serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Infrastructure</div>
@@ -1383,7 +1444,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Resist a stack-diagram-with-fourteen-boxes. The point is that engine choice follows workload shape, and both stay on our metal.</div>
 </section>
-<!-- ============ 35 · agentic search · the embedder's dilemma ============ -->
+<!-- ============ 36 · agentic search · the embedder's dilemma ============ -->
 <section class="slide tight" data-t="The embedder's dilemma">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agentic search · cost</div>
@@ -1428,7 +1489,7 @@ The Berlin point is worth one sentence and no more. It is a genuine reinforcemen
   <div class="notes">Three things worth saying out loud beyond the numbers on screen. First, where it flips: LLMs genuinely lead on reasoning-heavy retrieval, embedding models lead on classification, and the two match on clustering, STS and pair classification — so this is a routing decision, not a winner. Second, reasoning tokens are 28–81% of LLM inference cost, and in their ablation lower reasoning budgets preserved or even improved retrieval quality — which is a knob we control because we host the serving stack. Third, the Pareto frontier holds the leading embedding models plus exactly one LLM, and that LLM buys 0.4 points for three orders of magnitude. For an agentic caller issuing many queries per task, that trade is not close.</div>
 </section>
 
-<!-- ============ 36 · agentic search · the counter-example ============ -->
+<!-- ============ 37 · agentic search · the counter-example ============ -->
 <section class="slide tight" data-t="And then someone trained a small one">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agentic search · the counter-example</div>
@@ -1486,7 +1547,7 @@ None of which weakens the point for us. The base model is open, the training met
 If asked "so should we train one?" — not yet. The honest sequence is the eval set first, then measure how far a good off-the-shelf embedder gets us, and only then consider training. This slide is a reason to keep the option open, not a plan.</div>
 </section>
 
-<!-- ============ 37 · evaluation · 3 · our own eval set ============ -->
+<!-- ============ 38 · evaluation · 3 · our own eval set ============ -->
 <section class="slide" data-t="Our own eval set is the instrument">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Evaluation</div>
@@ -1533,7 +1594,7 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">This is the slide I actually want people to leave with. Public benchmarks narrow the field to three or four candidates; after that, only our own labelled queries can tell us anything. And note the cold-start link — on a new tenant we cannot wait for click data, so the offline eval set is not a nice-to-have piece of ML hygiene, it is the only measuring instrument that exists on day one. Building it is product work, not research work.</div>
 </section>
-<!-- ============ 38 · evaluation · 4 · loop back to infrastructure ============ -->
+<!-- ============ 39 · evaluation · 4 · loop back to infrastructure ============ -->
 <section class="slide" data-t="Which is why we own the serving stack">
   <div class="draft-flag">Draft</div>
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Back to infrastructure</div>
@@ -1580,7 +1641,7 @@ If asked "so should we train one?" — not yet. The honest sequence is the eval 
   <div class="slide-foot">ML and data at Colourbox</div>
   <div class="notes">Close the loop back to part three. The whole self-hosting argument was framed as sovereignty, and it is — but this is the second half of the return on it. Because we run the models, we can pull a new checkpoint on Monday, re-embed a sample of a customer's corpus on Tuesday and have a number on Wednesday. A hosted API gives you none of that: you cannot benchmark what you cannot re-index, and you cannot re-index a corpus you are not allowed to send. Sovereignty and the ability to keep improving turn out to be the same piece of infrastructure.</div>
 </section>
-<!-- ============ 39 · open-ended finish ============ -->
+<!-- ============ 40 · open-ended finish ============ -->
 <section class="slide section tight" data-t="What all of this is for">
   <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Where this goes</div>
   <h1>An agent searching a DAM<br>needs <span style="color:var(--accent)">all of it</span></h1>
