@@ -206,12 +206,12 @@ Then the turn. Our corpus is images, drawings, scanned pages and video. There is
     </div>
   </div>
   <ul class="sources">
-    <li><a href="https://hugobowne.substack.com/p/your-agents-are-only-as-good-as-your">Your Agents Are Only As Good As Your Retrieval</a> · Hugo Bowne-Anderson, 21 August 2026 — this slide's title</li>
+    <li><a href="https://hugobowne.substack.com/p/your-agents-are-only-as-good-as-your">Your Agents Are Only As Good As Your Retrieval</a> · <strong>Atita Arora</strong> — her opening talk at Context Camp, in Hugo Bowne-Anderson's write-up of 21 August 2026. This slide's title is her phrase.</li>
     <li><a href="https://hornet.dev/blog/this-is-what-agentic-retrieval-looks-like">This is what agentic retrieval looks like</a> · Jo Kristian Bergum, 20 May 2026 — median 24 search calls per question, GPT-5 with BM25 over 830 BrowseComp-Plus questions</li>
     <li><a href="https://bluenotebook.io/blog/context-gating-browsecomp/">Does a context gate for search agents actually work?</a> · Nikhil Kasukurthi, 17 July 2026 — 16–19 searches per query, and what gating the context does to them</li>
   </ul>
   <div class="slide-foot">ML and data at Colourbox</div>
-  <div class="notes">This slide gives the talk its direction, so do not rush it. Everything after it serves the claim in the headline, which is Hugo Bowne-Anderson's phrase from a piece published a few days ago — worth crediting out loud, it costs one sentence.
+  <div class="notes">This slide gives the talk its direction, so do not rush it. Everything after it serves the claim in the headline, which is Atita Arora's phrase, from her opening talk at Context Camp — worth crediting out loud by name, it costs one sentence. Hugo Bowne-Anderson's write-up is where the slides and the recording are.
 
 Walk the diagram once, slowly, in this order: the loop runs, retrieve is the only box that touches the corpus, and everything it returns is written upward into the context window. Then the point: nothing is ever removed from up there. A false positive is not a bad result the user scrolls past — it is a document the model re-reads on every subsequent step and reasons from as if it were evidence.
 
@@ -1391,8 +1391,7 @@ If the room is engineers, the test-suite analogy is the whole explanation: same 
       product. <strong>Stock</strong> takes the dense, cheap-index end; <strong>DAM</strong> pays for
       patches, because there a near miss is a failure. Owning the stack is what lets us sit at two points
       on that curve at once — and change our mind when the next model lands.</p>
-      <p style="margin-top:14px">All of it on our own GPUs — <strong>2 nodes × 4 NVIDIA
-      L40S</strong> — inside EU data centres.</p>
+      <p style="margin-top:14px">All of it on our own GPUs — inside EU data centres.</p>
     </div>
   </div>
   <ul class="sources">
