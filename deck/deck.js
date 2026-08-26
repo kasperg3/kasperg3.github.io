@@ -71,8 +71,25 @@ addEventListener('resize', scheduleFit, { passive: true });
 fit();
 
 /* ---------- slide furniture ---------- */
+const esc = t => t.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function addRefStrip(s){
+  const refs = [...s.querySelectorAll('.sources li')];
+  if (!refs.length || s.querySelector('.slide-refs')) return;
+  const ol = document.createElement('ol');
+  ol.className = 'slide-refs';
+  ol.innerHTML = refs.map((li, k) => {
+    const a = li.querySelector('a');
+    const label = esc((a ? a.textContent : li.textContent).trim().replace(/\s+/g, ' '));
+    const body = a
+      ? `<a class="rl" href="${esc(a.getAttribute('href'))}" target="_blank" rel="noopener" title="${label}">${label}</a>`
+      : `<span class="rl" title="${label}">${label}</span>`;
+    return `<li><span class="rn">${k + 1}</span>${body}</li>`;
+  }).join('');
+  s.append(ol);
+}
 slides.forEach((s, i) => {
   s.setAttribute('aria-hidden', 'true');
+  addRefStrip(s);
   if (s.classList.contains('title-slide')) return;
   if (!s.querySelector('.slide-number')) {
     const n = document.createElement('div');
@@ -129,7 +146,9 @@ function renderSources(){
   srcEl.querySelector('.rc').textContent = refs.length
     ? `${refs.length} source${refs.length === 1 ? '' : 's'} attached to this slide`
     : 'No source attached to this slide';
-  srcEl.querySelector('.refs').innerHTML = refs.map(li => `<li>${li.innerHTML}</li>`).join('');
+  srcEl.querySelector('.refs').innerHTML = refs
+    .map((li, k) => `<li><span class="rn">${k + 1}</span><span class="rb">${li.innerHTML}</span></li>`)
+    .join('');
 }
 
 /* ---------- contents drawer, grouped by .section slides ---------- */

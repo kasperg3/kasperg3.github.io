@@ -194,6 +194,17 @@ figcaption{font:400 17px/1.45 var(--sans);color:var(--faint)}
 
 /* ---------- per-slide footer ---------- */
 .slide-number{position:absolute;right:116px;bottom:52px;font:500 17px/1 var(--mono);color:var(--faint)}
+/* visible, numbered references — so sources are readable without opening the drawer */
+.slide-refs{position:absolute;left:116px;right:116px;bottom:76px;list-style:none;margin:0;padding:0;
+            display:flex;flex-wrap:wrap;gap:5px 16px;align-items:baseline;
+            font:500 12px/1.35 var(--sans);color:var(--faint)}
+.slide-refs li{display:flex;gap:6px;align-items:baseline;min-width:0;max-width:440px}
+.slide-refs .rn{font:600 10px/14px var(--mono);color:var(--accent);background:var(--accent-faint);
+                border-radius:4px;min-width:15px;height:14px;text-align:center;flex:none;padding:0 3px}
+.slide-refs .rl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:inherit;text-decoration:none}
+a.rl:hover{color:var(--accent);text-decoration:underline}
+.slide.section .slide-refs{color:rgba(255,255,255,.5)}
+.slide.section .slide-refs .rn{color:#fff;background:rgba(255,255,255,.18)}
 .slide-foot{position:absolute;left:116px;bottom:52px;font:500 15px/1 var(--sans);
             letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
 .slide.section .slide-number,.slide.section .slide-foot{color:rgba(255,255,255,.4)}
@@ -223,7 +234,7 @@ figcaption{font:400 17px/1.45 var(--sans);color:var(--faint)}
         border-left:1px solid var(--hair);padding:40px 38px;overflow-y:auto;
         transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
 #toc{width:440px}
-body.notes-open #notes,body.toc-open #toc{transform:none}
+body.notes-open #notes,body.toc-open #toc,body.sources-open #sources{transform:none}
 .drawer .tk{font:600 13px/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;
             color:var(--accent-soft);margin-bottom:14px}
 .drawer h2{font:600 30px/1.2 var(--serif);margin-bottom:8px}
@@ -250,7 +261,11 @@ body.notes-open #notes,body.toc-open #toc{transform:none}
 #sources .rc{font:500 12px/1.5 var(--mono);letter-spacing:.05em;color:var(--faint);
              text-transform:uppercase;margin-bottom:20px}
 #sources .refs{list-style:none;display:flex;flex-direction:column;gap:2px}
-#sources .refs li{border-bottom:1px solid var(--hair-soft);padding:15px 0}
+#sources .refs li{border-bottom:1px solid var(--hair-soft);padding:15px 0;
+                  display:flex;gap:12px;align-items:baseline}
+#sources .refs .rn{font:600 11px/17px var(--mono);color:var(--accent);background:var(--accent-faint);
+                   border-radius:5px;min-width:19px;text-align:center;flex:none;padding:0 4px}
+#sources .refs .rb{flex:1;min-width:0}
 #sources .refs li:last-child{border-bottom:0}
 #sources .refs a{font:400 16px/1.5 var(--sans);color:var(--ink);text-decoration:none;
                  display:flex;gap:10px;align-items:baseline}
@@ -338,6 +353,10 @@ body.notes-open #notes,body.toc-open #toc{transform:none}
   #stage{transform:none!important;width:1920px;height:auto}
   #hud,#progress,.drawer,#lightbox{display:none!important}
   .slide .sources{display:none!important}
+  /* background-clip:text does not survive the print pipeline — render it solid */
+  .grad{background:none!important;-webkit-background-clip:border-box!important;
+        background-clip:border-box!important;color:var(--accent)!important;
+        -webkit-text-fill-color:var(--accent)!important}
   .slide{position:relative;display:flex!important;page-break-after:always;
          width:1920px;height:1080px;animation:none!important}
   .slide *{animation:none!important}
