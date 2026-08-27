@@ -10,10 +10,12 @@
 # rebuilt index reaches the site.
 name: Rebuild search index
 
+# Runs on any branch: an index that disagrees with the content is worse than
+# no index, and a branch that changes a page should carry the matching index
+# into its pull request rather than waiting for the merge.
 on:
   workflow_dispatch:
   push:
-    branches: ["master"]
     paths:
       - "publications.html"
       - "projects.html"
@@ -27,7 +29,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: "search-index"
+  group: search-index-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
