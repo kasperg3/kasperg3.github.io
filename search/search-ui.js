@@ -1,124 +1,110 @@
 /* ============================================================================
-   search-ui.js — the visible half of the SPLADE demo.
+   search-ui.js — /search/: the autocomplete, plus the breakdown it feeds.
 
-   Four views, all drawn from data that is already in index.json:
+   The search box and its five ranked results are the page. Everything under
+   them dissects whichever result you pressed:
 
-     1. sparsity strip      every one of the ~30k vocabulary dimensions, with
-                            the handful this document activates lit up
-     2. query decomposition what WordPiece did to what you typed, and what each
-                            piece is worth in the static query table
-     3. score decomposition which terms produced a result's score, and how much
-     4. expansion reveal    terms the model added that the text never contained
+     1. query decomposition  what WordPiece did to what you typed, and what
+                             each piece is worth in the static query table
+     2. score decomposition  every term the query and the passage share, and
+                             how much each one contributed
+     3. sparsity strip       all ~30k vocabulary dimensions, with the ~150 this
+                             passage activates lit up
+     4. expansion reveal     terms the model added that the text never had
 
-   Facets (kind / year) are handled entirely outside the model, on the metadata.
-   That separation is deliberate — see the note on the page.
+   Facets (kind / year) are handled outside the model, on the metadata — see
+   the note on the page.
    ============================================================================ */
 
-import { load } from './splade.js';
+import { Autocomplete, KIND_LABEL, escapeHTML, fmt, tokenHTML, yearOf } from './autocomplete.js';
 
 const $ = sel => document.querySelector(sel);
 
-const LIMIT = 12;          // results shown
 const TERMS_SHOWN = 120;   // expansion-panel terms before "and N more"
-const STACK_SEGMENTS = 14; // segments in a result's score bar
+const CONTRIB_ROWS = 18;   // rows in the score decomposition
 
 const el = {
-  q: $('#q'),
-  clear: $('#clear'),
-  status: $('#status'),
-  skeleton: $('#skeleton'),
-  examples: $('#examples'),
-  facets: $('#facets'),
-  results: $('#results'),
-  resultsNote: $('#results-note'),
-  qterms: $('#qterms'),
-  qsplit: $('#qsplit'),
-  strip: $('#strip'),
-  stripAlt: $('#strip-alt'),
-  facts: $('#facts'),
-  terms: $('#terms'),
-  docHead: $('#doc-head'),
-  docMeta: $('#doc-meta'),
-  docLink: $('#doc-link'),
-  termsNote: $('#terms-note'),
+  q: $('#q'), clear: $('#clear'), status: $('#status'), skeleton: $('#skeleton'),
+  ac: $('#ac'), acList: $('#ac-list'), acFoot: $('#ac-foot'),
+  examples: $('#examples'), facets: $('#facets'), corpusNote: $('#corpus-note'),
+  picker: $('#picker'), pickerLabel: $('#picker-label'),
+  qterms: $('#qterms'), qsplit: $('#qsplit'),
+  contrib: $('#contrib'),
+  strip: $('#strip'), stripAlt: $('#strip-alt'), facts: $('#facts'),
+  terms: $('#terms'), termsNote: $('#terms-note'),
+  docHead: $('#doc-head'), docMeta: $('#doc-meta'), docLink: $('#doc-link'),
 };
 
-const KIND_LABEL = {
-  publication: 'Paper',
-  slide: 'Slide',
-  project: 'Project',
-  'cv-role': 'CV',
-  thesis: 'Thesis',
-  supervision: 'Supervision',
-};
-
-let engine = null;        // the Splade instance, once loaded
-let loading = null;       // in-flight load promise, so focus + type race safely
-let selected = null;      // { doc, parts } currently in the inspector
-let lastResults = [];
+let engine = null;
+let hits = [];          // the results currently listed
+let selected = null;    // the hit being dissected
+let lastTerms = [];
 const filters = { kind: new Set(), year: new Set() };
 
-/* ------------------------------------------------------------------ helpers */
+/* ------------------------------------------------------------------ widget */
 
-const fmt = n => n.toFixed(2);
-
-function tokenHTML(token) {
-  // WordPiece continuations start with ##; grey the marker so the split reads.
-  return token.startsWith('##')
-    ? `<span class="cont">##</span>${escapeHTML(token.slice(2))}`
-    : escapeHTML(token);
-}
-
-function escapeHTML(s) {
-  return s.replace(/[&<>"']/g, c =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
-/** The year a document belongs to, dug out of its metadata. */
-function yearOf(doc) {
-  const m = /\b(19|20)\d{2}\b/.exec(doc.meta || '');
-  return m ? m[0] : null;
-}
-
-/* ------------------------------------------------------------------- boot */
-
-function ready() {
-  if (engine) return Promise.resolve(engine);
-  if (loading) return loading;
-
-  el.skeleton.hidden = false;
-  el.status.textContent = 'Loading the index…';
-  el.status.classList.remove('err');
-
-  loading = load('./').then(e => {
+const ac = new Autocomplete({
+  input: el.q, panel: el.ac, list: el.acList, foot: el.acFoot,
+  status: el.status, skeleton: el.skeleton, clear: el.clear,
+  base: './', limit: 5,
+  filter: passesFilters,
+  onReady(e) {
     engine = e;
-    el.skeleton.hidden = true;
     buildFacets();
-    el.status.textContent =
-      `${e.docs.length} passages indexed over ${e.vocabSize.toLocaleString('en')} `
-      + 'vocabulary dimensions. No model runs in your browser.';
-    return e;
-  }).catch(err => {
-    loading = null;
-    el.skeleton.hidden = true;
-    el.status.classList.add('err');
-    el.status.textContent = `Could not load the index: ${err.message}`;
-    throw err;
-  });
-  return loading;
+    el.corpusNote.textContent =
+      `${e.docs.length} passages · ${e.vocabSize.toLocaleString('en')} dimensions`;
+    applyDeepLink();
+  },
+  onQuery({ terms, results, total, query }) {
+    hits = results;
+    lastTerms = terms;
+    renderPicker();
+    // Pressing a result is what commits a selection, but the breakdown should
+    // never be stale: follow the top hit until the reader picks another.
+    show(results.length ? (keepSelected(results) ?? results[0]) : null);
+    renderQuery(terms);
+    syncURL(query);
+    if (!query) el.qsplit.textContent = '';
+    void total;
+  },
+  onHighlight(hit) { if (hit) show(hit); },   // arrow keys preview as they move
+  onSelect(hit, i) {
+    show(hit);
+    renderPicker(i);
+    ac.close();
+    syncURL(el.q.value.trim(), hit.doc.id);
+    el.picker.scrollIntoView({ block: 'start', behavior: prefersMotion() ? 'smooth' : 'auto' });
+  },
+});
+
+function prefersMotion() {
+  return !matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/** Keep dissecting the same document across keystrokes when it is still a hit. */
+function keepSelected(results) {
+  if (!selected) return null;
+  return results.find(r => r.doc.id === selected.doc.id) || null;
 }
 
 /* ----------------------------------------------------------------- facets */
 
+function passesFilters(doc) {
+  if (filters.kind.size && !filters.kind.has(doc.kind)) return false;
+  if (filters.year.size) {
+    const y = yearOf(doc);
+    if (!y || !filters.year.has(y)) return false;
+  }
+  return true;
+}
+
 function buildFacets() {
-  const kinds = new Map();
-  const years = new Map();
+  const kinds = new Map(), years = new Map();
   for (const d of engine.docs) {
     kinds.set(d.kind, (kinds.get(d.kind) || 0) + 1);
     const y = yearOf(d);
     if (y) years.set(y, (years.get(y) || 0) + 1);
   }
-
   const rows = [
     ['kind', 'Kind', [...kinds.keys()].sort((a, b) => kinds.get(b) - kinds.get(a)),
       k => `${KIND_LABEL[k] || k} ${kinds.get(k)}`],
@@ -132,7 +118,7 @@ function buildFacets() {
     row.className = 'sp-facet';
     row.innerHTML = `<span id="facet-${group}">${label}</span>`;
     const holder = document.createElement('div');
-    holder.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px';
+    holder.className = 'sp-facet-chips';
     holder.setAttribute('role', 'group');
     holder.setAttribute('aria-labelledby', `facet-${group}`);
     for (const v of values) {
@@ -145,7 +131,7 @@ function buildFacets() {
         const on = b.getAttribute('aria-pressed') === 'true';
         b.setAttribute('aria-pressed', on ? 'false' : 'true');
         on ? filters[group].delete(v) : filters[group].add(v);
-        run();
+        ac.run();
       });
       holder.appendChild(b);
     }
@@ -155,65 +141,68 @@ function buildFacets() {
   el.facets.hidden = false;
 }
 
-function passesFilters(doc) {
-  if (filters.kind.size && !filters.kind.has(doc.kind)) return false;
-  if (filters.year.size) {
-    const y = yearOf(doc);
-    if (!y || !filters.year.has(y)) return false;
+/* ------------------------------------------------- the result being shown */
+
+function renderPicker(activeIndex = -1) {
+  const on = hits.length > 0;
+  el.picker.hidden = !on;
+  el.pickerLabel.hidden = !on;
+  if (!on) { el.picker.innerHTML = ''; return; }
+
+  const current = activeIndex >= 0 ? activeIndex
+    : Math.max(0, hits.findIndex(h => h.doc.id === selected?.doc.id));
+
+  el.picker.innerHTML = hits.map((h, i) => `
+    <button type="button" role="tab" class="sp-pick${i === current ? ' on' : ''}"
+            aria-selected="${i === current}" data-i="${i}">
+      <span class="n">${i + 1}</span>${escapeHTML(h.doc.title)}
+    </button>`).join('');
+
+  for (const b of el.picker.querySelectorAll('.sp-pick')) {
+    b.addEventListener('click', () => {
+      const i = +b.dataset.i;
+      show(hits[i]);
+      renderPicker(i);
+      syncURL(el.q.value.trim(), hits[i].doc.id);
+    });
   }
-  return true;
 }
 
-/* ------------------------------------------------------------------ search */
-
-let debounce = 0;
-function schedule() {
-  clearTimeout(debounce);
-  debounce = setTimeout(run, 90);
+/** Keep ?q= and ?r= in step so any view of this page is shareable. */
+function syncURL(query, docId) {
+  const p = new URLSearchParams();
+  if (query) p.set('q', query);
+  if (docId) p.set('r', docId);
+  const qs = p.toString();
+  history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
 }
 
-async function run() {
-  const text = el.q.value.trim();
-  el.clear.hidden = !text;
-  if (!engine) {
-    if (!text) return;
-    await ready().catch(() => {});
-    if (!engine) return;
-  }
-
-  if (!text) {
-    el.qterms.innerHTML = '<p class="sp-empty">Type a query — its pieces and their static weights appear here.</p>';
-    el.qsplit.textContent = '';
-    el.results.innerHTML = '';
-    el.resultsNote.textContent = '';
-    lastResults = [];
-    showDoc(null);
-    return;
-  }
-
-  // Search the whole corpus, then apply the metadata facets. Filtering after
-  // scoring keeps the two paths honestly separate: the model never sees a year.
-  const { terms, results } = engine.search(text, engine.docs.length);
-  const kept = results.filter(r => passesFilters(r.doc)).slice(0, LIMIT);
-
-  // Results first: renderQuery colours a term by whether it matched anything,
-  // and that is only known once the results are in.
-  renderResults(kept, results.length);
-  renderQuery(terms);
-  showDoc(kept.length ? kept[0] : null);
+/** Open on a specific result when arriving from the front page. */
+function applyDeepLink() {
+  const p = new URLSearchParams(location.search);
+  const q = p.get('q');
+  if (!q) return;
+  el.q.value = q;
+  ac.run().then(() => {
+    const want = p.get('r');
+    const i = want ? hits.findIndex(h => h.doc.id === want) : -1;
+    if (i >= 0) { show(hits[i]); renderPicker(i); }
+    ac.close();
+  });
 }
 
-/* ------------------------------------------------- view 2: query breakdown */
+/* ------------------------------------------------- view 1: query breakdown */
 
 function renderQuery(terms) {
   if (!terms.length) {
-    el.qterms.innerHTML = '<p class="sp-empty">Nothing tokenizable in that query.</p>';
+    el.qterms.innerHTML =
+      '<p class="sp-empty">Type a query — its pieces and their static weights appear here.</p>';
     el.qsplit.textContent = '';
     return;
   }
   const max = Math.max(...terms.map(t => t.weight), 0.001);
   const matched = new Set();
-  for (const r of lastResults) for (const p of r.parts) matched.add(p.id);
+  for (const h of hits) for (const p of h.parts) matched.add(p.id);
 
   el.qterms.innerHTML = terms.map(t => {
     const dead = t.unknown || t.weight === 0;
@@ -229,7 +218,6 @@ function renderQuery(terms) {
     </div>`;
   }).join('');
 
-  // Show the splitting itself when a word was broken into more than one piece.
   const byWord = new Map();
   for (const t of terms) {
     if (!byWord.has(t.word)) byWord.set(t.word, []);
@@ -251,85 +239,34 @@ function renderQuery(terms) {
   el.qsplit.innerHTML = bits.join(' ');
 }
 
-/* ------------------------------------- views 1 + 3: results and their scores */
+/* ------------------------------- views 2-4: everything about one result --- */
 
-function renderResults(hits, totalBeforeFilter) {
-  lastResults = hits;
-  if (!hits.length) {
-    el.results.innerHTML = '<li class="sp-empty" style="padding:8px 0">No passage shares a term with that query.</li>';
-    el.resultsNote.textContent = totalBeforeFilter
-      ? `${totalBeforeFilter} scored above zero, but the filters excluded all of them.`
-      : '';
-    return;
-  }
-  const top = hits[0].score;
-
-  el.results.innerHTML = hits.map((hit, i) => {
-    const d = hit.doc;
-    const segs = hit.parts.slice(0, STACK_SEGMENTS).map(p => {
-      const pct = 100 * p.contribution / hit.score;
-      const tk = engine.tokenOf(p.id);
-      return `<i class="${p.literal ? '' : 'exp'}" style="width:${pct}%"
-        title="${escapeHTML(tk)} — ${fmt(p.contribution)} of ${fmt(hit.score)}${p.literal ? '' : ' · expansion'}"></i>`;
-    }).join('');
-    return `<li class="sp-result${i === 0 ? ' on' : ''}" data-i="${i}">
-      <button type="button" class="sp-hit" aria-expanded="${i === 0}">
-        <div class="row">
-          <span class="sp-kind">${KIND_LABEL[d.kind] || d.kind}</span>
-          <span class="ti">${escapeHTML(d.title)}</span>
-          <span class="sc">${fmt(hit.score)}</span>
-        </div>
-        <div class="mt">${escapeHTML(d.meta || '')}</div>
-        <div class="sn">${escapeHTML(d.snippet || '')}</div>
-        <div class="sp-stack" role="img"
-             aria-label="Score ${fmt(hit.score)}, built from ${hit.parts.length} matching terms, the largest being ${escapeHTML(engine.tokenOf(hit.parts[0].id))}.">${segs}</div>
-      </button>
-      <a class="sp-open" href="${escapeHTML(d.url)}">Open ${d.kind === 'slide' ? 'the slide' : 'the page'} →</a>
-    </li>`;
-  }).join('');
-
-  const filtered = totalBeforeFilter - hits.length;
-  el.resultsNote.textContent =
-    `${totalBeforeFilter} passage${totalBeforeFilter === 1 ? '' : 's'} scored above zero`
-    + (filtered > 0 ? `, showing ${hits.length}` : '')
-    + (top < 0.6 ? ' — every score here is weak, so read them as leads, not answers.' : '.');
-
-  el.results.querySelectorAll('.sp-hit').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const li = btn.closest('.sp-result');
-      showDoc(hits[+li.dataset.i]);
-      el.results.querySelectorAll('.sp-result').forEach(n => {
-        const on = n === li;
-        n.classList.toggle('on', on);
-        n.querySelector('.sp-hit').setAttribute('aria-expanded', String(on));
-      });
-    });
-  });
-}
-
-/* ------------------------- views 1 + 4: the inspector for one document ---- */
-
-function showDoc(hit) {
+function show(hit) {
   selected = hit;
   if (!hit) {
-    el.docHead.textContent = 'No document selected';
+    el.docHead.textContent = 'No result selected';
     el.docMeta.textContent = '';
     el.docLink.hidden = true;
-    el.terms.innerHTML = '<p class="sp-empty">Run a search, then pick a result to see the vector behind it.</p>';
+    el.contrib.innerHTML = '<p class="sp-empty">Run a search to see a score taken apart.</p>';
+    el.terms.innerHTML =
+      '<p class="sp-empty">Run a search, then pick a result to see the vector behind it.</p>';
     el.facts.innerHTML = '';
     el.termsNote.textContent = '';
     drawStrip(null);
     return;
   }
-  const d = hit.doc;
-  const all = engine.termsOf(d);
-  const expansions = all.filter(t => !t.literal).length;
-  const matchedIds = new Set(hit.parts ? hit.parts.map(p => p.id) : []);
 
+  const d = hit.doc;
   el.docHead.textContent = d.title;
   el.docMeta.textContent = d.meta || '';
   el.docLink.hidden = false;
   el.docLink.href = d.url;
+
+  renderContributions(hit);
+
+  const all = engine.termsOf(d);
+  const expansions = all.filter(t => !t.literal).length;
+  const matchedIds = new Set(hit.parts.map(p => p.id));
 
   el.facts.innerHTML = [
     [all.length, 'terms activated'],
@@ -354,7 +291,31 @@ function showDoc(hit) {
   drawStrip(d);
 }
 
-/* ------------------------------------------------ view 1: the sparsity strip */
+/** View 2: the score, term by term. */
+function renderContributions(hit) {
+  const rows = hit.parts.slice(0, CONTRIB_ROWS);
+  const max = rows[0]?.contribution || 1;
+  el.contrib.innerHTML = `
+    <p class="sp-contrib-sum">Score <b>${fmt(hit.score)}</b> — the sum of
+      ${hit.parts.length} shared term${hit.parts.length === 1 ? '' : 's'}.</p>
+    <ol class="sp-contrib-list">
+      ${rows.map(p => {
+        const q = engine.queryWeightOf(p.id);
+        const dw = p.contribution / (q || 1);
+        return `<li>
+          <span class="tk ${p.literal ? 'lit' : 'exp'}">${tokenHTML(engine.tokenOf(p.id))}</span>
+          <span class="bar"><i class="${p.literal ? '' : 'exp'}"
+                style="width:${Math.max(2, 100 * p.contribution / max)}%"></i></span>
+          <span class="mul">${fmt(q)} × ${fmt(dw)}</span>
+          <span class="val">${fmt(p.contribution)}</span>
+        </li>`;
+      }).join('')}
+    </ol>
+    ${hit.parts.length > rows.length
+      ? `<p class="sp-note">and ${hit.parts.length - rows.length} smaller contributions.</p>` : ''}`;
+}
+
+/* ------------------------------------------------ view 3: the sparsity strip */
 
 let stripDoc = null;
 
@@ -375,14 +336,11 @@ function drawStrip(doc) {
   const accent = css.getPropertyValue('--accent').trim();
   const accent2 = css.getPropertyValue('--accent-2').trim();
 
-  // The empty vocabulary, as a baseline the eye can measure the lit ticks against.
+  // The empty vocabulary, as a baseline the eye can measure the ticks against.
   ctx.fillStyle = hair || 'rgba(0,0,0,.07)';
   ctx.fillRect(0, h - 1.5, w, 1.5);
 
-  if (!doc) {
-    el.stripAlt.textContent = '';
-    return;
-  }
+  if (!doc) { el.stripAlt.textContent = ''; return; }
 
   const n = engine.vocabSize;
   const maxW = Math.max(...doc.w) / engine.docScale;
@@ -406,18 +364,12 @@ function drawStrip(doc) {
 
 /* -------------------------------------------------------------------- wire */
 
-el.q.addEventListener('focus', ready, { once: true });
-el.q.addEventListener('input', () => { el.clear.hidden = !el.q.value; schedule(); });
-el.q.addEventListener('keydown', e => { if (e.key === 'Escape') { el.q.value = ''; run(); } });
-
-el.clear.addEventListener('click', () => { el.q.value = ''; el.q.focus(); run(); });
-
 el.examples.addEventListener('click', e => {
   const b = e.target.closest('.sp-ex');
   if (!b) return;
-  el.q.value = b.textContent;
-  ready().then(run);
+  el.q.value = b.textContent.trim();
   el.q.focus();
+  ac.ready().then(() => ac.run());
 });
 
 let resizeTimer = 0;
@@ -429,11 +381,7 @@ addEventListener('resize', () => {
 // when the OS theme flips underneath it.
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => drawStrip(stripDoc));
 
-// A query in the URL (?q=…) makes any search on this page shareable.
-const initial = new URLSearchParams(location.search).get('q');
-if (initial) {
-  el.q.value = initial;
-  ready().then(run);
-} else {
-  showDoc(null);
-}
+// Arriving with ?q= (from the front page, or a shared link) loads immediately;
+// otherwise nothing is fetched until the box is focused.
+if (new URLSearchParams(location.search).get('q')) ac.ready();
+else show(null);

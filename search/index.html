@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=9df2b8c0">
-<link rel="stylesheet" href="/search/search.css?v=1">
+<link rel="stylesheet" href="/site/site.css?v=974e5dde">
+<link rel="stylesheet" href="/search/search.css?v=2">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
@@ -36,15 +36,141 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 <main id="main">
 <div class="wrap narrow">
 
-  <div class="hero lead">
+  <!-- ============ search, front and centre ============ -->
+  <div class="sp-hero">
     <p class="eyebrow">Learned sparse retrieval</p>
-    <h1>Search, with the vectors showing</h1>
-    <p class="lede">This page searches everything on the site — papers, slides, projects, the CV —
-    using <strong>inference-free SPLADE</strong>. No model runs in your browser. Not a quantized one,
-    not a small one: none. The reason is worth a minute, because it is the whole trick.</p>
+    <h1>Search this site</h1>
+    <p class="lede">Papers, slides, projects and the CV — searched with
+    <strong>inference-free SPLADE</strong>. No model runs in your browser; the sparse vectors were
+    built offline, and everything below shows you the ones behind your results.</p>
   </div>
 
-  <section style="padding-top:0;border:0">
+  <div class="sp-box">
+    <!-- The combobox owns the listbox; focus stays in the input and
+         aria-activedescendant points at the highlighted result. -->
+    <div class="sp-field-wrap">
+      <div class="sp-field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <label for="q" class="skip">Search this site</label>
+        <input id="q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search"
+               role="combobox" aria-expanded="false" aria-controls="ac-list"
+               aria-autocomplete="list" aria-describedby="ac-hint"
+               placeholder="how do drones divide up a search area?">
+        <button id="clear" class="sp-clear" type="button" hidden aria-label="Clear the search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="sp-ac" id="ac" hidden>
+        <ul class="sp-ac-list" id="ac-list" role="listbox" aria-label="Search results"></ul>
+        <p class="sp-ac-foot" id="ac-foot"></p>
+      </div>
+    </div>
+
+    <p class="skip" id="ac-hint">Results appear as you type. Use the up and down arrow keys to move
+    through them, Enter to open one, Escape to dismiss the list.</p>
+
+    <div class="sp-examples" id="examples">
+      <span>Try</span>
+      <button class="sp-ex" type="button">splitting work between robots without a leader</button>
+      <button class="sp-ex" type="button">why keyword search fails on images</button>
+      <button class="sp-ex" type="button">finding someone lost in the woods</button>
+      <button class="sp-ex" type="button">keeping data inside Europe</button>
+    </div>
+
+    <p class="sp-status" id="status" role="status">The index loads when you focus the box — nothing
+    is fetched until you do.</p>
+
+    <div class="sp-skel" id="skeleton" hidden aria-hidden="true"><i></i><i></i><i></i></div>
+
+    <noscript>
+      <p class="sp-noscript"><strong>Search needs JavaScript.</strong> The retrieval itself is a
+      sparse dot product over a pre-built index, so it runs in your browser rather than on a
+      server — which also means it cannot run with scripting off. Everything explaining how it
+      works is on this page regardless, and the site's own pages are all linked from the
+      navigation above.</p>
+    </noscript>
+
+    <div class="sp-facets" id="facets" hidden></div>
+  </div>
+
+  <!-- ============ the breakdown ============ -->
+  <section class="sp-breakdown">
+    <div class="sec-head"><h2>What just happened</h2>
+      <span class="sec-note" id="corpus-note">78 passages · 30,522 dimensions</span></div>
+
+    <p class="sp-picker-label" id="picker-label" hidden>Dissecting result</p>
+    <div class="sp-picker sp-scroll" id="picker" role="tablist"
+         aria-labelledby="picker-label" hidden></div>
+
+    <div class="sp-panel">
+      <header>
+        <h2>Your query, decomposed</h2>
+        <p>Each WordPiece with its static weight. Dashed means out of vocabulary; orange means it
+        carries weight but matched nothing.</p>
+      </header>
+      <div class="sp-body">
+        <div class="sp-scroll"><div class="sp-qterms" id="qterms">
+          <p class="sp-empty">Type a query — its pieces and their static weights appear here.</p>
+        </div></div>
+        <p class="sp-qsplit" id="qsplit"></p>
+      </div>
+    </div>
+
+    <div class="sp-panel">
+      <header>
+        <h2>Why that result scored</h2>
+        <p>Every term the query and the passage share, largest contribution first. Teal is in the
+        text, orange the model added.</p>
+      </header>
+      <div class="sp-body">
+        <div class="sp-doc-head">
+          <h3 id="doc-head">No result selected</h3>
+          <a id="doc-link" href="#" hidden>Open →</a>
+        </div>
+        <p class="sp-doc-meta" id="doc-meta"></p>
+        <div class="sp-contrib" id="contrib">
+          <p class="sp-empty">Run a search to see a score taken apart.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sp-panel">
+      <header>
+        <h2>The vector behind it</h2>
+        <p>All 30,522 vocabulary dimensions, left to right. Nearly every one is exactly zero.</p>
+      </header>
+      <div class="sp-body">
+        <canvas class="sp-strip" id="strip" role="img" aria-describedby="strip-alt"></canvas>
+        <div class="sp-axis"><span>token 0</span><span>vocabulary position</span><span>30,521</span></div>
+        <p class="sp-note" id="strip-alt"></p>
+        <div class="sp-facts" id="facts"></div>
+      </div>
+    </div>
+
+    <div class="sp-panel">
+      <header>
+        <h2>What the model added</h2>
+        <p>That same vector written out as words. This is the part a dense embedding cannot show
+        you.</p>
+      </header>
+      <div class="sp-body">
+        <p class="sp-legend">
+          <span><i></i>in the passage</span>
+          <span><i class="exp"></i>added by the model — <em>expansion</em></span>
+          <span class="sp-legend-hit">matched your query</span>
+        </p>
+        <div class="sp-scroll"><div class="sp-terms" id="terms">
+          <p class="sp-empty">Run a search, then pick a result to see the vector behind it.</p>
+        </div></div>
+        <p class="sp-note" id="terms-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ how it works ============ -->
+  <section>
+    <div class="sec-head"><h2>How this works</h2></div>
     <div class="prose">
       <p>SPLADE is <em>asymmetric</em>. Encoding a document is a 67-million-parameter masked language
       model's job: it reads the passage and outputs a weight for every one of the 30,522 tokens in
@@ -58,134 +184,15 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       vocabulary, and the postings. Scoring is a sparse dot product — six lines of JavaScript.</p>
 
       <p>Which means this page can do semantic-ish retrieval on GitHub Pages with no inference
-      server, no ONNX runtime, no WASM, and no model download. And because the dimensions are
-      vocabulary tokens, the machinery can be put on screen instead of described. That is what the
-      panels below do: they show you the vector, the query's decomposition, and exactly which terms
-      produced each score.</p>
-    </div>
-  </section>
+      server, no ONNX runtime, no WASM, and no model download.</p>
 
-  <!-- ============ the box ============ -->
-  <section>
-    <div class="sec-head"><h2>Try it</h2>
-      <span class="sec-note">78 passages · 30,522 dimensions</span></div>
-
-    <div class="sp-box">
-      <div class="sp-field">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-        <label for="q" class="skip">Search this site</label>
-        <input id="q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search"
-               placeholder="how do drones divide up a search area?">
-        <button id="clear" class="sp-clear" type="button" hidden>Clear</button>
-      </div>
-
-      <div class="sp-examples" id="examples">
-        <span>Try</span>
-        <button class="sp-ex" type="button">splitting work between robots without a leader</button>
-        <button class="sp-ex" type="button">why keyword search fails on images</button>
-        <button class="sp-ex" type="button">finding someone lost in the woods</button>
-        <button class="sp-ex" type="button">keeping data inside Europe</button>
-      </div>
-
-      <p class="sp-status" id="status" role="status">The index loads when you focus the box — nothing
-      is fetched until you do.</p>
-
-      <div class="sp-skel" id="skeleton" hidden aria-hidden="true"><i></i><i></i><i></i></div>
-
-      <noscript>
-        <p class="sp-noscript"><strong>Search needs JavaScript.</strong> The retrieval itself is a
-        sparse dot product over a pre-built index, so it runs in your browser rather than on a
-        server — which also means it cannot run with scripting off. Everything explaining how it
-        works is on this page regardless, and the site's own pages are all linked from the
-        navigation above.</p>
-      </noscript>
-
-      <div class="sp-facets" id="facets" hidden></div>
-      <p class="sp-facet-note">These filters are ordinary metadata matching, and they run
-      <em>after</em> scoring — the model never sees a year or a venue. That is deliberate. SPLADE
-      shreds the strings a known-item lookup depends on: type <code>ICUAS 2024</code> and the panel
-      below will show it become <code>ic ##ua ##s</code> and <code>202 ##4</code>. Sometimes those
-      shards are rare enough that the right paper still comes first — as it happens, here it does.
-      But that is luck rather than design, and when it misses it misses silently. Learned sparse
-      retrieval is for <em>meaning</em>; for “the ICUAS paper from 2024”, use the filters.</p>
-    </div>
-  </section>
-
-  <!-- ============ query decomposition ============ -->
-  <section>
-    <div class="sp-panel">
-      <header>
-        <h2>Your query, decomposed</h2>
-        <p>Each piece with its static weight. Dashed means out of vocabulary; orange means it carries
-        weight but matched nothing.</p>
-      </header>
-      <div class="sp-body">
-        <div class="sp-scroll"><div class="sp-qterms" id="qterms">
-          <p class="sp-empty">Type a query — its pieces and their static weights appear here.</p>
-        </div></div>
-        <p class="sp-qsplit" id="qsplit"></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ results ============ -->
-  <section>
-    <div class="sp-panel">
-      <header>
-        <h2>Results</h2>
-        <p>The bar under each hit is its score, split by contributing term — teal for terms in the
-        text, orange for ones the model added. Hover a segment to name it.</p>
-      </header>
-      <div class="sp-body">
-        <ul class="sp-results" id="results"></ul>
-        <p class="sp-note" id="results-note"></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ the vector itself ============ -->
-  <section>
-    <div class="sp-panel">
-      <header>
-        <h2>The vector behind the result</h2>
-        <p>Every vocabulary dimension, left to right, for the selected passage. Nearly all of them
-        are zero.</p>
-      </header>
-      <div class="sp-body">
-        <div class="sp-doc-head">
-          <h3 id="doc-head">No document selected</h3>
-          <a id="doc-link" href="#" hidden>Open →</a>
-        </div>
-        <p class="sp-doc-meta" id="doc-meta"></p>
-
-        <canvas class="sp-strip" id="strip" role="img" aria-describedby="strip-alt"></canvas>
-        <div class="sp-axis"><span>token 0</span><span>vocabulary position</span><span>30,521</span></div>
-        <p class="sp-note" id="strip-alt"></p>
-
-        <div class="sp-facts" id="facts"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ expansion ============ -->
-  <section>
-    <div class="sp-panel">
-      <header>
-        <h2>What the model added</h2>
-        <p>The terms of that same vector, written out. This is the part a dense embedding cannot
-        show you.</p>
-      </header>
-      <div class="sp-body">
-        <p class="sp-legend">
-          <span><i></i>in the passage</span>
-          <span><i class="exp"></i>added by the model — <em>expansion</em></span>
-          <span style="outline:2px solid var(--ink);outline-offset:1px;border-radius:4px;padding:0 5px">matched your query</span>
-        </p>
-        <div class="sp-scroll"><div class="sp-terms" id="terms">
-          <p class="sp-empty">Run a search, then pick a result to see the vector behind it.</p>
-        </div></div>
-        <p class="sp-note" id="terms-note"></p>
-      </div>
+      <p>The filters above the breakdown are ordinary metadata matching, and they run <em>after</em>
+      scoring — the model never sees a year or a venue. That is deliberate. SPLADE shreds the strings
+      a known-item lookup depends on: type <code>ICUAS 2024</code> and the decomposition will show it
+      become <code>ic ##ua ##s</code> and <code>202 ##4</code>. Sometimes those shards are rare
+      enough that the right paper still comes first — as it happens, here it does. But that is luck
+      rather than design, and when it misses it misses silently. Learned sparse retrieval is for
+      <em>meaning</em>; for “the ICUAS paper from 2024”, use the filters.</p>
     </div>
   </section>
 
@@ -245,6 +252,6 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   </div>
 </footer>
 
-<script type="module" src="/search/search-ui.js?v=1"></script>
+<script type="module" src="/search/search-ui.js?v=2"></script>
 </body>
 </html>

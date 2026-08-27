@@ -16,7 +16,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=9df2b8c0">
+<link rel="stylesheet" href="/site/site.css?v=974e5dde">
+<link rel="stylesheet" href="/search/search.css?v=2">
+<noscript><style>/* the search box cannot work without scripting */
+.spot-search .sp-field-wrap,.spot-search .sp-status{display:none}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Person","name":"Kasper Rømer Grøntved",
  "alternateName":"Kasper Andreas Rømer Grøntved","url":"https://www.grontved.xyz",
@@ -72,27 +75,54 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </div>
 
-  <a class="spotlight" href="/knowledge/ml-and-data-at-colourbox/">
+  <!-- The spotlight can no longer be one big anchor: the right-hand panel used
+       to be a decorative MaxSim grid and is now a working search box, and an
+       input cannot live inside a link. The left half keeps its own link. -->
+  <div class="spotlight">
     <div class="spot-main">
       <div class="spot-top"><b>Featured lecture</b><span class="when">Draft · 59 slides</span></div>
-      <span class="stitle">ML and Data at Colourbox</span>
+      <a class="stitle" href="/knowledge/ml-and-data-at-colourbox/">ML and Data at Colourbox</a>
       <span class="ssub">Multimodal search, and why the models run on our own hardware</span>
       <p>Why cold starts are hard when the open Danish data does not exist yet, what a DAM archive
       actually contains, and how dense embeddings and late interaction split the work between a stock
       library and a customer's own assets.</p>
-      <span class="spot-go">Explore the deck →</span>
+      <a class="spot-go" href="/knowledge/ml-and-data-at-colourbox/">Explore the deck →</a>
     </div>
-    <div class="spot-art" aria-hidden="true">
-      <div class="art-top"><span>Local evidence</span><span>MaxSim</span></div>
-      <div class="art-grid">
-        <span class="hd"></span><span class="hd">lokalplan</span><span class="hd">kabel</span><span class="hd">bilag</span>
-        <span class="rw">image</span><span class="cell on">0.94</span><span class="cell"></span><span class="cell"></span>
-        <span class="rw">drawing</span><span class="cell"></span><span class="cell on">0.91</span><span class="cell"></span>
-        <span class="rw">pdf</span><span class="cell"></span><span class="cell"></span><span class="cell on">0.88</span>
+
+    <div class="spot-art spot-search">
+      <div class="art-top"><span>Try it</span><span>SPLADE</span></div>
+
+      <div class="sp-field-wrap">
+        <div class="sp-field">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <label for="hq" class="skip">Search this site</label>
+          <input id="hq" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search"
+                 role="combobox" aria-expanded="false" aria-controls="hac-list"
+                 aria-autocomplete="list" aria-describedby="hac-hint"
+                 placeholder="Search the site…">
+          <button id="hclear" class="sp-clear" type="button" hidden aria-label="Clear the search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+
+        <div class="sp-ac" id="hac" hidden>
+          <ul class="sp-ac-list" id="hac-list" role="listbox" aria-label="Search results"></ul>
+          <p class="sp-ac-foot" id="hac-foot"></p>
+        </div>
       </div>
-      <p class="art-cap">Know the corpus. Then pick the model.</p>
+
+      <p class="skip" id="hac-hint">Results appear as you type. Use the up and down arrow keys to
+      move through them, Enter to open the analysis of one, Escape to dismiss the list.</p>
+
+      <p class="sp-status" id="hstatus" role="status"></p>
+
+      <noscript><p class="art-cap">Site search needs JavaScript — the retrieval runs in your
+      browser rather than on a server.</p></noscript>
+
+      <p class="art-cap">Learned sparse retrieval over the whole site — and no model runs in your
+      browser. <a href="/search/">See how it works →</a></p>
     </div>
-  </a>
+  </div>
 
   <div class="duo">
     <div class="panel">
@@ -184,5 +214,6 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </div>
 </footer>
+<script type="module" src="/search/home-search.js?v=1"></script>
 </body>
 </html>
