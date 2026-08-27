@@ -1,0 +1,20 @@
+name = "ask-relay"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# Per-IP rate limiting, enforced in the Cloudflare runtime.
+# `period` must be exactly 10 or 60 — no other value is accepted.
+# Note it counts per Cloudflare location, not globally: it is a speed bump
+# against a script, not a wall. The caps in src/index.js bound the damage.
+[[unsafe.bindings]]
+name = "ASK_LIMIT"
+type = "ratelimit"
+namespace_id = "1001"            # any integer, unique within the account
+simple = { limit = 8, period = 60 }
+
+# MISTRAL_API_KEY is a secret, never a var:
+#   npx wrangler secret put MISTRAL_API_KEY
+#
+# To allow a local preview origin while developing, uncomment:
+# [vars]
+# DEV_ORIGIN = "http://127.0.0.1:8765"

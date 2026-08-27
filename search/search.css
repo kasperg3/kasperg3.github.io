@@ -266,6 +266,18 @@
                   font-size:12.5px;color:#7b8794}
 .ask-answer .cite a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.45)}
 
+/* the generated answer — a layer on the quote, never a replacement for it */
+.ask-gen{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(255,255,255,.13)}
+.ask-gen-go{border:1px solid rgba(63,190,178,.45);background:rgba(63,190,178,.10);
+            color:#3fbeb2;cursor:pointer;font:500 13px/1 var(--sans);
+            padding:8px 13px;border-radius:8px}
+.ask-gen-go:hover:not(:disabled){background:rgba(63,190,178,.18);border-color:#3fbeb2}
+.ask-gen-go:disabled{opacity:.6;cursor:default}
+.ask-gen-out{margin:0;font:400 15px/1.6 var(--sans);color:#dfe6ed}
+.ask-gen-out:empty{display:none}
+.ask-gen-out.err{color:#e0894f;font-size:13.5px}
+.ask-gen.done .ask-gen-out{padding-left:11px;border-left:2px solid #3fbeb2}
+
 /* the try-these row, with the dice */
 .ask-tries{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
 .asksite .sp-ex{border-color:rgba(255,255,255,.15);color:#98a4b0;font-size:13px;padding:7px 12px}

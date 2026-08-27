@@ -22,7 +22,9 @@ search/autocomplete.js  the search box and results dropdown, shared by both page
 search/search-ui.js     /search/ only: the breakdown panels
 search/home-search.js   the compact widget in the front page spotlight
 search/search.css       styles for the box, the dropdown and the panels
+search/ask.js           optional generated answer; off unless a relay URL is set
 search/index.json …     the built index (generated — CI rebuilds it)
+worker/                 the ask-relay Cloudflare Worker (see worker/README.md)
 tools/build_search_index.py   extracts the corpus and encodes it
 site/site.css           shared design system for the site pages
 deck/deck.css           slide styles, same tokens as site.css
@@ -263,6 +265,31 @@ the `id` to the HTML and the slug to `SLUG_MAP` together.
 
 `INCLUDE_CV_FACTS` is off: the CV's skills rows are `·`-separated lists, not passages, and SPLADE
 produces noise from them.
+
+## The generated answer
+
+The front page can write up a search result in prose as well as quoting it. That
+needs a language model, and a static site has nowhere to hide an API key — so
+one small piece runs off-site: `worker/`, a Cloudflare Worker holding a Mistral
+key. See [`worker/README.md`](worker/README.md) to deploy it.
+
+**It is off by default.** `RELAY` at the top of `search/ask.js` is an empty
+string; while it is empty the button never renders and nothing is fetched. Set
+it to the deployed Worker URL to switch the feature on, and back to `''` to
+switch it off.
+
+Two things about it are deliberate:
+
+- **Retrieval stays in the browser.** The Worker never sees the index. The page
+  sends the passages SPLADE already found, and the model only summarises them.
+  The site's inference-free claim stays true.
+- **Generation is opt-in, behind a button.** Retrieval is free and instant; a
+  language model is neither. Calling one on every keystroke would empty a free
+  tier in an afternoon.
+
+The quoted passage and its link stay on screen either way. If the model is
+unavailable, switched off, or never deployed, the reader still has the evidence
+— which is what makes a wrong answer survivable.
 
 ## Regenerating the CV PDF
 
