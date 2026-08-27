@@ -5,6 +5,7 @@
    about getting someone to type in the first place:
 
      · the top hit is quoted back as an answer, not just listed as a row
+     · that quote can be written up by a language model, if one is configured
      · the placeholder cycles through real questions, so the box suggests
        what it is for instead of describing it
      · "Surprise me" runs one, because a click is cheaper than a sentence
@@ -18,6 +19,7 @@
    ============================================================================ */
 
 import { Autocomplete, KIND_LABEL, escapeHTML } from './autocomplete.js';
+import { askRelay, relayEnabled } from './ask.js';
 
 const input = document.getElementById('hq');
 
@@ -45,6 +47,38 @@ function quote(doc) {
   return snip;
 }
 
+/**
+ * Add the "Write this up" control under the quoted passage. The quote stays
+ * put: a generated sentence appears beside the evidence, never instead of it.
+ */
+function offerGeneratedAnswer(into, question, results) {
+  const box = document.createElement('div');
+  box.className = 'ask-gen';
+  box.innerHTML = `
+    <button type="button" class="ask-gen-go">Write this up →</button>
+    <p class="ask-gen-out" role="status" aria-live="polite"></p>`;
+  into.appendChild(box);
+
+  const button = box.querySelector('.ask-gen-go');
+  const out = box.querySelector('.ask-gen-out');
+
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+    button.textContent = 'Reading the passages…';
+    out.classList.remove('err');
+    try {
+      out.textContent = await askRelay(question, results);
+      box.classList.add('done');
+      button.remove();
+    } catch (err) {
+      out.textContent = err.message;
+      out.classList.add('err');
+      button.disabled = false;
+      button.textContent = 'Try again →';
+    }
+  }, { once: false });
+}
+
 if (input) {
   const answer = document.getElementById('hanswer');
 
@@ -68,6 +102,7 @@ if (input) {
           <span>${escapeHTML(KIND_LABEL[d.kind] || d.kind)} · ${escapeHTML(d.title)}</span>
           <a href="${escapeHTML(d.url)}">Read it →</a>
         </p>`;
+      if (relayEnabled()) offerGeneratedAnswer(answer, query, results);
     },
 
     onSelect(hit) {
