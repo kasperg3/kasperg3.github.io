@@ -18,7 +18,10 @@ knowledge/<slug>/index.html  one deck = one HTML file
 knowledge/_template/    copy this to start a new deck
 search/index.html       SPLADE site search (see below)
 search/splade.js        retrieval engine: WordPiece + sparse dot product
-search/search-ui.js     the four visualisations
+search/autocomplete.js  the search box and results dropdown, shared by both pages
+search/search-ui.js     /search/ only: the breakdown panels
+search/home-search.js   the compact widget in the front page spotlight
+search/search.css       styles for the box, the dropdown and the panels
 search/index.json …     the built index (generated — CI rebuilds it)
 tools/build_search_index.py   extracts the corpus and encodes it
 site/site.css           shared design system for the site pages
@@ -212,6 +215,23 @@ screen while it does. It runs on GitHub Pages with no inference server because S
 
 So the browser downloads the table, the vocabulary and the postings, and `search/splade.js` does the
 rest in about 200 lines with no dependencies.
+
+### The two search surfaces
+
+`search/autocomplete.js` is the widget: a combobox whose listbox holds the top five results, each
+with its rank, kind, score and a bar splitting that score by contributing term. Both pages use it
+and differ only in `onSelect`:
+
+- **`/search/`** — pressing a result dissects it in the panels below, and the URL picks up
+  `?q=…&r=<doc id>` so any view of the page is shareable.
+- **the front page** — the spotlight card's right-hand panel (which used to be a decorative MaxSim
+  grid) carries a compact copy. Pressing a result hands off to `/search/?q=…&r=…`, so the reader
+  lands on the analysis of the thing they picked.
+
+Each row also carries a corner link straight to the source page, so you can skip the analysis. That
+link is the one real `<a>` in a row: the row itself is a listbox option, activated by click or
+Enter. Nothing is fetched until the box is focused, so the front page pays no bytes for this unless
+someone actually searches.
 
 ### Rebuilding the index
 

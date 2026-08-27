@@ -255,28 +255,32 @@ footer.site .fine{font:400 14px/1.6 var(--sans);color:var(--faint);max-width:40c
 .factlinks a.cta:hover{color:#fff;filter:brightness(1.08)}
 
 /* spotlight */
-.spotlight{display:grid;grid-template-columns:1fr 292px;margin-top:30px;background:var(--card);
-           border:1px solid var(--hair);border-radius:18px;overflow:hidden;text-decoration:none;
-           transition:border-color .18s,transform .18s,box-shadow .18s}
-.spotlight:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+.spotlight{display:grid;grid-template-columns:1fr 330px;margin-top:30px;background:var(--card);
+           border:1px solid var(--hair);border-radius:18px;text-decoration:none;
+           transition:border-color .18s,box-shadow .18s}
+/* not `overflow:hidden`: the search panel's results drop out of this box */
+.spotlight:focus-within{border-color:var(--accent);box-shadow:var(--shadow)}
+/* same reason as .duo: the search input gives this column a wide min-content,
+   which pushed the single-column track past the viewport on small phones */
+.spotlight > *{min-width:0}
 .spot-main{padding:28px 32px 30px;display:flex;flex-direction:column;min-width:0}
 .spot-top{display:flex;align-items:baseline;gap:16px;margin-bottom:12px}
 .spot-top b{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
             color:var(--accent)}
 .spot-top .when{margin-left:auto;font:500 12px/1 var(--mono);color:var(--faint)}
 .spotlight .stitle{font:600 clamp(23px,3.1vw,32px)/1.22 var(--serif);color:var(--ink);
-                   letter-spacing:-.012em}
-.spotlight:hover .stitle{color:var(--accent)}
+                   letter-spacing:-.012em;text-decoration:none;align-self:flex-start}
+.spotlight .stitle:hover{color:var(--accent)}
 .spotlight .ssub{font-size:15.5px;color:var(--ink-2);margin-top:7px;font-weight:500}
 .spotlight p{color:var(--muted);font-size:15.5px;max-width:56ch;margin-top:11px}
 .spot-go{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;margin-top:20px;
-         font:500 14px/1 var(--sans);color:#fff;background:var(--accent);
-         border-radius:9px;padding:12px 18px}
-.spotlight:hover .spot-go{filter:brightness(1.08)}
+         font:500 14px/1 var(--sans);color:#fff;background:var(--accent);text-decoration:none;
+         border-radius:9px;padding:12px 18px;transition:filter .18s}
+.spot-go:hover{filter:brightness(1.08);color:#fff}
 
 /* the dark decorative panel */
 .spot-art{background:var(--dark);padding:20px 22px;display:flex;flex-direction:column;gap:14px;
-          color:#e9edf2}
+          color:#e9edf2;border-radius:0 17px 17px 0}
 .art-top{display:flex;gap:12px;font:500 9.5px/1 var(--mono);letter-spacing:.16em;
          text-transform:uppercase;color:#6f7c89}
 .art-top span:last-child{margin-left:auto;color:#3fbeb2}
@@ -292,6 +296,10 @@ footer.site .fine{font:400 14px/1.6 var(--sans);color:var(--faint);max-width:40c
 
 /* lower duo: panel + index column */
 .duo{display:grid;grid-template-columns:1fr 384px;gap:24px;margin-top:24px;align-items:start}
+/* Grid items default to min-width:auto, so a wide child can push the track
+   past the container — which it did below ~420px, scrolling the page
+   sideways. Let them shrink and wrap instead. */
+.duo > *{min-width:0}
 .panel{background:var(--card);border:1px solid var(--hair-soft);border-radius:18px;
        padding:26px 30px 10px}
 .panel-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
@@ -339,8 +347,10 @@ aside.idx{position:sticky;top:92px}
   .masthead{grid-template-columns:1fr;gap:22px}
   .masthead .bio{padding-top:0;max-width:60ch}
   .spotlight{grid-template-columns:1fr}
-  .spot-art{flex-direction:row;align-items:center;gap:20px}
+  .spot-art{flex-direction:row;align-items:center;gap:20px;border-radius:0 0 17px 17px}
   .spot-art .art-grid{max-width:340px}
+  /* the search widget stays a column even when the art panel goes side-by-side */
+  .spot-art.spot-search{flex-direction:column;align-items:stretch}
   .duo{grid-template-columns:1fr}
   aside.idx{position:static}
 }
