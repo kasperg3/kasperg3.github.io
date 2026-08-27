@@ -549,14 +549,9 @@ def encode(docs: list, out: Path) -> None:
         buf.byteswap()
     (out / "qweights.u16.bin").write_bytes(buf.tobytes())
 
-    # The client needs a token string for every id it might display: every id
-    # used by a document, plus every id the tokenizer can produce for a query —
-    # which is all of them, since the demo must be able to show a query token
-    # that matched nothing.
-    (out / "tokens.json").write_text(
-        json.dumps({str(i): id_to_token[i] for i in range(vocab_size) if i in id_to_token},
-                   ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-
+    # vocab.txt is the id -> token map: line N is token N. The client needs that
+    # for every id it might display, which is all of them — the demo must be able
+    # to name a query token that matched nothing.
     vocab_txt = "\n".join(id_to_token[i] for i in range(vocab_size))
     (out / "vocab.txt").write_text(vocab_txt + "\n", encoding="utf-8")
 
@@ -567,7 +562,7 @@ def encode(docs: list, out: Path) -> None:
     print(f"  expansion: {100 * (total_terms - total_lit) / total_terms:.0f}% "
           f"of activated terms are not literally in the text")
     print(f"  {len(used_tokens):,} distinct vocabulary dimensions used across the corpus\n")
-    for f in ("index.json", "qweights.u16.bin", "tokens.json", "vocab.txt"):
+    for f in ("index.json", "qweights.u16.bin", "vocab.txt"):
         print(f"  {f:<22}{(out / f).stat().st_size:>10,} B")
     print()
 

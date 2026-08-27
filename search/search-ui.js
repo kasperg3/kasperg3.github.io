@@ -196,8 +196,10 @@ async function run() {
   const { terms, results } = engine.search(text, engine.docs.length);
   const kept = results.filter(r => passesFilters(r.doc)).slice(0, LIMIT);
 
-  renderQuery(terms);
+  // Results first: renderQuery colours a term by whether it matched anything,
+  // and that is only known once the results are in.
   renderResults(kept, results.length);
+  renderQuery(terms);
   showDoc(kept.length ? kept[0] : null);
 }
 

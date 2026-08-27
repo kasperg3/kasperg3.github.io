@@ -103,10 +103,11 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <div class="sp-facets" id="facets" hidden></div>
       <p class="sp-facet-note">These filters are ordinary metadata matching, and they run
       <em>after</em> scoring — the model never sees a year or a venue. That is deliberate. SPLADE
-      shreds exactly the strings academic search leans on: <code>ICUAS</code> becomes
-      <code>ic ##ua ##s</code>, surnames become subword confetti, and version numbers lose their
-      meaning. Learned sparse retrieval is for <em>meaning</em>; for a known-item lookup you want
-      matching, so both are here, kept visibly apart.</p>
+      shreds the strings a known-item lookup depends on: type <code>ICUAS 2024</code> and the panel
+      below will show it become <code>ic ##ua ##s</code> and <code>202 ##4</code>. Sometimes those
+      shards are rare enough that the right paper still comes first — as it happens, here it does.
+      But that is luck rather than design, and when it misses it misses silently. Learned sparse
+      retrieval is for <em>meaning</em>; for “the ICUAS paper from 2024”, use the filters.</p>
     </div>
   </section>
 
@@ -199,9 +200,10 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       want the corpus statistics too.</p>
 
       <p>The model is <strong>English-only</strong>, and it is a <em>document</em> expander, not a
-      reasoner: it will happily add <em>rescue</em> to a passage about search and rescue, and it will
-      not notice that <code>Grøntved</code> is a name. Ask it for a person or a venue and you will get
-      subword noise — use the filters, or the pages themselves.</p>
+      reasoner: it will happily add <em>rescue</em> to a passage about search and rescue, but it has
+      no idea that <code>Grøntved</code> is a name — it sees <code>gr ##ø ##nt ##ved</code> and
+      matches whichever passages happen to contain those fragments. Retrieval by meaning is what it
+      is for; retrieval of a specific known thing is what the filters are for.</p>
 
       <p>Everything here is built by
       <a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/tools/build_search_index.py"><code>tools/build_search_index.py</code></a>

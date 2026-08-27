@@ -229,7 +229,7 @@ python3 tools/check_search_index.py              # client vs. reference implemen
 ```
 
 The build writes `search/index.json` (postings and metadata), `search/qweights.u16.bin` (the query
-table), `search/tokens.json` and `search/vocab.txt`.
+table) and `search/vocab.txt` (line N is vocabulary token N).
 
 ### Adding content the index can reach
 
