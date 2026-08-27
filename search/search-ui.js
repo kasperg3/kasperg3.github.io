@@ -12,11 +12,16 @@
                              passage activates lit up
      4. expansion reveal     terms the model added that the text never had
 
+   Everything below that — where the two sides met, the same vector painted
+   over the passage, and what the comparison would have cost under a different
+   architecture — lives in ./meet.js, which this file feeds from `show()`.
+
    Facets (kind / year) are handled outside the model, on the metadata — see
    the note on the page.
    ============================================================================ */
 
 import { Autocomplete, KIND_LABEL, escapeHTML, fmt, tokenHTML, yearOf } from './autocomplete.js';
+import { Meet } from './meet.js';
 
 const $ = sel => document.querySelector(sel);
 
@@ -35,6 +40,16 @@ const el = {
   docHead: $('#doc-head'), docMeta: $('#doc-meta'), docLink: $('#doc-link'),
 };
 
+/* The "when the query meets the document" section owns its own elements. */
+const meet = new Meet({
+  graph: $('#meet-graph'), graphFoot: $('#meet-graph-foot'),
+  graphReadout: $('#meet-graph-readout'),
+  passage: $('#meet-passage'), ghosts: $('#meet-ghosts'),
+  passageNote: $('#meet-passage-note'),
+  archCards: document.querySelectorAll('.mt-arch'),
+  corpusChips: $('#meet-corpus'), cost: $('#meet-cost'), costNote: $('#meet-cost-note'),
+});
+
 let engine = null;
 let hits = [];          // the results currently listed
 let selected = null;    // the hit being dissected
@@ -50,6 +65,7 @@ const ac = new Autocomplete({
   filter: passesFilters,
   onReady(e) {
     engine = e;
+    meet.ready(e);
     buildFacets();
     el.corpusNote.textContent =
       `${e.docs.length} passages · ${e.vocabSize.toLocaleString('en')} dimensions`;
@@ -250,6 +266,7 @@ function show(hit) {
     el.facts.innerHTML = '';
     el.termsNote.textContent = '';
     drawStrip(null);
+    meet.update(lastTerms, null);
     return;
   }
 
@@ -286,6 +303,9 @@ function show(hit) {
     : 'Every activated term is literally present in this passage.';
 
   drawStrip(d);
+  // onQuery assigns lastTerms before calling show(), so the meeting views
+  // always see the query that produced this hit.
+  meet.update(lastTerms, hit);
 }
 
 /** View 2: the score, term by term. */

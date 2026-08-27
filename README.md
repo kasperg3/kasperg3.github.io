@@ -20,6 +20,7 @@ search/index.html       SPLADE site search (see below)
 search/splade.js        retrieval engine: WordPiece + sparse dot product
 search/autocomplete.js  the search box and results dropdown, shared by both pages
 search/search-ui.js     /search/ only: the breakdown panels
+search/meet.js          /search/ only: "when the query meets the document"
 search/home-search.js   the compact widget in the front page spotlight
 search/search.css       styles for the box, the dropdown and the panels
 search/index.json …     the built index (generated — CI rebuilds it)
@@ -215,6 +216,46 @@ screen while it does. It runs on GitHub Pages with no inference server because S
 
 So the browser downloads the table, the vocabulary and the postings, and `search/splade.js` does the
 rest in about 200 lines with no dependencies.
+
+### What the page shows after a search
+
+The four panels under **What just happened** dissect one ranking: the query's WordPiece
+decomposition, the per-term products that make up the score, all 30,522 dimensions as a sparsity
+strip, and the activated terms as words.
+
+Under those, **When the query meets the document** (`search/meet.js`) answers the question that
+ranking raises — *where* did the two sides touch, and what would the same comparison have cost
+somewhere else:
+
+1. **The meeting.** A bipartite graph: your wordpieces on the left, the passage's ~160 activated
+   dimensions on the right, an edge wherever the two coincide, thickness proportional to the
+   product. Hovering either end isolates the edge and reads the arithmetic out. The point is the
+   *non*-edges — the pieces that hit nothing and the hundred-odd dimensions the query never
+   mentions.
+2. **That vector, over the passage.** The same document vector painted back onto the text, each
+   word tinted by its weight, matched words underlined. Terms that scored but have no anchor in the
+   prose are listed beneath it, split by *why*: the model invented them, or they sit past the
+   240-character excerpt the index ships.
+3. **Four ways to let them meet.** Dense, learned sparse, late interaction and full interaction, as
+   four figures in the same grammar — a query column, a document column, and a glyph where the two
+   are allowed to touch. This is slide 18 of
+   [the Colourbox deck](knowledge/ml-and-data-at-colourbox/), re-authored against `site.css` tokens
+   and extended with the learned-sparse column the reader has just used. The figures are static SVG
+   in `search/index.html` so they survive with scripting off; only the counts inside them are live.
+4. **What each one costs.** FLOPs to score one passage and to score a corpus, on a log scale that
+   spans eight orders of magnitude. The query side is *measured* — whatever you typed. The document
+   side is measured for SPLADE and assumed for the other three (`DENSE_DIM`, `TOKEN_DIM`,
+   `DOC_TOKENS`, `CE_PARAMS` at the top of `meet.js`), because this site ships no dense vectors and
+   no token embeddings to measure. Every assumption is printed next to the number it produced, and
+   at the 9M-passage setting the late-interaction figure reproduces the deck's 23B dot products.
+
+The ordering is not a claim that the right-hand columns are unaffordable — it is that they are
+unaffordable *over the whole corpus*, which is what the funnel on slide 25 is for.
+
+One trap worth naming, since it cost a debugging round: `tokenHTML()` from `autocomplete.js` wraps
+a continuation piece's `##` in a `<span>`, and an HTML element inside an `<svg>` makes the HTML
+parser break out of foreign content — one `##token` in the meeting graph spilled the rest of the
+figure into the document as plain text. `meet.js` has a `tokenSVG()` that emits `<tspan>` instead.
 
 ### The two search surfaces
 
