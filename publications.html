@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=518e6b0a">
+<link rel="stylesheet" href="/site/site.css?v=9df2b8c0">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
@@ -27,6 +27,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <a href="/knowledge/">Knowledge</a>
       <a href="/publications.html" aria-current="page">Publications</a>
       <a href="/cv.html">CV</a>
+      <a href="/search/">Search</a>
     </nav>
   </div>
 </header>
@@ -48,7 +49,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <p class="pubyear">2025</p>
 
-  <details class="pub">
+  <details class="pub" id="pub-sarenv">
     <summary><span><span class="ptitle">SAREnv: An Open-Source Dataset and Benchmark Tool for Informed
       Wilderness Search and Rescue Using UAVs</span>
       <span class="pmeta">Kasper Andreas Rømer Grøntved, Alejandro Jarabo-Peñas, Sid Reid, Edouard
@@ -76,7 +77,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </details>
 
-  <details class="pub">
+  <details class="pub" id="pub-swarmtalk-espnow">
     <summary><span><span class="ptitle">Communication for UAV Swarms: an Open-source, Low-cost Solution
       Based on ESP-NOW</span>
       <span class="pmeta">Kasper A. R. Grøntved, Robert Ladigl, Anders Lyhne Christensen ·
@@ -101,7 +102,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <p class="pubyear">2024</p>
 
-  <details class="pub">
+  <details class="pub" id="pub-task-generation-sar">
     <summary><span><span class="ptitle">Automated Task Generation for Multi-Drone Search and Rescue
       Operations</span>
       <span class="pmeta">Kasper A. R. Grøntved, Maria-Therese Bahodi, Anders Lyhne Christensen ·
@@ -122,7 +123,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </details>
 
-  <details class="pub">
+  <details class="pub" id="pub-volcanic-plume">
     <summary><span><span class="ptitle">Autonomous UAV Volcanic Plume Sampling Based on Machine Vision
       and Path Planning</span>
       <span class="pmeta">Edouard G. A. Rolland, Kasper A. R. Grøntved, Anders Lyhne Christensen,
@@ -144,7 +145,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </details>
 
-  <details class="pub">
+  <details class="pub" id="pub-uspace-planning">
     <summary><span><span class="ptitle">Towards Autonomous Multi-UAV U-space Operation Planning</span>
       <span class="pmeta">Kasper A. R. Grøntved, Jes Hundevadt Jepsen, Anders Lyhne Christensen,
       Kjeld Jensen, Ulrik Pagh Schultz Lundquist, Miguel Campusano ·
@@ -167,7 +168,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <p class="pubyear">2023</p>
 
-  <details class="pub">
+  <details class="pub" id="pub-trajectory-task-allocation">
     <summary><span><span class="ptitle">Decentralized Multi-UAV Trajectory Task Allocation in Search and
       Rescue Applications</span>
       <span class="pmeta">Kasper A. R. Grøntved, Ulrik Pagh Schultz, Anders Lyhne Christensen ·
@@ -192,7 +193,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </details>
 
-  <details class="pub">
+  <details class="pub" id="pub-drone-swarms-chapter">
     <summary><span><span class="ptitle">Drone Swarms to Support Search and Rescue Operations:
       Opportunities and Challenges</span>
       <span class="pmeta">Maria-Theresa O. Hoang, Kasper A. R. Grøntved, Niels van Berkel, Mikael B.
@@ -217,7 +218,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <p class="pubyear">2022</p>
 
-  <details class="pub">
+  <details class="pub" id="pub-herd-project">
     <summary><span><span class="ptitle">The HERD Project: Human-Multi-Robot Interaction in Search &amp;
       Rescue and in Farming</span>
       <span class="pmeta">Anders Lyhne Christensen, Kasper Andreas Rømer Grøntved, Maria-Theresa Oanh
@@ -244,16 +245,16 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <section>
     <div class="sec-head"><h2>Theses</h2></div>
     <dl class="kv" style="margin-top:22px">
-      <dt>PhD · 2025</dt>
+      <dt id="thesis-phd">PhD · 2025</dt>
       <dd><strong>Cooperative Control of Multirobot Systems in Real-World Applications</strong><br>
         Defended 2025 at the University of Southern Denmark, UAS Center, as part of the HERD project
         (Human-AI Collaboration: Engaging and Controlling Swarms of Robots and Drones), funded by
         Innovation Fund Denmark. Supervisors: Anders Lyhne Christensen, Ulrik Pagh Schultz
         Lundquist.</dd>
-      <dt>M.Sc. · 2022</dt>
+      <dt id="thesis-msc">M.Sc. · 2022</dt>
       <dd><strong>Multi-Agent Decentralised Coordination using CNRL for Industrial Applications</strong><br>
         M.Sc. Advanced Robotic Systems, University of Southern Denmark.</dd>
-      <dt>B.Sc. · 2018</dt>
+      <dt id="thesis-bsc">B.Sc. · 2018</dt>
       <dd><strong>Semantic Segmentation using a Deep Neural Network for Pose Estimation of a Rigid
         Object</strong><br>B.Sc. Robotic Systems, University of Southern Denmark.</dd>
     </dl>
@@ -262,10 +263,10 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <section>
     <div class="sec-head"><h2>Supervision</h2></div>
     <dl class="kv" style="margin-top:22px">
-      <dt>2023</dt>
+      <dt id="supervision-thomsen">2023</dt>
       <dd>Nicoline Louise Thomsen — <em>Robust Area Coverage by a Swarm of Unmanned Aerial
         Vehicles</em>. M.Sc. thesis, successfully defended.</dd>
-      <dt>2023</dt>
+      <dt id="supervision-mansson-jensen">2023</dt>
       <dd>Emil Månsson &amp; Kristian Damkjær Jensen — <em>Swarm Intelligence for Land-based Mobile
         Robots Operating in a Large Environment</em>. M.Sc. thesis, successfully defended.</dd>
     </dl>
@@ -284,6 +285,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <a href="/publications.html">Publications</a>
       <a href="/cv.html">CV</a>
       <a href="/knowledge/">Knowledge</a>
+    <a href="/search/">Search</a>
     </div>
     <div class="col">
       <a href="https://github.com/kasperg3">GitHub</a>
@@ -292,5 +294,29 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </div>
 </footer>
+<script>
+/* A <details> linked by fragment does not open itself, so a search result
+   pointing at #pub-sarenv would land on a closed summary. Open the target on
+   load and whenever the hash changes. */
+(function () {
+  function openTarget() {
+    var id = location.hash.slice(1);
+    if (!id) return;
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (el.tagName === 'DETAILS') el.open = true;
+    var d = el.closest && el.closest('details');
+    if (d) d.open = true;
+    // Re-scroll: the browser measured the position before we opened anything.
+    el.scrollIntoView({ block: 'start', behavior: 'auto' });
+  }
+  addEventListener('hashchange', openTarget);
+  if (document.readyState === 'loading') {
+    addEventListener('DOMContentLoaded', openTarget);
+  } else {
+    openTarget();
+  }
+})();
+</script>
 </body>
 </html>

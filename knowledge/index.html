@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=518e6b0a">
+<link rel="stylesheet" href="/site/site.css?v=9df2b8c0">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
@@ -27,6 +27,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <a href="/knowledge/" aria-current="page">Knowledge</a>
       <a href="/publications.html">Publications</a>
       <a href="/cv.html">CV</a>
+      <a href="/search/">Search</a>
     </nav>
   </div>
 </header>
@@ -81,6 +82,18 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         decentralization actually costs. Based on the ICAR 2023 paper.</p>
         <div class="foot"><span class="pill">10 slides</span><span class="pill">ICAR 2023</span></div>
       </a>
+      <a class="card" href="/search/">
+        <span class="tag">Interactive · live demo</span>
+        <h3>Search, with the vectors showing</h3>
+        <p>Inference-free SPLADE over this entire site. The document vectors were built offline by a
+        67M-parameter masked LM; the query side is a tokenizer and a lookup table, so your browser
+        runs no model at all. The page puts the sparse vectors on screen — the query's WordPiece
+        decomposition, which terms produced each score, and the words the model added that the text
+        never contained.</p>
+        <div class="foot"><span class="pill">Learned sparse</span><span class="pill">No inference</span>
+          <span class="pill">Vanilla JS</span></div>
+      </a>
+
       <div class="card" style="justify-content:center;border-style:dashed;background:transparent">
         <h3 style="color:var(--faint)">More coming</h3>
         <p>Older decks are being converted from slides into this format as I get to them.</p>
@@ -125,6 +138,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <a href="/knowledge/">Knowledge</a>
       <a href="/publications.html">Publications</a>
       <a href="/cv.html">CV</a>
+    <a href="/search/">Search</a>
     </div>
     <div class="col">
       <a href="https://github.com/kasperg3">GitHub</a>

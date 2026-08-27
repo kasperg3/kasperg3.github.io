@@ -347,6 +347,15 @@ aside.idx{position:sticky;top:92px}
 @media (max-width:560px){
   .factlinks{margin-left:0;width:100%}
   .spot-art{flex-direction:column;align-items:stretch}
+
+  /* The nav wraps to several rows on a phone, and a fixed-height masthead
+     then lets it spill over the page. Give it its own row instead. */
+  header.top .wrap{height:auto;min-height:68px;flex-wrap:wrap;gap:0;
+                   padding-top:12px;padding-bottom:12px}
+  nav.main{margin-left:0;width:100%;margin-top:8px;gap:2px}
+  nav.main a{font-size:14px;padding:8px 11px}
+  /* ...which makes the masthead taller, so anchored targets need more room */
+  details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:128px}
 }
 
 /* ============================================================
@@ -355,6 +364,11 @@ aside.idx{position:sticky;top:92px}
    dark-scheme tokens above when someone prints in dark mode.
    A polished 2-page PDF also lives at /assets/cv/cv.pdf.
    ============================================================ */
+/* ---------- fragment targets ----------
+   Search results deep-link into these. The masthead is sticky, so without a
+   scroll margin the browser parks the target underneath it. */
+details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:84px}
+
 @media print{
   @page{size:A4;margin:16mm 15mm 14mm}
 

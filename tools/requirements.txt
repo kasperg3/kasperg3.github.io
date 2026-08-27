@@ -1,0 +1,9 @@
+# Build-time only. None of this reaches the browser — the whole point of
+# inference-free SPLADE is that the query side needs no model at all.
+#
+# torch is deliberately not pinned here: install the CPU wheel first, from
+# https://download.pytorch.org/whl/cpu, or this pulls the CUDA build and
+# several gigabytes with it. See .github/workflows/search-index.yml.
+transformers>=4.44
+safetensors>=0.4
+huggingface_hub>=0.24
