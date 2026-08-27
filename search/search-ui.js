@@ -195,8 +195,7 @@ function applyDeepLink() {
 
 function renderQuery(terms) {
   if (!terms.length) {
-    el.qterms.innerHTML =
-      '<p class="sp-empty">Type a query — its pieces and their static weights appear here.</p>';
+    el.qterms.innerHTML = '<p class="sp-empty">Type a query.</p>';
     el.qsplit.textContent = '';
     return;
   }
@@ -233,8 +232,7 @@ function renderQuery(terms) {
   }
   if (oov.length) {
     bits.push(`<code>${oov.map(escapeHTML).join('</code>, <code>')}</code> `
-      + `${oov.length > 1 ? 'are' : 'is'} out of vocabulary entirely — the model was trained on `
-      + 'English MS MARCO, and nothing it knows can stand in.');
+      + `${oov.length > 1 ? 'are' : 'is'} out of vocabulary — the model is English-only.`);
   }
   el.qsplit.innerHTML = bits.join(' ');
 }
@@ -247,9 +245,8 @@ function show(hit) {
     el.docHead.textContent = 'No result selected';
     el.docMeta.textContent = '';
     el.docLink.hidden = true;
-    el.contrib.innerHTML = '<p class="sp-empty">Run a search to see a score taken apart.</p>';
-    el.terms.innerHTML =
-      '<p class="sp-empty">Run a search, then pick a result to see the vector behind it.</p>';
+    el.contrib.innerHTML = '<p class="sp-empty">Pick a result.</p>';
+    el.terms.innerHTML = '<p class="sp-empty">Pick a result.</p>';
     el.facts.innerHTML = '';
     el.termsNote.textContent = '';
     drawStrip(null);
@@ -284,8 +281,8 @@ function show(hit) {
         ? `<span class="sp-more">and ${all.length - shown.length} more</span>` : '');
 
   el.termsNote.textContent = expansions
-    ? `${expansions} of these ${all.length} terms never appear in the passage. `
-      + 'The model put them there because a query might use them instead.'
+    ? `${expansions} of these ${all.length} terms never appear in the passage — `
+      + 'the model added them in case a query uses them instead.'
     : 'Every activated term is literally present in this passage.';
 
   drawStrip(d);
@@ -296,7 +293,7 @@ function renderContributions(hit) {
   const rows = hit.parts.slice(0, CONTRIB_ROWS);
   const max = rows[0]?.contribution || 1;
   el.contrib.innerHTML = `
-    <p class="sp-contrib-sum">Score <b>${fmt(hit.score)}</b> — the sum of
+    <p class="sp-contrib-sum">Score <b>${fmt(hit.score)}</b> — from
       ${hit.parts.length} shared term${hit.parts.length === 1 ? '' : 's'}.</p>
     <ol class="sp-contrib-list">
       ${rows.map(p => {
@@ -312,7 +309,7 @@ function renderContributions(hit) {
       }).join('')}
     </ol>
     ${hit.parts.length > rows.length
-      ? `<p class="sp-note">and ${hit.parts.length - rows.length} smaller contributions.</p>` : ''}`;
+      ? `<p class="sp-note">and ${hit.parts.length - rows.length} smaller.</p>` : ''}`;
 }
 
 /* ------------------------------------------------ view 3: the sparsity strip */

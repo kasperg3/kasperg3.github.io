@@ -89,15 +89,13 @@ export class Autocomplete {
     this.loading = load(this.base).then(e => {
       this.engine = e;
       if (this.o.skeleton) this.o.skeleton.hidden = true;
-      this.setStatus(
-        `${e.docs.length} passages indexed over ${e.vocabSize.toLocaleString('en')} `
-        + 'vocabulary dimensions. No model runs in your browser.');
+      this.setStatus(`${e.docs.length} passages indexed. No model runs in your browser.`);
       this.o.onReady?.(e);
       return e;
     }).catch(err => {
       this.loading = null;
       if (this.o.skeleton) this.o.skeleton.hidden = true;
-      this.setStatus(`Could not load the index: ${err.message}`, true);
+      this.setStatus(`Could not load the index — ${err.message}`, true);
       throw err;
     });
     return this.loading;
@@ -150,7 +148,7 @@ export class Autocomplete {
   render(total) {
     if (!this.hits.length) {
       this.list.innerHTML =
-        '<li class="sp-opt-empty" role="presentation">No passage shares a term with that query.</li>';
+        '<li class="sp-opt-empty" role="presentation">No matches.</li>';
       if (this.o.foot) this.o.foot.textContent = '';
       this.open();
       this.setActive(-1);
@@ -188,8 +186,8 @@ export class Autocomplete {
     if (this.o.foot) {
       const shown = this.hits.length;
       this.o.foot.textContent = total > shown
-        ? `Top ${shown} of ${total} passages that scored above zero.`
-        : `${total} passage${total === 1 ? '' : 's'} scored above zero.`;
+        ? `Top ${shown} of ${total} matches`
+        : `${total} match${total === 1 ? '' : 'es'}`;
     }
 
     this.open();

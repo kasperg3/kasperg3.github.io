@@ -224,7 +224,10 @@
 .spot-search #hq::placeholder{color:#8b96a2}
 .spot-search .sp-clear{color:#8b96a2}
 .spot-search .sp-clear:hover{color:#3fbeb2;background:rgba(63,190,178,.14)}
-.spot-search .sp-status{margin-top:0;font-size:12px;color:#8b96a2}
+.spot-search .sp-examples{margin-top:2px;gap:6px}
+.spot-search .sp-ex{border-color:rgba(255,255,255,.15);color:#98a4b0;
+                    font-size:12.5px;padding:6px 10px}
+.spot-search .sp-ex:hover{border-color:#3fbeb2;color:#3fbeb2;background:rgba(63,190,178,.10)}
 .spot-search .art-cap{margin-top:auto}
 .spot-search .art-cap a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.5)}
 /* The dropdown belongs to the page, not the dark panel, so it keeps the
