@@ -212,33 +212,66 @@
              padding:16px 20px;background:var(--card);color:var(--ink-2);font-size:15px}
 
 /* ============================================================
-   the front page widget: same box on the dark spotlight panel
+   the front page band — search on its own, not inside a card
    ============================================================ */
-.spot-search{gap:12px}
-.spot-search .sp-field{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);
-                       box-shadow:none;padding:0 10px 0 13px}
-.spot-search .sp-field:focus-within{border-color:#3fbeb2;
-                                    box-shadow:0 0 0 3px rgba(63,190,178,.18)}
-.spot-search .sp-field > svg{stroke:#8b96a2}
-.spot-search #hq{color:#eef2f6;font-size:15px;padding:13px 0}
-.spot-search #hq::placeholder{color:#8b96a2}
-.spot-search .sp-clear{color:#8b96a2}
-.spot-search .sp-clear:hover{color:#3fbeb2;background:rgba(63,190,178,.14)}
-.spot-search .sp-examples{margin-top:2px;gap:6px}
-.spot-search .sp-ex{border-color:rgba(255,255,255,.15);color:#98a4b0;
-                    font-size:12.5px;padding:6px 10px}
-.spot-search .sp-ex:hover{border-color:#3fbeb2;color:#3fbeb2;background:rgba(63,190,178,.10)}
-.spot-search .art-cap{margin-top:auto}
-.spot-search .art-cap a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.5)}
-/* The dropdown belongs to the page, not the dark panel, so it keeps the
-   light-or-dark card treatment and stays readable over either. */
-.spot-search .sp-ac{box-shadow:0 26px 70px -30px rgba(0,0,0,.7)}
-.spot-search .sp-ac-list{max-height:min(56vh,380px)}
-/* The spotlight's right-hand column is narrow; above the breakpoint where the
-   card is still two columns, let the results grow leftward over the card. */
-@media (min-width:981px){
-  .spot-search .sp-ac{left:auto;right:0;width:400px}
-}
+.asksite{background:var(--dark);color:#e9edf2;margin-top:34px;border-radius:18px;
+         padding:clamp(24px,4vw,38px) clamp(20px,4vw,38px) clamp(22px,3.5vw,32px)}
+.ask-inner{max-width:720px;margin:0 auto}
+.ask-head{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:baseline;margin-bottom:16px}
+.ask-eyebrow{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
+             color:#3fbeb2;margin:0}
+.ask-note{font:400 13px/1.5 var(--sans);color:#8b96a2;margin:0}
+.ask-note a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.45)}
+
+/* the field, on the dark ground */
+.ask-field .sp-field{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15);
+                     box-shadow:none;border-radius:13px;padding:0 12px 0 16px}
+.ask-field .sp-field:focus-within{border-color:#3fbeb2;background:rgba(255,255,255,.09);
+                                  box-shadow:0 0 0 3px rgba(63,190,178,.18)}
+.ask-field .sp-field > svg{stroke:#8b96a2}
+.asksite #hq{color:#eef2f6;font-size:clamp(16px,2.2vw,18px);padding:18px 0}
+.asksite #hq::placeholder{color:#7b8794}
+.asksite .sp-clear{color:#8b96a2}
+.asksite .sp-clear:hover{color:#3fbeb2;background:rgba(63,190,178,.14)}
+
+/* Results expand inline here rather than overlaying: on a landing page this
+   reads as an invitation, and it never covers the content below. */
+.asksite .sp-field-wrap{position:static}
+.asksite .sp-ac{position:static;margin-top:12px;background:rgba(255,255,255,.04);
+                border-color:rgba(255,255,255,.12);box-shadow:none;border-radius:13px}
+.asksite .sp-ac-list{max-height:none;padding:6px}
+.asksite .sp-ac-foot{background:transparent;border-top-color:rgba(255,255,255,.09);
+                     color:#7b8794;padding:9px 14px}
+.asksite .sp-opt.on,.asksite .sp-opt:hover{background:rgba(63,190,178,.13)}
+.asksite .sp-opt-title{color:#eef2f6}
+.asksite .sp-rank{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);
+                  color:#98a4b0}
+.asksite .sp-opt.on .sp-rank{background:#3fbeb2;border-color:#3fbeb2;color:#0f1317}
+.asksite .sp-kind{color:#3fbeb2;border-color:rgba(63,190,178,.5)}
+.asksite .sp-score{color:#3fbeb2}
+.asksite .sp-stack{background:rgba(255,255,255,.09)}
+.asksite .sp-stack i{background:#3fbeb2}
+.asksite .sp-stack i.exp{background:#e0894f}
+.asksite .sp-src{color:#8b96a2;border-color:rgba(255,255,255,.14)}
+.asksite .sp-src:hover{color:#3fbeb2;border-color:#3fbeb2;background:rgba(63,190,178,.10)}
+.asksite .sp-opt-empty{color:#98a4b0}
+
+/* the top hit, quoted as an answer — the slot a generated answer would fill */
+.ask-answer{padding:16px 16px 14px;border-bottom:1px solid rgba(255,255,255,.09)}
+.ask-answer:empty{display:none}
+.ask-answer .lbl{display:block;font:600 10px/1 var(--sans);letter-spacing:.18em;
+                 text-transform:uppercase;color:#3fbeb2;margin-bottom:9px}
+.ask-answer blockquote{margin:0;font:400 15.5px/1.6 var(--sans);color:#dfe6ed}
+.ask-answer .cite{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-top:10px;
+                  font-size:12.5px;color:#7b8794}
+.ask-answer .cite a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.45)}
+
+/* the try-these row, with the dice */
+.ask-tries{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.asksite .sp-ex{border-color:rgba(255,255,255,.15);color:#98a4b0;font-size:13px;padding:7px 12px}
+.asksite .sp-ex:hover{border-color:#3fbeb2;color:#3fbeb2;background:rgba(63,190,178,.10)}
+.ask-dice{display:inline-flex;align-items:center;gap:7px;margin-left:auto}
+.ask-dice svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.7}
 
 /* ============================================================
    narrow screens
@@ -253,7 +286,12 @@
   .sp-contrib-list .mul{display:none}
 }
 
+@media (max-width:640px){
+  .ask-dice{margin-left:0}
+}
+
 @media (max-width:480px){
+  .asksite{border-radius:14px}
   .sp-opt{gap:0 10px;padding:10px}
   .sp-rank{width:23px;height:23px;font-size:11.5px}
   .sp-opt-title{font-size:14.5px}
