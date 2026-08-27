@@ -89,9 +89,10 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         67M-parameter masked LM; the query side is a tokenizer and a lookup table, so your browser
         runs no model at all. The page puts the sparse vectors on screen — the query's WordPiece
         decomposition, which terms produced each score, and the words the model added that the text
-        never contained.</p>
+        never contained. Then it shows you <em>where</em> the query met the document, and runs the
+        same comparison past dense, late interaction and a cross-encoder to price it.</p>
         <div class="foot"><span class="pill">Learned sparse</span><span class="pill">No inference</span>
-          <span class="pill">Vanilla JS</span></div>
+          <span class="pill">Interactive</span><span class="pill">Vanilla JS</span></div>
       </a>
 
       <div class="card" style="justify-content:center;border-style:dashed;background:transparent">

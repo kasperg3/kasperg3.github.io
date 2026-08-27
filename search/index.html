@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=974e5dde">
-<link rel="stylesheet" href="/search/search.css?v=3">
+<link rel="stylesheet" href="/search/search.css?v=4">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
@@ -161,6 +161,384 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         <p class="sp-note" id="terms-note"></p>
       </div>
     </div>
+
+    <p class="mt-jump"><a href="#meet"><strong>Next &mdash; where those two sides actually
+      met</strong>, and what the same comparison would have cost if you let them meet somewhere
+      else.<span aria-hidden="true">&darr;</span></a></p>
+  </section>
+
+
+  <!-- ============ when the query meets the document ============ -->
+  <section class="sp-breakdown mt-sec" id="meet">
+    <div class="sec-head"><h2>When the query meets the document</h2>
+      <span class="sec-note">and what it costs to let them</span></div>
+
+    <p class="mt-lede">That score was a sum of products over dimensions the two sides happened to
+    share. Which raises the question the panels above cannot answer: <strong>where</strong> did they
+    meet, and what would the same question have cost if you let them meet somewhere else?</p>
+
+    <!-- ---------- 1 · the meeting ---------- -->
+    <div class="sp-panel">
+      <header>
+        <h2>The meeting</h2>
+        <p>Your wordpieces on the left, the passage's dimensions on the right, an edge wherever the
+        two coincide. Hover either end.</p>
+      </header>
+      <div class="sp-body">
+        <div class="sp-scroll"><div class="mt-graph-host" id="meet-graph">
+          <p class="sp-empty">Type a query.</p>
+        </div></div>
+        <p class="mt-readout" id="meet-graph-readout" role="status"></p>
+        <p class="sp-note" id="meet-graph-foot"></p>
+      </div>
+    </div>
+
+    <!-- ---------- 2 · the vector, over the passage ---------- -->
+    <div class="sp-panel">
+      <header>
+        <h2>That vector, over the passage</h2>
+        <p>Every word tinted by the weight the model gave it. Underlined words matched you.</p>
+      </header>
+      <div class="sp-body">
+        <p class="mt-passage" id="meet-passage"><span class="sp-empty">Pick a result.</span></p>
+        <p class="sp-legend mt-legend">
+          <span><i class="mt-sw-1"></i>low weight</span>
+          <span><i class="mt-sw-2"></i>high weight</span>
+          <span class="mt-legend-hit">matched your query</span>
+        </p>
+        <h3 class="mt-sub">Matched, with nothing to point at</h3>
+        <div class="sp-scroll"><div class="sp-terms mt-ghosts" id="meet-ghosts"></div></div>
+        <p class="sp-note" id="meet-passage-note"></p>
+      </div>
+    </div>
+
+    <!-- ---------- 3 · four architectures ---------- -->
+    <div class="sp-panel mt-wide">
+      <header>
+        <h2>Four ways to let them meet</h2>
+        <p>The same picture drawn four times. The only thing that changes is when the two sides are
+        allowed to touch.</p>
+      </header>
+      <div class="sp-body">
+        <div class="mt-axis">
+          <span>&larr; cheaper &middot; runs over everything</span>
+          <span>more accurate &middot; runs over a shortlist &rarr;</span>
+        </div>
+        <svg class="mt-rail" viewBox="0 0 1000 8" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="mt-railg" x1="0" x2="1">
+            <stop offset="0" stop-color="var(--accent)"/>
+            <stop offset="1" stop-color="var(--accent-2)"/>
+          </linearGradient></defs>
+          <path d="M0 4 H1000" stroke="url(#mt-railg)" stroke-opacity=".45" stroke-width="2"/>
+          <g fill="url(#mt-railg)"><path d="M125 0 l5 4 -5 4 -5 -4z"/>
+            <path d="M375 0 l5 4 -5 4 -5 -4z"/><path d="M625 0 l5 4 -5 4 -5 -4z"/>
+            <path d="M875 0 l5 4 -5 4 -5 -4z"/></g>
+        </svg>
+
+        <div class="mt-arch-grid">
+
+          <!-- ······ dense ······ -->
+          <article class="mt-arch" data-arch="dense">
+            <button class="mt-arch-btn" type="button" aria-expanded="false">
+              <span class="mt-arch-h"><b>Dense, pooled</b><small>single-vector dual encoder</small></span>
+              <span class="mt-arch-ratio" data-live="ratio">&mdash;</span>
+              <svg class="mt-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="mt-fig"><svg class="mt-svg" viewBox="0 0 320 212" role="img"
+              aria-label="Dense retrieval. Query and document are encoded separately into token vectors, each side is pooled down to a single vector, and the score is one dot product.">
+              <text class="mt-lab" x="78" y="10" text-anchor="middle">QUERY</text>
+              <text class="mt-lab" x="242" y="10" text-anchor="middle">DOCUMENT</text>
+              <rect class="mt-box" x="60" y="16" width="36" height="22" rx="7"/>
+              <text class="mt-box-t" x="78" y="32" text-anchor="middle">q</text>
+              <rect class="mt-box" x="224" y="16" width="36" height="22" rx="7"/>
+              <text class="mt-box-t" x="242" y="32" text-anchor="middle">d</text>
+              <path class="mt-arrow" d="M78 38 V45"/><path class="mt-tri" d="M74 44 h8 l-4 6 z"/>
+              <path class="mt-arrow" d="M242 38 V45"/><path class="mt-tri" d="M238 44 h8 l-4 6 z"/>
+              <rect class="mt-stage" x="42" y="53" width="72" height="18" rx="6"/>
+              <text class="mt-stage-t" x="78" y="65.5" text-anchor="middle">encoder</text>
+              <rect class="mt-stage" x="206" y="53" width="72" height="18" rx="6"/>
+              <text class="mt-stage-t" x="242" y="65.5" text-anchor="middle">encoder</text>
+              <path class="mt-arrow" d="M78 71 V77"/><path class="mt-tri" d="M74 76 h8 l-4 6 z"/>
+              <path class="mt-arrow" d="M242 71 V77"/><path class="mt-tri" d="M238 76 h8 l-4 6 z"/>
+              <g class="mt-q">
+                <rect x="44" y="85" width="20" height="14" rx="4"/>
+                <rect x="68" y="85" width="20" height="14" rx="4"/>
+                <rect x="92" y="85" width="20" height="14" rx="4"/>
+              </g>
+              <g class="mt-qt"><text x="54" y="95" text-anchor="middle">q1</text>
+                <text x="78" y="95" text-anchor="middle">q2</text>
+                <text x="102" y="95" text-anchor="middle">q3</text></g>
+              <g class="mt-d">
+                <rect x="202" y="85" width="17" height="14" rx="4"/>
+                <rect x="223" y="85" width="17" height="14" rx="4"/>
+                <rect x="244" y="85" width="17" height="14" rx="4"/>
+                <rect x="265" y="85" width="17" height="14" rx="4"/>
+              </g>
+              <g class="mt-dt"><text x="210.5" y="95" text-anchor="middle">d1</text>
+                <text x="231.5" y="95" text-anchor="middle">d2</text>
+                <text x="252.5" y="95" text-anchor="middle">d3</text>
+                <text x="273.5" y="95" text-anchor="middle">d4</text></g>
+              <text class="mt-op" x="78" y="107" text-anchor="middle">POOL</text>
+              <text class="mt-op" x="242" y="107" text-anchor="middle">POOL</text>
+              <rect class="mt-pill" x="60" y="112" width="36" height="15" rx="7.5"/>
+              <text class="mt-pill-t" x="78" y="122.5" text-anchor="middle">1 vec</text>
+              <rect class="mt-pill" x="224" y="112" width="36" height="15" rx="7.5"/>
+              <text class="mt-pill-t" x="242" y="122.5" text-anchor="middle">1 vec</text>
+              <path class="mt-link" d="M78 127 C78 142 160 138 160 145"/>
+              <path class="mt-link" d="M242 127 C242 142 160 138 160 145"/>
+              <circle class="mt-meet" cx="160" cy="158" r="13"/>
+              <text class="mt-meet-t" x="160" y="161" text-anchor="middle">q&middot;d</text>
+              <path class="mt-arrow" d="M160 171 V181"/><path class="mt-tri" d="M156 180 h8 l-4 6 z"/>
+              <rect class="mt-score" x="124" y="188" width="72" height="18" rx="6"/>
+              <text class="mt-score-t" x="160" y="200.5" text-anchor="middle">score</text>
+            </svg></div>
+            <p class="mt-when"><span class="mt-when-k">meets once</span>
+              <span data-live="primary"><b>1</b> dot product of <b>1024</b> floats</span></p>
+            <p class="mt-badge off">documents encoded offline</p>
+            <div class="mt-more">
+              <p data-live="secondary">Both sides are already collapsed to one vector, so the query
+              and the whole passage meet exactly once.</p>
+              <p class="mt-extra">Both sides are compressed before either knows what the other will
+              ask. That is the whole trade: one vector per asset is unbeatably cheap to store and
+              search, and it has to decide what to keep in advance.</p>
+            </div>
+          </article>
+
+          <!-- ······ learned sparse ······ -->
+          <article class="mt-arch is-here" data-arch="sparse">
+            <button class="mt-arch-btn" type="button" aria-expanded="false">
+              <span class="mt-arch-h"><b>Learned sparse</b><small>SPLADE &middot; this page</small></span>
+              <span class="mt-arch-ratio" data-live="ratio">&mdash;</span>
+              <svg class="mt-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="mt-fig"><svg class="mt-svg" viewBox="0 0 320 212" role="img"
+              aria-label="Learned sparse retrieval. The query is tokenized and looked up in a static weight table; the document was expanded offline by a masked language model. Both become sparse vectors over the same vocabulary, and they meet only on the dimensions both activate.">
+              <text class="mt-lab" x="78" y="10" text-anchor="middle">QUERY</text>
+              <text class="mt-lab" x="242" y="10" text-anchor="middle">DOCUMENT</text>
+              <rect class="mt-box" x="60" y="16" width="36" height="22" rx="7"/>
+              <text class="mt-box-t" x="78" y="32" text-anchor="middle">q</text>
+              <rect class="mt-box" x="224" y="16" width="36" height="22" rx="7"/>
+              <text class="mt-box-t" x="242" y="32" text-anchor="middle">d</text>
+              <path class="mt-arrow" d="M78 38 V45"/><path class="mt-tri" d="M74 44 h8 l-4 6 z"/>
+              <path class="mt-arrow" d="M242 38 V45"/><path class="mt-tri" d="M238 44 h8 l-4 6 z"/>
+              <rect class="mt-stage" x="30" y="53" width="96" height="18" rx="6"/>
+              <text class="mt-stage-t" x="78" y="65.5" text-anchor="middle">tokenizer + table</text>
+              <rect class="mt-stage on" x="194" y="53" width="96" height="18" rx="6"/>
+              <text class="mt-stage-t" x="242" y="65.5" text-anchor="middle">masked LM &middot; 67M</text>
+              <text class="mt-fine" x="78" y="83" text-anchor="middle">no model at query time</text>
+              <text class="mt-fine" x="242" y="83" text-anchor="middle">offline, at build time</text>
+              <text class="mt-lab" x="160" y="104" text-anchor="middle">SHARED VOCABULARY &middot; 30,522</text>
+              <path class="mt-rail-l" d="M14 130 H306"/>
+              <g class="mt-comb q">
+                <path d="M30 130 V119"/><path d="M58 130 V112"/><path d="M86 130 V124"/>
+                <path d="M104 130 V121"/><path d="M140 130 V114"/><path d="M176 130 V126"/>
+                <path d="M206 130 V116"/><path d="M238 130 V123"/><path d="M266 130 V117"/>
+                <path d="M290 130 V125"/>
+              </g>
+              <g class="mt-comb d">
+                <path d="M22 130 V143"/><path d="M58 130 V148"/><path d="M96 130 V139"/>
+                <path d="M140 130 V146"/><path d="M158 130 V137"/><path d="M190 130 V141"/>
+                <path d="M206 130 V149"/><path d="M232 130 V136"/><path d="M266 130 V145"/>
+                <path d="M284 130 V138"/><path d="M298 130 V140"/>
+              </g>
+              <g class="mt-hit">
+                <path d="M58 110 V150"/><path d="M140 110 V150"/>
+                <path d="M206 110 V150"/><path d="M266 110 V150"/>
+              </g>
+              <g class="mt-dia"><path d="M58 124 l6 6 -6 6 -6 -6z"/><path d="M140 124 l6 6 -6 6 -6 -6z"/>
+                <path d="M206 124 l6 6 -6 6 -6 -6z"/><path d="M266 124 l6 6 -6 6 -6 -6z"/></g>
+              <text class="mt-meet-t" x="160" y="166" text-anchor="middle">only the shared dimensions cost anything</text>
+              <path class="mt-arrow" d="M160 172 V181"/><path class="mt-tri" d="M156 180 h8 l-4 6 z"/>
+              <rect class="mt-score" x="124" y="188" width="72" height="18" rx="6"/>
+              <text class="mt-score-t" x="160" y="200.5" text-anchor="middle">score</text>
+            </svg></div>
+            <p class="mt-when"><span class="mt-when-k">meets in the vocabulary</span>
+              <span data-live="primary">one multiply-add per <b>shared</b> dimension</span></p>
+            <p class="mt-badge off">documents encoded offline &middot; no model at query time</p>
+            <div class="mt-more">
+              <p data-live="secondary">Only the dimensions both sides activate cost anything, and an
+              inverted index never even visits a passage that shares none.</p>
+              <p class="mt-extra">It sits here rather than to the right of dense on purpose: per
+              passage it is the <em>cheapest</em> of the four, because a sparse vector has almost no
+              dimensions to multiply and an inverted index skips the passages that share none. What
+              it buys over dense is that every dimension has a name, so an exact term can never be
+              blurred away — and what it gives up is everything a name cannot carry.</p>
+            </div>
+          </article>
+
+          <!-- ······ late interaction ······ -->
+          <article class="mt-arch" data-arch="late">
+            <button class="mt-arch-btn" type="button" aria-expanded="false">
+              <span class="mt-arch-h"><b>Late interaction</b><small>multi-vector dual encoder</small></span>
+              <span class="mt-arch-ratio" data-live="ratio">&mdash;</span>
+              <svg class="mt-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="mt-fig"><svg class="mt-svg" viewBox="0 0 320 212" role="img"
+              aria-label="Late interaction. Query and document are still encoded separately and nothing is pooled: every query vector is compared against every document vector, and only the best match per query token counts. That operator is MaxSim.">
+              <text class="mt-lab" x="78" y="10" text-anchor="middle">QUERY</text>
+              <text class="mt-lab" x="242" y="10" text-anchor="middle">DOCUMENT</text>
+              <rect class="mt-box" x="60" y="16" width="36" height="22" rx="7"/>
+              <text class="mt-box-t" x="78" y="32" text-anchor="middle">q</text>
+              <rect class="mt-box" x="224" y="16" width="36" height="22" rx="7"/>
+              <text class="mt-box-t" x="242" y="32" text-anchor="middle">d</text>
+              <path class="mt-arrow" d="M78 38 V45"/><path class="mt-tri" d="M74 44 h8 l-4 6 z"/>
+              <path class="mt-arrow" d="M242 38 V45"/><path class="mt-tri" d="M238 44 h8 l-4 6 z"/>
+              <rect class="mt-stage" x="42" y="53" width="72" height="18" rx="6"/>
+              <text class="mt-stage-t" x="78" y="65.5" text-anchor="middle">encoder</text>
+              <rect class="mt-stage" x="206" y="53" width="72" height="18" rx="6"/>
+              <text class="mt-stage-t" x="242" y="65.5" text-anchor="middle">encoder</text>
+              <text class="mt-fine on" x="160" y="80" text-anchor="middle">NOTHING IS POOLED</text>
+              <g class="mt-q">
+                <rect x="44" y="85" width="20" height="14" rx="4"/>
+                <rect x="68" y="85" width="20" height="14" rx="4"/>
+                <rect x="92" y="85" width="20" height="14" rx="4"/>
+              </g>
+              <g class="mt-qt"><text x="54" y="95" text-anchor="middle">q1</text>
+                <text x="78" y="95" text-anchor="middle">q2</text>
+                <text x="102" y="95" text-anchor="middle">q3</text></g>
+              <g class="mt-d">
+                <rect x="202" y="85" width="17" height="14" rx="4"/>
+                <rect x="223" y="85" width="17" height="14" rx="4"/>
+                <rect x="244" y="85" width="17" height="14" rx="4"/>
+                <rect x="265" y="85" width="17" height="14" rx="4"/>
+              </g>
+              <g class="mt-dt"><text x="210.5" y="95" text-anchor="middle">d1</text>
+                <text x="231.5" y="95" text-anchor="middle">d2</text>
+                <text x="252.5" y="95" text-anchor="middle">d3</text>
+                <text x="273.5" y="95" text-anchor="middle">d4</text></g>
+              <path class="mt-link" d="M78 99 C78 104 126 100 126 108"/>
+              <path class="mt-link" d="M242 99 C242 104 195 100 195 108"/>
+              <g class="mt-dt"><text x="128" y="105">d1</text><text x="146" y="105">d2</text>
+                <text x="164" y="105">d3</text><text x="182" y="105">d4</text></g>
+              <g class="mt-qt"><text x="122" y="120" text-anchor="end">q1</text>
+                <text x="122" y="138" text-anchor="end">q2</text>
+                <text x="122" y="156" text-anchor="end">q3</text></g>
+              <g class="mt-cell">
+                <rect x="126" y="108" width="15" height="15" rx="3"/>
+                <rect x="144" y="108" width="15" height="15" rx="3"/>
+                <rect class="max" x="162" y="108" width="15" height="15" rx="3"/>
+                <rect x="180" y="108" width="15" height="15" rx="3"/>
+                <rect class="max" x="126" y="126" width="15" height="15" rx="3"/>
+                <rect x="144" y="126" width="15" height="15" rx="3"/>
+                <rect x="162" y="126" width="15" height="15" rx="3"/>
+                <rect x="180" y="126" width="15" height="15" rx="3"/>
+                <rect x="126" y="144" width="15" height="15" rx="3"/>
+                <rect x="144" y="144" width="15" height="15" rx="3"/>
+                <rect x="162" y="144" width="15" height="15" rx="3"/>
+                <rect class="max" x="180" y="144" width="15" height="15" rx="3"/>
+              </g>
+              <g class="mt-brace"><path d="M201 108 h5 V159 h-5"/></g>
+              <text class="mt-meet-t" x="212" y="136">keep the row max</text>
+              <text class="mt-meet-t" x="160" y="172" text-anchor="middle">score = &Sigma; of those maxima &middot; MaxSim</text>
+              <path class="mt-arrow" d="M160 176 V181"/><path class="mt-tri" d="M156 180 h8 l-4 6 z"/>
+              <rect class="mt-score" x="124" y="188" width="72" height="18" rx="6"/>
+              <text class="mt-score-t" x="160" y="200.5" text-anchor="middle">score</text>
+            </svg></div>
+            <p class="mt-when"><span class="mt-when-k">meets token by token</span>
+              <span data-live="primary"><b>32 &times; 80</b> dot products of <b>128</b> floats</span></p>
+            <p class="mt-badge off">documents encoded offline</p>
+            <div class="mt-more">
+              <p data-live="secondary">Nothing is pooled on either side, so every query token meets
+              every token of the passage and only its best match counts. That operator is
+              MaxSim.</p>
+              <p class="mt-extra">Everything deployable about this column comes from the document
+              side still being precomputable. The query side is the expensive half, and it is small.
+              Swap tokens for image patches and the operator does not change &mdash; which is how a
+              page of a PDF gets searched.</p>
+            </div>
+          </article>
+
+          <!-- ······ full interaction ······ -->
+          <article class="mt-arch" data-arch="full">
+            <button class="mt-arch-btn" type="button" aria-expanded="false">
+              <span class="mt-arch-h"><b>Full interaction</b><small>cross-encoder reranker</small></span>
+              <span class="mt-arch-ratio" data-live="ratio">&mdash;</span>
+              <svg class="mt-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="mt-fig"><svg class="mt-svg" viewBox="0 0 320 212" role="img"
+              aria-label="Full interaction. Query and document tokens enter one encoder together, so every token attends to every token. It scores best and nothing can be precomputed.">
+              <text class="mt-lab" x="160" y="10" text-anchor="middle">QUERY + DOCUMENT, TOGETHER</text>
+              <rect class="mt-box" x="100" y="16" width="36" height="22" rx="7"/>
+              <text class="mt-box-t" x="118" y="32" text-anchor="middle">q</text>
+              <text class="mt-op" x="160" y="31" text-anchor="middle">+</text>
+              <rect class="mt-box" x="184" y="16" width="36" height="22" rx="7"/>
+              <text class="mt-box-t" x="202" y="32" text-anchor="middle">d</text>
+              <path class="mt-link" d="M118 38 C118 46 160 42 160 48"/>
+              <path class="mt-link" d="M202 38 C202 46 160 42 160 48"/>
+              <rect class="mt-stage big" x="52" y="54" width="216" height="104" rx="10"/>
+              <text class="mt-stage-t" x="160" y="69" text-anchor="middle">one encoder &mdash; every token attends to every token</text>
+              <g class="mt-att">
+                <path d="M118 93 L106 132"/><path d="M118 93 L128 132"/><path d="M118 93 L150 132"/>
+                <path d="M118 93 L172 132"/><path d="M118 93 L194 132"/><path d="M118 93 L216 132"/>
+                <path d="M146 93 L106 132"/><path d="M146 93 L128 132"/><path d="M146 93 L150 132"/>
+                <path d="M146 93 L172 132"/><path d="M146 93 L194 132"/><path d="M146 93 L216 132"/>
+                <path d="M174 93 L106 132"/><path d="M174 93 L128 132"/><path d="M174 93 L150 132"/>
+                <path d="M174 93 L172 132"/><path d="M174 93 L194 132"/><path d="M174 93 L216 132"/>
+                <path d="M202 93 L106 132"/><path d="M202 93 L128 132"/><path d="M202 93 L150 132"/>
+                <path d="M202 93 L172 132"/><path d="M202 93 L194 132"/><path d="M202 93 L216 132"/>
+              </g>
+              <g class="mt-q">
+                <rect x="107" y="80" width="22" height="13" rx="4"/>
+                <rect x="135" y="80" width="22" height="13" rx="4"/>
+                <rect x="163" y="80" width="22" height="13" rx="4"/>
+                <rect x="191" y="80" width="22" height="13" rx="4"/>
+              </g>
+              <g class="mt-qt"><text x="118" y="89.5" text-anchor="middle">q1</text>
+                <text x="146" y="89.5" text-anchor="middle">q2</text>
+                <text x="174" y="89.5" text-anchor="middle">q3</text>
+                <text x="202" y="89.5" text-anchor="middle">q4</text></g>
+              <g class="mt-d">
+                <rect x="97" y="132" width="18" height="13" rx="4"/>
+                <rect x="119" y="132" width="18" height="13" rx="4"/>
+                <rect x="141" y="132" width="18" height="13" rx="4"/>
+                <rect x="163" y="132" width="18" height="13" rx="4"/>
+                <rect x="185" y="132" width="18" height="13" rx="4"/>
+                <rect x="207" y="132" width="18" height="13" rx="4"/>
+              </g>
+              <g class="mt-dt"><text x="106" y="141.5" text-anchor="middle">d1</text>
+                <text x="128" y="141.5" text-anchor="middle">d2</text>
+                <text x="150" y="141.5" text-anchor="middle">d3</text>
+                <text x="172" y="141.5" text-anchor="middle">d4</text>
+                <text x="194" y="141.5" text-anchor="middle">d5</text>
+                <text x="216" y="141.5" text-anchor="middle">d6</text></g>
+              <path class="mt-arrow" d="M160 158 V181"/><path class="mt-tri" d="M156 180 h8 l-4 6 z"/>
+              <rect class="mt-score" x="124" y="188" width="72" height="18" rx="6"/>
+              <text class="mt-score-t" x="160" y="200.5" text-anchor="middle">score</text>
+            </svg></div>
+            <p class="mt-when"><span class="mt-when-k">meets everywhere, at once</span>
+              <span data-live="primary"><b>1</b> forward pass, <b>110M</b> parameters</span></p>
+            <p class="mt-badge qt">query time only &mdash; nothing precomputed</p>
+            <div class="mt-more">
+              <p data-live="secondary">Query and passage go into one encoder together, so every
+              token attends to every token. Scores best, and nothing can be precomputed.</p>
+              <p class="mt-extra">There is no index to build, because there is nothing to build one
+              from: the document's representation depends on the query. That is simultaneously why
+              it wins on quality and why it can never be the first stage.</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- 4 · the cost ---------- -->
+    <div class="sp-panel">
+      <header>
+        <h2>What each one costs</h2>
+        <p>FLOPs to score one passage, and to score a whole corpus. Log scale &mdash; the span is
+        eight orders of magnitude.</p>
+      </header>
+      <div class="sp-body">
+        <div class="sp-facet mt-corpus">
+          <span id="mt-corpus-label">Corpus</span>
+          <div class="sp-facet-chips" id="meet-corpus" role="group"
+               aria-labelledby="mt-corpus-label"></div>
+        </div>
+        <ol class="mt-cost" id="meet-cost"></ol>
+        <p class="sp-note" id="meet-cost-note">Search for something and this fills in with the
+        wordpieces you actually typed.</p>
+      </div>
+    </div>
   </section>
 
   <!-- ============ how it works ============ -->
@@ -237,6 +615,6 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   </div>
 </footer>
 
-<script type="module" src="/search/search-ui.js?v=2"></script>
+<script type="module" src="/search/search-ui.js?v=3"></script>
 </body>
 </html>

@@ -308,3 +308,253 @@
   .sp-box,.sp-picker,.sp-picker-label,.sp-ac{display:none}
   .sp-panel{break-inside:avoid;box-shadow:none}
 }
+
+/* ============================================================
+   /search/ · "when the query meets the document"
+
+   Four views built by search/meet.js on top of the panels above:
+   the bipartite meeting graph, the vector painted back over the
+   passage, the four-architecture comparison (static SVG, so it
+   survives with scripting off), and the cost table.
+
+   The architecture figures reuse slide 18's grammar from
+   /knowledge/ml-and-data-at-colourbox/ — query column, document
+   column, and a glyph where the two are allowed to touch — but
+   they are re-authored against site.css tokens, since the deck's
+   --accent-3 and --card-solid do not exist here.
+   ============================================================ */
+
+.mt-sec{padding-top:0}
+
+/* The pull-through from the breakdown. The illustrations are worth nothing if
+   nobody who just searched knows they are down there. */
+.mt-jump{margin-top:24px}
+.mt-jump a{display:flex;align-items:baseline;gap:10px;padding:14px 18px;
+  border:1px solid var(--hair);border-radius:12px;background:var(--card);
+  font:500 14.5px/1.5 var(--sans);color:var(--muted);text-decoration:none;
+  transition:border-color .15s ease,color .15s ease}
+.mt-jump a:hover{border-color:var(--accent);color:var(--accent)}
+.mt-jump a span{margin-left:auto;flex:none;color:var(--accent);font-size:17px}
+.mt-jump strong{color:var(--ink);font-weight:600}
+.mt-jump a:hover strong{color:var(--accent)}
+
+.mt-lede{font-size:16px;line-height:1.6;color:var(--muted);max-width:66ch;margin-top:14px}
+
+/* ---------- 1 · the meeting graph ---------- */
+.mt-graph-host{min-width:620px}
+.mt-graph{width:100%;height:auto;display:block;font-family:var(--sans)}
+
+.mt-col{font:600 10.5px/1 var(--sans);letter-spacing:1.2px;fill:var(--faint)}
+.mt-cap{font:400 10px/1 var(--sans);fill:var(--faint)}
+
+.mt-node rect:first-child{fill:var(--card);stroke:var(--hair);stroke-width:1}
+.mt-node.miss rect:first-child{stroke-dasharray:3 3}
+.mt-node.rest rect:first-child{fill:transparent;stroke:var(--hair-soft);stroke-dasharray:4 4}
+.mt-node .mt-fill{fill:var(--accent);opacity:.75}
+.mt-node.exp .mt-fill{fill:var(--accent-2)}
+.mt-node.miss .mt-fill{fill:var(--faint);opacity:.4}
+.mt-tk{font:500 12.5px/1 var(--mono);fill:var(--ink)}
+.mt-tk .cont{fill:var(--faint)}
+.mt-node.miss .mt-tk{fill:var(--muted)}
+.mt-wt{font:400 11px/1 var(--mono);fill:var(--muted)}
+.mt-rest{font:400 11px/1 var(--sans);fill:var(--faint)}
+
+.mt-edge{fill:none;stroke:var(--accent);stroke-opacity:.42;stroke-linecap:round}
+.mt-edge.exp{stroke:var(--accent-2)}
+
+/* Hovering either end of an edge isolates it: everything else recedes rather
+   than disappearing, so the shape of the whole still reads. */
+.mt-graph .mt-node,.mt-graph .mt-edge{transition:opacity .16s ease,stroke-opacity .16s ease}
+.mt-graph.focused .mt-node{opacity:.3}
+.mt-graph.focused .mt-edge{stroke-opacity:.08}
+.mt-graph.focused .mt-node.lit{opacity:1}
+.mt-graph.focused .mt-edge.lit{stroke-opacity:.95}
+.mt-graph .mt-node{cursor:default}
+
+.mt-readout{margin-top:14px;min-height:2.6em;font-size:13.5px;line-height:1.5;
+  color:var(--muted);max-width:70ch}
+.mt-readout code{font:500 12.5px var(--mono);color:var(--ink-2)}
+.mt-readout b{font:600 13.5px var(--mono);color:var(--accent)}
+#meet-graph-foot b{font:600 15px/1 var(--mono);color:var(--accent)}
+
+/* ---------- 2 · the vector over the passage ---------- */
+/* --heat is the ceiling on the tint; --a is the word's share of it, set by
+   meet.js. The dark canvas needs a lower ceiling for the text to stay legible
+   against a mid-teal wash. */
+.mt-passage{font:400 16.5px/1.85 var(--serif);color:var(--ink-2);max-width:68ch;
+  letter-spacing:.002em;--heat:58%}
+@media (prefers-color-scheme:dark){.mt-passage{--heat:34%}}
+.mt-passage .mt-w{border-radius:4px;padding:1px 1px;transition:background-color .15s ease}
+.mt-passage .mt-w.on{background:color-mix(in srgb,var(--accent) calc(var(--a) * var(--heat)),
+  transparent)}
+.mt-passage .mt-w.match{box-shadow:inset 0 -2px 0 0 var(--accent);font-weight:600;
+  color:var(--ink)}
+
+.mt-legend{margin-top:16px}
+.mt-legend .mt-sw-1{background:color-mix(in srgb,var(--accent) 12%,transparent);
+  border:1px solid var(--hair)}
+.mt-legend .mt-sw-2{background:color-mix(in srgb,var(--accent) var(--heat,58%),transparent);
+  border:1px solid var(--hair)}
+@media (prefers-color-scheme:dark){.mt-legend{--heat:34%}}
+.mt-legend-hit{box-shadow:inset 0 -2px 0 0 var(--accent);font-weight:600}
+
+.mt-sub{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--faint);margin:22px 0 12px;padding-top:16px;border-top:1px solid var(--hair-soft)}
+
+.mt-ghost{display:inline-flex;align-items:baseline;gap:6px;border-radius:8px;
+  padding:5px 9px;font:500 12.5px/1.2 var(--mono);color:var(--accent-2);
+  border:1px dashed var(--accent-2);background:transparent}
+.mt-ghost.lit{color:var(--accent);border-color:var(--accent);border-style:solid;opacity:.85}
+.mt-ghost .tk{white-space:nowrap}
+.mt-ghost .cont{opacity:.55}
+.mt-ghost .w{font:400 10.5px/1 var(--mono);color:var(--faint)}
+.mt-ghosts{display:flex;flex-wrap:wrap;gap:7px;min-height:34px}
+
+/* ---------- 3 · the four architectures ---------- */
+.mt-axis{display:flex;justify-content:space-between;gap:16px;
+  font:500 11.5px/1.4 var(--sans);letter-spacing:.04em;color:var(--faint);margin-bottom:7px}
+.mt-rail{display:block;width:100%;height:8px;margin-bottom:20px}
+
+/* Two columns fit the site's 760px measure; four only fit if the panel is
+   allowed out of it, which it is once there is room either side. */
+.mt-arch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+
+.mt-arch{display:flex;flex-direction:column;border:1px solid var(--hair);border-radius:12px;
+  background:var(--card);overflow:hidden}
+/* The column the reader has just used, marked so the comparison has an anchor. */
+.mt-arch.is-here{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+
+.mt-arch-btn{display:flex;align-items:flex-start;gap:8px;width:100%;text-align:left;
+  padding:12px 12px 11px;border:0;border-bottom:1px solid var(--hair-soft);
+  background:transparent;cursor:pointer;color:inherit;font:inherit}
+.mt-arch-btn:hover{background:var(--accent-faint)}
+.mt-arch-btn:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.mt-arch-h{display:flex;flex-direction:column;gap:2px;min-width:0}
+.mt-arch-h b{font:600 13.5px/1.25 var(--sans);letter-spacing:-.01em;color:var(--ink)}
+.mt-arch-h small{font:400 11px/1.3 var(--sans);color:var(--faint)}
+.mt-arch-ratio{margin-left:auto;flex:none;font:600 12px/1.4 var(--mono);color:var(--accent)}
+.mt-caret{flex:none;width:14px;height:14px;margin-top:1px;fill:none;stroke:var(--faint);stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;transition:transform .18s ease}
+.mt-arch.open .mt-caret{transform:rotate(180deg)}
+
+.mt-fig{padding:10px 10px 4px}
+.mt-svg{display:block;width:100%;height:auto}
+
+/* Shared vocabulary of the four figures. Same names, same meaning, in all four. */
+.mt-lab{font:600 8.5px/1 var(--sans);letter-spacing:1.1px;fill:var(--faint)}
+.mt-fine{font:400 7.5px/1 var(--sans);fill:var(--faint)}
+.mt-fine.on{font-weight:600;letter-spacing:1px;fill:var(--accent)}
+.mt-box{fill:var(--canvas-2);stroke:var(--hair-soft);stroke-width:1}
+.mt-box-t{font:700 15px/1 var(--mono);fill:var(--ink)}
+.mt-stage{fill:var(--canvas-2);stroke:var(--hair-soft);stroke-width:1}
+.mt-stage.on{fill:var(--accent-faint);stroke:var(--accent);stroke-opacity:.45}
+.mt-stage.big{fill:var(--accent-faint);stroke:var(--accent);stroke-opacity:.3}
+.mt-stage-t{font:500 8px/1 var(--sans);fill:var(--muted)}
+.mt-arrow{stroke:var(--hair);stroke-width:1.5;fill:none}
+.mt-tri{fill:var(--hair)}
+.mt-q rect{fill:var(--accent-faint)}
+.mt-qt text{font:500 7.5px/1 var(--mono);fill:var(--accent)}
+.mt-d rect{fill:var(--hair-soft)}
+.mt-dt text{font:500 7.5px/1 var(--mono);fill:var(--muted)}
+.mt-op{font:600 8px/1 var(--sans);letter-spacing:1.1px;fill:var(--faint)}
+.mt-pill{fill:var(--card);stroke:var(--accent);stroke-width:1;stroke-opacity:.55}
+.mt-pill-t{font:500 8px/1 var(--mono);fill:var(--accent)}
+.mt-link{fill:none;stroke:var(--accent);stroke-opacity:.5;stroke-width:1.3}
+.mt-meet{fill:var(--accent-faint);stroke:var(--accent);stroke-width:1.2}
+.mt-meet-t{font:600 8px/1 var(--sans);fill:var(--accent)}
+.mt-score{fill:none;stroke:var(--accent);stroke-width:1.3}
+.mt-score-t{font:600 9px/1 var(--sans);letter-spacing:.4px;fill:var(--accent)}
+
+/* sparse: two combs over one rail */
+.mt-rail-l{stroke:var(--hair);stroke-width:1.2}
+.mt-comb path{stroke-width:2;stroke-linecap:round}
+.mt-comb.q path{stroke:var(--accent);stroke-opacity:.75}
+.mt-comb.d path{stroke:var(--ink-2);stroke-opacity:.45}
+.mt-hit path{stroke:var(--accent);stroke-opacity:.35;stroke-width:1;stroke-dasharray:2 2}
+.mt-dia path{fill:var(--accent)}
+
+/* late interaction: the nq × nd matrix */
+.mt-cell rect{fill:var(--hair-soft);stroke:var(--hair-soft)}
+.mt-cell rect.max{fill:var(--accent);fill-opacity:.75;stroke:var(--accent)}
+.mt-brace path{fill:none;stroke:var(--accent);stroke-opacity:.5;stroke-width:1.2}
+
+/* full interaction: all-to-all attention */
+.mt-att path{stroke:var(--accent);stroke-opacity:.16;stroke-width:.6}
+
+.mt-when{display:flex;flex-direction:column;gap:3px;padding:2px 12px 0;
+  font-size:12.5px;line-height:1.45;color:var(--muted)}
+.mt-when b{font:600 13px/1.3 var(--mono);color:var(--ink)}
+.mt-when-k{font:600 10px/1 var(--sans);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--accent)}
+
+.mt-badge{margin:10px 12px 12px;padding:5px 8px;border-radius:6px;
+  font:500 10.5px/1.35 var(--sans);letter-spacing:.02em;
+  background:var(--accent-faint);color:var(--accent)}
+.mt-badge.qt{background:color-mix(in srgb,var(--accent-2) 12%,transparent);color:var(--accent-2)}
+
+/* The prose is the part that folds away — the figure never does. */
+.mt-more{display:none;padding:0 12px 14px;border-top:1px solid var(--hair-soft);margin-top:auto}
+.mt-arch.open .mt-more{display:block}
+.mt-more p{font-size:13px;line-height:1.55;color:var(--muted);margin-top:12px}
+.mt-more b{color:var(--ink);font:600 13px var(--mono)}
+.mt-extra{padding-top:12px;border-top:1px solid var(--hair-soft)}
+.mt-extra em{font-style:italic}
+
+/* ---------- 4 · the cost ---------- */
+.mt-corpus{margin:0 0 18px}
+.mt-chip-n{font:500 10.5px/1 var(--mono);opacity:.6;margin-left:5px}
+
+.mt-cost{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.mt-cost-row{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(90px,2fr) auto auto;
+  gap:6px 14px;align-items:center}
+.mt-cost-name{display:flex;flex-direction:column;gap:2px;
+  font:600 13px/1.25 var(--sans);color:var(--ink)}
+.mt-cost-name small{font:400 11px/1.3 var(--sans);color:var(--faint)}
+.mt-cost-bar{height:12px;border-radius:6px;background:var(--hair-soft);overflow:hidden}
+.mt-cost-bar i{display:block;height:100%;border-radius:6px;background:var(--accent);opacity:.85}
+.mt-cost-how{font:400 11.5px/1.3 var(--mono);color:var(--faint);text-align:right;
+  white-space:nowrap}
+.mt-cost-val{text-align:right;font:400 11px/1.35 var(--sans);color:var(--muted);
+  display:flex;flex-direction:column;gap:1px;white-space:nowrap}
+.mt-cost-val b{font:600 14px/1 var(--mono);color:var(--ink)}
+.mt-cost-val small{font:400 10.5px/1 var(--mono);color:var(--faint)}
+
+/* One hue per column, matching the rail: cheap and scalable at one end,
+   accurate and expensive at the other. */
+.mt-sparse .mt-cost-bar i,.mt-dense .mt-cost-bar i{background:var(--accent)}
+.mt-late .mt-cost-bar i{background:color-mix(in srgb,var(--accent) 45%,var(--accent-2))}
+.mt-full .mt-cost-bar i{background:var(--accent-2)}
+
+#meet-cost-note b{font:600 14px/1 var(--mono);color:var(--ink)}
+#meet-cost-note a{color:var(--accent)}
+
+/* ============================================================
+   narrow screens · the four columns fold to two, then one
+   ============================================================ */
+@media (min-width:1180px){
+  .mt-wide{margin-inline:-160px}
+  .mt-arch-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (max-width:600px){
+  .mt-arch-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:640px){
+  .mt-axis{font-size:10.5px}
+  .mt-passage{font-size:15.5px;line-height:1.8}
+  /* Two of the four columns are arithmetic; the totals are the point. */
+  .mt-cost-row{grid-template-columns:minmax(100px,1fr) minmax(70px,1.4fr) auto}
+  .mt-cost-how{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .mt-graph .mt-node,.mt-graph .mt-edge,.mt-caret,.mt-passage .mt-w{transition:none}
+}
+
+@media print{
+  .mt-arch-btn{cursor:default}
+  .mt-more{display:block}
+  .mt-arch,.sp-panel{break-inside:avoid}
+  .mt-corpus{display:none}
+}
+
+@media print{.mt-jump{display:none}}
