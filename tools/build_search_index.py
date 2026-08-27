@@ -462,6 +462,13 @@ def encode(docs: list, out: Path) -> None:
     from huggingface_hub import hf_hub_download
     from transformers import AutoModelForMaskedLM, AutoTokenizer
 
+    # Reproducibility: multi-threaded CPU reductions sum in nondeterministic
+    # order, which moves the odd weight by ~0.01 and reshuffles ties. That is
+    # invisible on the page but it makes every rebuild a fresh diff, so the
+    # "index unchanged" path could never fire. One thread costs a few seconds
+    # on a corpus this size.
+    torch.set_num_threads(1)
+
     print(f"\nloading {MODEL_ID} ...")
     tok = AutoTokenizer.from_pretrained(MODEL_ID)
     model = AutoModelForMaskedLM.from_pretrained(MODEL_ID)
@@ -512,7 +519,9 @@ def encode(docs: list, out: Path) -> None:
     for d, act in zip(docs, acts):
         nz = torch.nonzero(act > MIN_WEIGHT, as_tuple=False).flatten()
         vals = act[nz]
-        order = torch.argsort(vals, descending=True)[:TOP_TERMS]
+        # stable, so equal weights keep ascending-token-id order rather than
+        # whatever the sort happened to do this run
+        order = torch.argsort(vals, descending=True, stable=True)[:TOP_TERMS]
         ids = nz[order].tolist()
         vals = vals[order].tolist()
 
