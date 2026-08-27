@@ -16,6 +16,11 @@ cv.html                 CV in HTML  ·  assets/cv/cv.pdf is the downloadable ver
 knowledge/index.html    knowledge-dissemination index (featured + archive)
 knowledge/<slug>/index.html  one deck = one HTML file
 knowledge/_template/    copy this to start a new deck
+search/index.html       SPLADE site search (see below)
+search/splade.js        retrieval engine: WordPiece + sparse dot product
+search/search-ui.js     the four visualisations
+search/index.json …     the built index (generated — CI rebuilds it)
+tools/build_search_index.py   extracts the corpus and encodes it
 site/site.css           shared design system for the site pages
 deck/deck.css           slide styles, same tokens as site.css
 deck/deck.js            slide runtime (~200 lines, vanilla JS)
@@ -192,6 +197,52 @@ im.resize((w, round(im.height*w/im.width)), Image.LANCZOS).save(
 ```
 
 Animations belong in WebP, not GIF — a 15 MB GIF here became a 363 KB animated WebP.
+
+## Site search
+
+`/search/` searches the whole site with **inference-free SPLADE**, and puts the sparse vectors on
+screen while it does. It runs on GitHub Pages with no inference server because SPLADE is asymmetric:
+
+- **Documents** are encoded by a 67M-parameter masked LM
+  ([`opensearch-neural-sparse-encoding-doc-v3-distill`](https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill),
+  Apache-2.0) into sparse vectors over BERT's 30,522-token vocabulary. That happens here, offline.
+- **Queries** need no model at all — just a WordPiece tokenizer and a static per-token weight table
+  that ships as a text file. Scoring is a sparse dot product over every document; at this corpus
+  size an inverted index would buy nothing.
+
+So the browser downloads the table, the vocabulary and the postings, and `search/splade.js` does the
+rest in about 200 lines with no dependencies.
+
+### Rebuilding the index
+
+CI does this automatically: `.github/workflows/search-index.yml` rebuilds and commits the index on
+any push touching `publications.html`, `projects.html`, `cv.html`, a deck, or the build script. That
+commit then triggers `pages.yml`, which deploys it. You only need to do it by hand when working
+offline:
+
+```bash
+pip install torch --index-url https://download.pytorch.org/whl/cpu   # CPU wheel, much smaller
+pip install -r tools/requirements.txt
+python3 tools/build_search_index.py --dry-run    # extract and report, no model
+python3 tools/build_search_index.py --out search # extract, encode, write the index
+python3 tools/check_search_index.py              # client vs. reference implementation
+```
+
+The build writes `search/index.json` (postings and metadata), `search/qweights.u16.bin` (the query
+table), `search/tokens.json` and `search/vocab.txt`.
+
+### Adding content the index can reach
+
+Results deep-link into real pages, so every indexed passage needs a stable fragment: `id` attributes
+on `details.pub` and the thesis/supervision `dt` rows, on `a.card` in `projects.html`, and on
+`ul.tl > li` in `cv.html`. Slides need nothing — `deck.js` already addresses them as `#N`.
+
+Those ids are listed in `SLUG_MAP` in `tools/build_search_index.py`, and the extractor **fails the
+build** if the HTML no longer matches, so a renamed section can't silently produce a dead link. Add
+the `id` to the HTML and the slug to `SLUG_MAP` together.
+
+`INCLUDE_CV_FACTS` is off: the CV's skills rows are `·`-separated lists, not passages, and SPLADE
+produces noise from them.
 
 ## Regenerating the CV PDF
 

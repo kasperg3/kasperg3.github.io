@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Search — Kasper Rømer Grøntved</title>
+<meta name="description" content="Search this site with inference-free SPLADE: learned sparse retrieval where the document vectors are built offline and the browser runs no model at all. The sparse vectors are on show.">
+<link rel="canonical" href="https://www.grontved.xyz/search/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/site.css?v=9df2b8c0">
+<link rel="stylesheet" href="/search/search.css?v=1">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><i></i><i></i></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/">Kasper <span>Grøntved</span></a>
+    <nav class="main">
+      <a href="/projects.html">Projects</a>
+      <a href="/knowledge/">Knowledge</a>
+      <a href="/publications.html">Publications</a>
+      <a href="/cv.html">CV</a>
+      <a href="/search/" aria-current="page">Search</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap narrow">
+
+  <div class="hero lead">
+    <p class="eyebrow">Learned sparse retrieval</p>
+    <h1>Search, with the vectors showing</h1>
+    <p class="lede">This page searches everything on the site — papers, slides, projects, the CV —
+    using <strong>inference-free SPLADE</strong>. No model runs in your browser. Not a quantized one,
+    not a small one: none. The reason is worth a minute, because it is the whole trick.</p>
+  </div>
+
+  <section style="padding-top:0;border:0">
+    <div class="prose">
+      <p>SPLADE is <em>asymmetric</em>. Encoding a document is a 67-million-parameter masked language
+      model's job: it reads the passage and outputs a weight for every one of the 30,522 tokens in
+      BERT's vocabulary, of which all but a hundred or so come out at exactly zero. That vector is
+      sparse, and — unlike a dense embedding — every non-zero dimension has a name you can read.</p>
+
+      <p>Encoding a <em>query</em>, in the inference-free variant, is not a model at all. It is a
+      tokenizer and a lookup table: one static weight per vocabulary token, learned once during
+      training and shipped as a text file. So the expensive half runs offline, in
+      <code>tools/build_search_index.py</code>, and what the browser downloads is that table, the
+      vocabulary, and the postings. Scoring is a sparse dot product — six lines of JavaScript.</p>
+
+      <p>Which means this page can do semantic-ish retrieval on GitHub Pages with no inference
+      server, no ONNX runtime, no WASM, and no model download. And because the dimensions are
+      vocabulary tokens, the machinery can be put on screen instead of described. That is what the
+      panels below do: they show you the vector, the query's decomposition, and exactly which terms
+      produced each score.</p>
+    </div>
+  </section>
+
+  <!-- ============ the box ============ -->
+  <section>
+    <div class="sec-head"><h2>Try it</h2>
+      <span class="sec-note">78 passages · 30,522 dimensions</span></div>
+
+    <div class="sp-box">
+      <div class="sp-field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <label for="q" class="skip">Search this site</label>
+        <input id="q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search"
+               placeholder="how do drones divide up a search area?">
+        <button id="clear" class="sp-clear" type="button" hidden>Clear</button>
+      </div>
+
+      <div class="sp-examples" id="examples">
+        <span>Try</span>
+        <button class="sp-ex" type="button">splitting work between robots without a leader</button>
+        <button class="sp-ex" type="button">why keyword search fails on images</button>
+        <button class="sp-ex" type="button">finding someone lost in the woods</button>
+        <button class="sp-ex" type="button">keeping data inside Europe</button>
+      </div>
+
+      <p class="sp-status" id="status" role="status">The index loads when you focus the box — nothing
+      is fetched until you do.</p>
+
+      <div class="sp-skel" id="skeleton" hidden aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <noscript>
+        <p class="sp-noscript"><strong>Search needs JavaScript.</strong> The retrieval itself is a
+        sparse dot product over a pre-built index, so it runs in your browser rather than on a
+        server — which also means it cannot run with scripting off. Everything explaining how it
+        works is on this page regardless, and the site's own pages are all linked from the
+        navigation above.</p>
+      </noscript>
+
+      <div class="sp-facets" id="facets" hidden></div>
+      <p class="sp-facet-note">These filters are ordinary metadata matching, and they run
+      <em>after</em> scoring — the model never sees a year or a venue. That is deliberate. SPLADE
+      shreds exactly the strings academic search leans on: <code>ICUAS</code> becomes
+      <code>ic ##ua ##s</code>, surnames become subword confetti, and version numbers lose their
+      meaning. Learned sparse retrieval is for <em>meaning</em>; for a known-item lookup you want
+      matching, so both are here, kept visibly apart.</p>
+    </div>
+  </section>
+
+  <!-- ============ query decomposition ============ -->
+  <section>
+    <div class="sp-panel">
+      <header>
+        <h2>Your query, decomposed</h2>
+        <p>Each piece with its static weight. Dashed means out of vocabulary; orange means it carries
+        weight but matched nothing.</p>
+      </header>
+      <div class="sp-body">
+        <div class="sp-scroll"><div class="sp-qterms" id="qterms">
+          <p class="sp-empty">Type a query — its pieces and their static weights appear here.</p>
+        </div></div>
+        <p class="sp-qsplit" id="qsplit"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ results ============ -->
+  <section>
+    <div class="sp-panel">
+      <header>
+        <h2>Results</h2>
+        <p>The bar under each hit is its score, split by contributing term — teal for terms in the
+        text, orange for ones the model added. Hover a segment to name it.</p>
+      </header>
+      <div class="sp-body">
+        <ul class="sp-results" id="results"></ul>
+        <p class="sp-note" id="results-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ the vector itself ============ -->
+  <section>
+    <div class="sp-panel">
+      <header>
+        <h2>The vector behind the result</h2>
+        <p>Every vocabulary dimension, left to right, for the selected passage. Nearly all of them
+        are zero.</p>
+      </header>
+      <div class="sp-body">
+        <div class="sp-doc-head">
+          <h3 id="doc-head">No document selected</h3>
+          <a id="doc-link" href="#" hidden>Open →</a>
+        </div>
+        <p class="sp-doc-meta" id="doc-meta"></p>
+
+        <canvas class="sp-strip" id="strip" role="img" aria-describedby="strip-alt"></canvas>
+        <div class="sp-axis"><span>token 0</span><span>vocabulary position</span><span>30,521</span></div>
+        <p class="sp-note" id="strip-alt"></p>
+
+        <div class="sp-facts" id="facts"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ expansion ============ -->
+  <section>
+    <div class="sp-panel">
+      <header>
+        <h2>What the model added</h2>
+        <p>The terms of that same vector, written out. This is the part a dense embedding cannot
+        show you.</p>
+      </header>
+      <div class="sp-body">
+        <p class="sp-legend">
+          <span><i></i>in the passage</span>
+          <span><i class="exp"></i>added by the model — <em>expansion</em></span>
+          <span style="outline:2px solid var(--ink);outline-offset:1px;border-radius:4px;padding:0 5px">matched your query</span>
+        </p>
+        <div class="sp-scroll"><div class="sp-terms" id="terms">
+          <p class="sp-empty">Run a search, then pick a result to see the vector behind it.</p>
+        </div></div>
+        <p class="sp-note" id="terms-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ closing ============ -->
+  <section>
+    <div class="sec-head"><h2>The honest caveats</h2></div>
+    <div class="prose">
+      <p>The query weights are <strong>static MS MARCO term weights</strong> — essentially a learned
+      IDF, fixed at training time. They know that <em>drone</em> is more discriminative than
+      <em>system</em> in general; they know nothing about this corpus in particular. On 78 passages
+      that is fine, and it is why no model is needed at query time. On a real collection you would
+      want the corpus statistics too.</p>
+
+      <p>The model is <strong>English-only</strong>, and it is a <em>document</em> expander, not a
+      reasoner: it will happily add <em>rescue</em> to a passage about search and rescue, and it will
+      not notice that <code>Grøntved</code> is a name. Ask it for a person or a venue and you will get
+      subword noise — use the filters, or the pages themselves.</p>
+
+      <p>Everything here is built by
+      <a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/tools/build_search_index.py"><code>tools/build_search_index.py</code></a>
+      from
+      <a href="https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill">OpenSearch's
+      inference-free sparse encoder</a> (Apache-2.0), re-run by CI whenever the content changes. The
+      client is
+      <a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/search/splade.js"><code>search/splade.js</code></a>:
+      a WordPiece tokenizer and a dot product, no dependencies.</p>
+
+      <p>If sparse vectors with named dimensions are interesting to you, the adjacent idea is
+      <em>late interaction</em>, which keeps one dense vector per token instead of collapsing to one
+      per document — a different answer to the same complaint about single-vector search.
+      <a href="/knowledge/late-interaction-primer/">There is a primer on it here</a>.</p>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="col">
+      <strong style="font:600 16px/1 var(--sans)">Kasper Rømer Grøntved</strong>
+      <p class="fine">Machine learning for search, run on European infrastructure. Odense, Denmark.</p>
+    </div>
+    <div class="col">
+      <a href="/projects.html">Projects</a>
+      <a href="/publications.html">Publications</a>
+      <a href="/cv.html">CV</a>
+      <a href="/knowledge/">Knowledge</a>
+      <a href="/search/">Search</a>
+    </div>
+    <div class="col">
+      <a href="https://github.com/kasperg3">GitHub</a>
+      <a href="https://www.linkedin.com/in/kaspergrontved/">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Google Scholar</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="/search/search-ui.js?v=1"></script>
+</body>
+</html>
