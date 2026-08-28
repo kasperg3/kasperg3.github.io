@@ -30,7 +30,10 @@ import { SYSTEM, buildUser } from './prompt.js';
 import BUNDLED from '../corpus.json';
 
 const MODEL = 'mistral-small-latest';
-const CORPUS_URL = 'https://www.grontved.xyz/search/corpus.json';
+// The ?v= is a cache key, not a path. Cloudflare caches this by URL, so a
+// corpus whose shape changes — a new field the prompt depends on — is not
+// picked up until the old entry expires. Bump this when that happens.
+const CORPUS_URL = 'https://www.grontved.xyz/search/corpus.json?v=2';
 const ORIGIN = 'https://www.grontved.xyz';
 
 const MAX_BODY = 4096;   // bytes, rejected before parsing
