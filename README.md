@@ -24,6 +24,7 @@ search/home-search.js   the front page band: the widget, and the generated answe
 search/search.css       styles for the box, the dropdown and the panels
 search/index.json …     the built index (generated — CI rebuilds it)
 search/corpus.json      the same passages without their vectors (generated)
+content/publications/   full paper text, indexed at build time and never served
 worker/                 the Cloudflare Worker behind "Answer this" (see below)
 tools/build_search_index.py   extracts the corpus and encodes it
 site/site.css           shared design system for the site pages
@@ -211,6 +212,14 @@ screen while it does. It runs on GitHub Pages with no inference server because S
 - **Documents** are encoded by a 67M-parameter masked LM
   ([`opensearch-neural-sparse-encoding-doc-v3-distill`](https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill),
   Apache-2.0) into sparse vectors over BERT's 30,522-token vocabulary. That happens here, offline.
+- **Passages** are the abstracts on `publications.html`, the slides, the projects and the CV
+  rows — and, for the papers that may be redistributed, the *body* of the paper too.
+  `content/publications/<id>.txt` is split on its numbered headings into passages the size of
+  the rest of the corpus, each deep-linking to the paper it came from. The text is never served:
+  the browser only ever gets `index.json`, which carries 240-character snippets and sparse term
+  weights. The IEEE and Springer published versions are deliberately absent — indexing them
+  would mean committing a publisher's typesetting to a public repository — so those two papers
+  are still indexed from their abstracts alone.
 - **Queries** need no model at all — just a WordPiece tokenizer and a static per-token weight table
   that ships as a text file. Scoring is a sparse dot product over every document; at this corpus
   size an inverted index would buy nothing.
@@ -239,34 +248,45 @@ someone actually searches, and nothing leaves the browser until someone presses 
 
 ### The generated answer
 
-The front page band offers one thing `/search/` does not: **Answer this**, which turns the retrieved
-passages into a written answer. Retrieval is unchanged and still happens in the browser — the button
-only adds generation, which needs a key, which needs a server.
+The front page band is a conversation. You ask, the page answers, and the answer carries the
+passages it was built from. `/search/` is unchanged — it is still the surface that shows the
+retrieval itself.
 
-That server is `worker/`, a Cloudflare Worker on `ask.grontved.xyz`. Its own hostname rather than a
-route on `www` is the whole point: nothing it does can reach the static pages, so if it breaks, runs
-out of quota, or is deleted outright, the front page keeps working and simply stops offering to
-answer. Every failure path — 4xx, 5xx, quota, timeout, an aborted request — renders nothing at all,
-because *Closest passage* is already on screen by the time the button is pressed. There is no error
-state to design.
+Retrieval has not moved: `search/splade.js` still scores every passage in the browser, and no
+query is sent anywhere to be retrieved. Only generation leaves the machine, and only after
+retrieval has already chosen the passages it may use.
 
-Two constraints shape the rest of it:
+Three things shape it:
 
-- **The client sends passage ids, never passage text.** The worker resolves them against
-  `search/corpus.json` — the same 78 passages as the index, minus the vectors — which it fetches
-  from this site at runtime. So it can only ever generate from this site's own corpus; nobody can
-  paste a document in to be summarised. Fetching the corpus rather than bundling it means CI never
-  needs a Cloudflare deploy token.
-- **Citations cannot be fabricated.** The model is told to cite as bare `[1]`, `[2]` and never to
-  write a URL. `search/home-search.js` resolves those numbers against the ordered id list it sent,
-  so a link the model invented is not representable — it stays as plain text.
+- **Each question stands alone.** Nothing is carried between turns, so a follow-up is not
+  understood as one. The thread is a record, not a memory, and the copy never implies otherwise.
+- **Generation is the optional half.** If the worker 4xxs, 5xxs, is rate limited or simply is not
+  there, the turn falls back to quoting the best retrieved passage. Retrieval alone is still an
+  answer, so no failure leaves the reader with nothing. This is the common path in local
+  development, where the worker rejects `localhost` on origin.
+- **The analysis moved, it did not go.** Every turn has a *How this was retrieved* button opening
+  the query terms and their weights, the ranked passages, and which of them the model was
+  actually given. It renders with the same `.sp-opt` rows `/search/` uses, so the two agree by
+  construction.
+
+The worker behind it is `worker/`, on `ask.grontved.xyz` — its own hostname rather than a route on
+`www`, so nothing it does can reach the static pages. If it breaks, runs out of quota, or is
+deleted, the front page keeps working and stops offering to answer.
+
+Two constraints on the worker:
+
+- **The client sends passage ids, never passage text.** It resolves them against
+  `search/corpus.json`, fetched from this site at runtime, so it can only generate from this
+  site's own corpus. Fetching rather than bundling means CI never needs a Cloudflare deploy token.
+- **Citations cannot be fabricated.** The model cites as bare `[1]`, `[2]` and never writes a URL.
+  `search/home-search.js` resolves those against the ordered id list it sent, so an invented link
+  is not representable — it stays plain text.
 
 It stays free structurally rather than carefully: Workers Free has no overage billing, the account
-carries no payment method, and Mistral stays on the Experiment tier. Exceeding any limit produces an
-error, never a charge. The layers inside the worker — a 200-character cap on the question, an origin
-check, a per-IP daily budget in the Cache API, an answer cache, and a circuit breaker in KV — exist
-to make that degradation rare and quiet, not to prevent a bill that cannot happen. The header
-comment in `worker/src/index.js` says which of them is load-bearing and which is a speed bump.
+carries no payment method, and Mistral stays on the Experiment tier, so every limit produces an
+error rather than a charge. The caps inside the worker — 200 characters of question, an origin
+check, a per-IP daily budget, a site-wide daily ceiling, an answer cache and a circuit breaker —
+make that degradation rare and quiet; they do not prevent a bill that cannot happen.
 
 Deploying it:
 
@@ -278,10 +298,10 @@ npx wrangler secret put IP_SALT
 npx wrangler deploy                          # from worker/
 ```
 
-The custom domain and the one WAF rate limiting rule (`http.request.uri.path eq "/ask"`, 5 requests
-per 10 seconds per IP) are dashboard-only. The rule must be scoped to that path: the free plan
-allows exactly one, and its expression can match on path but not on hostname, so an unscoped rule
-would throttle the whole zone.
+`wrangler deploy` claims the custom domain from `wrangler.toml`. The one WAF rate limiting rule
+(`http.request.uri.path eq "/ask"`, 5 requests per 10 seconds per IP) is dashboard-only, and must
+be scoped to that path: the free plan allows exactly one, and its expression can match on path but
+not on hostname, so an unscoped rule would throttle the whole zone.
 
 ### Rebuilding the index
 

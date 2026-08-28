@@ -21,6 +21,7 @@ on:
       - "projects.html"
       - "cv.html"
       - "knowledge/*/index.html"
+      - "content/publications/**"
       - "tools/build_search_index.py"
       - "tools/requirements.txt"
       - ".github/workflows/search-index.yml"

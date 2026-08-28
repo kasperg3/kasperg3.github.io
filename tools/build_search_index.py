@@ -246,6 +246,69 @@ def require_anchors(found: list, kind: str) -> None:
         )
 
 
+# Full paper text, indexed but never served. A paper's abstract says what it
+# claims; the body says how. Splitting on the numbered headings gives passages
+# the size of the rest of the corpus, each one deep-linking to the paper it came
+# from — there are no in-page anchors for sections, and inventing some would be
+# a promise the HTML does not keep.
+FULLTEXT = REPO / "content" / "publications"
+SECTION_RE = re.compile(r"^ *(?:[0-9]+(?:\.[0-9]+)*\.?|[IVXL]+\.)\s+([A-Z][^\n]{2,60})$")
+SECTION_MAX = 1800   # characters; the document encoder truncates near 512 tokens
+SECTION_MIN = 220    # below this a section is a stub — a figure caption or a header
+
+
+def read_sections(path: Path) -> list:
+    """Split a paper into (heading, body) pairs on its numbered headings."""
+    out, head, buf = [], None, []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = SECTION_RE.match(line.rstrip())
+        if m:
+            if head and buf:
+                out.append((head, "\n".join(buf)))
+            head, buf = m.group(1).strip(), []
+        elif head:
+            buf.append(line)
+    if head and buf:
+        out.append((head, "\n".join(buf)))
+    return out
+
+
+def fit(para: str, limit: int) -> list:
+    """A single paragraph past the limit is broken between sentences instead.
+
+    pdftotext output is not reliably paragraphed — a whole section can arrive as
+    one block — so packing paragraphs alone leaves passages the encoder would
+    truncate.
+    """
+    if len(para) <= limit:
+        return [para]
+    out, cur = [], ""
+    for sent in re.split(r"(?<=[.!?])\s+", para):
+        if cur and len(cur) + len(sent) + 1 > limit:
+            out.append(cur)
+            cur = sent
+        else:
+            cur = f"{cur} {sent}".strip()
+    if cur:
+        out.append(cur)
+    return out
+
+
+def chunk(text: str, limit: int = SECTION_MAX) -> list:
+    """Pack paragraphs up to the limit, breaking between them where possible."""
+    parts, cur = [], ""
+    for para in (p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()):
+        for piece in fit(para, limit):
+            if cur and len(cur) + len(piece) + 1 > limit:
+                parts.append(cur)
+                cur = piece
+            else:
+                cur = f"{cur} {piece}".strip()
+    if cur:
+        parts.append(cur)
+    return parts
+
+
 def extract_publications() -> list:
     root = parse(REPO / "publications.html")
     docs, pub_ids, thesis_ids, sup_ids = [], [], [], []
@@ -275,6 +338,27 @@ def extract_publications() -> list:
                 meta=normalise(f"{meta_txt} · {year}" if year else meta_txt),
                 text=normalise(f"{title}. {venue}. {body}"),
             ))
+
+            # …then the body of the paper, where a full text is available.
+            source = FULLTEXT / f"{slug}.txt"
+            if source.exists():
+                n = 0
+                for head, section in read_sections(source):
+                    # chunk() splits on blank lines, so it has to see the raw
+                    # text — normalise() collapses newlines and would hand it
+                    # one unbreakable paragraph.
+                    for raw in chunk(section):
+                        part = normalise(raw)
+                        if len(part) < SECTION_MIN:
+                            continue
+                        n += 1
+                        docs.append(Doc(
+                            id=f"{slug}-s{n:02d}", kind="paper-section",
+                            title=normalise(head),
+                            url=f"/publications.html#{slug}",
+                            meta=normalise(f"{title} · {venue}"),
+                            text=normalise(f"{head}. {part}"),
+                        ))
 
     # -- theses and supervision, as dt/dd pairs -----------------------------
     for section in main.find_all("section"):

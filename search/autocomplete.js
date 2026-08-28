@@ -14,6 +14,7 @@ import { load } from './splade.js';
 
 export const KIND_LABEL = {
   publication: 'Paper',
+  'paper-section': 'In a paper',
   slide: 'Slide',
   project: 'Project',
   'cv-role': 'CV',

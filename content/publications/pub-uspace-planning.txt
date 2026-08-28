@@ -1,0 +1,500 @@
+Towards Autonomous Multi-UAV U-space Operation Planning
+Kasper A. R. Grøntved∗1, Jes Hundevadt Jepsen∗1, Anders Lyhne Christensen1,
+Kjeld Jensen1, Ulrik Pagh Schultz Lundquist1, and Miguel Campusano2
+Abstract-One of the main challenges in the real-world
+adoption of multi-Uncrewed Aerial Vehicle (UAV) systems lies
+in the specification of operations and the management of
+dynamic tasks in varied operational contexts. In this paper, we
+propose a multi-UAV planning architecture to reduce the level of
+specialized expertise necessary for handling multi-UAV systems.
+Furthermore, this work is the first step towards designing a
+multi-UAV planning architecture that integrates with the Uspace services specified in EU regulatory 2021/664. We propose
+two declarative languages: (i) an Agent-Language for expressing
+mitigation and safety objectives for individual UAVs, and (ii) an
+Operation-Language to enable users to plan high-level multiUAV operations based on the available resources. The languages
+enable automatic on-the-fly re-planning if any UAVs abort
+the mission unexpectedly. The initial result of the multi-UAV
+planning architecture is showcased in three simulated UAVs
+running as Software-In-The-Loop (SITL), to demonstrate its
+capabilities.
+I. INTRODUCTION
+For efficient multi-Uncrewed Aerial Vehicle (UAV) operation and deployment in real-world environments, a system
+often needs to be easily configurable and display a relatively
+high level of autonomy. One of the main challenges is that
+the required expert knowledge and the implementation time
+increase as both the UAV operation and regulations become
+more complex. With the Commission Implementing Regulation 2021/{664/665/666} [3]-[5] in force, the European
+Union (EU) implementation of Uncrewed Aerial System
+(UAS) Traffic Management (UTM), named U-space, and its
+services have begun [6], [7].
+Our objective is to reduce the level of specialized expertise
+necessary for using multi-UAV systems in different use cases.
+We propose multi-UAV planning architecture that enables an
+operator to plan and execute an autonomous multi-UAV operation. This work represents a first step towards implementing
+U-space services in multi-UAV operations. Although there
+are existing solutions to control multi-UAV systems [8]-
+[10], an application for multi-UAV operation planning that
+conforms to U-space and UTM systems is still lacking.
+In this paper, we introduce two declarative languages designed to enhance the capabilities and operational efficiency
+of multi-UAV operations. These languages address the key
+* Equal contributors to this work and designated as co-first authors.
+This work is supported by the Innovation Fund Denmark for the project DIREC (9142-00001B) [1] and the 5G ENabled communication Infrastructure
+for Uncrewed Aerial System (GENIUS) project [2], 1K. A. R. Grøntved,
+J. H. Jepsen, A. L. Christensen, K. Jensen and U. P. S. Lundquist are with
+SDU UAS Center, University of Southern Denmark, Odense, Denmark.
+2M. Campusano is with the SDU Software Engineering, University of
+Southern Denmark. Corresponding email: {kang, jegj, andc,
+kjen, ups, mica}@mmmi.sdu.dk
+aspects of UAV operations, namely: the individual UAV
+capabilities, and; multi-UAV coordination. Furthermore, the
+U-space services specified in 2021/664 [3] are considered
+for future integration in the architecture. We present the
+following contributions:
+• Agent-Language: A declarative language for specifying
+the capabilities of each UAV. It encompasses contingency and emergency procedures aligned with the
+Specific Operations Risk Assessment (SORA) methodology.
+• Operation-Language: A declarative language tailored
+for multi-UAV operations. It abstracts the intricacies of
+multi-UAV coordination and trajectory planning.
+Both languages are defined as Domain-Specific Languages
+(DSLs) implemented in textX [11] utilizing ROS and PX4
+SITL [12], and the implementation is publicly available [13].
+The subsequent sections of this paper are structured as
+follows. In Section II, we delve into the current state of
+the art within operational planning for multi-UAV systems.
+Section III presents the two proposed declarative languages.
+Section IV presents the experimental setups and the corresponding experiments. Finally, Section VI concludes on the
+results and discusses future work for the multi-UAV planning
+framework.
+II. STATE OF THE ART
+DSLs' ability to provide high-level programming of robot
+behavior has been demonstrated in various robotics domains,
+such as improving Human-Robot Interaction (HRI) [14] and
+task scheduling [15]. This trend is driven by the potential
+advantages of increased efficiency, scalability, and adaptability. Within the domain of UAVs, an important field of
+study involves the creation of intricate flight plans from
+high-level descriptions. Several authors propose the use of a
+DSL for automatic trajectory generation and execution [16],
+[17], which focuses on HRI and enables non-expert users to
+describe a UAV operation, though at the cost of operational
+granularity. While the interface of which an operator is
+planning an operation is important, the generalization and
+granularity are often lost, and therefore a basic scripting
+language can be an effective alternative.
+Multiple algorithms have been proposed for automatic trajectory generation, focusing primarily on optimization [10],
+[18], feasibility [19], and safety through obstacle avoidance [20]. However, in this domain, considerations related
+to distributed control are often not taken into account.
+Our solution is designed to address multi-UAV operations. Parallel to our approach, FLYAQ [21] also represents
+the operation as a collection of geometries, within which
+the available UAVs must perform assigned tasks. Alves et
+al. [22] have developed DRESS-ML, a DSL to model not
+initially predicted events in real environments as "exceptional
+behaviors", and employ self adaptive strategies to guarantee
+continuous execution.
+Though the current approaches take obstacle avoidance
+into account, none, to the best of our knowledge, take operational constraints, such as restricted airspace or contingency
+regions, into account when the planned operation is executed.
+Another emerging research topic is the management of
+UAV traffic in low-altitude airspace. Since 2017, when Single
+European Sky ATM Research (SESAR) [23] published the
+blueprint [24] for the EU implementation of a UTM, called
+U-space, several exploratory research and demonstration
+projects have been initiated [25]-[28]. The majority of these
+projects aim to develop and demonstrate the initial U-space
+services, and only a limited amount of this research focuses
+on the higher-level representation and implementation of the
+U-space services, e.g., using DSLs. Within the area of UAV
+research, DSLs are most commonly used for describing the
+behavior or task for a single-UAV [16], [22] or execution of
+multi-UAV systems [29], [30], but all lacking the integration
+of U-space services in their design. Campusano et al. [17]
+present a service-oriented U-space architecture with highlevel abstraction models for UAV operations. One of the main
+gaps in this work is decision-making procedures in terms of
+multi-UAV planning and mitigation actions in contingencies
+and emergencies.
+Commercial UTM solutions, such as PansaUTM [31] and
+Unifly [32], are already available on the market, however,
+they target users with dedicated Ground Control Stations
+(GCSs) to monitor operations, not leaving the autonomous
+decision-making to the UAV. Our work addresses this lack
+of high-level definition of decision-making procedures using
+DSLs in the context of U-space.
+Contribution: The work in this paper is inspired by the
+study presented in [17] for UAV operation planning in Uspace, and aims to extend the concept from single-UAV
+operations to the multi-UAV domain. We propose an approach that combines the advantages of DSL-based operation
+specification with advanced multi-UAV task allocation. Our
+work includes operational restrictions, such as mitigation decisions and operation priorities, thus providing a step toward
+safe multi-UAV operations. Our work enables operators to
+define operational specifications for autonomous multi-UAV
+operations, and our experiments are conducted using multiUAV simulations.
+III. MULTI-UAV PLANNING ARCHITECTURE
+In this section, we introduce the multi-UAV planning
+architecture (Fig. 1). It is designed for uncrewed systems,
+hereafter referred to as agents, that run the PX4 Autopilot [33], an open-source firmware for uncrewed vehicles.
+All the UAVs in the system are connected to a ground
+station, where Robot Operating System 2 (ROS2) is used
+as communication middleware. We use textX [11] as metalanguage for creating the Agent-Language (Section III-A)
+and Operation-Language (Section III-B).
+Architecture: The architecture (illustrated in Fig. 1) consists of the following key components; (a) An agent_node
+for each agent that handles its communication and highlevel control based on the declarative Agent-Language and
+is defined in a preconfigured agent.agt file; (b) An
+agent_handler node that monitors all agents present
+in the operation and collects relevant information published
+by each agent on the heartbeat and metabeat topics.
+The heartbeat and metabeat provide the required
+information for each agent to the Operation-Language, e.g.
+their ID, global position, altitude, and battery level; (c) A
+planner_node which is responsible for planning and
+allocating tasks defined by the operation.plan to the
+available agents. Each agent executes their respective operation in their task_manager_node, and; (d) a U-space
+wrapper for ensuring seamless integration with the U-space
+Service Provider (USSP).
+U-space wrapper: The integration of the U-space services
+specified in 2021/664 [3] has been considered in the architecture, but not yet implemented, by the following components;
+a traffic_node and weather_node for providing updated information to the agent_node about (i) the adjacent
+air traffic utilizing the Traffic Information service, and; (ii)
+weather condition and forecast the operation volume utilizing
+the Weather Information service; a nrid_node that extracts
+the required information for the heartbeat topic and provide the network remote identification utilizing the Network
+identification service; a geo_node to provide operational
+conditions and airspace constraints to the planner_node;
+a auth_node to authorize each individual flight path when
+planned by the planner_node, potentially replan if the
+flight path gets declined, and; a conformance_node to
+inform each agent if a deviation from the flight authorization
+is detected and mitigate accordingly.
+U-space wrapper
+Agent
+Agent
+Operation-Language Agent-Language
+agent_node
+/heartbeat
+/metabeat
+agent.agt
+task_manager_node
+agent_handler
+planner_node
+ROS2 topic
+ROS2 Node
+DSL file
+operation.plan
+Subscribe Publish Generic SW class
+Agent class
+Condition classes Condition classes Condition class
+Generated SW class
+traffic_node weather_node
+Service
+nrid_node
+/task
+conformance_node
+geo_node auth_node
+U-space service
+interface
+Input
+Fig. 1: The multi-UAV planning architecture.
+A. Agent-Language: UTM specication language for UAVs
+Each agent in a system has its unique capabilities and
+behaviors, which are both platform- and payload-specific.
+Depending on the type of operation and its environment,
+each agent might also have different mitigation and safety
+objectives.
+The main motivation for introducing a declarative language to specify agents is to provide an abstraction for the
+user to express the contingency and emergency procedures
+according to the SORA of the operation. The PX4 flight
+stack has certain built-in software failsafes, however, they
+do not include complex decision making, e.g. in the case of
+multiple intruding aircraft in different geographical zones.
+The Agent-Language is designed to bridge the gap between
+the need for a human-in-the-loop during an operation and
+the UAV being able to mitigate situations autonomously.
+The framework auto-generates code for each agent, based
+on their respective configuration in agent.agt, to lower
+the required level of system knowledge for conducting multiUAV operations.
+1) Example: Declare a Single Agent: Defining agent
+capabilities and mitigation procedures is exemplified in
+Listing 1. Each tag in the example starts with the name
+of the specific tag and ends with the keyword end. The
+example contains contingency and emergency procedures to
+showcase how certain mitigation procedures based on the
+SORA methodology can be applied and handled by the UAV.
+The example presented in Listing 1 is for a UAV operating in
+the restricted airspace EK R25 at the UAS Denmark national
+drone test center.
+Dene geographical volumes: First, the flight geometry,
+contingency volume, and air risk buffer are defined using
+the volume tags. The import are for including additional
+packages containing different capabilities; in this example,
+we include restricted airspace EK R25.
+Dene the required meta-data and capabilities: After the
+volume tag, we define the meta-data and capabilities for the
+agent using the agent tag. In this example, we name the
+agent quad0, which is a quadcopter with a flight time of 40
+minutes and two kinds of payloads; a camera, and a lidar. Its
+system ID is 0, and both the naming and ID must be unique
+for each agent in the system. The inform tag defines at
+what frequency each inform level shall report to the user
+when activated.
+Dene mitigation procedures: The last two tags,
+contingency and emergency, defines the mitigation
+procedures for the agent. Three types of contingency and
+emergency procedures are included; (i) volume in case of
+airspace breach, meaning either an intruding aircraft enters
+a defined volume or the agent leaves a defined volume;
+(ii) component in case of anomalous system behavior,
+meaning a system component has exceeded a defined boundary, and; (iii) weather in case of weather change, meaning
+that a weather condition has exceeded a defined threshold.
+The Condition class' in Fig. 1 are auto-generated
+object-oriented software classes are based on the defined
+contingency and emergency. Each class is imported
+import airspace [EK]
+Volume:
+flight_geometry: POLY([10.308,52.470], ... ,[10.310,52
+.468])
+operational_volume: POLY([10.305,52.471], ... ,[10.311
+,52.465])
+air_risk_buffer: EK.R25
+end
+Agent quad0: quadcopter with camera and lidar
+Config:
+id: 0
+flight time: 40 minutes
+end
+Inform:
+notice once
+warning every 5 seconds
+alarm every 1 second
+end
+end
+Emergency:
+volume: agent out of operational_volume activate fts
+component: battery level lower than 5 percent activate
+fts
+component: c2 package_loss higher than 25 percent
+activate rtl
+weather: wind higher than 15 m/s activate land
+end
+Contingency:
+volume: agent out of flight_geometry activate rtl
+component: battery level lower than 30 percent activate
+rtl
+component: battery level lower than 15 percent activate
+land
+component: c2 package_loss higher than 15 percent
+activate warning
+weather: wind higher than 10 m/s activate warning
+end
+Listing 1: An example of a agent.agt file in Fig. 1,
+defining an agent with certain capabilities and mitigation
+procedures. Denotes: (rtl) Return to Launch; (fts)
+Flight Termination System; (...) List of coordinates.;
+(c2) Command and Control link.
+by the Agent class, where they are created as objects
+and utilized for high-level decision making, e.g. in case of a
+low battery level.
+B. Operation-Language: Multi-UAV operation planning
+Enabling multi-agent operation planning is an important
+task in robotics. The ability to coordinate multiple agents
+to achieve a common goal is essential in many applications, such as search-and-rescue operations, environmental
+monitoring, and warehouse logistics, among others [8]-[10],
+[34]. However, the complexity of multi-agent systems can
+make it challenging to manually allocate tasks to agents. The
+challenge is further exacerbated when tasks are described in
+natural language, as such descriptions can lack precision,
+completeness, and the interplay between multiple agents. To
+address these issues, we propose a method that utilizes descriptive language to enable multi-agent operation planning.
+Our approach focuses on the task definitions and the
+resources available to the agents in the specific operation,
+while at the same time shielding the operator the low-level
+task planning details and intrinsic infrastructure of multiagent systems. By creating minimal descriptive language, we
+can translate high-level instructions into detailed tasks for a
+multi-agent planning algorithm. The language is interpreted
+and executed by a series of stages, including task decomposition, trajectory generation, and task allocation, all based on
+available resources at the moment of deployment.
+Each agent has to continually send heartbeats to the central
+unit, to make sure that the agents are connected and aware
+of whether any agents are leaving the operation, either with
+intent or unintentionally.
+search_area = POLYGON(...)
+forrest_edge = LINE(...)
+Operation WildernessSearchAndRescue using 2 uavs within
+bounding_area:
+monitor forrest_edge with priority HIGH
+monitor search_area with priority LOW
+end
+Listing 2: A basic example of a operation plan, which
+defines different types of tasks with different priorities in
+a search-and-rescue operation, where (...) denotes a list of
+coordinates
+The Operation-Language supports different types of tasks,
+which can be specified as geometries. These geometries
+include points, lines, and polygons, which can be declared as
+variables and later referenced or directly described using the
+monitor keyword. A simple example of an operation using
+two UAVs is shown in Listing 2.
+a) Operation: An Operation essentially results in a set
+of tasks that will be executed based on the resources available
+at run-time. This means that the initial generation will not
+result in trajectories, but will be re-evaluated multiple times
+during an operation when UAVs are added or removed from
+the operation (it should be noted that a maximum amount of
+resources used can be defined in the operation specification).
+b) Monitor - Point, Line, Polygon: The tasks defined
+by the monitor keyword are all tasks that need to be covered
+by a UAV. Each of the tasks employs different movement
+strategies, such as stopping at a point, following a line,
+and covering the area of an entire polygon using a generic
+coverage pattern. Furthermore, the tasks can be given a
+priority, LOW and HIGH, which indicates the degree of
+urgency to the planner.
+The Operation-Language implements the abstraction of
+an operation. The language abstracts the complexity of the
+multi-UAV operation by considering only the most important
+constraints for the planner, such as resources available,
+geographical constraints, and tasks. The constraints are, for
+example, bounding areas that the agents must stay within and
+the number of UAVs that should be used to perform a certain
+operation. The language supports the definition of tasks as
+different geometries, while the execution of these tasks is
+left to the planner. For example, the point and line tasks
+are executed without alteration, while the polygon task is
+decomposed into line segments using a coverage pattern and
+allocated to the agents. This design simplifies the complexity
+of UAV operations, enabling operators to define and execute
+tasks.
+Expressing the operation as a set of objectives in an environment, without explicitly specifying which UAVs have to
+perform which tasks, not only simplifies the planning from an
+operator's point of view but also enables generalization. The
+Operation-Language can thus be used to specify missions
+for different kinds of operations, such as search and rescue,
+environmental monitoring, and patrolling.
+C. Multi-Agent planning
+The multi-agent planner implemented embedded in the
+framework is a decentralized task allocation algorithm called
+CBBA consensus-based bundle algorithm (CBBA) [35].
+CBBA is an auction-based algorithm, that iterates between a
+bundle-construction phase, in which tasks are assembled into
+bundles, and a conflict-resolution phase, in which consensus
+about the allocated tasks is reached. If the duration of the
+tasks defined in the operation plan exceeds the combined
+flight time, then the agents will allocate as many tasks
+as possible, and replan when an agent joins the mission
+again after being recharged. Furthermore, the implementation
+uses an extension such that trajectory tasks are taken into
+account [36].
+CBBA is a polynomial-time algorithm [35] with the worstcase complexity of the bundle construction for a single agent
+of: O(NtLt), where Nt is the number of tasks available
+to the agent and Lt is the number of tasks that an agent
+can be assigned. Furthermore, CBBA has a convergence
+guarantee within max{Nt,LtNu}D iterations, where Nu is
+the number of agents and D is the communication network
+diameter, which can be Nu at most.
+Though the implementation of CBBA is inherently decentralized, the implementation of the Operation-Language is
+centralized, which creates a central point of control for an
+operator.
+D. Planning and Re-planning
+Whenever one or more agents join an operation and start
+to poll tasks from the planner_node, as seen in Fig. 1,
+the planner needs to plan or replan the assignment of the
+available tasks for the specific operation.
+The multi-agent planner will only initiate a re-plan when
+the number of required UAVs in the specific operation
+changes, which means that a re-plan will take place whenever
+an agent joins or leaves an operation. However, when there
+is an excess of agents in the operation and an active agent
+leaves the operation, the agents' remaining tasks will be
+transferred to an excess agent.
+IV. RESULTS
+To demonstrate the two proposed descriptive languages, an
+end-to-end experiment has been conducted utilizing the PX4
+SITL simulation environment [12]. The experiment is based
+on the provided examples in Listing 1 and 2. A homogenous
+team is considered, containing three UAVs, where only two
+are used, as specified in the operation (Listing 2). During
+the operation, a single UAV leaves the operation before it
+can complete its tasks, which results in a re-planning of
+the operation, including the UAV which is not in use. The
+Operation-Language generates a set of tasks for the UAVs
+to perform and performs online planning when resources
+become available in the operation. The architecture ensures
+that the operation requirements will be satisfied even in
+the case of a UAV leaving the operation unexpectedly and
+abruptly stopping the communication if enough agents are
+available.
+UAV2
+Operation End
+Timeout
+Operation Start
+UAV1
+UAV3
+Fig. 2: Execution timeline of the basic usage scenario described in Listing 2
+Figure 2 shows the timeline of events in the example scenario
+described in Listing 2, where two agents are required to
+perform a coverage search in an environment, though three
+agents are available in the operation. As seen in Fig. 2, the
+agents are sequentially added to the operation, respectively at
+t0 and t1, which trigger the multi-agent planning algorithm.
+Suddenly, at time t2 the communication to UAV1 is lost and
+after the timeout at t3, the loss of connection is detected
+and UAV3 is dispatched as a replacement. The event did not
+enforce a re-planning of the operation but simply initiated a
+transfer of tasks to UAV3.
+The experiment using the example scenario has been
+conducted using the PX4 SITL simulation environment in
+combination with QGroundControl (QGC) to monitor the
+UAVs throughout the operation [37]. The three UAVs are
+sequentially instantiated using the generated classes from
+the Agent-Language described in Section III-A and execute
+the example operation defined in Listing 2. The trajectories
+of the UAVs in the experiment are shown in QGC and are
+depicted in Fig. 3. Notably, UAV3 seamlessly completes the
+unfinished task initiated by UAV1 and follows the same trajectory. Meanwhile, UAV2 remains unaffected and continues
+its assigned tasks.
+Although this experiment is small scale, the algorithm
+can scale well to handle many agents and tasks, while navigating complex non-convex environments. The simulation
+results demonstrate that the proposed languages facilitate
+multi-agent path planning while maintaining straightforward
+operation specifications and supporting specific services of
+U-space.
+V. DISCUSSION
+Our current implementation relies on a central coordinator
+for task management, which introduces overhead when coordinating multiple UAVs simultaneously. Advantageously a
+decentralized version of the planner_node integrated into
+UAV1
+(a) UAV1
+UAV2
+(b) UAV2
+UAV3
+(c) UAV3
+Fig. 3: The UAV trajectories in QGC of the experimental
+scenario. Fig. 3 (a), (b), and (c) show UAV1, UAV2 and
+UAV3 trajectories, respectively.
+each agent, will enable it to mitigate unforeseen events
+concurrently and more effectively.
+Although the presented results for the architecture are
+independent of the U-space framework, we still recognize
+the importance of integrating it seamlessly in future work
+by considering the existing services in the architecture. The
+integration of U-space is still at an early stage [38], meaning
+that our work needs to adjust to future changes in the services
+as the U-space matures.
+VI. CONCLUSION AND FUTURE WORK
+In this study, we introduced a planning architecture to
+facilitate multi-agent operation planning and execution, while
+U-space-aware and enabling agents to autonomously mitigate
+unforeseen events. The presented work comprises two descriptive languages: the Agent-Language designed for interfacing with the individual UAV and defining their capabilities
+and mitigation procedures, and; the Operation-Language
+optimized for multi-agent operation planning. The simulation
+results demonstrate the potential of our proposed languages
+in orchestrating UAV operations with minimal code. By
+leveraging ROS2 and PX4 SITL simulation environment, our
+approach is a step towards enabling UAV operators to deploy
+multi-UAV operations using descriptive languages.
+Our ongoing research aims to advance both languages
+by creating additional usage examples and deploying UAVs
+in practical operational settings in a U-space environment.
+Specifically, we intend to enhance time-based task execution,
+which is important for scenarios like autonomous patrolling
+and environmental monitoring. In summary, our software
+framework represents a promising step toward U-spaceaware multi-UAV operations, with future enhancements
+aimed at real-world deployments and dynamic decentralized
+multi-agent planning.
