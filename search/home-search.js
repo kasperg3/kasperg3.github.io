@@ -106,11 +106,21 @@ function addTurn(question) {
   return { id, node, text: node.querySelector('.turn-text'), a: node.querySelector('.turn-a') };
 }
 
+/**
+ * What names a source. For a section of a paper it is the paper: two different
+ * papers both have an "Introduction", and the heading on its own does not
+ * answer "where did this come from".
+ */
+function sourceName(doc) {
+  if (doc.kind !== 'paper-section') return doc.title;
+  return (doc.meta || '').split('·')[0].trim() || doc.title;
+}
+
 /** The sources row: what the answer drew on, and the way into the scoring. */
 function addFoot(turn, cited) {
   const cards = cited.map((h, i) =>
-    `<a class="src-card" href="${escapeHTML(h.doc.url)}">
-       <b>${i + 1}</b><span>${escapeHTML(h.doc.title)}</span>
+    `<a class="src-card" href="${escapeHTML(h.doc.url)}" title="${escapeHTML(h.doc.title)}">
+       <b>${i + 1}</b><span>${escapeHTML(sourceName(h.doc))}</span>
      </a>`).join('');
   const foot = document.createElement('div');
   foot.className = 'turn-foot';

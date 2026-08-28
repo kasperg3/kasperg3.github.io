@@ -217,9 +217,14 @@
 .asksite{background:var(--dark);color:#e9edf2;margin-top:34px;border-radius:18px;
          padding:clamp(24px,4vw,38px) clamp(20px,4vw,38px) clamp(22px,3.5vw,32px)}
 .ask-inner{max-width:720px;margin:0 auto}
-.ask-head{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:baseline;margin-bottom:16px}
-.ask-eyebrow{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-             color:#3fbeb2;margin:0}
+.ask-head{margin-bottom:20px}
+.ask-eyebrow{display:flex;align-items:center;font:600 11px/1.4 var(--sans);letter-spacing:.2em;
+             text-transform:uppercase;color:#3fbeb2;margin:0}
+.ask-eyebrow .dot{flex:none;width:6px;height:6px;border-radius:50%;background:#3fbeb2;
+                  margin-right:9px;box-shadow:0 0 0 3px rgba(63,190,178,.16)}
+/* site.css styles a bare h2 as an uppercase eyebrow; this one is a title. */
+.ask-title{margin:6px 0 0;font:600 clamp(20px,2.6vw,25px)/1.2 var(--serif);color:#eef2f6;
+           text-transform:none;letter-spacing:-.01em}
 .ask-note{font:400 13px/1.5 var(--sans);color:#8b96a2;margin:0}
 .ask-note a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.45)}
 
@@ -231,7 +236,13 @@
    second speaker would imply a persona that does not exist. Each turn is
    retrieved and answered on its own, so nothing here suggests memory.
    ------------------------------------------------------------------ */
-.chat{display:flex;flex-direction:column;gap:24px}
+.chat{display:flex;flex-direction:column;gap:24px;
+      max-height:min(52vh,440px);overflow-y:auto;overscroll-behavior:contain;
+      padding-right:6px;scrollbar-width:thin;
+      scrollbar-color:rgba(255,255,255,.18) transparent}
+.chat::-webkit-scrollbar{width:7px}
+.chat::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:99px}
+.chat::-webkit-scrollbar-track{background:transparent}
 .chat:empty{display:none}
 .turn{display:flex;flex-direction:column;gap:13px}
 .turn-q{align-self:flex-end;max-width:85%;margin:0;

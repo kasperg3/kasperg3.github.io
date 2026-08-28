@@ -28,6 +28,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: search-index-${{ github.ref }}
@@ -76,4 +77,10 @@ jobs:
           else
             git commit -m "Rebuild the SPLADE search index"
             git push
+            # A push made with GITHUB_TOKEN deliberately does not trigger other
+            # workflows, so pages.yml would not run and the rebuilt index would
+            # sit undeployed until the next human push. Ask for it explicitly.
+            gh workflow run pages.yml --ref "$GITHUB_REF_NAME"
           fi
+        env:
+          GH_TOKEN: ${{ github.token }}
