@@ -75,7 +75,10 @@ async function sha256(s) {
 let corpusP = null;
 
 function corpus() {
-  corpusP ??= fetch(CORPUS_URL, { cf: { cacheTtl: 3600, cacheEverything: true } })
+  // Five minutes, not an hour: the corpus changes when the site does, and an
+  // hour of edge cache means an hour of answering from the previous corpus.
+  // The isolate memo below is what actually keeps this cheap.
+  corpusP ??= fetch(CORPUS_URL, { cf: { cacheTtl: 300, cacheEverything: true } })
     .then(r => (r.ok ? r.json() : Promise.reject(new Error(`corpus ${r.status}`))))
     .catch(err => { corpusP = null; throw err; });
   return corpusP;

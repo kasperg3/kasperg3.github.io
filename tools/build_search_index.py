@@ -548,8 +548,16 @@ def write_corpus(docs: list, out: Path) -> None:
     artefact; the corpus is a projection of it.
     """
     out.mkdir(parents=True, exist_ok=True)
-    corpus = {d.id: {k: v for k, v in d.as_index_entry().items() if k != "id"}
-              for d in docs}
+    corpus = {}
+    for d in docs:
+        entry = {k: v for k, v in d.as_index_entry().items() if k != "id"}
+        # `snippet` is 240 characters because that is a sensible thing to show.
+        # The answer worker needs the passage it was scored on, not its opening
+        # sentence, so carry the text as well and let each side take what it
+        # wants. This is the difference between the model reading a passage and
+        # reading the start of one.
+        entry["text"] = d.text
+        corpus[d.id] = entry
     (out / "corpus.json").write_text(
         json.dumps(corpus, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"  {'corpus.json':<22}{(out / 'corpus.json').stat().st_size:>10,} B\n")

@@ -25,7 +25,7 @@ and name what they do cover. Do not guess, and do not apologise at length.
 /** Number the passages in the order the client ranked them, so [n] maps to ids[n-1]. */
 export function buildUser(question, passages) {
   const context = passages
-    .map((p, i) => `[${i + 1}] ${p.title}${p.meta ? ` — ${p.meta}` : ''}\n${p.snippet}`)
+    .map((p, i) => `[${i + 1}] ${p.title}${p.meta ? ` — ${p.meta}` : ''}\n${p.text || p.snippet}`)
     .join('\n\n');
   return `${context}\n\nQuestion: ${question}`;
 }

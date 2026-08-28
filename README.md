@@ -24,7 +24,7 @@ search/home-search.js   the front page band: the widget, and the generated answe
 search/search.css       styles for the box, the dropdown and the panels
 search/index.json …     the built index (generated — CI rebuilds it)
 search/corpus.json      the same passages without their vectors (generated)
-content/publications/   full paper text, indexed at build time and never served
+content/publications/   full paper text, read at build time (public, like everything here)
 worker/                 the Cloudflare Worker behind "Answer this" (see below)
 tools/build_search_index.py   extracts the corpus and encodes it
 site/site.css           shared design system for the site pages
@@ -215,9 +215,10 @@ screen while it does. It runs on GitHub Pages with no inference server because S
 - **Passages** are the abstracts on `publications.html`, the slides, the projects and the CV
   rows — and, for the papers that may be redistributed, the *body* of the paper too.
   `content/publications/<id>.txt` is split on its numbered headings into passages the size of
-  the rest of the corpus, each deep-linking to the paper it came from. The text is never served:
-  the browser only ever gets `index.json`, which carries 240-character snippets and sparse term
-  weights. The IEEE and Springer published versions are deliberately absent — indexing them
+  the rest of the corpus, each deep-linking to the paper it came from. The search UI never
+  downloads these files — the browser only gets `index.json` — but the repo is uploaded to Pages
+  as-is, so they are public, which is why only redistributable versions are kept here. The IEEE
+  and Springer published versions are deliberately absent — indexing them
   would mean committing a publisher's typesetting to a public repository — so those two papers
   are still indexed from their abstracts alone.
 - **Queries** need no model at all — just a WordPiece tokenizer and a static per-token weight table

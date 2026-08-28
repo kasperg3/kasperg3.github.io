@@ -2,9 +2,10 @@ Full text of the publications, used only at build time.
 
 `tools/build_search_index.py` splits each file on its numbered headings and
 indexes the sections, so a search can reach the body of a paper rather than
-only its abstract. Nothing here is served: the browser only ever downloads
-`search/index.json`, which carries 240-character snippets and sparse term
-weights, never these files.
+only its abstract. The search UI never downloads these files — the browser gets
+`search/index.json` — but the repo is uploaded to Pages as-is, so they are
+reachable at `/content/publications/`, and `search/corpus.json` carries the same
+passages for the answer worker. Everything here is public.
 
 Only versions that may be redistributed are kept here — the MDPI article is
 CC-BY, the SDU portal copies are self-archived accepted manuscripts, the
