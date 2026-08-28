@@ -17,9 +17,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=974e5dde">
-<link rel="stylesheet" href="/search/search.css?v=4">
-<noscript><style>/* the search box cannot work without scripting */
-.asksite .sp-field-wrap,.asksite .ask-tries,.asksite .ask-disclose{display:none}</style></noscript>
+<link rel="stylesheet" href="/search/search.css?v=5">
+<noscript><style>/* the conversation cannot work without scripting */
+.asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Person","name":"Kasper Rømer Grøntved",
  "alternateName":"Kasper Andreas Rømer Grøntved","url":"https://www.grontved.xyz",
@@ -42,7 +42,6 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <div class="wrap">
     <a class="brand" href="/">Kasper <span>Grøntved</span></a>
     <nav class="main">
-      <a href="/projects.html">Projects</a>
       <a href="/knowledge/">Knowledge</a>
       <a href="/publications.html">Publications</a>
       <a href="/cv.html">CV</a>
@@ -75,66 +74,36 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </div>
 
-  <!-- Search stands on its own: its own full-width band, its own colour, no
-       relationship to the deck card below it. Results expand inline rather
-       than as an overlay — on a landing page that reads as an invitation
-       rather than as a utility. -->
+  <!-- Ask this site: a conversation, not a search box. Retrieval still runs
+       entirely in the browser and is still the whole of the feature; the thread
+       is only what makes it legible. Each question is retrieved and answered on
+       its own, so nothing here implies a memory it does not have, and the
+       scoring behind any answer is one press away in the modal. -->
   <section class="asksite" id="ask">
     <div class="ask-inner">
       <div class="ask-head">
         <p class="ask-eyebrow">Ask this site</p>
-        <p class="ask-note">Answered out of 78 passages — papers, slides, projects, the CV.
-          <a href="/search/">See how →</a></p>
-        <p class="ask-note ask-disclose">Retrieval runs in your browser. Pressing
-          <em>Answer this</em> sends the question and the passages below it to
-          Mistral (France) on their free tier, which trains on what it receives.</p>
       </div>
 
-      <div class="sp-field-wrap ask-field">
-        <div class="sp-field">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-          <label for="hq" class="skip">Ask this site a question</label>
-          <input id="hq" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search"
-                 role="combobox" aria-expanded="false" aria-controls="hac-list"
-                 aria-autocomplete="list" aria-describedby="hac-hint"
-                 placeholder="How do drones divide up a search area?">
-          <button id="hclear" class="sp-clear" type="button" hidden aria-label="Clear">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-          </button>
-        </div>
+      <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
 
-        <div class="sp-ac" id="hac" hidden>
-          <!-- The generated answer sits above the retrieved passage, so the
-               passage below it reads as the evidence it was grounded in. The
-               button is the only thing that spends a model call. -->
-          <div class="ask-gen" id="hgen" hidden>
-            <button class="ask-go" id="hask" type="button">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.1 5.4L19.5 10l-5.4 2.1L12 17.5l-2.1-5.4L4.5 10l5.4-1.6z"/></svg>
-              Answer this
-            </button>
-            <div class="ask-out" id="hout" hidden aria-live="polite"></div>
-          </div>
-          <div class="ask-answer" id="hanswer"></div>
-          <ul class="sp-ac-list" id="hac-list" role="listbox" aria-label="Search results"></ul>
-          <p class="sp-ac-foot" id="hac-foot"></p>
-        </div>
+      <div class="chat-tries" id="htries">
+        <button class="sp-ex" type="button">How do drones divide up a search area?</button>
+        <button class="sp-ex" type="button">What is late interaction?</button>
+        <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
       </div>
 
-      <p class="skip" id="hac-hint">Results appear as you type. Arrow keys move through them,
-      Enter opens one, Escape dismisses the list.</p>
-
-      <div class="ask-tries" id="hexamples">
-        <button class="sp-ex" type="button">search and rescue</button>
-        <button class="sp-ex" type="button">late interaction</button>
-        <button class="sp-ex" type="button">EU hosting</button>
-        <button class="sp-ex" type="button">task allocation</button>
-        <button class="sp-ex ask-dice" id="hdice" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.4"/><circle cx="15.5" cy="15.5" r="1.4"/><circle cx="15.5" cy="8.5" r="1.4"/><circle cx="8.5" cy="15.5" r="1.4"/></svg>
-          Surprise me
+      <form class="composer" id="hform" autocomplete="off">
+        <label for="hq" class="skip">Ask this site a question</label>
+        <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
+               placeholder="Ask about the research, the projects, or the CV">
+        <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
         </button>
-      </div>
+      </form>
 
-      <noscript><p class="ask-note">Search needs JavaScript — it runs in your browser.</p></noscript>
+
+      <noscript><p class="ask-note">Needs JavaScript.</p></noscript>
     </div>
   </section>
 
@@ -191,7 +160,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
 
     <aside class="idx">
-      <div class="idx-head"><b>Index</b><span class="count">05 chapters</span></div>
+      <div class="idx-head"><b>Index</b><span class="count">04 chapters</span></div>
       <div class="idx-title">Explore the site</div>
 
       <a href="/knowledge/">
@@ -212,14 +181,8 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         <span class="tx"><b>Publications</b><span>Peer-reviewed robotics and AI work</span></span>
         <span class="arw">→</span>
       </a>
-      <a href="/projects.html">
-        <span class="n">04</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 6 3 10l4 4M13 6l4 4-4 4"/></svg></span>
-        <span class="tx"><b>Projects</b><span>Open-source tools and datasets</span></span>
-        <span class="arw">→</span>
-      </a>
       <a href="https://www.linkedin.com/in/kaspergrontved/">
-        <span class="n">05</span>
+        <span class="n">04</span>
         <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14v10H3zM3 5l7 5 7-5"/></svg></span>
         <span class="tx"><b>Get in touch</b><span>LinkedIn, GitHub and Scholar</span></span>
         <span class="arw">↗</span>
@@ -229,27 +192,24 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
 </div>
 </main>
-
-<footer class="site">
-  <div class="wrap">
-    <div class="col">
-      <strong style="font:600 16px/1 var(--sans)">Kasper Rømer Grøntved</strong>
-      <p class="fine">Machine learning for search, run on European infrastructure. Odense, Denmark.</p>
-    </div>
-    <div class="col">
-      <a href="/projects.html">Projects</a>
-      <a href="/publications.html">Publications</a>
-      <a href="/cv.html">CV</a>
-      <a href="/knowledge/">Knowledge</a>
-      <a href="/search/">Search</a>
-    </div>
-    <div class="col">
-      <a href="https://github.com/kasperg3">GitHub</a>
-      <a href="https://www.linkedin.com/in/kaspergrontved/">LinkedIn</a>
-      <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Google Scholar</a>
-    </div>
+<!-- The retrieval analysis: kept in full, moved out of the way. The chat answers
+     the question; this says how it found what it answered from. -->
+<div class="retr" id="hrt" hidden>
+  <div class="retr-scrim" data-retr-close></div>
+  <div class="retr-panel" role="dialog" aria-modal="true" aria-labelledby="hrt-title">
+    <header class="retr-head">
+      <div>
+        <p class="retr-eyebrow">How this was retrieved</p>
+        <h2 class="retr-title" id="hrt-title"></h2>
+      </div>
+      <button class="retr-close" type="button" data-retr-close aria-label="Close modal">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <div class="retr-body" id="hrt-body"></div>
   </div>
-</footer>
-<script type="module" src="/search/home-search.js?v=3"></script>
+</div>
+
+<script type="module" src="/search/home-search.js?v=4"></script>
 </body>
 </html>

@@ -160,15 +160,6 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
         border:1px solid var(--accent-2);color:var(--accent-2);border-radius:999px;
         padding:5px 9px;vertical-align:2px;margin-left:8px;white-space:nowrap}
 
-/* ---------- footer ---------- */
-footer.site{border-top:1px solid var(--hair);padding:52px 0 68px;margin-top:40px}
-footer.site .wrap{display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start}
-footer.site .col{display:flex;flex-direction:column;gap:9px}
-footer.site .col:last-child{margin-left:auto;text-align:right}
-footer.site a{font-size:15px;color:var(--muted);text-decoration:none}
-footer.site a:hover{color:var(--accent)}
-footer.site .fine{font:400 14px/1.6 var(--sans);color:var(--faint);max-width:40ch}
-
 /* ============================================================
    concise front page
    ============================================================ */
@@ -390,7 +381,7 @@ details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:84px}
   body{background:#fff;color:#000;font-size:10.2pt;line-height:1.48}
 
   /* chrome and decoration off the paper */
-  .ambient,.skip,header.top,footer.site,.hero-actions,nav.main{display:none!important}
+  .ambient,.skip,header.top,.hero-actions,nav.main{display:none!important}
 
   .wrap,.wrap.narrow{max-width:none;padding:0}
 

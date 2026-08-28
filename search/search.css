@@ -223,79 +223,113 @@
 .ask-note{font:400 13px/1.5 var(--sans);color:#8b96a2;margin:0}
 .ask-note a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.45)}
 
-/* the field, on the dark ground */
-.ask-field .sp-field{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15);
-                     box-shadow:none;border-radius:13px;padding:0 12px 0 16px}
-.ask-field .sp-field:focus-within{border-color:#3fbeb2;background:rgba(255,255,255,.09);
-                                  box-shadow:0 0 0 3px rgba(63,190,178,.18)}
-.ask-field .sp-field > svg{stroke:#8b96a2}
-.asksite #hq{color:#eef2f6;font-size:clamp(16px,2.2vw,18px);padding:18px 0}
-.asksite #hq::placeholder{color:#7b8794}
-.asksite .sp-clear{color:#8b96a2}
-.asksite .sp-clear:hover{color:#3fbeb2;background:rgba(63,190,178,.14)}
+/* ------------------------------------------------------------------
+   the conversation
 
-/* Results expand inline here rather than overlaying: on a landing page this
-   reads as an invitation, and it never covers the content below. */
-.asksite .sp-field-wrap{position:static}
-.asksite .sp-ac{position:static;margin-top:12px;background:rgba(255,255,255,.04);
-                border-color:rgba(255,255,255,.12);box-shadow:none;border-radius:13px}
-.asksite .sp-ac-list{max-height:none;padding:6px}
-.asksite .sp-ac-foot{background:transparent;border-top-color:rgba(255,255,255,.09);
-                     color:#7b8794;padding:9px 14px}
-.asksite .sp-opt.on,.asksite .sp-opt:hover{background:rgba(63,190,178,.13)}
-.asksite .sp-opt-title{color:#eef2f6}
-.asksite .sp-rank{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);
-                  color:#98a4b0}
-.asksite .sp-opt.on .sp-rank{background:#3fbeb2;border-color:#3fbeb2;color:#0f1317}
-.asksite .sp-kind{color:#3fbeb2;border-color:rgba(63,190,178,.5)}
-.asksite .sp-score{color:#3fbeb2}
-.asksite .sp-stack{background:rgba(255,255,255,.09)}
-.asksite .sp-stack i{background:#3fbeb2}
-.asksite .sp-stack i.exp{background:#e0894f}
-.asksite .sp-src{color:#8b96a2;border-color:rgba(255,255,255,.14)}
-.asksite .sp-src:hover{color:#3fbeb2;border-color:#3fbeb2;background:rgba(63,190,178,.10)}
-.asksite .sp-opt-empty{color:#98a4b0}
-
-/* the top hit, quoted as an answer — the slot a generated answer would fill */
-.ask-answer{padding:16px 16px 14px;border-bottom:1px solid rgba(255,255,255,.09)}
-.ask-answer:empty{display:none}
-.ask-answer .lbl{display:block;font:600 10px/1 var(--sans);letter-spacing:.18em;
-                 text-transform:uppercase;color:#3fbeb2;margin-bottom:9px}
-.ask-answer blockquote{margin:0;font:400 15.5px/1.6 var(--sans);color:#dfe6ed}
-.ask-answer .cite{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-top:10px;
-                  font-size:12.5px;color:#7b8794}
-.ask-answer .cite a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.45)}
-
-/* the generated answer, and the one control on the page that spends a model
-   call. The band paints its own dark ground, so these hard-code their colours
-   like everything else in .asksite — var(--ink) and friends would invert. */
-.ask-disclose{flex-basis:100%;color:#6f7a86;font-size:12px;margin-top:2px;max-width:60ch}
-.ask-disclose em{font-style:normal;color:#8b96a2}
-.ask-gen{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.09)}
-.ask-gen[hidden],.ask-go[hidden],.ask-out[hidden]{display:none}
-.ask-go{display:inline-flex;align-items:center;gap:7px;cursor:pointer;
-        border:1px solid rgba(63,190,178,.45);background:rgba(63,190,178,.10);color:#3fbeb2;
-        font:500 13.5px/1 var(--sans);padding:9px 14px;border-radius:999px}
-.ask-go:hover:not(:disabled){background:rgba(63,190,178,.18);border-color:#3fbeb2}
-.ask-go:disabled{opacity:.45;cursor:default}
-.ask-go svg{width:14px;height:14px;fill:currentColor;stroke:none}
-.ask-out .lbl{display:block;font:600 10px/1 var(--sans);letter-spacing:.18em;
-              text-transform:uppercase;color:#3fbeb2;margin-bottom:9px}
-.ask-out p{margin:0;font:400 15.5px/1.62 var(--sans);color:#eef2f6}
-.ask-out .ref{color:#3fbeb2;text-decoration:none;font-variant-numeric:tabular-nums;
-              border-bottom:1px solid rgba(63,190,178,.4);padding:0 1px}
-.ask-out .cur{display:inline-block;width:2px;height:1em;vertical-align:-2px;margin-left:1px;
-              background:#3fbeb2;animation:ask-blink 1s steps(2) infinite}
-.ask-out .quiet{font:400 13px/1.5 var(--sans);color:#8b96a2;margin:0}
+   The question is a bubble because it is speech. The answer is not,
+   because it is the page talking about itself, and dressing that as a
+   second speaker would imply a persona that does not exist. Each turn is
+   retrieved and answered on its own, so nothing here suggests memory.
+   ------------------------------------------------------------------ */
+.chat{display:flex;flex-direction:column;gap:24px}
+.chat:empty{display:none}
+.turn{display:flex;flex-direction:column;gap:13px}
+.turn-q{align-self:flex-end;max-width:85%;margin:0;
+        border-radius:16px 16px 4px 16px;padding:11px 15px;
+        background:rgba(63,190,178,.15);border:1px solid rgba(63,190,178,.26);
+        color:#eef2f6;font:400 15px/1.55 var(--sans)}
+.turn-a{display:flex;flex-direction:column;gap:13px}
+.turn-text{margin:0;font:400 16px/1.68 var(--sans);color:#eef2f6}
+.turn-text .ref{color:#3fbeb2;text-decoration:none;padding:0 1px;
+                font-variant-numeric:tabular-nums;
+                border-bottom:1px solid rgba(63,190,178,.4)}
+.turn-quiet{margin:0;font:400 13.5px/1.6 var(--sans);color:#8b96a2}
+.caret{display:inline-block;width:2px;height:1em;margin-left:1px;vertical-align:-2px;
+     background:#3fbeb2;animation:ask-blink 1s steps(2) infinite}
 @keyframes ask-blink{50%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.ask-out .cur{animation:none}}
 
-/* the try-these row, with the dice */
-.ask-tries{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+/* what the answer was built from, and the way into the scoring */
+.turn-foot{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.src-card{display:inline-flex;align-items:baseline;gap:7px;max-width:100%;
+          border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:6px 12px;
+          text-decoration:none;color:#b6c0ca;font:400 12.5px/1.35 var(--sans)}
+.src-card:hover{border-color:#3fbeb2;color:#3fbeb2;background:rgba(63,190,178,.10)}
+.src-card b{font:600 11px/1 var(--mono);color:#3fbeb2;font-variant-numeric:tabular-nums}
+.src-card span{max-width:32ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.turn-retr{border:1px solid rgba(255,255,255,.14);background:transparent;color:#8b96a2;
+         cursor:pointer;border-radius:999px;padding:6px 12px;
+         font:400 12.5px/1.35 var(--sans)}
+.turn-retr:hover{border-color:#e0894f;color:#e0894f;background:rgba(224,137,79,.10)}
+
+/* the composer */
+.composer{display:flex;align-items:center;gap:8px;margin-top:16px;padding:6px 6px 6px 18px;
+          background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);
+          border-radius:14px}
+.composer:focus-within{border-color:#3fbeb2;background:rgba(255,255,255,.09);
+                       box-shadow:0 0 0 3px rgba(63,190,178,.18)}
+.composer input{flex:1;min-width:0;border:0;outline:none;background:transparent;color:#eef2f6;
+                font:400 clamp(16px,2.2vw,17px)/1.5 var(--sans);padding:14px 0}
+.composer input::placeholder{color:#7b8794}
+.composer-send{flex:none;display:grid;place-items:center;width:40px;height:40px;
+               border:0;border-radius:11px;cursor:pointer;background:#3fbeb2;color:#0f1317}
+.composer-send:hover:not(:disabled){background:#57d0c4}
+.composer-send:disabled{opacity:.35;cursor:default}
+.composer-send svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;
+                   stroke-linecap:round;stroke-linejoin:round}
+
+/* the openers, which stand down once the conversation has started */
+.chat-tries{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.chat-tries[hidden]{display:none}
 .asksite .sp-ex{border-color:rgba(255,255,255,.15);color:#98a4b0;font-size:13px;padding:7px 12px}
 .asksite .sp-ex:hover{border-color:#3fbeb2;color:#3fbeb2;background:rgba(63,190,178,.10)}
-.ask-dice{display:inline-flex;align-items:center;gap:7px;margin-left:auto}
-.ask-dice svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.7}
+
+/* ============================================================
+   the retrieval modal — the analysis, kept in full
+
+   A light panel on the site's own tokens, deliberately: every row in it is
+   the same .sp-opt that /search/ renders, so the scoring reads identically
+   in both places. The band overrode those rules for its dark ground; here
+   they are wanted exactly as they were.
+   ============================================================ */
+.retr[hidden]{display:none}
+.retr{position:fixed;inset:0;z-index:80;display:grid;place-items:center;
+    padding:clamp(12px,4vw,40px)}
+.retr-scrim{position:absolute;inset:0;background:rgba(12,15,19,.62)}
+.retr-panel{position:relative;display:flex;flex-direction:column;
+          width:min(720px,100%);max-height:min(84vh,760px);overflow:hidden;
+          background:var(--card);color:var(--ink);
+          border:1px solid var(--hair);border-radius:16px;
+          box-shadow:0 40px 90px -30px rgba(15,18,23,.55)}
+.retr-head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;
+         padding:18px 20px 15px;border-bottom:1px solid var(--hair-soft)}
+.retr-eyebrow{margin:0 0 7px;font:600 10px/1 var(--sans);letter-spacing:.18em;
+            text-transform:uppercase;color:var(--accent)}
+.retr-title{margin:0;font:600 17px/1.4 var(--sans);color:var(--ink);
+            text-transform:none;letter-spacing:normal}
+.retr-close{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;
+          border:1px solid var(--hair);background:transparent;color:var(--muted);cursor:pointer}
+.retr-close:hover{border-color:var(--accent);color:var(--accent)}
+.retr-close svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;
+              stroke-linecap:round}
+.retr-body{overflow-y:auto;padding:16px 20px 20px}
+.retr-lead{margin:0 0 15px;font:400 13.5px/1.62 var(--sans);color:var(--muted)}
+.retr-sub{margin:0 0 9px;font:600 10px/1 var(--sans);letter-spacing:.18em;
+        text-transform:uppercase;color:var(--faint)}
+.retr-terms{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px;padding:0;list-style:none}
+.retr-term{display:inline-flex;align-items:baseline;gap:6px;padding:4px 8px;
+         border:1px solid var(--hair);border-radius:7px;
+         font:500 12px/1 var(--mono);color:var(--ink)}
+.retr-term em{font-style:normal;font-size:11px;color:var(--faint);
+            font-variant-numeric:tabular-nums}
+.retr-term .cont{color:var(--faint)}
+.retr-list{list-style:none;margin:0;padding:0}
+.retr-list .sp-opt{cursor:default}
+.retr-key{display:flex;flex-wrap:wrap;gap:6px 16px;margin:16px 0 0;
+        font:400 12px/1.5 var(--sans);color:var(--faint)}
+.retr-key i{display:inline-block;width:9px;height:9px;border-radius:2px;
+          margin-right:6px;vertical-align:-1px}
+.retr-key .lit{background:var(--accent)}
+.retr-key .exp{background:var(--accent-2)}
 
 /* ============================================================
    narrow screens
@@ -308,10 +342,6 @@
      token, the bar and the total. */
   .sp-contrib-list li{grid-template-columns:minmax(64px,104px) 1fr auto}
   .sp-contrib-list .mul{display:none}
-}
-
-@media (max-width:640px){
-  .ask-dice{margin-left:0}
 }
 
 @media (max-width:480px){
