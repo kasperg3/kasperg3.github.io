@@ -20,9 +20,11 @@ search/index.html       SPLADE site search (see below)
 search/splade.js        retrieval engine: WordPiece + sparse dot product
 search/autocomplete.js  the search box and results dropdown, shared by both pages
 search/search-ui.js     /search/ only: the breakdown panels
-search/home-search.js   the compact widget in the front page spotlight
+search/home-search.js   the front page band: the widget, and the generated answer
 search/search.css       styles for the box, the dropdown and the panels
 search/index.json …     the built index (generated — CI rebuilds it)
+search/corpus.json      the same passages without their vectors (generated)
+worker/                 the Cloudflare Worker behind "Answer this" (see below)
 tools/build_search_index.py   extracts the corpus and encodes it
 site/site.css           shared design system for the site pages
 deck/deck.css           slide styles, same tokens as site.css
@@ -214,24 +216,72 @@ screen while it does. It runs on GitHub Pages with no inference server because S
   size an inverted index would buy nothing.
 
 So the browser downloads the table, the vocabulary and the postings, and `search/splade.js` does the
-rest in about 200 lines with no dependencies.
+rest in about 200 lines with no dependencies. Retrieval is still the whole of `/search/`, and it is
+still the whole of the front page until someone presses **Answer this** — see *The generated
+answer* below, which is the one part of this site that talks to a server.
 
 ### The two search surfaces
 
-`search/autocomplete.js` is the widget: a combobox whose listbox holds the top five results, each
-with its rank, kind, score and a bar splitting that score by contributing term. Both pages use it
-and differ only in `onSelect`:
+`search/autocomplete.js` is the widget: a combobox whose listbox holds the top results — five on
+`/search/`, four on the front page — each with its rank, kind, score and a bar splitting that score
+by contributing term. Both pages use it and differ only in `onSelect`:
 
 - **`/search/`** — pressing a result dissects it in the panels below, and the URL picks up
   `?q=…&r=<doc id>` so any view of the page is shareable.
-- **the front page** — the spotlight card's right-hand panel (which used to be a decorative MaxSim
-  grid) carries a compact copy. Pressing a result hands off to `/search/?q=…&r=…`, so the reader
-  lands on the analysis of the thing they picked.
+- **the front page** — the `.asksite` band carries a compact copy, quotes the top hit back under
+  *Closest passage*, and offers to generate an answer from it. Pressing a result hands off to
+  `/search/?q=…&r=…`, so the reader lands on the analysis of the thing they picked.
 
 Each row also carries a corner link straight to the source page, so you can skip the analysis. That
 link is the one real `<a>` in a row: the row itself is a listbox option, activated by click or
 Enter. Nothing is fetched until the box is focused, so the front page pays no bytes for this unless
-someone actually searches.
+someone actually searches, and nothing leaves the browser until someone presses a button.
+
+### The generated answer
+
+The front page band offers one thing `/search/` does not: **Answer this**, which turns the retrieved
+passages into a written answer. Retrieval is unchanged and still happens in the browser — the button
+only adds generation, which needs a key, which needs a server.
+
+That server is `worker/`, a Cloudflare Worker on `ask.grontved.xyz`. Its own hostname rather than a
+route on `www` is the whole point: nothing it does can reach the static pages, so if it breaks, runs
+out of quota, or is deleted outright, the front page keeps working and simply stops offering to
+answer. Every failure path — 4xx, 5xx, quota, timeout, an aborted request — renders nothing at all,
+because *Closest passage* is already on screen by the time the button is pressed. There is no error
+state to design.
+
+Two constraints shape the rest of it:
+
+- **The client sends passage ids, never passage text.** The worker resolves them against
+  `search/corpus.json` — the same 78 passages as the index, minus the vectors — which it fetches
+  from this site at runtime. So it can only ever generate from this site's own corpus; nobody can
+  paste a document in to be summarised. Fetching the corpus rather than bundling it means CI never
+  needs a Cloudflare deploy token.
+- **Citations cannot be fabricated.** The model is told to cite as bare `[1]`, `[2]` and never to
+  write a URL. `search/home-search.js` resolves those numbers against the ordered id list it sent,
+  so a link the model invented is not representable — it stays as plain text.
+
+It stays free structurally rather than carefully: Workers Free has no overage billing, the account
+carries no payment method, and Mistral stays on the Experiment tier. Exceeding any limit produces an
+error, never a charge. The layers inside the worker — a 200-character cap on the question, an origin
+check, a per-IP daily budget in the Cache API, an answer cache, and a circuit breaker in KV — exist
+to make that degradation rare and quiet, not to prevent a bill that cannot happen. The header
+comment in `worker/src/index.js` says which of them is load-bearing and which is a speed bump.
+
+Deploying it:
+
+```bash
+npx wrangler login
+npx wrangler kv namespace create ASK_KV      # ids go in worker/wrangler.toml
+npx wrangler secret put MISTRAL_API_KEY
+npx wrangler secret put IP_SALT
+npx wrangler deploy                          # from worker/
+```
+
+The custom domain and the one WAF rate limiting rule (`http.request.uri.path eq "/ask"`, 5 requests
+per 10 seconds per IP) are dashboard-only. The rule must be scoped to that path: the free plan
+allows exactly one, and its expression can match on path but not on hostname, so an unscoped rule
+would throttle the whole zone.
 
 ### Rebuilding the index
 
@@ -249,7 +299,9 @@ python3 tools/check_search_index.py              # client vs. reference implemen
 ```
 
 The build writes `search/index.json` (postings and metadata), `search/qweights.u16.bin` (the query
-table) and `search/vocab.txt` (line N is vocabulary token N).
+table) and `search/vocab.txt` (line N is vocabulary token N). It also writes `search/corpus.json`,
+the same passages without their vectors, which the answer worker reads — that one belongs to the
+extraction stage, so `--dry-run` regenerates it in a second and it never needs torch.
 
 ### Adding content the index can reach
 

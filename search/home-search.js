@@ -21,6 +21,27 @@ import { Autocomplete, KIND_LABEL, escapeHTML } from './autocomplete.js';
 
 const input = document.getElementById('hq');
 
+/* ---------------------------------------------------------------------------
+   The generated answer.
+
+   Everything above this line works with no network beyond the index itself.
+   This part talks to a worker that holds a Mistral key, and it is deliberately
+   the weakest link in the page: if it 4xxs, 5xxs, times out, runs out of quota
+   or simply is not there, we render nothing at all and the retrieved passage —
+   already on screen before the button was pressed — is the answer. There is no
+   error state to design because there is no moment where the reader is looking
+   at an empty box.
+
+   We send passage ids rather than passage text, so the worker can only ever
+   generate from this site's own corpus. Citations come back as bare [n] and are
+   resolved here against the same ordered id list we sent, which means a
+   fabricated link is not something the model is able to express.
+   --------------------------------------------------------------------------- */
+
+const ASK_URL = 'https://ask.grontved.xyz/ask';
+const COOLDOWN = 4000;
+const MAX_Q = 200;      // must match the worker; a longer question is refused there
+
 const PROMPTS = [
   'How do drones divide up a search area?',
   'Why does keyword search fail on images?',
@@ -47,6 +68,119 @@ function quote(doc) {
 
 if (input) {
   const answer = document.getElementById('hanswer');
+  const gen = document.getElementById('hgen');
+  const askBtn = document.getElementById('hask');
+  const out = document.getElementById('hout');
+
+  let hits = [];        // what the last query retrieved, and what we would cite
+  let inflight = null;  // AbortController — Autocomplete has no cancellation of its own
+  let cooling = 0;
+
+  /** A new query invalidates whatever was generated for the previous one. */
+  function resetGen(available) {
+    inflight?.abort();
+    inflight = null;
+    if (!gen) return;
+    gen.hidden = !available;
+    if (out) { out.hidden = true; out.innerHTML = ''; }
+    if (askBtn) { askBtn.hidden = false; askBtn.disabled = false; }
+  }
+
+  /**
+   * Turn the model's bare [n] markers into links to the passage they cite.
+   * n indexes the same ordered list we sent, so the URL never comes from the
+   * model — a fabricated citation resolves to nothing and is left as text.
+   */
+  function linkCitations(text, cited) {
+    return escapeHTML(text).replace(/\[(\d{1,2})\]/g, (m, n) => {
+      const d = cited[+n - 1]?.doc;
+      return d ? `<a class="ref" href="${escapeHTML(d.url)}" title="${escapeHTML(d.title)}">${m}</a>` : m;
+    });
+  }
+
+  async function askLLM() {
+    const question = input.value.trim();
+    if (!question || question.length > MAX_Q || !hits.length) return;
+    if (Date.now() < cooling) return;
+    cooling = Date.now() + COOLDOWN;
+
+    const cited = hits.slice(0, 4);
+    inflight?.abort();
+    const ctl = new AbortController();
+    inflight = ctl;
+
+    askBtn.disabled = true;
+    askBtn.hidden = true;
+    out.hidden = false;
+    out.innerHTML = '<span class="lbl">Answer</span><p><span class="cur"></span></p>';
+    const para = out.querySelector('p');
+
+    let res;
+    try {
+      res = await fetch(ASK_URL, {
+        method: 'POST',
+        // text/plain is CORS-safelisted, so this sends no preflight — and a
+        // preflight would be a second billable worker invocation per question.
+        headers: { 'content-type': 'text/plain' },
+        body: JSON.stringify({ q: question, ids: cited.map(h => h.doc.id) }),
+        signal: ctl.signal,
+      });
+    } catch {
+      return giveUp();
+    }
+
+    if (!res.ok || !(res.headers.get('content-type') || '').includes('text/event-stream')) {
+      return giveUp(res.status === 429 ? 'Asked too often just now — the passage below still stands.' : '');
+    }
+
+    // Parse the SSE here rather than in the worker: the worker passes the
+    // upstream body through untouched, which costs it no CPU per chunk and
+    // lets it cache the response with a plain clone().
+    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buf = '';
+    let text = '';
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += value;
+        let i;
+        while ((i = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, i).trim();
+          buf = buf.slice(i + 1);
+          if (!line.startsWith('data:')) continue;
+          const payload = line.slice(5).trim();
+          if (payload === '[DONE]') continue;
+          try {
+            const delta = JSON.parse(payload).choices?.[0]?.delta?.content;
+            if (delta) {
+              text += delta;
+              para.innerHTML = `${linkCitations(text, cited)}<span class="cur"></span>`;
+            }
+          } catch { /* a partial frame; the next chunk completes it */ }
+        }
+      }
+    } catch {
+      if (ctl.signal.aborted) return;
+    }
+
+    if (ctl.signal.aborted) return;
+    inflight = null;
+    if (!text.trim()) return giveUp();
+    para.innerHTML = linkCitations(text, cited);
+
+    function giveUp(note) {
+      inflight = null;
+      if (ctl.signal.aborted) return;
+      // Silence is the correct fallback: "Closest passage" is already rendered.
+      out.innerHTML = note ? `<p class="quiet">${escapeHTML(note)}</p>` : '';
+      out.hidden = !note;
+      askBtn.hidden = !!note;
+      askBtn.disabled = false;
+    }
+  }
+
+  askBtn?.addEventListener('click', askLLM);
 
   const widget = new Autocomplete({
     input,
@@ -58,6 +192,8 @@ if (input) {
     limit: 4,
 
     onQuery({ results, query }) {
+      hits = results;
+      resetGen(Boolean(query) && results.length > 0);
       if (!answer) return;
       if (!query || !results.length) { answer.innerHTML = ''; return; }
       const d = results[0].doc;

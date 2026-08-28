@@ -266,6 +266,30 @@
                   font-size:12.5px;color:#7b8794}
 .ask-answer .cite a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.45)}
 
+/* the generated answer, and the one control on the page that spends a model
+   call. The band paints its own dark ground, so these hard-code their colours
+   like everything else in .asksite — var(--ink) and friends would invert. */
+.ask-disclose{flex-basis:100%;color:#6f7a86;font-size:12px;margin-top:2px;max-width:60ch}
+.ask-disclose em{font-style:normal;color:#8b96a2}
+.ask-gen{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.09)}
+.ask-gen[hidden],.ask-go[hidden],.ask-out[hidden]{display:none}
+.ask-go{display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+        border:1px solid rgba(63,190,178,.45);background:rgba(63,190,178,.10);color:#3fbeb2;
+        font:500 13.5px/1 var(--sans);padding:9px 14px;border-radius:999px}
+.ask-go:hover:not(:disabled){background:rgba(63,190,178,.18);border-color:#3fbeb2}
+.ask-go:disabled{opacity:.45;cursor:default}
+.ask-go svg{width:14px;height:14px;fill:currentColor;stroke:none}
+.ask-out .lbl{display:block;font:600 10px/1 var(--sans);letter-spacing:.18em;
+              text-transform:uppercase;color:#3fbeb2;margin-bottom:9px}
+.ask-out p{margin:0;font:400 15.5px/1.62 var(--sans);color:#eef2f6}
+.ask-out .ref{color:#3fbeb2;text-decoration:none;font-variant-numeric:tabular-nums;
+              border-bottom:1px solid rgba(63,190,178,.4);padding:0 1px}
+.ask-out .cur{display:inline-block;width:2px;height:1em;vertical-align:-2px;margin-left:1px;
+              background:#3fbeb2;animation:ask-blink 1s steps(2) infinite}
+.ask-out .quiet{font:400 13px/1.5 var(--sans);color:#8b96a2;margin:0}
+@keyframes ask-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.ask-out .cur{animation:none}}
+
 /* the try-these row, with the dice */
 .ask-tries{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
 .asksite .sp-ex{border-color:rgba(255,255,255,.15);color:#98a4b0;font-size:13px;padding:7px 12px}

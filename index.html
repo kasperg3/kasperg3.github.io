@@ -17,9 +17,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=974e5dde">
-<link rel="stylesheet" href="/search/search.css?v=3">
+<link rel="stylesheet" href="/search/search.css?v=4">
 <noscript><style>/* the search box cannot work without scripting */
-.asksite .sp-field-wrap,.asksite .ask-tries{display:none}</style></noscript>
+.asksite .sp-field-wrap,.asksite .ask-tries,.asksite .ask-disclose{display:none}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Person","name":"Kasper Rømer Grøntved",
  "alternateName":"Kasper Andreas Rømer Grøntved","url":"https://www.grontved.xyz",
@@ -85,6 +85,9 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         <p class="ask-eyebrow">Ask this site</p>
         <p class="ask-note">Answered out of 78 passages — papers, slides, projects, the CV.
           <a href="/search/">See how →</a></p>
+        <p class="ask-note ask-disclose">Retrieval runs in your browser. Pressing
+          <em>Answer this</em> sends the question and the passages below it to
+          Mistral (France) on their free tier, which trains on what it receives.</p>
       </div>
 
       <div class="sp-field-wrap ask-field">
@@ -101,6 +104,16 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         </div>
 
         <div class="sp-ac" id="hac" hidden>
+          <!-- The generated answer sits above the retrieved passage, so the
+               passage below it reads as the evidence it was grounded in. The
+               button is the only thing that spends a model call. -->
+          <div class="ask-gen" id="hgen" hidden>
+            <button class="ask-go" id="hask" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.1 5.4L19.5 10l-5.4 2.1L12 17.5l-2.1-5.4L4.5 10l5.4-1.6z"/></svg>
+              Answer this
+            </button>
+            <div class="ask-out" id="hout" hidden aria-live="polite"></div>
+          </div>
           <div class="ask-answer" id="hanswer"></div>
           <ul class="sp-ac-list" id="hac-list" role="listbox" aria-label="Search results"></ul>
           <p class="sp-ac-foot" id="hac-foot"></p>
@@ -237,6 +250,6 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </div>
 </footer>
-<script type="module" src="/search/home-search.js?v=2"></script>
+<script type="module" src="/search/home-search.js?v=3"></script>
 </body>
 </html>
