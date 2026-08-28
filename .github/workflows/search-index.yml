@@ -69,7 +69,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add search/index.json search/qweights.u16.bin search/vocab.txt
+          git add search/index.json search/qweights.u16.bin search/vocab.txt search/corpus.json
           if git diff --cached --quiet; then
             echo "Index unchanged."
           else

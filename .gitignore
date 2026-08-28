@@ -1,2 +1,9 @@
 _site/
-*.locktools/__pycache__/
+*.lock
+tools/__pycache__/
+
+# Cloudflare Worker (worker/) — local state and the plaintext Mistral key.
+node_modules/
+.wrangler/
+.dev.vars
+.dev.vars.*

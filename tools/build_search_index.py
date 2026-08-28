@@ -453,6 +453,24 @@ def report(docs: list) -> None:
     print()
 
 
+def write_corpus(docs: list, out: Path) -> None:
+    """Write the passages without their vectors, keyed by id.
+
+    The answer worker grounds a generated answer in whatever the browser
+    retrieved, so it needs titles, urls and snippets — and has no use for the
+    postings, which are four fifths of index.json. This belongs to the
+    extraction stage rather than the encoding one, so it regenerates in a
+    second with `--dry-run` and never needs torch. The index is the expensive
+    artefact; the corpus is a projection of it.
+    """
+    out.mkdir(parents=True, exist_ok=True)
+    corpus = {d.id: {k: v for k, v in d.as_index_entry().items() if k != "id"}
+              for d in docs}
+    (out / "corpus.json").write_text(
+        json.dumps(corpus, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"  {'corpus.json':<22}{(out / 'corpus.json').stat().st_size:>10,} B\n")
+
+
 # ---------------------------------------------------------------------------
 # encoding
 # ---------------------------------------------------------------------------
@@ -586,6 +604,7 @@ def main() -> None:
 
     docs = extract_all()
     report(docs)
+    write_corpus(docs, REPO / args.out)
     if args.dry_run:
         return
     encode(docs, REPO / args.out)
