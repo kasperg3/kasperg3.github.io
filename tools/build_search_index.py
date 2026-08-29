@@ -45,9 +45,16 @@ QRY_SCALE = 1000
 TOP_TERMS = 160        # keep at most this many activated terms per document
 MIN_WEIGHT = 0.05      # ...and drop anything below this before the cut
 
-# `cv-fact` rows (Skills: Languages -> "Python · C / C++ · Rust") are
-# `·`-separated list fragments, not passages. SPLADE produces noise from them.
-INCLUDE_CV_FACTS = False
+# The Skills / Research output / Contact blocks are `dl.kv` rows. Indexed one
+# row at a time they are `·`-separated fragments rather than passages, and
+# SPLADE makes noise of them — which is why they were skipped entirely. Indexed
+# one *section* at a time, with the separators read as prose, they are ordinary
+# passages and the only place on the site that answers "what does he work in".
+CV_FACT_SECTIONS = {
+    "Skills": "cv-skills",
+    "Research output": "cv-research-output",
+    "Contact": "cv-contact",
+}
 
 # A slide with fewer words than this is a divider (title / section / closing),
 # not content.
@@ -83,6 +90,7 @@ SLUG_MAP = {
         "project-sarenv",
         "project-hopdatabase",
     ],
+    "cv-facts": ["cv-skills", "cv-research-output", "cv-contact"],
     "cv-role": [
         "cv-colourbox",
         "cv-esoft",
@@ -421,7 +429,7 @@ def extract_projects() -> list:
 
 def extract_cv() -> list:
     root = parse(REPO / "cv.html")
-    docs, role_ids = [], []
+    docs, role_ids, fact_ids = [], [], []
     main = root.find("main")
 
     for section in main.find_all("section"):
@@ -451,27 +459,30 @@ def extract_cv() -> list:
                 ))
             continue
 
-        if not INCLUDE_CV_FACTS:
-            continue
+        slug = CV_FACT_SECTIONS.get(label)
         dl = section.find("dl", "kv")
-        if dl is None:
+        if slug is None or dl is None:
             continue
-        pending = None
+        fact_ids.append(section.attrs.get("id", ""))
+        rows, pending = [], None
         for child in dl.children:
             if not isinstance(child, Node):
                 continue
             if child.tag == "dt":
                 pending = child.text()
             elif child.tag == "dd" and pending is not None:
-                slug = f"cv-fact-{re.sub(r'[^a-z0-9]+', '-', pending.lower()).strip('-')}"
-                docs.append(Doc(
-                    id=slug, kind="cv-fact", title=normalise(pending),
-                    url="/cv.html", meta=normalise(label),
-                    text=normalise(f"{pending}: {child.text()}"),
-                ))
+                # "Python · C / C++ · Rust" is a list read aloud as a sentence.
+                rows.append(f"{pending}: {child.text().replace(' · ', ', ')}.")
                 pending = None
+        if rows:
+            docs.append(Doc(
+                id=slug, kind="cv-facts", title=normalise(label),
+                url=f"/cv.html#{slug}", meta="CV",
+                text=normalise(f"{label}. " + " ".join(rows)),
+            ))
 
     require_anchors(role_ids, "cv-role")
+    require_anchors(fact_ids, "cv-facts")
     return docs
 
 

@@ -18,6 +18,7 @@ export const KIND_LABEL = {
   slide: 'Slide',
   project: 'Project',
   'cv-role': 'CV',
+  'cv-facts': 'CV',
   thesis: 'Thesis',
   supervision: 'Supervision',
 };
