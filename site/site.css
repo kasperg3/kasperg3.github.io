@@ -23,13 +23,14 @@
   --shadow:0 18px 50px -34px rgba(21,24,29,.30);
   --measure:72ch;
 }
-@media (prefers-color-scheme:dark){
-  :root{
-    --canvas:#0f1317;--canvas-2:#141a20;--ink:#eef2f6;--ink-2:#cdd6e0;--muted:#a3aeba;
-    --faint:#6e7a86;--accent:#3fbeb2;--accent-2:#e0894f;--accent-faint:rgba(63,190,178,.12);
-    --hair:rgba(255,255,255,.13);--hair-soft:rgba(255,255,255,.07);--card:#171d23;
-    --shadow:0 18px 50px -34px rgba(0,0,0,.6);
-  }
+/* Dark is a choice, not a system setting: the site opens light and the header
+   toggle opts in. Same attribute and same localStorage key the decks already
+   use, so one toggle covers the whole site. */
+:root[data-theme="dark"]{
+  --canvas:#0f1317;--canvas-2:#141a20;--ink:#eef2f6;--ink-2:#cdd6e0;--muted:#a3aeba;
+  --faint:#6e7a86;--accent:#3fbeb2;--accent-2:#e0894f;--accent-faint:rgba(63,190,178,.12);
+  --hair:rgba(255,255,255,.13);--hair-soft:rgba(255,255,255,.07);--card:#171d23;
+  --shadow:0 18px 50px -34px rgba(0,0,0,.6);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -56,6 +57,15 @@ header.top .wrap{display:flex;align-items:center;gap:28px;height:68px}
 .brand{font:600 19px/1 var(--serif);text-decoration:none;letter-spacing:-.01em;flex:none}
 .brand span{color:var(--accent)}
 nav.main{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+.theme{flex:none;display:grid;place-items:center;width:34px;height:34px;
+       border:1px solid var(--hair);border-radius:9px;background:transparent;
+       color:var(--muted);cursor:pointer}
+.theme:hover{border-color:var(--accent);color:var(--accent)}
+.theme svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;
+           stroke-linecap:round;stroke-linejoin:round}
+.theme .sun{display:none}
+:root[data-theme="dark"] .theme .sun{display:block}
+:root[data-theme="dark"] .theme .moon{display:none}
 nav.main a{font:500 15px/1 var(--sans);text-decoration:none;color:var(--muted);
            padding:9px 14px;border-radius:8px}
 nav.main a:hover{background:var(--accent-faint);color:var(--accent)}
@@ -370,7 +380,8 @@ details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:84px}
 @media print{
   @page{size:A4;margin:16mm 15mm 14mm}
 
-  :root{
+  /* Matches :root[data-theme="dark"] on specificity, so paper stays paper. */
+  :root,:root[data-theme="dark"]{
     --canvas:#fff;--canvas-2:#fff;--card:#fff;
     --ink:#000;--ink-2:#111;--muted:#1a1a1a;--faint:#555;
     --accent:#1f6f68;--accent-2:#8f3f16;--accent-faint:transparent;

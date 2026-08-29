@@ -28,6 +28,7 @@ content/publications/   full paper text, read at build time (public, like everyt
 worker/                 the Cloudflare Worker behind "Answer this" (see below)
 tools/build_search_index.py   extracts the corpus and encodes it
 site/site.css           shared design system for the site pages
+site/theme.js           the light/dark toggle in the header
 deck/deck.css           slide styles, same tokens as site.css
 deck/deck.js            slide runtime (~200 lines, vanilla JS)
 assets/img/             web-optimized images
@@ -158,8 +159,16 @@ Colour and type tokens live in the `:root` block at the top of both `site/site.c
 system. Change `--accent` and `--canvas` and everything follows. For a one-off deck
 palette, add `<style>:root{--accent:#7a3ea1}</style>` to that deck's `<head>`.
 
-Dark mode: the site follows `prefers-color-scheme`; decks toggle with `t` and remember
-the choice in `localStorage`.
+Dark mode is a choice, not a system setting. Both the site and the decks open light and opt
+in through `:root[data-theme="dark"]`, and both remember it under the same `localStorage`
+key (`deck-theme`), so the toggle in the site header and the `t` key in a deck are the same
+switch — flip it anywhere and the whole site follows.
+
+Two things are easy to get wrong here. The attribute is applied by a two-line inline script
+in each page's `<head>`, because it has to run before the first paint or the page flashes the
+wrong colour; `site/theme.js` only wires the button. And the `@media print` block overrides
+`:root,:root[data-theme="dark"]` rather than `:root` alone — a bare `:root` loses on
+specificity, and a CV printed in dark mode would come out dark.
 
 ## Animation
 
