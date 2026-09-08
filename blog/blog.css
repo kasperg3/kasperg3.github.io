@@ -1,7 +1,7 @@
 /* ============================================================
    blog.css — long-form articles under /blog/.
-   Extends site/site.css; every colour is a token so light,
-   dark and print follow for free.
+   Extends site/site.css; every colour is a token so a palette
+   change there, and the print block, reach the posts too.
    ============================================================ */
 .post{max-width:var(--measure);margin:0 auto}
 .post-hero{padding:clamp(56px,9vw,110px) 0 clamp(28px,4vw,44px)}
