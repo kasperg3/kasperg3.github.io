@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Semantic search for the price of a git push — Kasper Rømer Grøntved</title>
-<meta name="description" content="How this site's search understands meaning without a server: inference-free SPLADE, with the model run once on GitHub Actions, the sparse index served from GitHub Pages, and a free Mistral key for the generated answers. The receipt comes to €0.00, and here is the maths behind it.">
+<meta name="description" content="How this site's search understands meaning with no model at query time: dense retrieval, SPLADE and late interaction side by side, why the inference-free variant needs nothing but a tokenizer and a weight table in the browser, and what the sparse vectors actually contain.">
 <link rel="canonical" href="https://www.grontved.xyz/blog/inference-free-splade/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Semantic search for the price of a git push">
-<meta property="og:description" content="Inference-free SPLADE on GitHub Actions, GitHub Pages and a free Mistral key. A €0.00 receipt, itemised and checked.">
+<meta property="og:description" content="Dense, SPLADE and late interaction side by side, and how the inference-free variant runs a semantic search from three static files.">
 <meta property="og:url" content="https://www.grontved.xyz/blog/inference-free-splade/">
 <meta property="article:published_time" content="2026-09-08">
 <meta name="twitter:card" content="summary">
@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=b31c0d02">
-<link rel="stylesheet" href="/blog/blog.css?v=1">
+<link rel="stylesheet" href="/blog/blog.css?v=2">
 <link rel="stylesheet" href="/search/search.css?v=7">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BlogPosting",
@@ -25,7 +25,7 @@
  "datePublished":"2026-09-08","inLanguage":"en",
  "author":{"@type":"Person","name":"Kasper Rømer Grøntved","url":"https://www.grontved.xyz"},
  "url":"https://www.grontved.xyz/blog/inference-free-splade/",
- "about":["Learned sparse retrieval","SPLADE","GitHub Pages","GitHub Actions"]}
+ "about":["Learned sparse retrieval","SPLADE","Dense retrieval","Late interaction","GitHub Pages"]}
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
@@ -53,15 +53,15 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 <article class="post">
 
   <div class="post-hero">
-    <p class="eyebrow">Inference-free SPLADE · GitHub Actions · GitHub Pages · one free API key</p>
+    <p class="eyebrow">Learned sparse retrieval · inference-free SPLADE · dense vs sparse vs late interaction</p>
     <h1>Semantic search for the price of a <em>git push</em></h1>
     <p class="lede">The <a href="/search/">search on this site</a> knows that <em>someone lost in the
     woods</em> is a search-and-rescue question. It runs no model in your browser and no server
-    anywhere, and my monthly invoice for it is €0.00. This is the receipt, itemised, with the maths
-    that makes each line hold.</p>
+    anywhere. This post puts the three ways of doing neural retrieval side by side, shows why the
+    inference-free one can drop the query encoder, and reads the vectors it produces.</p>
     <div class="post-meta">
-      <span><b>Kasper Rømer Grøntved</b></span><span>8 September 2026</span><span>≈ 16 min</span>
-      <span>Every number below is measured on the live index or cited</span>
+      <span><b>Kasper Rømer Grøntved</b></span><span>8 September 2026</span><span>≈ 9 min</span>
+      <span>Every number is measured on the live index or cited</span>
     </div>
   </div>
 
@@ -107,105 +107,113 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     browser rather than on a server. The post reads fine without it.</p></noscript>
   </section>
 
-  <div class="receipt" role="figure" aria-label="A receipt totalling zero euros">
-    <h3>grontved.xyz</h3>
-    <p class="sub">semantic site search · monthly statement</p>
-    <div class="row"><span>Document encoder, 67M params, Apache-2.0</span><span>€0.00</span></div>
-    <div class="row"><span>Encoding compute (GitHub Actions, public repo)</span><span>€0.00</span></div>
-    <div class="row"><span>Hosting, 285 KB of index (GitHub Pages)</span><span>€0.00</span></div>
-    <div class="row"><span>Query-time inference</span><span>n/a</span></div>
-    <div class="row"><span>Key holder for the LLM (Workers Free)</span><span>€0.00</span></div>
-    <div class="row"><span>Generated answers (Mistral, Experiment tier)</span><span>€0.00</span></div>
-    <div class="row total"><span>TOTAL</span><span>€0.00</span></div>
-    <p class="foot">no payment method on file · limits fail, never bill</p>
-  </div>
+  <p>I wanted a search box on a static site that understands meaning, and I did not want to pay
+  for a process that stays up to provide it. Those two wants usually conflict: <em>meaning</em>
+  implies an embedding model, which implies a GPU or at least a server, which implies a monthly
+  line item. The corpus here is my papers, slides and CV, written by people who say <em>wilderness
+  search and rescue</em> when a reader types <em>finding someone lost in the woods</em>. Keyword
+  search never connects the two. What follows is the piece of retrieval research that connects
+  them without a model running anywhere at query time, and a look at what that buys and costs
+  next to the two other ways of doing it.</p>
 
-  <p>I should be clear about my motives. This is not a post about frugality as a virtue. I am simply
-  cheap, and I wanted a search box on a static site that understands meaning. Those two wants are
-  usually in conflict: <em>meaning</em> tends to imply an embedding model, which implies a GPU or at
-  least a process that stays up, which implies a monthly line item I will eventually resent. What
-  follows is how a specific piece of retrieval research lets you have the meaning without the
-  process, and what it honestly costs instead.</p>
+  <h2 id="three"><span class="num">01</span>Three ways to compare a query with a document</h2>
 
-  <h2 id="constraints"><span class="num">01</span>The things I refused to pay for</h2>
+  <p>Every neural retriever answers the same question: how alike are this query and this passage?
+  They differ in <strong>what they store per passage</strong> and <strong>when the two sides are
+  allowed to meet</strong>. Read the three panels as the same drawing made three times.</p>
 
-  <p>This site is plain HTML pushed to GitHub Pages. No build step, no framework, no server, and I
-  intended to keep it that way. That rules out the ordinary answer to "make search understand
-  meaning", which is to run an encoder on every query. It also rules out the fashionable answer,
-  which is to ship the encoder to the browser as WebAssembly: the document encoder I ended up using
-  is a 268 MB <code>safetensors</code> file, and asking a reader to download it so they can find a
-  PDF is not a trade I will make on their behalf.</p>
+  <figure class="fig wide" aria-labelledby="fig1-cap">
+    <div class="arch3">
+      <div class="arch3-panel">
+        <h3>Dense retrieval<small>one vector per side</small></h3>
+        <svg viewBox="0 0 240 300" role="img" aria-label="Dense retrieval. Query and document each go through an encoder, each side is pooled to one vector, and the score is a single dot product."><g font-family="var(--sans)"><text x="60" y="10" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.2" fill="var(--faint)">QUERY</text><text x="180" y="10" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.2" fill="var(--faint)">DOCUMENT</text><rect x="11" y="32" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="26.0" y="43.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">q1</text><rect x="45" y="32" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="60.0" y="43.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">q2</text><rect x="79" y="32" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="94.0" y="43.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">q3</text><rect x="131" y="22" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="146.0" y="33.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d1</text><rect x="165" y="22" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="180.0" y="33.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d2</text><rect x="199" y="22" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="214.0" y="33.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d3</text><rect x="131" y="42" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="146.0" y="53.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d4</text><rect x="165" y="42" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="180.0" y="53.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d5</text><rect x="199" y="42" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="214.0" y="53.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d6</text><path d="M60 62V67" stroke="var(--hair)" stroke-width="1.5"/><path d="M60 72l-4 -6h8z" fill="var(--hair)"/><path d="M180 62V67" stroke="var(--hair)" stroke-width="1.5"/><path d="M180 72l-4 -6h8z" fill="var(--hair)"/><rect x="12" y="74" width="96" height="24" rx="7" fill="var(--dark)"/><text x="60.0" y="90.0" text-anchor="middle" font-size="11.5" font-weight="600" fill="#e9edf2">Encoder</text><rect x="132" y="74" width="96" height="24" rx="7" fill="var(--dark)"/><text x="180.0" y="90.0" text-anchor="middle" font-size="11.5" font-weight="600" fill="#e9edf2">Encoder</text><path d="M60 100V105" stroke="var(--hair)" stroke-width="1.5"/><path d="M60 110l-4 -6h8z" fill="var(--hair)"/><path d="M180 100V105" stroke="var(--hair)" stroke-width="1.5"/><path d="M180 110l-4 -6h8z" fill="var(--hair)"/><rect x="38" y="116" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="38" y="121" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="38" y="126" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="54" y="116" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="54" y="121" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="54" y="126" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="70" y="116" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="70" y="121" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="70" y="126" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="134" y="116" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="134" y="121" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="134" y="126" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="150" y="116" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="150" y="121" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="150" y="126" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="166" y="116" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="166" y="121" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="166" y="126" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="182" y="116" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="182" y="121" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="182" y="126" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="198" y="116" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="198" y="121" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="198" y="126" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="214" y="116" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="214" y="121" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><rect x="214" y="126" width="12" height="3.2" rx="1.6" fill="var(--accent)" opacity=".45"/><path d="M60 134V139" stroke="var(--hair)" stroke-width="1.5"/><path d="M60 144l-4 -6h8z" fill="var(--hair)"/><path d="M180 134V139" stroke="var(--hair)" stroke-width="1.5"/><path d="M180 144l-4 -6h8z" fill="var(--hair)"/><rect x="38" y="147" width="44" height="17" rx="6" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3"/><text x="60" y="159" text-anchor="middle" font-size="9.5" font-weight="600" letter-spacing=".8" fill="var(--accent-2)">pool</text><rect x="158" y="147" width="44" height="17" rx="6" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3"/><text x="180" y="159" text-anchor="middle" font-size="9.5" font-weight="600" letter-spacing=".8" fill="var(--accent-2)">pool</text><path d="M60 167V172" stroke="var(--hair)" stroke-width="1.5"/><path d="M60 177l-4 -6h8z" fill="var(--hair)"/><path d="M180 167V172" stroke="var(--hair)" stroke-width="1.5"/><path d="M180 177l-4 -6h8z" fill="var(--hair)"/><rect x="50" y="181" width="20" height="3.2" rx="1.6" fill="var(--accent)"/><rect x="50" y="186" width="20" height="3.2" rx="1.6" fill="var(--accent)"/><rect x="50" y="191" width="20" height="3.2" rx="1.6" fill="var(--accent)"/><rect x="170" y="181" width="20" height="3.2" rx="1.6" fill="var(--accent)"/><rect x="170" y="186" width="20" height="3.2" rx="1.6" fill="var(--accent)"/><rect x="170" y="191" width="20" height="3.2" rx="1.6" fill="var(--accent)"/><path d="M60 198C60 222 100 226 114 231" stroke="var(--accent)" stroke-opacity=".55" stroke-width="1.5" fill="none"/><path d="M180 198C180 222 140 226 126 231" stroke="var(--accent)" stroke-opacity=".55" stroke-width="1.5" fill="none"/><circle cx="120" cy="232" r="4" fill="var(--accent)"/><text x="120" y="262" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">one dot product</text><text x="120" y="278" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--faint)">pool(q) · pool(d)</text></g></svg>
+        <p class="arch3-badge">encoder at query time</p>
+      </div>
+      <div class="arch3-panel on">
+        <h3>SPLADE<small>one weight per word</small></h3>
+        <svg viewBox="0 0 240 300" role="img" aria-label="Inference-free SPLADE. The document goes through an encoder and comes out as weights on vocabulary words, some of which are not in the text. The query side is a tokenizer and a lookup table, no model. The score is a dot product over the words both sides lit up."><g font-family="var(--sans)"><text x="60" y="10" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.2" fill="var(--faint)">QUERY</text><text x="180" y="10" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.2" fill="var(--faint)">DOCUMENT</text><rect x="11" y="32" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="26.0" y="43.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">q1</text><rect x="45" y="32" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="60.0" y="43.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">q2</text><rect x="79" y="32" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="94.0" y="43.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">q3</text><rect x="131" y="22" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="146.0" y="33.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d1</text><rect x="165" y="22" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="180.0" y="33.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d2</text><rect x="199" y="22" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="214.0" y="33.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d3</text><rect x="131" y="42" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="146.0" y="53.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d4</text><rect x="165" y="42" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="180.0" y="53.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d5</text><rect x="199" y="42" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="214.0" y="53.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d6</text><path d="M60 62V67" stroke="var(--hair)" stroke-width="1.5"/><path d="M60 72l-4 -6h8z" fill="var(--hair)"/><path d="M180 62V67" stroke="var(--hair)" stroke-width="1.5"/><path d="M180 72l-4 -6h8z" fill="var(--hair)"/><rect x="12" y="74" width="96" height="24" rx="7" fill="var(--card)" stroke="var(--accent)" stroke-width="1.3"/><text x="60.0" y="90.0" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--accent)">lookup table</text><rect x="132" y="74" width="96" height="24" rx="7" fill="var(--dark)"/><text x="180.0" y="90.0" text-anchor="middle" font-size="11.5" font-weight="600" fill="#e9edf2">Encoder</text><path d="M60 100V105" stroke="var(--hair)" stroke-width="1.5"/><path d="M60 110l-4 -6h8z" fill="var(--hair)"/><path d="M180 100V105" stroke="var(--hair)" stroke-width="1.5"/><path d="M180 110l-4 -6h8z" fill="var(--hair)"/><text x="42" y="124.5" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">finding</text><rect x="48" y="116" width="26" height="10" rx="3" fill="var(--accent)"/><rect x="166" y="116" width="26" height="10" rx="3" fill="var(--accent-2)"/><path d="M74 121H166" stroke="var(--accent)" stroke-width="1.6" stroke-opacity=".9"/><text x="42" y="138.5" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">someone</text><rect x="48" y="130" width="26" height="10" rx="3" fill="var(--accent)"/><rect x="166" y="130" width="26" height="10" rx="3" fill="var(--accent-2)"/><path d="M74 135H166" stroke="var(--accent)" stroke-width="1.6" stroke-opacity=".9"/><text x="42" y="152.5" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">lost</text><rect x="48" y="144" width="26" height="10" rx="3" fill="var(--accent)"/><rect x="166" y="144" width="26" height="10" rx="3" fill="var(--accent)"/><path d="M74 149H166" stroke="var(--accent)" stroke-width="1.6" stroke-opacity=".9"/><text x="42" y="166.5" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">the</text><rect x="48" y="158" width="26" height="10" rx="3" fill="var(--accent)" opacity=".22"/><rect x="166.5" y="158.5" width="25" height="9" rx="3" fill="none" stroke="var(--hair)"/><text x="42" y="180.5" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">woods</text><rect x="48" y="172" width="26" height="10" rx="3" fill="var(--accent)"/><rect x="166" y="172" width="26" height="10" rx="3" fill="var(--accent-2)"/><path d="M74 177H166" stroke="var(--accent)" stroke-width="1.6" stroke-opacity=".9"/><text x="42" y="194.5" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">sar</text><rect x="48.5" y="186.5" width="25" height="9" rx="3" fill="none" stroke="var(--hair)"/><rect x="166" y="186" width="26" height="10" rx="3" fill="var(--accent)"/><text x="42" y="208.5" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">rescue</text><rect x="48.5" y="200.5" width="25" height="9" rx="3" fill="none" stroke="var(--hair)"/><rect x="166" y="200" width="26" height="10" rx="3" fill="var(--accent)"/><text x="42" y="222.5" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">drones</text><rect x="48.5" y="214.5" width="25" height="9" rx="3" fill="none" stroke="var(--hair)"/><rect x="166" y="214" width="26" height="10" rx="3" fill="var(--accent)"/><text x="120" y="238" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--faint)">+ 30,514 more rows, all empty</text><text x="198" y="124.5" font-family="IBM Plex Mono,monospace" font-size="8" fill="var(--accent-2)">added</text><text x="198" y="152.5" font-family="IBM Plex Mono,monospace" font-size="8" fill="var(--accent)">in text</text><text x="120" y="262" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">sparse dot product</text><text x="120" y="278" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--faint)">a row is a word · q · d</text></g></svg>
+        <p class="arch3-badge q">no model at query time</p>
+      </div>
+      <div class="arch3-panel">
+        <h3>Late interaction<small>one vector per token</small></h3>
+        <svg viewBox="0 0 240 300" role="img" aria-label="Late interaction. Both sides are encoded to one vector per token and nothing is pooled. Every query vector is compared with every document vector and only its best match counts; the score is the sum of those maxima."><g font-family="var(--sans)"><text x="60" y="10" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.2" fill="var(--faint)">QUERY</text><text x="180" y="10" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.2" fill="var(--faint)">DOCUMENT</text><rect x="11" y="32" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="26.0" y="43.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">q1</text><rect x="45" y="32" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="60.0" y="43.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">q2</text><rect x="79" y="32" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="94.0" y="43.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">q3</text><rect x="131" y="22" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="146.0" y="33.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d1</text><rect x="165" y="22" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="180.0" y="33.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d2</text><rect x="199" y="22" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="214.0" y="33.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d3</text><rect x="131" y="42" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="146.0" y="53.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d4</text><rect x="165" y="42" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="180.0" y="53.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d5</text><rect x="199" y="42" width="30" height="16" rx="5" fill="var(--accent-faint)"/><text x="214.0" y="53.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">d6</text><path d="M60 62V67" stroke="var(--hair)" stroke-width="1.5"/><path d="M60 72l-4 -6h8z" fill="var(--hair)"/><path d="M180 62V67" stroke="var(--hair)" stroke-width="1.5"/><path d="M180 72l-4 -6h8z" fill="var(--hair)"/><rect x="12" y="74" width="96" height="24" rx="7" fill="var(--dark)"/><text x="60.0" y="90.0" text-anchor="middle" font-size="11.5" font-weight="600" fill="#e9edf2">Encoder</text><rect x="132" y="74" width="96" height="24" rx="7" fill="var(--dark)"/><text x="180.0" y="90.0" text-anchor="middle" font-size="11.5" font-weight="600" fill="#e9edf2">Encoder</text><path d="M60 100V105" stroke="var(--hair)" stroke-width="1.5"/><path d="M60 110l-4 -6h8z" fill="var(--hair)"/><path d="M180 100V105" stroke="var(--hair)" stroke-width="1.5"/><path d="M180 110l-4 -6h8z" fill="var(--hair)"/><path d="M75 117.5L165 117.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 117.5L165 149.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 117.5L165 165.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 117.5L165 181.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 117.5L165 197.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 133.5L165 117.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 133.5L165 133.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 133.5L165 149.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 133.5L165 165.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 133.5L165 197.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 149.5L165 133.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 149.5L165 149.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 149.5L165 165.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 149.5L165 181.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 149.5L165 197.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 165.5L165 117.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 165.5L165 133.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 165.5L165 149.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 165.5L165 181.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 165.5L165 197.5" stroke="var(--ink)" stroke-opacity=".1" stroke-width=".8"/><path d="M75 117.5L165 133.5" stroke="var(--accent)" stroke-width="1.8" stroke-opacity=".95"/><path d="M75 133.5L165 181.5" stroke="var(--accent)" stroke-width="1.8" stroke-opacity=".95"/><path d="M75 149.5L165 117.5" stroke="var(--accent)" stroke-width="1.8" stroke-opacity=".95"/><path d="M75 165.5L165 165.5" stroke="var(--accent)" stroke-width="1.8" stroke-opacity=".95"/><rect x="45" y="112" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="49.5" y="114.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="55.3" y="114.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="61.1" y="114.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="66.9" y="114.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="45" y="128" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="49.5" y="130.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="55.3" y="130.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="61.1" y="130.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="66.9" y="130.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="45" y="144" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="49.5" y="146.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="55.3" y="146.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="61.1" y="146.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="66.9" y="146.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="45" y="160" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="49.5" y="162.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="55.3" y="162.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="61.1" y="162.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="66.9" y="162.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="165" y="112" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="169.5" y="114.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="175.3" y="114.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="181.1" y="114.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="186.9" y="114.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="165" y="128" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="169.5" y="130.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="175.3" y="130.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="181.1" y="130.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="186.9" y="130.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="165" y="144" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="169.5" y="146.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="175.3" y="146.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="181.1" y="146.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="186.9" y="146.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="165" y="160" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="169.5" y="162.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="175.3" y="162.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="181.1" y="162.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="186.9" y="162.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="165" y="176" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="169.5" y="178.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="175.3" y="178.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="181.1" y="178.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="186.9" y="178.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="165" y="192" width="30" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".5"/><rect x="169.5" y="194.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="175.3" y="194.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="181.1" y="194.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><rect x="186.9" y="194.5" width="2.4" height="6" rx="1.2" fill="var(--accent)" opacity=".75"/><text x="120" y="262" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">sum of best matches</text><text x="120" y="278" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--faint)">Σ max · nothing pooled</text></g></svg>
+        <p class="arch3-badge">encoder at query time</p>
+      </div>
+    </div>
+    <figcaption id="fig1-cap"><b>Figure 1.</b> Dense retrieval <a href="#ref-dpr">[7]</a> pools
+    each side to a single point and compares the points, so the compression happens before anyone
+    knows what will be asked. Late interaction <a href="#ref-colbert">[8]</a> keeps every token
+    vector and lets each query token pick its best match, so a rare local clue survives. SPLADE
+    <a href="#ref-splade">[1]</a> keeps one weight per vocabulary word, which makes the vector
+    readable, and in the inference-free variant the query side needs no model at all. The
+    orange cells are words the encoder put on the document that the text never contained.</figcaption>
+  </figure>
 
-  <p>But keyword search would not do either. The corpus is my papers, slides, projects and CV, and
-  it is written in the register of people who say <em>wilderness search and rescue</em> when they
-  mean <em>finding someone lost in the woods</em>. A reader types the second. BM25 matches the
-  first. They never meet.</p>
+  <div class="tbl-wrap"><table class="tbl compare">
+    <thead><tr><th></th><th>Dense</th><th>SPLADE, inference-free</th><th>Late interaction</th></tr></thead>
+    <tbody>
+      <tr><td>Stored per passage</td><td>one vector, typically 768 floats, 3 KB</td><td>a few hundred weighted words; here 2.1 KB, 0.6 KB gzipped</td><td>one 128-d vector per token; 20–36 bytes each with ColBERTv2's compression <a href="#ref-colbert2">[9]</a></td></tr>
+      <tr><td>Score</td><td>one dot product</td><td>sparse dot product over shared words</td><td>sum over query tokens of the best-matching document token</td></tr>
+      <tr><td>Query time</td><td>run the encoder</td><td>tokenize, look up a weight per token</td><td>run the encoder, then MaxSim</td></tr>
+      <tr><td>Vocabulary gap bridged by</td><td>both encoders, invisibly</td><td>the document encoder alone, in words you can read</td><td>both encoders, per token</td></tr>
+      <tr><td>Why a result matched</td><td>it just did</td><td>this word times that word</td><td>these token pairs</td></tr>
+    </tbody>
+  </table></div>
 
-  <p>So the requirement was: retrieval that bridges vocabulary, on a static host, with the browser
-  downloading something closer to a stylesheet than a model. The trick that makes this possible is
-  that <strong>SPLADE is asymmetric</strong>, and one family of SPLADE models pushes the asymmetry
-  all the way to its conclusion.</p>
+  <p>Dense is the default and it is good. Late interaction is more accurate and pays for it in
+  index size and in the encoder it still needs when a query arrives. Both need something to run
+  when a reader types. The middle column is the one where that requirement disappears, and the
+  rest of this post is about how, using the search on this page as the specimen.</p>
 
   <h2 id="splade"><span class="num">02</span>SPLADE in one breath</h2>
 
-  <p>SPLADE <a href="#ref-splade">[1]</a> takes a BERT-style masked language model and uses the
-  head it was pre-trained with, the one that predicts a vocabulary token at every position, for
-  something else. For an input of <span class="math">n</span> tokens the MLM head produces an
-  <span class="math">n × |V|</span> matrix of logits, where <span class="math">|V|</span> is the
-  30,522-entry WordPiece vocabulary. SPLADE squashes it into one vector per passage:</p>
+  <p>SPLADE <a href="#ref-splade">[1]</a> takes a BERT-style masked language model and reuses the
+  head it was pre-trained with, the one that predicts a vocabulary token at every position. For
+  <span class="math">n</span> input tokens the head produces an <span class="math">n × |V|</span>
+  matrix of logits over the 30,522-entry WordPiece vocabulary, and SPLADE squashes it into one
+  vector per passage:</p>
 
   <p style="text-align:center;margin:26px 0"><span class="math">w<sub>j</sub> = max<sub>i</sub>
   <span class="r">log</span>(1 + <span class="r">log</span>(1 + <span class="r">ReLU</span>(ℓ<sub>ij</sub>)))</span></p>
 
-  <p>The ReLU keeps only positive evidence, the max over positions keeps the strongest occurrence
-  of each vocabulary term, and the double logarithm is the v3 saturation the OpenSearch models use
-  <a href="#ref-l0">[3]</a>; the original paper used a single log. Training adds a sparsity
-  regulariser, so the vector that comes out has a few hundred non-zero entries rather than thirty
-  thousand. Each non-zero entry has a name, because each dimension <em>is</em> a token. A passage
-  about UAVs may come out with a weight on <code>drone</code> even though the word never appears.
-  That is the "expansion" in <em>Sparse Lexical and Expansion</em>, and it is what BM25 cannot
-  do.</p>
-
-  <p>In the standard, symmetric setup both the query and the document go through the model.
-  Scoring is then a dot product of two sparse vectors, which an inverted index does well. The
-  quality is competitive with dense retrieval on the BEIR suite <a href="#ref-splade2">[2]</a>,
-  and unlike dense retrieval you can read the vector and see why a result matched.</p>
+  <p>ReLU keeps positive evidence, the max over positions keeps the strongest occurrence of each
+  word, and the double logarithm is the v3 saturation the OpenSearch models use
+  <a href="#ref-l0">[3]</a>. A sparsity regulariser in training leaves a few hundred non-zero
+  entries out of thirty thousand, and every entry has a name because every dimension <em>is</em> a
+  word. A passage about UAVs can come out with weight on <code>drone</code> without ever saying it.
+  That is the expansion in <em>Sparse Lexical and Expansion</em>, and it is what BM25 cannot do.
+  On the BEIR suite the quality is competitive with dense retrieval <a href="#ref-splade2">[2]</a>,
+  with the difference that you can read the vector and see why a result matched.</p>
 
   <h2 id="asymmetry"><span class="num">03</span>The asymmetry, which is the whole trick</h2>
 
-  <p>Here is the observation that pays for everything. Vocabulary bridging only has to happen
-  <em>once</em>, on one side. If the document side is expanded aggressively enough at index time,
-  the query side can be almost nothing: tokenize, look up a weight per token, done. Models trained
-  this way are called <em>inference-free</em>, because no neural network runs when a query
-  arrives.</p>
-
-  <p>There are two schools. The naver <code>splade-v3-doc</code> line gives every query token the
-  weight 1.0, a bag of words. The OpenSearch line <a href="#ref-if">[4]</a><a href="#ref-l0">[3]</a>
-  gives each query token a fixed, learned IDF-style weight, shipped with the model as a text
-  file, and trains the document encoder to expect exactly those weights. I used
+  <p>Vocabulary bridging only has to happen <em>once</em>, on one side. If the document side is
+  expanded aggressively enough at index time, the query side can be almost nothing: tokenize, look
+  up a weight per token, done. Models trained this way are called <em>inference-free</em>. The
+  naver <code>splade-v3-doc</code> line gives every query token weight 1.0. The OpenSearch line
+  <a href="#ref-if">[4]</a><a href="#ref-l0">[3]</a> ships a fixed, learned, IDF-style weight per
+  token as a text file and trains the document encoder to expect exactly those weights. I used
   <a href="https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill"><code>opensearch-neural-sparse-encoding-doc-v3-distill</code></a>:
-  67M parameters, Apache-2.0, an average NDCG@10 of 0.517 on the model card's thirteen BEIR sets.
-  The weights matter more than they sound. From the table this site actually ships:</p>
+  67M parameters, Apache-2.0, average NDCG@10 of 0.517 on the model card's thirteen BEIR sets. From
+  the weight table this site ships:</p>
 
   <div class="tbl-wrap"><table class="tbl">
     <thead><tr><th>Query token</th><th class="num">Static weight</th><th>Reading</th></tr></thead>
     <tbody>
-      <tr><td><code>the</code></td><td class="num">0.135</td><td>almost nothing; a stopword by arithmetic, not by list</td></tr>
-      <tr><td><code>a</code></td><td class="num">0.402</td><td></td></tr>
+      <tr><td><code>the</code></td><td class="num">0.135</td><td>a stopword by arithmetic, not by list</td></tr>
       <tr><td><code>how</code></td><td class="num">2.76</td><td>question words carry a little</td></tr>
-      <tr><td><code>?</code></td><td class="num">3.33</td><td>punctuation is a token too, and it has a weight</td></tr>
       <tr><td><code>search</code></td><td class="num">4.62</td><td></td></tr>
       <tr><td><code>drones</code></td><td class="num">9.22</td><td>68× the weight of <code>the</code></td></tr>
       <tr><td><code>sp</code> · <code>##lad</code> · <code>##e</code></td><td class="num">4.76 · 7.90 · 3.04</td><td>what SPLADE thinks of the word SPLADE</td></tr>
     </tbody>
   </table></div>
 
-  <p>With bag-of-words weights, <em>the</em> and <em>drones</em> would count the same and a passage
-  that mentions <em>the</em> a lot would win. With these weights the query side already knows what
-  is worth matching, in general, before it has seen a single document. It knows nothing about
-  <em>this</em> corpus; that is the price, and I come back to it in <a href="#limits">§10</a>.</p>
+  <p>With bag-of-words weights, <em>the</em> and <em>drones</em> would count the same. With these,
+  the query side already knows what is worth matching before it has seen a single document. It
+  knows nothing about <em>this</em> corpus, which is the price, and <a href="#limits">§7</a> comes
+  back to it.</p>
 
-  <figure class="fig" aria-labelledby="fig1-cap">
+    <figure class="fig" aria-labelledby="fig2-cap">
     <svg viewBox="0 0 760 360" role="img" aria-label="A balance scale. The heavy left pan, labelled index time on GitHub Actions, holds a 268 megabyte model and takes about three minutes. The light right pan, labelled query time in your browser, holds a tokenizer and a 61 kilobyte weight table and takes under a millisecond. The beam tilts hard to the left.">
       <defs>
         <marker id="f1arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
@@ -245,21 +253,19 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <text x="380" y="40" font-size="13" font-weight="600" fill="var(--ink)" text-anchor="middle">Where the weight lives</text>
       <text x="380" y="58" font-size="11.5" fill="var(--muted)" text-anchor="middle">All the intelligence is spent before anyone types a query</text>
     </svg>
-    <figcaption id="fig1-cap"><b>Figure 1.</b> Inference-free SPLADE moves all of the model to
+    <figcaption id="fig2-cap"><b>Figure 2.</b> Inference-free SPLADE moves all of the model to
     index time. The right pan holds everything the browser needs to turn a query into a vector: a
     WordPiece tokenizer, about a hundred lines of JavaScript, and one static weight per vocabulary
-    entry. Timings are from <a href="#pages">§7</a>.</figcaption>
+    entry. Timings are from <a href="#plumbing">§6</a>.</figcaption>
   </figure>
 
   <h2 id="vector"><span class="num">04</span>A vector you can read</h2>
 
-  <p>Dense embeddings ask you to trust them. A sparse one shows its working, and I think that is
-  reason enough to prefer it for a personal site where the point is partly to <em>explain</em> the
-  retrieval. Here is the abstract of the <a href="/publications.html#pub-sarenv">SAREnv paper</a>
-  as the document encoder sees it: 160 activated terms, 88 of which appear in the text and 72 of
-  which the model added.</p>
+  <p>Dense embeddings ask you to trust them. A sparse one shows its working. Here is the abstract
+  of the <a href="/publications.html#pub-sarenv">SAREnv paper</a> as the document encoder sees it:
+  160 activated words, 88 of them in the text and 72 added by the model.</p>
 
-  <figure class="fig" aria-labelledby="fig2-cap">
+    <figure class="fig" aria-labelledby="fig3-cap">
     <svg viewBox="0 0 760 400" role="img" aria-label="Horizontal bar chart of sixteen terms from the SAREnv abstract's sparse vector. Terms present in the text, in teal: sar 0.79, wilderness 0.73, search 0.71, data 0.67, path 0.57, drones 0.56, unmanned 0.55, rescue 0.50, lost 0.48. Terms the model added, in orange: drone 0.60, map 0.45, mapping 0.37, wild 0.37, camping 0.29, hunting 0.29, forest 0.28.">
       <text x="0" y="16" font-size="13" font-weight="600" fill="var(--ink)">SAREnv abstract, top of its sparse vector</text>
       <text x="0" y="34" font-size="11.5" fill="var(--muted)">weight per vocabulary term · teal is in the passage, orange the model added</text>
@@ -316,7 +322,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       </g>
       <text x="760" y="396" font-size="10.5" fill="var(--faint)" text-anchor="end">* not in the text · 144 further terms omitted</text>
     </svg>
-    <figcaption id="fig2-cap"><b>Figure 2.</b> Sixteen of the 160 terms, read straight out of
+    <figcaption id="fig3-cap"><b>Figure 3.</b> Sixteen of the 160 terms, read straight out of
     <code>search/index.json</code>. The paper never says <em>camping</em>, <em>hunting</em> or
     <em>forest</em>. The model decided a paper about wilderness search and rescue is the kind of
     document those words retrieve, which is exactly right and slightly eerie. Note the singular
@@ -324,17 +330,17 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     morphology.</figcaption>
   </figure>
 
-  <p>Across the whole corpus the picture is the same. Of 31,556 postings in the index, 59.5% are
-  terms not literally present in their passage. The 203 passages between them touch 5,757 of the
-  30,522 dimensions. So the "sparse" vector is sparse in the sense that matters, at about 0.5%
-  density per passage, but it is far from a bag of the words on the page.</p>
+  <p>Across the corpus the picture is the same. Of 31,556 postings in the index, 59.5% are words
+  not literally present in their passage, and the 203 passages between them touch 5,757 of the
+  30,522 dimensions. The vector is sparse in the sense that matters, about 0.5% density per
+  passage, but it is far from a bag of the words on the page.</p>
 
   <h2 id="dot"><span class="num">05</span>The dot product, with the working shown</h2>
 
   <p>Retrieval is now a sparse dot product between a query vector that cost nothing and a document
-  vector that was paid for weeks ago. Take the query from the top of this post.</p>
+  vector that was paid for weeks ago. Take the first example above the fold.</p>
 
-  <figure class="fig" aria-labelledby="fig3-cap">
+    <figure class="fig" aria-labelledby="fig4-cap">
     <svg viewBox="0 0 760 300" role="img" aria-label="A worked scoring ledger. The query 'finding someone lost in the woods' is tokenized into six terms with static weights: finding 5.92, someone 4.75, lost 5.42, in 0.50, the 0.14, woods 7.18. Against the passage 'Modeling Lost Person Locations' the products are: lost 5.42 times 1.00 equals 5.42; someone 4.75 times 0.19 equals 0.90; woods 7.18 times 0.12 equals 0.86; finding 5.92 times 0.12 equals 0.71; in and the contribute 0. Total 7.90.">
       <text x="0" y="16" font-size="13" font-weight="600" fill="var(--ink)">finding someone lost in the woods</text>
       <text x="0" y="34" font-size="11.5" fill="var(--muted)">scored against the top passage, “Modeling Lost Person Locations” (SAREnv §4)</text>
@@ -386,7 +392,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       </g>
       <text x="0" y="294" font-size="10.5" fill="var(--faint)">weights shown to two decimals; the sum uses the unrounded query table</text>
     </svg>
-    <figcaption id="fig3-cap"><b>Figure 3.</b> Six query tokens, four of which land. Only
+    <figcaption id="fig4-cap"><b>Figure 4.</b> Six query tokens, four of which land. Only
     <em>lost</em> is in the passage. <em>Someone</em>, <em>woods</em> and <em>finding</em> were put
     into the document vector by the encoder, at index time, in anticipation of a query like this
     one. The stopwords were given almost no weight by the table and no weight at all by the model,
@@ -394,350 +400,118 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   </figure>
 
   <p>Now the honest counter-example, because this is where inference-free stops being magic and
-  starts being a design choice. Type <em>heart attack</em> into this site and the top result is a
-  section of a U-space planning paper, with a score of 1.01, entirely from an expansion term
-  <code>heart</code> the model put on a passage about UAV corridors. Type <em>cardiac arrest</em>
-  and you get nothing at all. In a symmetric SPLADE the query encoder would have expanded
-  <em>cardiac</em> towards <em>heart</em>. Here the query side has no encoder, so the bridge has to
-  have been built from the document side, and no document on this site is about hearts. Inference-free
-  retrieval can only be as clever as the document encoder's guesses about future queries.</p>
+  becomes a design choice. Type <em>heart attack</em> and the top result is a U-space planning
+  section, scored 1.01 entirely from an expansion word <code>heart</code> the model put on a
+  passage about UAV corridors. Type <em>cardiac arrest</em> and you get nothing. A symmetric SPLADE
+  would have expanded <em>cardiac</em> towards <em>heart</em> on the query side; a dense model would
+  have placed the two phrases near each other. Here the bridge has to have been built from the
+  document side, and no document on this site is about hearts. Inference-free retrieval is exactly
+  as clever as the document encoder's guesses about future queries, and no cleverer.</p>
 
-  <h2 id="actions"><span class="num">06</span>The factory: GitHub Actions</h2>
+  <h2 id="plumbing"><span class="num">06</span>The plumbing, in one picture</h2>
 
-  <p>The heavy pan of Figure 1 is a workflow. Any push that touches an indexed page, a deck, a paper
-  text or the build script itself triggers <a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/.github/workflows/search-index.yml"><code>search-index.yml</code></a>,
-  which installs the CPU wheel of torch, pulls the model from the Hub, encodes every passage and
-  commits the result back to the branch. GitHub-hosted runners are free for public repositories,
-  and the whole thing takes between two and three and a half minutes on the runs I have on record,
-  most of it <code>pip install</code>.</p>
+  <p>Everything the model does happens on a GitHub Actions runner, once, when content changes.
+  Everything the reader touches is three static files and about a hundred lines of JavaScript.</p>
 
-  <pre class="code"><span class="c"># the part that does the work, trimmed</span>
-<span class="k">- name:</span> Install dependencies
-  <span class="k">run:</span> |
-    pip install torch --index-url https://download.pytorch.org/whl/cpu   <span class="c"># not the CUDA wheel, no GPU here</span>
-    pip install -r tools/requirements.txt
-<span class="k">- uses:</span> actions/cache@v4                 <span class="c"># ~/.cache/huggingface, so the 268 MB is fetched once</span>
-<span class="k">- run:</span> python tools/build_search_index.py --out search
-<span class="k">- run:</span> python tools/check_search_index.py     <span class="c"># browser tokenizer == HuggingFace tokenizer, or fail</span>
-<span class="k">- run:</span> |
-    git add search/index.json search/qweights.u16.bin search/vocab.txt search/corpus.json
-    git diff --cached --quiet || { git commit -m <span class="s">"Rebuild the SPLADE search index"</span>; git push;
-                                   gh workflow run pages.yml --ref <span class="s">"$GITHUB_REF_NAME"</span>; }</pre>
-
-  <p>Four details earned their place the hard way.</p>
-
-  <ol>
-    <li><strong>Determinism.</strong> Multi-threaded CPU reductions sum in a nondeterministic
-    order, which moves the odd weight by a hundredth and reshuffles ties. Invisible on the page,
-    but it made every rebuild a fresh diff, so the "index unchanged, nothing to commit" branch could
-    never fire. <code>torch.set_num_threads(1)</code> costs a few seconds on a corpus this size and
-    buys byte-identical output on the same runner image. Not across images: the rebuild
-    this very post triggered landed on a fresh runner with newer wheels, and twelve of the 203
-    passages moved by one quantisation step, one posting appeared, and the diff was a single
-    line of JSON. The numbers in this post are read from that rebuilt index.</li>
-    <li><strong>The token gotcha.</strong> A push made with the workflow's own
-    <code>GITHUB_TOKEN</code> deliberately does not trigger other workflows, so the commit carrying
-    the new index never started the Pages deploy. Every rebuilt index was sitting undeployed until
-    my next human push. The job now dispatches the deploy itself.</li>
-    <li><strong>The check step.</strong> The browser has its own WordPiece implementation, and a
-    tokenizer that disagrees with the one the model was trained with fails silently: results are
-    merely, quietly wrong. So the build tokenizes a fixture of awkward strings (<em>grøntved</em>,
-    <em>ESP-NOW</em>, <em>TrajAllocPy</em>, <em>café résumé naïve</em>) both ways and scores the
-    same queries both ways, and the job fails if either disagrees beyond 10<sup>−4</sup>.</li>
-    <li><strong>Truncation.</strong> The encoder reads 512 tokens. Paper sections are chunked to
-    about 1,800 characters between sentences, so nothing the model is scored on was cut off
-    unseen.</li>
-  </ol>
-
-  <h2 id="pages"><span class="num">07</span>The shop floor: GitHub Pages</h2>
-
-  <p>The light pan is three files and a script. Nothing is fetched until the reader focuses the
-  search box, so a visitor who never searches pays nothing for the feature.</p>
-
-  <div class="tbl-wrap"><table class="tbl">
-    <thead><tr><th>File</th><th>What it is</th><th class="num">Bytes</th><th class="num">gzipped</th></tr></thead>
-    <tbody>
-      <tr><td><code>index.json</code></td><td>203 passages: postings, quantised weights, a literal/expansion bit, title, URL, snippet</td><td class="num">431,055</td><td class="num">123,362</td></tr>
-      <tr><td><code>vocab.txt</code></td><td>line <span class="math">n</span> is token <span class="math">n</span>; needed to tokenize and to name any dimension</td><td class="num">231,508</td><td class="num">110,507</td></tr>
-      <tr><td><code>qweights.u16.bin</code></td><td>one <code>uint16</code> per vocabulary entry, the query table at 1/1000 resolution</td><td class="num">61,044</td><td class="num">51,096</td></tr>
-      <tr><td><code>splade.js</code></td><td>tokenizer, scorer, loader; no dependencies</td><td class="num">8,796</td><td class="num">3,446</td></tr>
-      <tr class="total"><td>Total</td><td>versus 267,954,768 bytes of model</td><td class="num">732,403</td><td class="num">288,411</td></tr>
-    </tbody>
-  </table></div>
-
-  <p>That is a 930× reduction in what the reader downloads, for the same document vectors. The
-  quantisation is deliberate and its error is bounded: document weights are stored as
-  <code>round(100·w)</code> in one byte, so the absolute error is at most 0.005. The smallest weight
-  kept is 0.05 (anything below is dropped, then the top 160 terms are kept), so the worst relative
-  error on the least important term is 10%, and on the terms that decide a ranking, which sit
-  around 0.5 to 0.8, it is under 1%. Query weights are stored at 1/1000 and the error there is
-  negligible. The CI check above compares the browser's scores to an unquantised reference, so the
-  bound is not just argued, it is tested on every build.</p>
-
-  <p>Scoring is brute force: for every passage, walk its postings and multiply where the query has
-  a weight. There are 31,556 postings in total. In Node on a laptop-class CPU that is
-  <strong>0.7 ms per query</strong>, and building the engine from the fetched files is 11 ms, both
-  measured with the same <code>splade.js</code> the browser runs. An inverted index would make each
-  query cheaper and the code less legible, and at this scale legibility wins; the point of
-  <a href="/search/">the search page</a> is to show the arithmetic, not to hide it.</p>
-
-  <div class="aside">
-    <p><strong>Why not a pure static inverted index?</strong> You could ship one posting list per
-    vocabulary term as its own file and fetch only the lists a query touches, and then a static
-    host would scale to hundreds of thousands of passages. It is the obvious next step and I have
-    not needed it. The scaling table in <a href="#limits">§10</a> says when I would.</p>
-  </div>
-
-  <h2 id="mistral"><span class="num">08</span>The one part that talks to a server</h2>
-
-  <p>Retrieval is the whole of the search page and the whole of the front page until someone
-  presses <em>Answer this</em>. Then, and only then, the four best passages are handed to a
-  language model that writes two to four sentences with bare <code>[n]</code> citations. This is the
-  part that costs money in most RAG systems, and it is the part where being cheap took the most
-  engineering.</p>
-
-  <p>The problem is not the model. Mistral's Experiment tier is free and is enough for a personal
-  site by a wide margin. The problem is that a static site <strong>cannot hold a secret</strong>.
-  Every byte GitHub Pages serves is public, so an API key in the JavaScript is an API key on the
-  internet. Something has to hold the key, and it has to be free too.</p>
-
-  <p>That something is a Cloudflare Worker on its own hostname, on the Workers Free plan. It does
-  one job: the browser sends it passage <em>ids</em>, never text, it resolves them against a copy of
-  the corpus fetched from this site, and it forwards the question and those passages to Mistral
-  with the key attached. Because it only accepts ids, it can only ever generate from this site's own
-  corpus: you cannot paste in a document and have it summarised on my key.</p>
-
-  <figure class="fig" aria-labelledby="fig4-cap">
-    <svg viewBox="0 0 760 268" role="img" aria-label="A request passes through five gates in a row before reaching Mistral: shape, origin, breaker, cache, and budget. Any gate that refuses drops down to a fallback lane labelled quote the best retrieved passage. The cache gate can also return a stored answer without reaching the model.">
-      <defs>
-        <marker id="f4a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M0 0L10 5 0 10z" fill="var(--faint)"/></marker>
-        <marker id="f4b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M0 0L10 5 0 10z" fill="var(--accent-2)"/></marker>
-      </defs>
-      <text x="0" y="16" font-size="13" font-weight="600" fill="var(--ink)">One question’s path through the worker</text>
-      <text x="0" y="34" font-size="11.5" fill="var(--muted)">every gate fails to an error, and every error means the reader still gets the retrieved passage</text>
-      <g transform="translate(0 18)">
-      <!-- browser -->
-      <rect x="0" y="70" width="78" height="46" rx="9" fill="var(--accent-faint)" stroke="var(--accent)" stroke-width="1.3"/>
-      <text x="39" y="89" font-size="11" font-weight="600" fill="var(--ink)" text-anchor="middle">browser</text>
-      <text x="39" y="104" font-size="9.5" fill="var(--muted)" text-anchor="middle" font-family="IBM Plex Mono,monospace">q + 4 ids</text>
-      <!-- gates -->
-      <g font-size="10.5" text-anchor="middle">
-        <g transform="translate(104 66)">
-          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--hair)"/>
-          <text x="46" y="20" font-weight="600" fill="var(--ink)">shape</text>
-          <text x="46" y="35" fill="var(--muted)" font-size="9.5">≤ 4 KB, 3–200 chars</text>
-          <text x="46" y="47" fill="var(--muted)" font-size="9.5">≤ 4 ids</text>
-        </g>
-        <g transform="translate(212 66)">
-          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--hair)"/>
-          <text x="46" y="20" font-weight="600" fill="var(--ink)">origin</text>
-          <text x="46" y="35" fill="var(--muted)" font-size="9.5">only this site’s</text>
-          <text x="46" y="47" fill="var(--muted)" font-size="9.5">pages may ask</text>
-        </g>
-        <g transform="translate(320 66)">
-          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--hair)"/>
-          <text x="46" y="20" font-weight="600" fill="var(--ink)">breaker</text>
-          <text x="46" y="35" fill="var(--muted)" font-size="9.5">upstream 429/5xx</text>
-          <text x="46" y="47" fill="var(--muted)" font-size="9.5">pauses 15 min</text>
-        </g>
-        <g transform="translate(428 66)">
-          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--accent)" stroke-width="1.3"/>
-          <text x="46" y="20" font-weight="600" fill="var(--ink)">cache</text>
-          <text x="46" y="35" fill="var(--muted)" font-size="9.5">same question,</text>
-          <text x="46" y="47" fill="var(--muted)" font-size="9.5">same answer, 24 h</text>
-        </g>
-        <g transform="translate(536 66)">
-          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--hair)"/>
-          <text x="46" y="20" font-weight="600" fill="var(--ink)">budget</text>
-          <text x="46" y="35" fill="var(--muted)" font-size="9.5">40 / IP / day</text>
-          <text x="46" y="47" fill="var(--muted)" font-size="9.5">800 / site / day</text>
-        </g>
-      </g>
-      <!-- mistral -->
-      <rect x="654" y="66" width="106" height="54" rx="9" fill="var(--ink)"/>
-      <text x="707" y="88" font-size="11" font-weight="600" fill="var(--canvas)" text-anchor="middle">Mistral</text>
-      <text x="707" y="103" font-size="9.5" fill="var(--canvas)" text-anchor="middle" font-family="IBM Plex Mono,monospace">≤ 220 tokens out</text>
-      <!-- arrows along the top lane -->
-      <g stroke="var(--faint)" stroke-width="1.4" fill="none" marker-end="url(#f4a)">
-        <line x1="80" y1="93" x2="100" y2="93"/><line x1="198" y1="93" x2="208" y2="93"/>
-        <line x1="306" y1="93" x2="316" y2="93"/><line x1="414" y1="93" x2="424" y2="93"/>
-        <line x1="522" y1="93" x2="532" y2="93"/><line x1="630" y1="93" x2="650" y2="93"/>
-      </g>
-      <!-- cache hit shortcut back to the browser -->
-      <path d="M474 66 C474 44 300 44 60 44 L60 66" stroke="var(--accent)" stroke-width="1.3" fill="none" stroke-dasharray="4 4" marker-end="url(#f4a)"/>
-      <text x="270" y="40" font-size="9.5" fill="var(--accent)" text-anchor="middle" style="paint-order:stroke" stroke="var(--card)" stroke-width="4">cache hit: no model call at all</text>
-      <!-- fallback lane -->
-      <rect x="104" y="180" width="524" height="40" rx="9" fill="color-mix(in srgb,var(--accent-2) 10%,transparent)" stroke="var(--accent-2)" stroke-width="1.2" stroke-dasharray="5 4"/>
-      <text x="366" y="198" font-size="11" font-weight="600" fill="var(--accent-2)" text-anchor="middle">refused, rate-limited, paused or unreachable</text>
-      <text x="366" y="212" font-size="10" fill="var(--muted)" text-anchor="middle">the page quotes the best retrieved passage instead, and says so</text>
-      <g stroke="var(--accent-2)" stroke-width="1.2" fill="none" marker-end="url(#f4b)">
-        <line x1="150" y1="122" x2="150" y2="176"/><line x1="258" y1="122" x2="258" y2="176"/>
-        <line x1="366" y1="122" x2="366" y2="176"/><line x1="582" y1="122" x2="582" y2="176"/>
-        <path d="M707 122 L707 150 L636 150 L636 176" />
-      </g>
-      <text x="0" y="244" font-size="10.5" fill="var(--faint)">per-IP counters are salted hashes in the Cache API, so no address is stored; the breaker is the only KV write, once per incident</text>
-      </g>
-    </svg>
-    <figcaption id="fig4-cap"><b>Figure 4.</b> The gates in the order a request meets them, from
-    <a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/worker/src/index.js"><code>worker/src/index.js</code></a>.
-    Nothing above the budget gate spends a model call. The cache is keyed on the normalised
-    question plus the sorted passage ids, so two readers asking the same thing cost one
-    generation.</figcaption>
+  <figure class="fig" aria-labelledby="fig5-cap">
+    <svg viewBox="0 0 760 300" role="img" aria-label="Pipeline. A git push triggers GitHub Actions, which runs the 67 million parameter encoder once over 203 passages in about three minutes and commits the index. GitHub Pages serves three static files, 288 kilobytes gzipped, fetched when the search box is focused. The browser tokenizes the query, looks up weights and computes the dot product in 0.7 milliseconds with no model and no server. A dashed optional lane runs only when a reader presses Answer this: the browser sends passage ids to a Cloudflare Worker on the free plan, which holds the API key, applies caps and a cache, and forwards to Mistral’s free tier, which returns two to four sentences with numbered citations. Every box is marked zero euros."><g font-family="var(--sans)"><text x="0" y="16" font-size="13" font-weight="600" fill="var(--ink)">Where the work happens</text><text x="0" y="34" font-size="11.5" fill="var(--muted)">the model runs once, on the left; a reader only ever touches the right</text><rect x="0" y="62" width="96" height="74" rx="10" fill="var(--card)" stroke="var(--hair)" stroke-width="1"/><text x="14" y="84" font-size="12" font-weight="600" fill="var(--ink)">git push</text><text x="14" y="102" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">you edit a</text><text x="14" y="116" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">page or a paper</text><path d="M98 99H120" stroke="var(--faint)" stroke-width="1.4" fill="none"/><path d="M126 99l-7 -4v8z" fill="var(--faint)"/><rect x="128" y="62" width="176" height="74" rx="10" fill="var(--card)" stroke="var(--hair)" stroke-width="1"/><text x="142" y="84" font-size="12" font-weight="600" fill="var(--ink)">GitHub Actions</text><text x="142" y="102" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">67M encoder, once</text><text x="142" y="116" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">203 passages · ~3 min</text><text x="142" y="130" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">commits the index</text><rect x="264" y="72" width="30" height="15" rx="7.5" fill="var(--accent-faint)"/><text x="279" y="83" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--accent)">€0</text><path d="M306 99H328" stroke="var(--faint)" stroke-width="1.4" fill="none"/><path d="M334 99l-7 -4v8z" fill="var(--faint)"/><rect x="336" y="62" width="176" height="74" rx="10" fill="var(--card)" stroke="var(--hair)" stroke-width="1"/><text x="350" y="84" font-size="12" font-weight="600" fill="var(--ink)">GitHub Pages</text><text x="350" y="102" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">3 static files</text><text x="350" y="116" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">288 KB gzipped</text><text x="350" y="130" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">fetched on focus</text><rect x="472" y="72" width="30" height="15" rx="7.5" fill="var(--accent-faint)"/><text x="487" y="83" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--accent)">€0</text><path d="M514 99H536" stroke="var(--faint)" stroke-width="1.4" fill="none"/><path d="M542 99l-7 -4v8z" fill="var(--faint)"/><rect x="544" y="62" width="216" height="74" rx="10" fill="var(--accent-faint)" stroke="var(--accent)" stroke-width="1.3"/><text x="558" y="84" font-size="12" font-weight="600" fill="var(--ink)">Your browser</text><text x="558" y="102" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">tokenize · weight table</text><text x="558" y="116" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">dot product · 0.7 ms</text><text x="558" y="130" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">no model, no server</text><rect x="720" y="72" width="30" height="15" rx="7.5" fill="var(--accent-faint)"/><text x="735" y="83" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--accent)">€0</text><text x="0" y="176" font-size="10.5" fill="var(--accent-2)" font-weight="600">only if a reader presses “Answer this”</text><text x="0" y="191" font-size="10" fill="var(--muted)">the four best passages,</text><text x="0" y="204" font-size="10" fill="var(--muted)">by id, never by text</text><path d="M652 138V158H424V184" stroke="var(--accent-2)" stroke-width="1.3" fill="none" stroke-dasharray="5 4"/><path d="M424 190l-4 -7h8z" fill="var(--accent-2)"/><rect x="336" y="192" width="176" height="74" rx="10" fill="var(--card)" stroke="var(--accent-2)" stroke-width="1.2" stroke-dasharray="5 4"/><text x="350" y="214" font-size="12" font-weight="600" fill="var(--ink)">Cloudflare Worker</text><text x="350" y="232" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">holds the API key</text><text x="350" y="246" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">caps and a 24 h cache</text><text x="350" y="260" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">Workers Free</text><rect x="472" y="202" width="30" height="15" rx="7.5" fill="var(--accent-faint)"/><text x="487" y="213" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--accent)">€0</text><path d="M514 229H536" stroke="var(--accent-2)" stroke-width="1.4" fill="none"/><path d="M542 229l-7 -4v8z" fill="var(--accent-2)"/><rect x="544" y="192" width="216" height="74" rx="10" fill="var(--ink)" stroke="var(--ink)" stroke-width="1"/><text x="558" y="214" font-size="12" font-weight="600" fill="var(--canvas)">Mistral</text><text x="558" y="232" font-size="10" fill="var(--canvas)" font-family="IBM Plex Mono,monospace">2–4 sentences, [n] cites</text><text x="558" y="246" font-size="10" fill="var(--canvas)" font-family="IBM Plex Mono,monospace">free Experiment tier</text><text x="558" y="260" font-size="10" fill="var(--canvas)" font-family="IBM Plex Mono,monospace">429 → the page quotes [1]</text><rect x="720" y="202" width="30" height="15" rx="7.5" fill="rgba(255,255,255,.14)"/><text x="735" y="213" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--canvas)">€0</text><text x="0" y="292" font-size="10.5" fill="var(--faint)">no payment method on any account · every limit fails with an error and never with a bill · sizes measured on the live index</text></g></svg>
+    <figcaption id="fig5-cap"><b>Figure 5.</b> The top row is the whole of search. A push that
+    touches indexed content runs the encoder on a free runner and commits the result; Pages serves
+    it; the browser fetches 288 KB gzipped on first focus, which is 930× less than the 268 MB
+    model, and scores all 31,556 postings by brute force in 0.7 ms. The bottom row exists only
+    for the <em>Answer this</em> button and is the one part that talks to a server, because a
+    static site cannot hold an API key. The Worker accepts passage ids, never text, so it can only
+    ever generate from this site's own corpus.</figcaption>
   </figure>
 
-  <p>The design principle is that this stays free <em>structurally</em> rather than carefully.
-  Workers Free has no overage billing. The Cloudflare account has no payment method. The Mistral
-  organisation is on the Experiment tier, whose limits are per second, per minute and per month and
-  live in the admin console rather than the docs. So every limit in the system, when hit, produces
-  an error, and every error the browser sees means it leaves the retrieved passage on screen and
-  stops offering to generate. The caps inside the worker make that degradation rare and quiet.
-  They do not prevent a bill, because there is no bill to prevent.</p>
+  <p>Three details from the top row earned their place the hard way. Document weights are stored
+  as one byte each, <code>round(100·w)</code>, so the error on the weights that decide a ranking is
+  under 1%, and CI compares the browser's scores against an unquantised reference on every build.
+  The browser has its own WordPiece implementation, and a tokenizer that drifts from the model's
+  fails silently, so the same build tokenizes a fixture of awkward strings (<em>grøntved</em>,
+  <em>ESP-NOW</em>, <em>café résumé naïve</em>) both ways and fails on any disagreement. And
+  <code>torch.set_num_threads(1)</code> makes the encoding deterministic on a given runner image,
+  which is what lets an unchanged index produce no commit. The workflow, the build script and the
+  Worker are linked in <a href="#steal">§8</a>.</p>
 
-  <p>Two constraints on the model's output are worth stealing. It is told to cite as bare
-  <code>[1]</code>, <code>[2]</code> and never to write a URL; the page resolves those numbers
-  against the ordered id list it sent, so a hallucinated link is not representable, it just stays as
-  text. And the passages come with their full text, not their 240-character snippets, because I
-  once shipped the snippets and had the model confidently answer from four opening sentences.</p>
+  <h2 id="limits"><span class="num">07</span>Where it stops</h2>
 
-  <h2 id="ledger"><span class="num">09</span>The receipt, itemised</h2>
-
-  <p>Every free tier has a limit that would bind first if this site were popular. Here they are,
-  with what actually happens at the limit, as documented by each provider at the time of
-  writing.</p>
+  <p>The index is 2.1 KB per passage uncompressed and scoring is linear in postings. Extrapolating
+  from the measured figures:</p>
 
   <div class="tbl-wrap"><table class="tbl">
-    <thead><tr><th>Line item</th><th>Binding limit</th><th>At the limit</th></tr></thead>
+    <thead><tr><th>Passages</th><th class="num">Index, gzipped</th><th class="num">Brute-force query</th><th>Verdict</th></tr></thead>
     <tbody>
-      <tr><td>Document encoder</td><td>none; Apache-2.0, 268 MB download, cached in CI</td><td>—</td></tr>
-      <tr><td>GitHub Actions</td><td>unmetered on standard runners for public repositories</td><td>—</td></tr>
-      <tr><td>GitHub Pages</td><td>1 GB published site; soft 100 GB/month bandwidth; not for commercial SaaS</td><td>a polite email, historically</td></tr>
-      <tr><td>Workers Free</td><td>100,000 requests/day; 10 ms CPU per invocation; KV 1,000 writes/day</td><td>requests fail with an error; the page quotes the passage</td></tr>
-      <tr><td>Mistral Experiment</td><td>rate-limited per second, minute and month; figures in the console</td><td>429; the breaker pauses for 15 minutes</td></tr>
-      <tr><td>My own caps</td><td>40 answers per IP per day, 800 per day site-wide, 200 characters in, 220 tokens out</td><td>429 from the worker, same fallback</td></tr>
+      <tr><td>203 (today)</td><td class="num">123 KB</td><td class="num">0.7 ms</td><td>measured</td></tr>
+      <tr><td>1,000</td><td class="num">0.6 MB</td><td class="num">3.5 ms</td><td>fine</td></tr>
+      <tr><td>10,000</td><td class="num">6 MB</td><td class="num">35 ms</td><td>the download is now the problem</td></tr>
+      <tr><td>100,000</td><td class="num">61 MB</td><td class="num">350 ms</td><td>ship one posting list per word, or admit you need a server</td></tr>
     </tbody>
   </table></div>
 
-  <p>The 10 ms CPU budget is the tightest one and it shaped the code. Parsing the 317 KB corpus
-  measures 0.66 ms, streaming the answer back is done by handing Mistral's response body straight
-  through with a <code>clone()</code> for the cache rather than transforming it, and the per-IP
-  counters are the Cache API rather than KV because KV allows a thousand writes a day and a busy
-  afternoon would spend them on accounting.</p>
+  <p>The download column is the reliable one; the timing assumes the loop stays cache-friendly,
+  which it will not. This architecture is right for a corpus you could read in an afternoon and
+  wrong for one you could not. Past that, Lucene-based engines do this natively, and OpenSearch
+  ships this exact model for the purpose <a href="#ref-if">[4]</a>, which is the not-free path.</p>
 
-  <h2 id="limits"><span class="num">10</span>Where the cheapness stops</h2>
+  <p>Two limits are about the model rather than the plumbing. The static query weights are a
+  learned IDF over MS MARCO-shaped web text: they rate <em>drone</em> far above <em>system</em>,
+  8.71 against 3.43, while on this site the two words are equally ordinary, in the vectors of 38%
+  and 36% of passages. A corpus-specific IDF would fix that and would break the contract the
+  document encoder was trained under, and I have not measured which effect wins on 203 passages.
+  And WordPiece shreds proper nouns: <em>Grøntved</em> becomes <code>gr ##ø ##nt ##ved</code>. The
+  fragments happen to be rare enough here that the right thing still surfaces, but that is luck.
+  Meaning is what this is for; finding a specific known thing is what the metadata filters on the
+  search page are for. The model is also English only, and a free API tier is typically paid for in
+  the prompts you send, so read the terms before you route anything sensitive through one. My
+  papers are public; that is the case where the trade is fine.</p>
 
-  <p>Being rigorous about cost means being rigorous about where the argument fails.</p>
-
-  <h3>Scale</h3>
-  <p>The index is 2.1 KB per passage uncompressed and 0.6 KB gzipped, and brute-force scoring is
-  linear in postings. Extrapolating from the measured figures:</p>
-
-  <div class="tbl-wrap"><table class="tbl">
-    <thead><tr><th>Passages</th><th class="num">Index, raw</th><th class="num">Index, gzipped</th><th class="num">Brute-force query</th><th>Verdict</th></tr></thead>
-    <tbody>
-      <tr><td>203 (today)</td><td class="num">431 KB</td><td class="num">123 KB</td><td class="num">0.7 ms</td><td>measured</td></tr>
-      <tr><td>1,000</td><td class="num">2.1 MB</td><td class="num">0.6 MB</td><td class="num">3.5 ms</td><td>fine</td></tr>
-      <tr><td>10,000</td><td class="num">21 MB</td><td class="num">6 MB</td><td class="num">35 ms</td><td>the download is now the problem</td></tr>
-      <tr><td>100,000</td><td class="num">212 MB</td><td class="num">61 MB</td><td class="num">350 ms</td><td>split postings by term, or admit you need a server</td></tr>
-    </tbody>
-  </table></div>
-
-  <p>Those are estimates from a 203-passage measurement and should be read as such; the download
-  size is the reliable column, the timing assumes the loop stays cache-friendly, which it will
-  not. The honest reading is that this architecture is right for a corpus you could read in an
-  afternoon and wrong for one you could not. Around a few thousand passages the per-term
-  posting-file variant from <a href="#pages">§7</a> becomes worth writing. Somewhere past that,
-  Lucene-based engines do this natively and OpenSearch ships this exact model for the purpose
-  <a href="#ref-if">[4]</a>, which is the not-free path.</p>
-
-  <h3>What the query side cannot know</h3>
-  <p>The static weights are a learned IDF over the training corpora, mostly MS MARCO-shaped web
-  text. They know <em>drone</em> is far more discriminative than <em>system</em> in general, and the
-  table says so: 8.71 against 3.43. They do not know that on this site the two words are equally
-  ordinary, with <em>drone</em> in the vectors of 38% of the passages and <em>system</em> in 36%. A corpus-specific IDF would fix that, and I could compute one in CI, but it would break the
-  contract the document encoder was trained under, and I have not measured whether the trade is
-  worth it on 203 passages. That is a real experiment I have not run, so I will not claim the
-  answer.</p>
-
-  <h3>Known items</h3>
-  <p>WordPiece shreds proper nouns: <em>ICUAS 2024</em> becomes <code>ic ##ua ##s 202 ##4</code>,
-  and <em>Grøntved</em> becomes <code>gr ##ø ##nt ##ved</code>. The fragments happen to be rare
-  enough here that the right thing still surfaces, but that is luck, not design. Meaning is what
-  this is for. Finding a specific known thing is what a metadata filter is for, and the search page
-  has those.</p>
-
-  <h3>English only, and the other kind of cost</h3>
-  <p>The model is English. Danish queries tokenize into fragments that match by accident. And the
-  free tiers are not free in the sense of costing nobody anything: a free API tier is typically paid
-  for in the prompts you send, so read the current terms before you route anything sensitive
-  through one. The questions readers ask this site are about my papers, which are public, and the
-  passages are already on the internet. That is the case where the trade is fine. It is not every
-  case.</p>
-
-  <h2 id="steal"><span class="num">11</span>Steal it</h2>
+  <h2 id="steal"><span class="num">08</span>Steal it</h2>
 
   <p>Everything is in <a href="https://github.com/kasperg3/kasperg3.github.io">the repository</a>
   and none of it is clever enough to deserve a package:</p>
 
   <ul>
     <li><a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/tools/build_search_index.py"><code>tools/build_search_index.py</code></a>:
-    extract passages from HTML with the standard library, encode them, quantise, write the three
-    files. The v3 activation is the double logarithm; do not "simplify" it to the v1 formula.</li>
+    extract passages, encode, quantise, write three files. The v3 activation is the double
+    logarithm; do not simplify it to the v1 formula.</li>
     <li><a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/search/splade.js"><code>search/splade.js</code></a>:
-    WordPiece, the dot product, the loader. The search itself is six lines inside
-    <code>search()</code>.</li>
+    WordPiece, the dot product, the loader. The search itself is six lines inside <code>search()</code>.</li>
     <li><a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/.github/workflows/search-index.yml"><code>.github/workflows/search-index.yml</code></a>:
-    the factory, including the two lines that dispatch the deploy.</li>
+    the top row of Figure 5, including the dispatch of the Pages deploy that a
+    <code>GITHUB_TOKEN</code> push would otherwise never trigger.</li>
     <li><a href="https://github.com/kasperg3/kasperg3.github.io/tree/master/worker"><code>worker/</code></a>:
-    the key holder and its gates, with the grounding prompt in a file of its own because the
-    prompt is the interesting part and hiding it would only hide it from people acting in good
-    faith.</li>
+    the bottom row, with the grounding prompt in a file of its own.</li>
   </ul>
 
-  <p>And go and <a href="/search/">type something into the search</a>. Pick a result, and the page
-  shows you the query decomposed, the terms that scored, and the whole 30,522-dimensional vector
-  as a strip of mostly nothing. Then try <em>cardiac arrest</em>, and enjoy the silence. It is the
-  most instructive result on the site.</p>
+  <p>Then go and <a href="/search/">type something into the search</a>. Pick a result and the page
+  shows the query decomposed, the words that scored, and the whole 30,522-dimensional vector as a
+  strip of mostly nothing. Then try <em>cardiac arrest</em>, and enjoy the silence.</p>
 
-  <h2 id="next"><span class="num">12</span>Up next, if the receipt stays at zero</h2>
+  <h2 id="next"><span class="num">09</span>Up next</h2>
 
-  <p>Three things I want to try, in rising order of how likely they are to cost money.</p>
+  <p><strong>Inference-free <em>visual</em> SPLADE.</strong> The document encoder does not have to
+  read text. V-SPLADE <a href="#ref-vsplade">[10]</a> puts a vision-language model on the document
+  side, reads the page as an image, and leaves the query side as a tokenizer and a weight table.
+  <code>splade.js</code> was written not to care about the vocabulary size for exactly this reason.
+  My slides are images with structure and the papers have figures nobody can search; the open
+  question is whether a VLM encoding a few hundred page images fits in a free CPU runner's
+  six-hour job, and I intend to time it rather than guess.</p>
 
-  <h3>Inference-free <em>visual</em> SPLADE</h3>
-  <p>The document encoder does not have to read text. V-SPLADE <a href="#ref-vsplade">[7]</a>
-  puts a vision-language model on the document side, reads the page as an image, and still
-  leaves the query side as a tokenizer and a weight table. Caption-gated supervision teaches it
-  which vocabulary terms a picture should light up, and the paper reports it more than doubling
-  recall over a same-scale dense model on an 18.7M-document corpus. The vocabulary is larger, but
-  the shape of the query table is identical, and <code>splade.js</code> was written not to care
-  about the vocabulary size for exactly this reason. My slides are already images with structure,
-  and the papers have figures nobody can search. The open question is whether a VLM encoding a few
-  hundred page images fits inside a free CPU runner's six-hour job limit. I expect it does, slowly,
-  and I intend to time it rather than guess.</p>
+  <p><strong>A vocabulary of my own.</strong> <em>Grøntved</em> shreds because the vocabulary was
+  cut for English web text in 2018. Yu, Mallia and Petri <a href="#ref-vocab">[11]</a> show that
+  a corpus-specific vocabulary improves learned sparse retrieval by up to 12% and, with shorter
+  posting lists, halves latency. It means training the document encoder again, which is the first
+  item here a CPU runner might refuse to do for free.</p>
 
-  <h3>A vocabulary of my own</h3>
-  <p><em>Grøntved</em> becomes <code>gr ##ø ##nt ##ved</code> because the vocabulary was cut for
-  English web text in 2018. Yu, Mallia and Petri <a href="#ref-vocab">[8]</a> show that
-  pre-training the encoder on a corpus-specific vocabulary improves learned sparse retrieval by up
-  to 12% and, because the posting lists get shorter, cuts latency by up to half. For this site the
-  interesting version is a Danish-and-robotics vocabulary. It means training the document encoder
-  again, which is the first thing on this list that a CPU runner might refuse to do for free. A 67M
-  model, in pieces, across several six-hour jobs, with the checkpoint committed between them, is
-  either a clever use of a free tier or an abuse of one, and I have not decided which.</p>
-
-  <h3>SPLARE, and the end of readable dimensions</h3>
-  <p>The dimensions of a SPLADE vector are words. That is what made <a href="#vector">§4</a>
-  possible. SPLARE <a href="#ref-splare">[9]</a> gives that up: it trains a sparse autoencoder on
-  an LLM's hidden states and retrieves over the autoencoder's latent features instead of the
-  vocabulary, which buys a representation that is multilingual and holds up out of domain. The
-  latents are interpretable in the mechanistic sense, but they no longer have a WordPiece spelling,
-  so the figures in this post would need a legend generated by a model rather than read off a
-  file. It is also not inference-free: the query goes through the LLM too. Whether a static table
-  from tokens to latents can stand in for that, the way an IDF table stands in for the query
-  encoder here, is a research question rather than a weekend, and the honest teaser is that I do
-  not know. It is the one on this list most likely to end with a GPU invoice, which is how I will
-  know it was worth it.</p>
+  <p><strong>SPLARE, and the end of readable dimensions.</strong> SPLARE
+  <a href="#ref-splare">[12]</a> retrieves over the latent features of a sparse autoencoder
+  trained on an LLM's hidden states rather than over the vocabulary, which buys a multilingual
+  representation that holds up out of domain. The latents no longer have a WordPiece spelling, so
+  Figure 3 would need a legend generated by a model, and it is not inference-free: the query goes
+  through the LLM too. Whether a static table from tokens to latents can stand in for that, the
+  way an IDF table stands in for the query encoder here, is a research question rather than a
+  weekend, and it is the item on this list most likely to end with a GPU invoice.</p>
 
   <hr>
 
@@ -760,8 +534,16 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     model card with the BEIR table and the reference encoding code. Apache-2.0.</li>
     <li id="ref-kshivendu">K. Shivendu. <a href="https://blog.kshivendu.dev/blog/if-splade"><em>Inference-Free
     SPLADE: Full Quality, 13× Faster Queries.</em></a> 2026. A proper benchmark of inference-free
-    versus full SPLADE on BEIR SciFact across two engines; the post that nudged me to write this
-    one up, and the place to go if you want the numbers rather than the receipt.</li>
+    versus full SPLADE on BEIR SciFact; the place to go for the numbers.</li>
+    <li id="ref-dpr">V. Karpukhin, B. Oğuz, S. Min, P. Lewis, L. Wu, S. Edunov, D. Chen, W. Yih.
+    <em>Dense Passage Retrieval for Open-Domain Question Answering.</em> EMNLP 2020.
+    <a href="https://arxiv.org/abs/2004.04906">arXiv:2004.04906</a></li>
+    <li id="ref-colbert">O. Khattab, M. Zaharia. <em>ColBERT: Efficient and Effective Passage
+    Search via Contextualized Late Interaction over BERT.</em> SIGIR 2020.
+    <a href="https://arxiv.org/abs/2004.12832">arXiv:2004.12832</a></li>
+    <li id="ref-colbert2">K. Santhanam, O. Khattab, J. Saad-Falcon, C. Potts, M. Zaharia.
+    <em>ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction.</em> NAACL
+    2022. <a href="https://arxiv.org/abs/2112.01488">arXiv:2112.01488</a></li>
     <li id="ref-vsplade">G.-H. Cho, Y. Lee, K. Jeong, S. Lee, S. Han, H. Déjean, S. Clinchant,
     S.-w. Hwang. <em>Inference-Free Multimodal Learned Sparse Retrieval for Production-Scale Visual
     Document Search.</em> 2026. V-SPLADE. <a href="https://arxiv.org/abs/2605.30917">arXiv:2605.30917</a></li>

@@ -60,6 +60,7 @@ pre.code .n{color:#c9b3ff}
 .tbl .total td{border-bottom:0;border-top:2px solid var(--ink);color:var(--ink);font-weight:600}
 .tbl .total td.num{color:var(--accent)}
 .tbl-wrap{overflow-x:auto}
+.tbl.compare{min-width:600px}.tbl.compare th:first-child{width:18%}
 
 /* figures */
 figure.fig{margin:30px 0;background:var(--card);border:1px solid var(--hair-soft);border-radius:16px;
@@ -69,6 +70,19 @@ figure.fig figcaption{font-size:14.5px;line-height:1.55;color:var(--muted);margi
                       padding-top:12px;border-top:1px solid var(--hair-soft)}
 figure.fig figcaption b{color:var(--ink);font-weight:600}
 .fig .mono{font-family:var(--mono)}
+
+/* three retrieval architectures side by side (Figure 1 of the SPLADE post) */
+.arch3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.arch3-panel{background:var(--canvas);border:1px solid var(--hair-soft);border-radius:12px;padding:12px 12px 10px;min-width:0}
+.arch3-panel.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.post .arch3-panel h3{font:600 14px/1.3 var(--sans);margin:0 0 10px;color:var(--ink)}
+.arch3-panel h3 small{display:block;font:500 11px/1.4 var(--mono);color:var(--faint);margin-top:2px}
+.arch3-panel svg{width:100%;height:auto;display:block}
+.post .arch3-badge{margin:8px 0 0;font:500 11px/1.4 var(--mono);color:var(--faint);text-align:center}
+.post .arch3-badge.q{color:var(--accent);font-weight:600}
+@media (max-width:720px){.arch3{grid-template-columns:1fr}.arch3-panel{padding:14px 14px 12px}}
+/* a figure that earns more than the text column: centred on the column, wider than it */
+@media (min-width:1000px){figure.fig.wide{width:min(1000px,calc(100vw - 80px));margin-left:calc(50% - min(1000px,calc(100vw - 80px))/2)}}
 
 /* the live search box at the top of a post: one header line, the field, the chips, one footer line */
 .demo{margin:26px 0 4px;background:var(--card);border:1px solid var(--accent);border-radius:14px;
