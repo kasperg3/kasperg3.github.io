@@ -18,6 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=aa0af2e6">
 <link rel="stylesheet" href="/blog/blog.css?v=1">
+<link rel="stylesheet" href="/search/search.css?v=6">
 <script>try{var t=localStorage.getItem("deck-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BlogPosting",
@@ -65,10 +66,51 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     anywhere, and my monthly invoice for it is €0.00. This is the receipt, itemised, with the maths
     that makes each line hold.</p>
     <div class="post-meta">
-      <span><b>Kasper Rømer Grøntved</b></span><span>8 September 2026</span><span>≈ 14 min</span>
+      <span><b>Kasper Rømer Grøntved</b></span><span>8 September 2026</span><span>≈ 16 min</span>
       <span>Every number below is measured on the live index or cited</span>
     </div>
   </div>
+
+  <!-- The thing the post is about, before the post. Same widget as /search/,
+       same index; nothing is fetched until the box is focused. -->
+  <section class="demo" aria-labelledby="demo-title">
+    <p class="demo-eyebrow"><i class="dot" aria-hidden="true"></i>Live · the index this post measures</p>
+    <h2 class="demo-title" id="demo-title">Try it before you read it</h2>
+    <p class="demo-lede">Type something a person would say, not a keyword. Everything that happens
+    next happens in this tab: no request carries your query anywhere.</p>
+    <div class="sp-field-wrap">
+      <div class="sp-field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <label for="q" class="skip">Search this site</label>
+        <input id="q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search"
+               role="combobox" aria-expanded="false" aria-controls="ac-list"
+               aria-autocomplete="list" aria-describedby="ac-hint"
+               placeholder="finding someone lost in the woods">
+        <button id="clear" class="sp-clear" type="button" hidden aria-label="Clear the search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="sp-ac" id="ac" hidden>
+        <ul class="sp-ac-list" id="ac-list" role="listbox" aria-label="Search results"></ul>
+        <p class="sp-ac-foot" id="ac-foot"></p>
+      </div>
+    </div>
+    <p class="skip" id="ac-hint">Results appear as you type. Arrow keys move through them, Enter
+    opens the scoring for one, Escape dismisses the list.</p>
+    <div class="sp-examples" id="examples">
+      <span>Try</span>
+      <button class="sp-ex" type="button">finding someone lost in the woods</button>
+      <button class="sp-ex" type="button">how do drones divide up a search area?</button>
+      <button class="sp-ex" type="button">cardiac arrest</button>
+    </div>
+    <p class="sp-status" id="status" role="status">Nothing has been downloaded yet. Focus the box
+    and 288 KB arrives; that is the whole search engine.</p>
+    <div class="sp-skel" id="skeleton" hidden aria-hidden="true"><i></i><i></i><i></i></div>
+    <p class="demo-note">Press a result to see its scoring on <a href="/search/">the search page</a>.
+    The third example is deliberate; <a href="#dot">§5</a> explains the silence.</p>
+    <noscript><p class="demo-note">The box needs JavaScript, because the search runs in your
+    browser rather than on a server. The post reads fine without it.</p></noscript>
+  </section>
 
   <div class="receipt" role="figure" aria-label="A receipt totalling zero euros">
     <h3>grontved.xyz</h3>
@@ -660,6 +702,45 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   as a strip of mostly nothing. Then try <em>cardiac arrest</em>, and enjoy the silence. It is the
   most instructive result on the site.</p>
 
+  <h2 id="next"><span class="num">12</span>Up next, if the receipt stays at zero</h2>
+
+  <p>Three things I want to try, in rising order of how likely they are to cost money.</p>
+
+  <h3>Inference-free <em>visual</em> SPLADE</h3>
+  <p>The document encoder does not have to read text. V-SPLADE <a href="#ref-vsplade">[7]</a>
+  puts a vision-language model on the document side, reads the page as an image, and still
+  leaves the query side as a tokenizer and a weight table. Caption-gated supervision teaches it
+  which vocabulary terms a picture should light up, and the paper reports it more than doubling
+  recall over a same-scale dense model on an 18.7M-document corpus. The vocabulary is larger, but
+  the shape of the query table is identical, and <code>splade.js</code> was written not to care
+  about the vocabulary size for exactly this reason. My slides are already images with structure,
+  and the papers have figures nobody can search. The open question is whether a VLM encoding a few
+  hundred page images fits inside a free CPU runner's six-hour job limit. I expect it does, slowly,
+  and I intend to time it rather than guess.</p>
+
+  <h3>A vocabulary of my own</h3>
+  <p><em>Grøntved</em> becomes <code>gr ##ø ##nt ##ved</code> because the vocabulary was cut for
+  English web text in 2018. Yu, Mallia and Petri <a href="#ref-vocab">[8]</a> show that
+  pre-training the encoder on a corpus-specific vocabulary improves learned sparse retrieval by up
+  to 12% and, because the posting lists get shorter, cuts latency by up to half. For this site the
+  interesting version is a Danish-and-robotics vocabulary. It means training the document encoder
+  again, which is the first thing on this list that a CPU runner might refuse to do for free. A 67M
+  model, in pieces, across several six-hour jobs, with the checkpoint committed between them, is
+  either a clever use of a free tier or an abuse of one, and I have not decided which.</p>
+
+  <h3>SPLARE, and the end of readable dimensions</h3>
+  <p>The dimensions of a SPLADE vector are words. That is what made <a href="#vector">§4</a>
+  possible. SPLARE <a href="#ref-splare">[9]</a> gives that up: it trains a sparse autoencoder on
+  an LLM's hidden states and retrieves over the autoencoder's latent features instead of the
+  vocabulary, which buys a representation that is multilingual and holds up out of domain. The
+  latents are interpretable in the mechanistic sense, but they no longer have a WordPiece spelling,
+  so the figures in this post would need a legend generated by a model rather than read off a
+  file. It is also not inference-free: the query goes through the LLM too. Whether a static table
+  from tokens to latents can stand in for that, the way an IDF table stands in for the query
+  encoder here, is a research question rather than a weekend, and the honest teaser is that I do
+  not know. It is the one on this list most likely to end with a GPU invoice, which is how I will
+  know it was worth it.</p>
+
   <hr>
 
   <h2 id="refs"><span class="num">Sources</span>Reading list</h2>
@@ -683,6 +764,15 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     SPLADE: Full Quality, 13× Faster Queries.</em></a> 2026. A proper benchmark of inference-free
     versus full SPLADE on BEIR SciFact across two engines; the post that nudged me to write this
     one up, and the place to go if you want the numbers rather than the receipt.</li>
+    <li id="ref-vsplade">G.-H. Cho, Y. Lee, K. Jeong, S. Lee, S. Han, H. Déjean, S. Clinchant,
+    S.-w. Hwang. <em>Inference-Free Multimodal Learned Sparse Retrieval for Production-Scale Visual
+    Document Search.</em> 2026. V-SPLADE. <a href="https://arxiv.org/abs/2605.30917">arXiv:2605.30917</a></li>
+    <li id="ref-vocab">P. Yu, A. Mallia, M. Petri. <em>Improved Learned Sparse Retrieval with
+    Corpus-Specific Vocabularies.</em> ECIR 2024.
+    <a href="https://arxiv.org/abs/2401.06703">arXiv:2401.06703</a></li>
+    <li id="ref-splare">T. Formal, M. Louis, H. Déjean, S. Clinchant. <em>Learning Retrieval Models
+    with Sparse Autoencoders.</em> ICLR 2026. SPLARE.
+    <a href="https://arxiv.org/abs/2603.13277">arXiv:2603.13277</a></li>
     <li>Provider limits, as read on 8 September 2026:
     <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits">GitHub Pages</a>,
     <a href="https://docs.github.com/billing/managing-billing-for-github-actions/about-billing-for-github-actions">GitHub Actions billing</a>,
@@ -693,6 +783,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 </article>
 </div>
 </main>
+<script type="module" src="/blog/inference-free-splade/demo.js?v=1"></script>
 <script type="module" src="/site/theme.js?v=1"></script>
 </body>
 </html>
