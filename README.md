@@ -34,13 +34,29 @@ deck/deck.js            slide runtime (~200 lines, vanilla JS)
 assets/img/             web-optimized images
 assets/cv/cv.pdf        downloadable CV (generated — see below)
 assets/cv/cv-print.html the print source the PDF is rendered from
-blog/ posts/ hop-database/   redirect stubs for the retired blog (see below)
+blog/index.html         the blog index
+blog/<slug>/index.html  one post = one HTML file, hand-written; inline SVG for figures
+blog/blog.css           article styles (prose, figures, tables, the receipt), on top of site.css
+blog/*/ posts/ hop-database/  redirect stubs for the retired Jekyll blog (see below)
 publications/ cv/         redirect stubs for the old Jekyll nav URLs
 sitemap.xml robots.txt CNAME .nojekyll
 ```
 
 `.nojekyll` matters: without it GitHub Pages runs Jekyll and ignores files starting
 with `_`, which would break `knowledge/_template/`.
+
+## Blog
+
+`/blog/` is the prose counterpart to `/knowledge/`: one hand-written `index.html` per post, no
+generator. Figures are inline SVG that use the colour tokens (`fill="var(--accent)"`), so they
+follow the light/dark toggle for free. To add a post, copy an existing one, add a row to
+`blog/index.html`, a card to `knowledge/index.html` if it belongs there, and the URL to
+`sitemap.xml`. The first post, `blog/inference-free-splade/`, is the write-up of the site search
+below; the numbers in it are read off the built index, so if the corpus changes materially the
+post's figures are the thing to re-check.
+
+The two old Jekyll post directories under `blog/` (`swarm-simulator`, `hop-database`) are
+redirect stubs, not posts.
 
 ## Legacy URL redirects
 

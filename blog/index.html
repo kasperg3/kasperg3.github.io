@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blog — Kasper Rømer Grøntved</title>
+<meta name="description" content="Long-form writing on retrieval, search infrastructure and running machine learning cheaply: what was built, what it cost, and what the numbers say.">
+<link rel="canonical" href="https://www.grontved.xyz/blog/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/site.css?v=aa0af2e6">
+<link rel="stylesheet" href="/blog/blog.css?v=1">
+<script>try{var t=localStorage.getItem("deck-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><i></i><i></i></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/">Kasper <span>Grøntved</span></a>
+    <nav class="main">
+      <a href="/knowledge/">Knowledge</a>
+      <a href="/blog/" aria-current="page">Blog</a>
+      <a href="/publications.html">Publications</a>
+      <a href="/cv.html">CV</a>
+      <a href="/search/">Search</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-pressed="false"
+            aria-label="Switch to dark mode">
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.2 12H2M22 12h-2.2M6.5 6.5 5 5M19 19l-1.5-1.5M17.5 6.5 19 5M5 19l1.5-1.5"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap narrow">
+  <div class="hero lead">
+    <p class="eyebrow">Writing</p>
+    <h1>Blog</h1>
+    <p class="lede">Long-form notes on retrieval and on running machine learning cheaply. Each
+    post says what was built, what it cost, and what the numbers say. The slide decks live under
+    <a href="/knowledge/">Knowledge</a>; this is the prose.</p>
+  </div>
+
+  <section style="padding-top:0;border:0">
+    <div class="post-list">
+      <a href="/blog/inference-free-splade/">
+        <span class="when">8 September 2026 · ≈ 14 min</span>
+        <h3>Semantic search for the price of a git push</h3>
+        <p>How this site's search understands meaning with no server and no model in the browser:
+        inference-free SPLADE, with the encoder run once on GitHub Actions, the sparse index served
+        from GitHub Pages, and a free Mistral key held by a free Worker for the generated answers. A
+        €0.00 receipt, itemised, with the maths that makes each line hold and the scale at which it
+        stops holding.</p>
+      </a>
+    </div>
+  </section>
+</div>
+</main>
+<script type="module" src="/site/theme.js?v=1"></script>
+</body>
+</html>
