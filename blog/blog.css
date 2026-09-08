@@ -70,24 +70,36 @@ figure.fig figcaption{font-size:14.5px;line-height:1.55;color:var(--muted);margi
 figure.fig figcaption b{color:var(--ink);font-weight:600}
 .fig .mono{font-family:var(--mono)}
 
-/* the live search box at the top of a post */
-.demo{margin:34px 0 10px;background:var(--card);border:1px solid var(--accent);border-radius:18px;
-      padding:24px 26px 22px;box-shadow:var(--shadow)}
-.demo-eyebrow{display:flex;align-items:center;font:600 11px/1.4 var(--sans);letter-spacing:.2em;
-              text-transform:uppercase;color:var(--accent);margin:0 0 6px}
-.demo-eyebrow .dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);
-                   margin-right:9px;box-shadow:0 0 0 3px var(--accent-faint)}
-.post .demo-title{font:600 clamp(21px,2.6vw,25px)/1.2 var(--serif);letter-spacing:-.01em;margin:0 0 8px}
-.post .demo-lede{font-size:15.5px;margin:0 0 16px;max-width:60ch}
-.post .demo-note{font-size:13.5px;color:var(--faint);margin:14px 0 0}
-.demo .sp-field{box-shadow:none}
+/* the live search box at the top of a post: one header line, the field, the chips, one footer line */
+.demo{margin:26px 0 4px;background:var(--card);border:1px solid var(--accent);border-radius:14px;
+      padding:14px 16px 12px;box-shadow:var(--shadow)}
+.demo-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:10px}
+.post .demo-title{font:600 15px/1.3 var(--sans);letter-spacing:.01em;margin:0;color:var(--ink)}
+.post .demo-lede{font-size:13.5px;margin:0;color:var(--muted)}
+.demo .sp-field{box-shadow:none;border-radius:10px;padding:0 10px 0 12px;gap:9px}
+.demo .sp-field > svg{width:16px;height:16px}
+.demo #q{font-size:15px;padding:11px 0}
+.demo .sp-examples{margin-top:10px;gap:6px}
+.demo .sp-ex{font-size:12.5px;padding:5px 10px}
+.demo .sp-skel{margin-top:10px}
+.demo .sp-skel i{height:40px}
+.demo-foot{display:flex;flex-wrap:wrap;gap:2px 14px;align-items:baseline;margin-top:10px}
+.post .demo-foot .sp-status{margin:0;font-size:12.5px;font-weight:500;flex:none}
+.post .demo-note{font-size:12.5px;color:var(--faint);margin:0;flex:1 1 20ch;line-height:1.5}
 /* the dropdown is a listbox, not prose: keep the article's bullets off it */
 .post .sp-ac-list{margin:0;padding:6px}
 .post .sp-ac-list li{padding-left:12px;margin:0;color:inherit}
 .post .sp-ac-list li::before{content:none}
 .post .sp-ac-list .sp-opt{padding:11px 12px}
-.demo .sp-status{margin-top:14px;font-size:13px}
-@media (max-width:600px){.demo{padding:18px 16px 16px;border-radius:14px}}
+@media (max-width:600px){
+  .demo{padding:12px 12px 10px;border-radius:12px;margin:20px 0 0}
+  .demo-head{gap:2px 8px;margin-bottom:8px}
+  .post .demo-lede{font-size:12.5px}
+  .demo #q{font-size:15px;padding:10px 0}
+  .demo .sp-examples > span{display:none}
+  .demo .sp-ex{font-size:12px;padding:5px 9px;max-width:100%;white-space:normal;text-align:left;line-height:1.25}
+  .demo .sp-ac-list{max-height:min(55vh,380px)}
+}
 
 /* the receipt */
 .receipt{margin:30px auto;max-width:400px;background:var(--card);color:var(--ink);

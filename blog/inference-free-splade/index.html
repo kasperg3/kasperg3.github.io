@@ -74,10 +74,10 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <!-- The thing the post is about, before the post. Same widget as /search/,
        same index; nothing is fetched until the box is focused. -->
   <section class="demo" aria-labelledby="demo-title">
-    <p class="demo-eyebrow"><i class="dot" aria-hidden="true"></i>Live · the index this post measures</p>
-    <h2 class="demo-title" id="demo-title">Try it before you read it</h2>
-    <p class="demo-lede">Type something a person would say, not a keyword. Everything that happens
-    next happens in this tab: no request carries your query anywhere.</p>
+    <div class="demo-head">
+      <h2 class="demo-title" id="demo-title">Try it first</h2>
+      <p class="demo-lede">The index this post measures, running in this tab.</p>
+    </div>
     <div class="sp-field-wrap">
       <div class="sp-field">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
@@ -85,7 +85,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         <input id="q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search"
                role="combobox" aria-expanded="false" aria-controls="ac-list"
                aria-autocomplete="list" aria-describedby="ac-hint"
-               placeholder="finding someone lost in the woods">
+               placeholder="say it the way a person would">
         <button id="clear" class="sp-clear" type="button" hidden aria-label="Clear the search">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
@@ -103,11 +103,12 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <button class="sp-ex" type="button">how do drones divide up a search area?</button>
       <button class="sp-ex" type="button">cardiac arrest</button>
     </div>
-    <p class="sp-status" id="status" role="status">Nothing has been downloaded yet. Focus the box
-    and 288 KB arrives; that is the whole search engine.</p>
-    <div class="sp-skel" id="skeleton" hidden aria-hidden="true"><i></i><i></i><i></i></div>
-    <p class="demo-note">Press a result to see its scoring on <a href="/search/">the search page</a>.
-    The third example is deliberate; <a href="#dot">§5</a> explains the silence.</p>
+    <div class="sp-skel" id="skeleton" hidden aria-hidden="true"><i></i><i></i></div>
+    <div class="demo-foot">
+      <p class="sp-status" id="status" role="status">Nothing downloaded until you focus the box.</p>
+      <p class="demo-note">A result opens its scoring on <a href="/search/">the search page</a>. The
+      third example is deliberate; <a href="#dot">§5</a> explains the silence.</p>
+    </div>
     <noscript><p class="demo-note">The box needs JavaScript, because the search runs in your
     browser rather than on a server. The post reads fine without it.</p></noscript>
   </section>
