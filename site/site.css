@@ -4,18 +4,18 @@
    the slide decks read as one thing.
    ============================================================ */
 :root{
-  --canvas:#f7f5f1;
-  --canvas-2:#f1eee8;
-  --ink:#15181d;
-  --ink-2:#2f3a44;
-  --muted:#57616d;
-  --faint:#8c96a1;
+  --canvas:#f6f1ea;
+  --canvas-2:#efe8de;
+  --ink:#1b1f24;
+  --ink-2:#333b45;
+  --muted:#5b6470;
+  --faint:#8b93a0;
   --accent:#1f6f68;
-  --accent-2:#b4531f;
+  --accent-2:#c26a3b;
   --accent-faint:rgba(31,111,104,.10);
-  --hair:rgba(21,24,29,.12);
-  --hair-soft:rgba(21,24,29,.07);
-  --card:#fff;
+  --hair:rgba(27,31,36,.12);
+  --hair-soft:rgba(27,31,36,.07);
+  --card:#fbf8f3;
   --dark:#12161b;
   --serif:"Playfair Display",Georgia,serif;
   --sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -41,10 +41,9 @@ a:hover{color:var(--accent)}
 .skip:focus{left:16px;top:16px;background:var(--card);padding:12px 18px;border-radius:8px;z-index:99}
 
 /* ---------- masthead ---------- */
-header.top{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);
-           background:var(--canvas);
-           border-bottom:1px solid var(--hair-soft)}
-header.top .wrap{display:flex;align-items:center;gap:28px;height:68px}
+/* A line of links, not a bar: nothing sticky, no border, no backdrop. */
+header.top{position:static;background:transparent}
+header.top .wrap{display:flex;align-items:center;gap:28px;height:76px}
 .brand{font:600 19px/1 var(--serif);text-decoration:none;letter-spacing:-.01em;flex:none}
 .brand span{color:var(--accent)}
 nav.main{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
@@ -155,11 +154,19 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
 /* ============================================================
    concise front page
    ============================================================ */
-.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.ambient i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
-.ambient i:nth-child(1){width:46vw;height:46vw;top:-14vw;right:-10vw;background:var(--accent-faint)}
-.ambient i:nth-child(2){width:38vw;height:38vw;bottom:-14vw;left:-12vw;
-                        background:color-mix(in srgb,var(--accent) 9%,transparent)}
+/* Northern light: a warm horizon at the top of every page, cool aurora to one
+   side, fading into the paper before the first section. Absolute rather than
+   fixed, so it belongs to the top of the page and scrolls away. */
+.ambient{position:absolute;left:0;right:0;top:0;height:min(84vh,820px);z-index:-1;overflow:hidden;
+         pointer-events:none}
+.ambient::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(243,214,192,.6) 0%,rgba(246,241,234,0) 78%)}
+.ambient i{position:absolute;border-radius:50%;filter:blur(70px)}
+.ambient i:nth-child(1){width:64vw;height:46vw;max-width:900px;max-height:640px;top:-22vw;right:-14vw;
+  background:radial-gradient(closest-side,rgba(240,172,130,.45),rgba(240,172,130,0))}
+.ambient i:nth-child(2){width:48vw;height:32vw;max-width:680px;max-height:440px;top:4vw;left:-18vw;
+  background:radial-gradient(closest-side,rgba(120,184,172,.34),rgba(120,184,172,0))}
+body{position:relative}
 
 .hero.lead{padding:clamp(72px,13vh,150px) 0 clamp(40px,6vw,64px)}
 .hero.lead h1{font-size:clamp(36px,5.4vw,58px);max-width:26ch}
@@ -209,143 +216,62 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
   background:var(--accent);border-radius:999px;padding:6px 11px;margin-bottom:12px;align-self:flex-start}
 
 /* ============================================================
-   front page — wide two-column masthead, fact bar, spotlight,
-   and the right-hand index column
+   front page — one column, warm light, hairlines
    ============================================================ */
-.masthead{display:grid;grid-template-columns:1fr 350px;gap:clamp(32px,5vw,64px);
-          align-items:start;padding:clamp(48px,7vw,86px) 0 clamp(26px,3.4vw,38px)}
-.masthead .eyebrow{margin-bottom:16px}
-.name{font:700 clamp(40px,5.9vw,70px)/1.02 var(--serif);letter-spacing:-.025em;
-      color:var(--accent);max-width:11ch}
-.masthead .bio{color:var(--muted);font-size:17px;line-height:1.7;padding-top:10px}
-.masthead .bio strong{color:var(--ink);font-weight:600}
+.home-top{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;
+          flex-wrap:wrap;padding:28px 0 0}
+.home-top nav{display:flex;gap:4px 22px;flex-wrap:wrap}
+.home-top nav a{font:500 14px/1 var(--sans);color:var(--muted);text-decoration:none}
+.home-top nav a:hover{color:var(--ink)}
 
-/* fact bar */
-.factbar{display:flex;align-items:flex-start;gap:clamp(20px,2.6vw,38px);flex-wrap:wrap;
-         border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:20px 0}
-.fact{display:flex;flex-direction:column;gap:6px}
-.fact b{font:600 10px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--faint)}
-.fact span{font:500 15px/1.45 var(--sans);color:var(--ink-2);max-width:28ch}
-.factlinks{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-.factlinks a{display:inline-flex;align-items:center;gap:8px;text-decoration:none;
-             font:500 13px/1 var(--sans);color:var(--ink-2);background:var(--card);
-             border:1px solid var(--hair);border-radius:9px;padding:10px 13px;
-             transition:border-color .16s,color .16s,transform .16s,box-shadow .16s}
-.factlinks a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);
-                   box-shadow:var(--shadow)}
-.factlinks svg{width:15px;height:15px;flex:none;fill:currentColor}
-.factlinks a.cta{background:var(--accent);border-color:var(--accent);color:#fff}
-.factlinks a.cta:hover{color:#fff;filter:brightness(1.08)}
+.home-hero{padding:clamp(80px,14vh,168px) 0 clamp(44px,6vw,64px)}
+.home-hero h1{font:600 clamp(38px,6vw,72px)/1.04 var(--serif);letter-spacing:-.025em;
+              max-width:17ch;margin-top:20px;color:var(--ink)}
+.home-hero h1 em{font-style:italic;color:var(--accent)}
+.home-hero .lede{margin-top:26px;max-width:58ch;font-size:clamp(17px,2vw,20px)}
+.home-links{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:32px;font:500 14.5px/1 var(--sans)}
+.home-links a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--hair);
+              padding-bottom:4px;transition:color .15s,border-color .15s}
+.home-links a:hover{color:var(--accent);border-color:var(--accent)}
+.home-links .ext{color:var(--faint);font-size:11px;margin-left:4px}
 
-/* spotlight */
-.spotlight{display:grid;grid-template-columns:1fr 292px;margin-top:30px;background:var(--card);
-           border:1px solid var(--hair);border-radius:18px;overflow:hidden;text-decoration:none;
-           transition:border-color .18s,transform .18s,box-shadow .18s}
-.spotlight:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
-/* grid items default to min-width:auto, so a wide child can push the track
-   past its container — that scrolled the page sideways on small phones */
-.spotlight > *{min-width:0}
-.spot-main{padding:28px 32px 30px;display:flex;flex-direction:column;min-width:0}
-.spot-top{display:flex;align-items:baseline;gap:16px;margin-bottom:12px}
-.spot-top b{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-            color:var(--accent)}
-.spot-top .when{margin-left:auto;font:500 12px/1 var(--mono);color:var(--faint)}
-.spotlight .stitle{font:600 clamp(23px,3.1vw,32px)/1.22 var(--serif);color:var(--ink);
-                   letter-spacing:-.012em}
-.spotlight:hover .stitle{color:var(--accent)}
-.spotlight .ssub{font-size:15.5px;color:var(--ink-2);margin-top:7px;font-weight:500}
-.spotlight p{color:var(--muted);font-size:15.5px;max-width:56ch;margin-top:11px}
-.spot-go{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;margin-top:20px;
-         font:500 14px/1 var(--sans);color:#fff;background:var(--accent);
-         border-radius:9px;padding:12px 18px}
-.spotlight:hover .spot-go{filter:brightness(1.08)}
+/* editorial sections: a label column and a content column */
+.home-sec{display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px clamp(28px,5vw,72px);
+          padding:clamp(40px,6vw,64px) 0;border-top:1px solid var(--hair-soft)}
+.home-sec > h2{padding-top:8px}
+.now p{font:400 clamp(19px,2.2vw,23px)/1.45 var(--serif);color:var(--ink-2);max-width:42ch;
+       letter-spacing:-.005em}
+.now p + p{margin-top:18px;font:400 16px/1.65 var(--sans);color:var(--muted);max-width:56ch}
+.now a{color:var(--ink)}
+.home-sec .index-list{border-top:0;margin-top:0}
+/* number · title over description · arrow; the title may wrap, nothing overflows */
+.home-sec .index-list a{display:grid;grid-template-columns:28px minmax(0,1fr) auto;
+                        gap:3px 18px;align-items:baseline;padding:18px 4px}
+.home-sec .index-list a:first-child{padding-top:6px}
+.home-sec .index-list .n{grid-column:1;grid-row:1;width:auto}
+.home-sec .index-list .t{grid-column:2;grid-row:1;font-size:18px;min-width:0;overflow-wrap:anywhere}
+.home-sec .index-list .d{grid-column:2;grid-row:2;font-size:15.5px;padding-left:0}
+.home-sec .index-list .arw{grid-column:3;grid-row:1;margin-left:0}
 
-/* the dark decorative panel */
-.spot-art{background:var(--dark);padding:20px 22px;display:flex;flex-direction:column;gap:14px;
-          color:#e9edf2}
-.art-top{display:flex;gap:12px;font:500 9.5px/1 var(--mono);letter-spacing:.16em;
-         text-transform:uppercase;color:#6f7c89}
-.art-top span:last-child{margin-left:auto;color:#3fbeb2}
-.art-grid{display:grid;grid-template-columns:auto repeat(3,1fr);gap:5px;align-items:center}
-.art-grid .hd{font:500 9px/1.3 var(--mono);color:#6f7c89;text-align:center;padding-bottom:2px}
-.art-grid .rw{font:500 10px/1 var(--mono);color:#98a4b0;padding-right:8px}
-.art-grid .cell{height:26px;border-radius:5px;background:rgba(255,255,255,.055);
-                display:flex;align-items:center;justify-content:center;
-                font:500 10.5px/1 var(--mono);color:#6f7c89}
-.art-grid .cell.on{background:rgba(63,190,178,.22);color:#7fd1c6;
-                   box-shadow:inset 0 0 0 1px rgba(63,190,178,.4)}
-.art-cap{font:400 11px/1.45 var(--sans);color:#8b96a2;margin:auto 0 0}
+.home-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;
+           padding:26px 0 44px;border-top:1px solid var(--hair-soft);
+           font:400 13px/1.5 var(--sans);color:var(--faint)}
+.home-foot a{color:var(--muted);text-decoration:none;margin-left:16px}
+.home-foot a:first-child{margin-left:0}
+.home-foot a:hover{color:var(--ink)}
 
-/* lower duo: panel + index column */
-.duo{display:grid;grid-template-columns:1fr 384px;gap:24px;margin-top:24px;align-items:start}
-/* Grid items default to min-width:auto, so a wide child can push the track
-   past the container — which it did below ~420px, scrolling the page
-   sideways. Let them shrink and wrap instead. */
-.duo > *{min-width:0}
-.panel{background:var(--card);border:1px solid var(--hair-soft);border-radius:18px;
-       padding:26px 30px 10px}
-.panel-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
-.panel-head b{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-              color:var(--faint)}
-.panel-head .count{margin-left:auto;font:500 11px/1 var(--mono);color:var(--faint)}
-.panel .ptitle2{font:600 25px/1.25 var(--serif);color:var(--ink);letter-spacing:-.01em}
-.panel .pnote{color:var(--muted);font-size:15px;margin-top:8px;max-width:52ch}
-.rows{margin-top:18px}
-.rows a{display:flex;align-items:baseline;gap:18px;padding:17px 2px;text-decoration:none;
-        border-top:1px solid var(--hair-soft);transition:padding-left .16s}
-.rows a:hover{padding-left:8px}
-.rows .n{font:500 11px/1.6 var(--mono);color:var(--faint);flex:none;width:20px}
-.rows .rt{font:600 16px/1.4 var(--sans);color:var(--ink);min-width:0}
-.rows a:hover .rt{color:var(--accent)}
-.rows .rd{font-size:14px;color:var(--muted);display:block;font-weight:400;margin-top:2px}
-.rows .arw{margin-left:auto;color:var(--faint);flex:none;font-size:15px}
-.rows a:hover .arw{color:var(--accent)}
-
-aside.idx{position:sticky;top:92px}
-.idx-head{display:flex;align-items:baseline;gap:14px;margin-bottom:4px}
-.idx-head b{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-            color:var(--faint)}
-.idx-head .count{margin-left:auto;font:500 11px/1 var(--mono);color:var(--faint)}
-.idx-title{font:600 25px/1.25 var(--serif);color:var(--ink);letter-spacing:-.01em;
-           padding-bottom:14px;border-bottom:1px solid var(--hair-soft);margin-bottom:12px}
-.idx a{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--card);
-       border:1px solid var(--hair-soft);border-radius:14px;text-decoration:none;
-       margin-bottom:9px;transition:border-color .16s,transform .16s,box-shadow .16s}
-.idx a:hover{border-color:var(--accent);transform:translateX(3px);box-shadow:var(--shadow)}
-.idx .n{font:500 10px/1 var(--mono);color:var(--faint);flex:none;width:16px}
-.idx .ico{width:34px;height:34px;border-radius:10px;background:var(--accent-faint);flex:none;
-          display:flex;align-items:center;justify-content:center;color:var(--accent)}
-.idx .ico svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;
-              stroke-linecap:round;stroke-linejoin:round}
-.idx .tx{min-width:0}
-.idx .tx b{font:600 15.5px/1.3 var(--sans);color:var(--ink);display:block}
-.idx a:hover .tx b{color:var(--accent)}
-.idx .tx b,.idx .tx span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.idx .tx span{display:block;font-size:13.5px;line-height:1.45;color:var(--muted)}
-.idx .arw{margin-left:auto;color:var(--faint);flex:none;font-size:15px}
-.idx a:hover .arw{color:var(--accent)}
-
-@media (max-width:980px){
-  .masthead{grid-template-columns:1fr;gap:22px}
-  .masthead .bio{padding-top:0;max-width:60ch}
-  .spotlight{grid-template-columns:1fr}
-  .spot-art{flex-direction:row;align-items:center;gap:20px}
-  .spot-art .art-grid{max-width:340px}
-  .duo{grid-template-columns:1fr}
-  aside.idx{position:static}
+@media (max-width:760px){
+  .home-sec{grid-template-columns:1fr;gap:10px}
+  .home-sec > h2{padding-top:0}
+  .now p{max-width:none}
 }
 @media (max-width:560px){
-  .factlinks{margin-left:0;width:100%}
-  .spot-art{flex-direction:column;align-items:stretch}
-
   /* The nav wraps to several rows on a phone, and a fixed-height masthead
      then lets it spill over the page. Give it its own row instead. */
-  header.top .wrap{height:auto;min-height:68px;flex-wrap:wrap;gap:0;
-                   padding-top:12px;padding-bottom:12px}
+  header.top .wrap{height:auto;min-height:76px;flex-wrap:wrap;gap:0;
+                   padding-top:14px;padding-bottom:12px}
   nav.main{margin-left:0;width:100%;margin-top:8px;gap:2px}
   nav.main a{font-size:14px;padding:8px 11px}
-  /* ...which makes the masthead taller, so anchored targets need more room */
-  details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:128px}
 }
 
 /* ============================================================
@@ -355,9 +281,8 @@ aside.idx{position:sticky;top:92px}
    A polished 2-page PDF also lives at /assets/cv/cv.pdf.
    ============================================================ */
 /* ---------- fragment targets ----------
-   Search results deep-link into these. The masthead is sticky, so without a
-   scroll margin the browser parks the target underneath it. */
-details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:84px}
+   Search results deep-link into these; a little air above the target. */
+details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:24px}
 
 @media print{
   @page{size:A4;margin:16mm 15mm 14mm}

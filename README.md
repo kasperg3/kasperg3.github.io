@@ -9,7 +9,7 @@ the repo as-is to Pages.
 ## Layout
 
 ```
-index.html              landing page (hero, current work, projects, talks, research)
+index.html              front page: statement hero, the ask band, and four hairline sections
 publications.html       full publication list with abstracts
 cv.html                 CV in HTML  ·  assets/cv/cv.pdf is the downloadable version
 404.html
@@ -43,6 +43,19 @@ sitemap.xml robots.txt CNAME .nojekyll
 
 `.nojekyll` matters: without it GitHub Pages runs Jekyll and ignores files starting
 with `_`, which would break `knowledge/_template/`.
+
+## Front page and the top bar
+
+The front page has no masthead bar. One quiet line of links sits above a statement hero, then
+the ask band as a light card, then four editorial sections (`Now`, `Writing & talks`,
+`Selected work`, `Explore`) laid out as a label column and a content column with hairlines
+between them. On the other pages `header.top` is still there but is a line of links rather
+than a bar: not sticky, no border, no backdrop blur.
+
+The warm wash at the top of every page is `.ambient` in `site/site.css`: a horizon gradient
+and two blurred radial glows, amber to the right and a cool aurora to the left, positioned
+absolutely at the top of the document so it scrolls away rather than following the viewport.
+Two `<i>` elements and one `::before`, no images.
 
 ## Blog
 

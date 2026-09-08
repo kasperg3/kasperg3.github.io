@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=b31c0d02">
-<link rel="stylesheet" href="/search/search.css?v=7">
+<link rel="stylesheet" href="/site/site.css?v=c2d4e601">
+<link rel="stylesheet" href="/search/search.css?v=8">
 <noscript><style>/* the conversation cannot work without scripting */
 .asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
 <script type="application/ld+json">
@@ -38,10 +38,14 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 <div class="ambient" aria-hidden="true"><i></i><i></i></div>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="top">
-  <div class="wrap">
+<main id="main">
+<div class="wrap">
+
+  <!-- No masthead bar on the front page: one quiet line of links, not sticky,
+       no border. The page itself is the introduction. -->
+  <div class="home-top">
     <a class="brand" href="/">Kasper <span>Grøntved</span></a>
-    <nav class="main">
+    <nav aria-label="Site">
       <a href="/knowledge/">Knowledge</a>
       <a href="/blog/">Blog</a>
       <a href="/publications.html">Publications</a>
@@ -49,31 +53,20 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <a href="/search/">Search</a>
     </nav>
   </div>
-</header>
 
-<main id="main">
-<div class="wrap">
-
-  <div class="masthead">
-    <div>
-      <p class="eyebrow">AI Engineer · European data sovereignty</p>
-      <h1 class="name">Kasper Rømer Grøntved</h1>
-    </div>
-    <p class="bio">PhD in multi-robot systems turned AI engineer, building the
-    <strong>multimodal search</strong> behind Colourbox and Skyfish — and running the models for it
-    inside European jurisdiction.</p>
-  </div>
-
-  <div class="factbar">
-    <div class="fact"><b>Current</b><span>AI Engineer at Colourbox</span></div>
-    <div class="fact"><b>Practice</b><span>Retrieval · Evaluation · Inference</span></div>
-    <div class="factlinks">
-      <a href="https://github.com/kasperg3"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.07-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A7.995 7.995 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
-      <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0 0 5.5l3.02 2.08A5.5 5.5 0 0 1 8 4.6c1.02 0 1.97.28 2.78.76l-2.9 2.3-3.4-2.34v.01A5.47 5.47 0 0 0 2.5 9.5a5.5 5.5 0 0 0 11 0c0-.72-.14-1.4-.39-2.03L16 5.5 8 0z"/></svg>Scholar</a>
-      <a href="https://www.linkedin.com/in/kaspergrontved/"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.63 0H2.37A2.37 2.37 0 0 0 0 2.37v11.26A2.37 2.37 0 0 0 2.37 16h11.26A2.37 2.37 0 0 0 16 13.63V2.37A2.37 2.37 0 0 0 13.63 0zM5.1 13.2H2.86V6.1H5.1v7.1zM3.98 5.02a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6zM13.2 13.2h-2.24V9.5c0-.88-.31-1.48-1.1-1.48-.6 0-.96.4-1.12.79-.06.14-.07.34-.07.53v3.86H6.43s.03-6.26 0-7.1h2.24v1c.3-.46.83-1.12 2.01-1.12 1.47 0 2.52.96 2.52 3.02v4.2z"/></svg>LinkedIn</a>
-      <a class="cta" href="/assets/cv/cv.pdf"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1v9m0 0L4.8 6.8M8 10l3.2-3.2M2 12v2h12v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Download CV</a>
-    </div>
-  </div>
+  <header class="home-hero">
+    <p class="eyebrow">AI Engineer · Colourbox · PhD in multi-robot systems</p>
+    <h1>Search that understands what it sees, <em>run inside Europe.</em></h1>
+    <p class="lede">I am Kasper Rømer Grøntved. I build the multimodal search behind Colourbox and
+    Skyfish, and I run the models for it on hardware inside European jurisdiction. Before that, a
+    PhD on one operator working with swarms of autonomous robots.</p>
+    <p class="home-links">
+      <a href="https://github.com/kasperg3">GitHub<span class="ext">↗</span></a>
+      <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Scholar<span class="ext">↗</span></a>
+      <a href="https://www.linkedin.com/in/kaspergrontved/">LinkedIn<span class="ext">↗</span></a>
+      <a href="/assets/cv/cv.pdf">CV as PDF</a>
+    </p>
+  </header>
 
   <!-- Ask this site: a conversation, not a search box. Retrieval still runs
        entirely in the browser and is still the whole of the feature; the thread
@@ -109,88 +102,97 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </section>
 
-  <a class="spotlight" href="/knowledge/ml-and-data-at-colourbox/">
-    <div class="spot-main">
-      <div class="spot-top"><b>Featured lecture</b><span class="when">Draft · 59 slides</span></div>
-      <span class="stitle">ML and Data at Colourbox</span>
-      <span class="ssub">Multimodal search, and why the models run on our own hardware</span>
-      <p>Why cold starts are hard when the open Danish data does not exist yet, what a DAM archive
-      actually contains, and how dense embeddings and late interaction split the work between a stock
-      library and a customer's own assets.</p>
-      <span class="spot-go">Explore the deck →</span>
+  <section class="home-sec">
+    <h2>Now</h2>
+    <div class="now">
+      <p>Two retrieval problems under one roof: a stock library, where dense embeddings do the
+      work, and a customer's own archive, where late interaction over the page keeps the evidence
+      a single vector throws away.</p>
+      <p>The models run on our own hardware, which is a sovereignty decision before it is a cost
+      one. The <a href="/knowledge/ml-and-data-at-colourbox/">Colourbox lecture</a> is the long
+      version; the <a href="/search/">search on this site</a> is the small one you can poke at.</p>
     </div>
-    <div class="spot-art" aria-hidden="true">
-      <div class="art-top"><span>Local evidence</span><span>MaxSim</span></div>
-      <div class="art-grid">
-        <span class="hd"></span><span class="hd">lokalplan</span><span class="hd">kabel</span><span class="hd">bilag</span>
-        <span class="rw">image</span><span class="cell on">0.94</span><span class="cell"></span><span class="cell"></span>
-        <span class="rw">drawing</span><span class="cell"></span><span class="cell on">0.91</span><span class="cell"></span>
-        <span class="rw">pdf</span><span class="cell"></span><span class="cell"></span><span class="cell on">0.88</span>
-      </div>
-      <p class="art-cap">Know the corpus. Then pick the model.</p>
-    </div>
-  </a>
+  </section>
 
-  <div class="duo">
-    <div class="panel">
-      <div class="panel-head"><b>Selected work</b><span class="count">04 of many</span></div>
-      <div class="ptitle2">What I have been building</div>
-      <p class="pnote">Robotics research that became open tooling, and the search systems that came
-      after it.</p>
-      <div class="rows">
-        <a href="/publications.html">
-          <span class="n">01</span>
-          <span class="rt">SAREnv<span class="rd">Open dataset and benchmark for informed wilderness search and rescue · Drones, 2025</span></span>
-          <span class="arw">→</span>
-        </a>
-        <a href="/projects.html">
-          <span class="n">02</span>
-          <span class="rt">TrajAllocPy<span class="rd">Decentralized trajectory task allocation for multi-robot area coverage</span></span>
-          <span class="arw">→</span>
-        </a>
-        <a href="/knowledge/late-interaction-primer/">
-          <span class="n">03</span>
-          <span class="rt">Multi-vector search primer<span class="rd">Where single-vector retrieval loses evidence, and what late interaction keeps</span></span>
-          <span class="arw">→</span>
-        </a>
-        <a href="/cv.html">
-          <span class="n">04</span>
-          <span class="rt">Human–swarm interaction<span class="rd">The PhD: one operator engaging with and controlling swarms of autonomous robots</span></span>
-          <span class="arw">→</span>
-        </a>
-      </div>
-    </div>
-
-    <aside class="idx">
-      <div class="idx-head"><b>Index</b><span class="count">04 chapters</span></div>
-      <div class="idx-title">Explore the site</div>
-
-      <a href="/knowledge/">
+  <section class="home-sec">
+    <h2>Writing &amp; talks</h2>
+    <div class="index-list">
+      <a href="/blog/inference-free-splade/">
         <span class="n">01</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14v10H3zM3 17h14M8 14v3M12 14v3"/></svg></span>
-        <span class="tx"><b>Knowledge</b><span>Slide decks, lectures and talks</span></span>
+        <span class="t">Semantic search for the price of a git push</span>
+        <span class="d">Inference-free SPLADE on GitHub Actions and Pages, with a €0.00 receipt</span>
+        <span class="arw">→</span>
+      </a>
+      <a href="/knowledge/ml-and-data-at-colourbox/">
+        <span class="n">02</span>
+        <span class="t">ML and Data at Colourbox</span>
+        <span class="d">Lecture · multimodal search, and why the models run on our own hardware</span>
+        <span class="arw">→</span>
+      </a>
+      <a href="/knowledge/late-interaction-primer/">
+        <span class="n">03</span>
+        <span class="t">Late interaction, up close</span>
+        <span class="d">Primer · where one vector loses evidence, and what MaxSim keeps</span>
+        <span class="arw">→</span>
+      </a>
+      <a href="/knowledge/decentralized-task-allocation/">
+        <span class="n">04</span>
+        <span class="t">Decentralized multi-UAV task allocation</span>
+        <span class="d">Research talk · ICAR 2023</span>
+        <span class="arw">→</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="home-sec">
+    <h2>Selected work</h2>
+    <div class="index-list">
+      <a href="/publications.html#pub-sarenv">
+        <span class="n">01</span>
+        <span class="t">SAREnv</span>
+        <span class="d">Open dataset and benchmark for informed wilderness search and rescue · Drones, 2025</span>
+        <span class="arw">→</span>
+      </a>
+      <a href="/projects.html#project-trajallocpy">
+        <span class="n">02</span>
+        <span class="t">TrajAllocPy</span>
+        <span class="d">Decentralized trajectory task allocation for multi-robot area coverage</span>
+        <span class="arw">→</span>
+      </a>
+      <a href="/projects.html#project-swarmtalk">
+        <span class="n">03</span>
+        <span class="t">SwarmTalk</span>
+        <span class="d">Open-source, low-cost mesh communication for UAV swarms</span>
         <span class="arw">→</span>
       </a>
       <a href="/cv.html">
-        <span class="n">02</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3h12v14H4zM7 7h6M7 10h6M7 13h4"/></svg></span>
-        <span class="tx"><b>CV</b><span>Roles, education and research stays</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="/publications.html">
-        <span class="n">03</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 5C8 3.5 5.5 3.5 3 4v11c2.5-.5 5 -.5 7 1 2-1.5 4.5-1.5 7-1V4c-2.5-.5-5-.5-7 1zM10 5v12"/></svg></span>
-        <span class="tx"><b>Publications</b><span>Peer-reviewed robotics and AI work</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="https://www.linkedin.com/in/kaspergrontved/">
         <span class="n">04</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14v10H3zM3 5l7 5 7-5"/></svg></span>
-        <span class="tx"><b>Get in touch</b><span>LinkedIn, GitHub and Scholar</span></span>
-        <span class="arw">↗</span>
+        <span class="t">Human–swarm interaction</span>
+        <span class="d">The PhD · one operator engaging with and controlling swarms of autonomous robots</span>
+        <span class="arw">→</span>
       </a>
-    </aside>
-  </div>
+    </div>
+  </section>
+
+  <section class="home-sec">
+    <h2>Explore</h2>
+    <div class="index-list">
+      <a href="/knowledge/"><span class="n">01</span><span class="t">Knowledge</span><span class="d">Slide decks, lectures and talks</span><span class="arw">→</span></a>
+      <a href="/blog/"><span class="n">02</span><span class="t">Blog</span><span class="d">Long-form notes on retrieval, with the numbers</span><span class="arw">→</span></a>
+      <a href="/publications.html"><span class="n">03</span><span class="t">Publications</span><span class="d">Peer-reviewed robotics and AI work, with abstracts</span><span class="arw">→</span></a>
+      <a href="/cv.html"><span class="n">04</span><span class="t">CV</span><span class="d">Roles, education and research stays</span><span class="arw">→</span></a>
+      <a href="/search/"><span class="n">05</span><span class="t">Search</span><span class="d">The whole site, with the vectors showing</span><span class="arw">→</span></a>
+    </div>
+  </section>
+
+  <footer class="home-foot">
+    <span>Kasper Rømer Grøntved · grontved.xyz</span>
+    <span>
+      <a href="https://github.com/kasperg3">GitHub</a>
+      <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Scholar</a>
+      <a href="https://www.linkedin.com/in/kaspergrontved/">LinkedIn</a>
+    </span>
+  </footer>
 
 </div>
 </main>

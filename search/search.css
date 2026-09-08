@@ -212,23 +212,24 @@
              padding:16px 20px;background:var(--card);color:var(--ink-2);font-size:15px}
 
 /* ============================================================
-   the front page band — search on its own, not inside a card
+   the front page band — a light card on the site's own tokens
    ============================================================ */
-.asksite{background:var(--dark);color:#e9edf2;margin-top:26px;border-radius:16px;
+.asksite{background:var(--card);color:var(--ink);margin-top:0;border-radius:16px;
+         border:1px solid var(--hair);box-shadow:var(--shadow);
          padding:clamp(16px,2.4vw,22px) clamp(16px,3vw,26px) clamp(14px,2.2vw,20px)}
 .ask-inner{max-width:720px;margin:0 auto}
 /* one line: the title on the left, what it is grounded in on the right */
 .ask-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;
           gap:4px 16px;margin-bottom:12px}
 .ask-eyebrow{display:flex;align-items:center;font:600 10.5px/1.4 var(--sans);letter-spacing:.16em;
-             text-transform:uppercase;color:#3fbeb2;margin:0}
-.ask-eyebrow .dot{flex:none;width:6px;height:6px;border-radius:50%;background:#3fbeb2;
-                  margin-right:9px;box-shadow:0 0 0 3px rgba(63,190,178,.16)}
+             text-transform:uppercase;color:var(--accent);margin:0}
+.ask-eyebrow .dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);
+                  margin-right:9px;box-shadow:0 0 0 3px var(--accent-faint)}
 /* site.css styles a bare h2 as an uppercase eyebrow; this one is a title. */
-.ask-title{margin:0;font:600 clamp(18px,2.2vw,21px)/1.2 var(--serif);color:#eef2f6;
+.ask-title{margin:0;font:600 clamp(18px,2.2vw,21px)/1.2 var(--serif);color:var(--ink);
            text-transform:none;letter-spacing:-.01em}
-.ask-note{font:400 13px/1.5 var(--sans);color:#8b96a2;margin:0}
-.ask-note a{color:#3fbeb2;text-decoration-color:rgba(63,190,178,.45)}
+.ask-note{font:400 13px/1.5 var(--sans);color:var(--muted);margin:0}
+.ask-note a{color:var(--accent)}
 
 /* ------------------------------------------------------------------
    the conversation
@@ -240,52 +241,51 @@
    ------------------------------------------------------------------ */
 .chat{display:flex;flex-direction:column;gap:22px;margin-bottom:14px;
       max-height:min(52vh,440px);overflow-y:auto;overscroll-behavior:contain;
-      padding-right:6px;scrollbar-width:thin;
-      scrollbar-color:rgba(255,255,255,.18) transparent}
+      padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--hair) transparent}
 .chat::-webkit-scrollbar{width:7px}
-.chat::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:99px}
+.chat::-webkit-scrollbar-thumb{background:var(--hair);border-radius:99px}
 .chat::-webkit-scrollbar-track{background:transparent}
 .chat:empty{display:none}
 .turn{display:flex;flex-direction:column;gap:13px}
 .turn-q{align-self:flex-end;max-width:85%;margin:0;
         border-radius:16px 16px 4px 16px;padding:11px 15px;
-        background:rgba(63,190,178,.15);border:1px solid rgba(63,190,178,.26);
-        color:#eef2f6;font:400 15px/1.55 var(--sans)}
+        background:var(--accent-faint);border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);
+        color:var(--ink);font:400 15px/1.55 var(--sans)}
 .turn-a{display:flex;flex-direction:column;gap:13px}
-.turn-text{margin:0;font:400 16px/1.68 var(--sans);color:#eef2f6}
-.turn-text .ref{color:#3fbeb2;text-decoration:none;padding:0 1px;
+.turn-text{margin:0;font:400 16px/1.68 var(--sans);color:var(--ink)}
+.turn-text .ref{color:var(--accent);text-decoration:none;padding:0 1px;
                 font-variant-numeric:tabular-nums;
-                border-bottom:1px solid rgba(63,190,178,.4)}
-.turn-quiet{margin:0;font:400 13.5px/1.6 var(--sans);color:#8b96a2}
+                border-bottom:1px solid color-mix(in srgb,var(--accent) 45%,transparent)}
+.turn-quiet{margin:0;font:400 13.5px/1.6 var(--sans);color:var(--muted)}
 .caret{display:inline-block;width:2px;height:1em;margin-left:1px;vertical-align:-2px;
-     background:#3fbeb2;animation:ask-blink 1s steps(2) infinite}
+     background:var(--accent);animation:ask-blink 1s steps(2) infinite}
 @keyframes ask-blink{50%{opacity:0}}
 
 /* what the answer was built from, and the way into the scoring */
 .turn-foot{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 .src-card{display:inline-flex;align-items:baseline;gap:7px;max-width:100%;
-          border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:6px 12px;
-          text-decoration:none;color:#b6c0ca;font:400 12.5px/1.35 var(--sans)}
-.src-card:hover{border-color:#3fbeb2;color:#3fbeb2;background:rgba(63,190,178,.10)}
-.src-card b{font:600 11px/1 var(--mono);color:#3fbeb2;font-variant-numeric:tabular-nums}
+          border:1px solid var(--hair);border-radius:999px;padding:6px 12px;
+          text-decoration:none;color:var(--muted);font:400 12.5px/1.35 var(--sans)}
+.src-card:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-faint)}
+.src-card b{font:600 11px/1 var(--mono);color:var(--accent);font-variant-numeric:tabular-nums}
 .src-card span{max-width:32ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.turn-retr{border:1px solid rgba(255,255,255,.14);background:transparent;color:#8b96a2;
+.turn-retr{border:1px solid var(--hair);background:transparent;color:var(--muted);
          cursor:pointer;border-radius:999px;padding:6px 12px;
          font:400 12.5px/1.35 var(--sans)}
-.turn-retr:hover{border-color:#e0894f;color:#e0894f;background:rgba(224,137,79,.10)}
+.turn-retr:hover{border-color:var(--accent-2);color:var(--accent-2);
+                 background:color-mix(in srgb,var(--accent-2) 10%,transparent)}
 
 /* the composer */
 .composer{display:flex;align-items:center;gap:8px;margin:0;padding:4px 4px 4px 14px;
-          background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);
-          border-radius:12px}
-.composer:focus-within{border-color:#3fbeb2;background:rgba(255,255,255,.09);
-                       box-shadow:0 0 0 3px rgba(63,190,178,.18)}
-.composer input{flex:1;min-width:0;border:0;outline:none;background:transparent;color:#eef2f6;
+          background:var(--canvas);border:1px solid var(--hair);border-radius:12px}
+.composer:focus-within{border-color:var(--accent);background:var(--card);
+                       box-shadow:0 0 0 3px var(--accent-faint)}
+.composer input{flex:1;min-width:0;border:0;outline:none;background:transparent;color:var(--ink);
                 font:400 15.5px/1.5 var(--sans);padding:9px 0;text-overflow:ellipsis}
-.composer input::placeholder{color:#7b8794}
+.composer input::placeholder{color:var(--faint)}
 .composer-send{flex:none;display:grid;place-items:center;width:34px;height:34px;
-               border:0;border-radius:9px;cursor:pointer;background:#3fbeb2;color:#0f1317}
-.composer-send:hover:not(:disabled){background:#57d0c4}
+               border:0;border-radius:9px;cursor:pointer;background:var(--accent);color:#fff}
+.composer-send:hover:not(:disabled){filter:brightness(1.08)}
 .composer-send:disabled{opacity:.35;cursor:default}
 .composer-send svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;
                    stroke-linecap:round;stroke-linejoin:round}
@@ -293,8 +293,7 @@
 /* the openers, which stand down once the conversation has started */
 .chat-tries{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .chat-tries[hidden]{display:none}
-.asksite .sp-ex{border-color:rgba(255,255,255,.15);color:#98a4b0;font-size:12.5px;padding:5px 10px}
-.asksite .sp-ex:hover{border-color:#3fbeb2;color:#3fbeb2;background:rgba(63,190,178,.10)}
+.asksite .sp-ex{font-size:12.5px;padding:5px 10px}
 
 /* ============================================================
    the retrieval modal — the analysis, kept in full
