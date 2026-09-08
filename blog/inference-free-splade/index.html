@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Semantic search for the price of a git push — Kasper Rømer Grøntved</title>
+<meta name="description" content="How this site's search understands meaning without a server: inference-free SPLADE, with the model run once on GitHub Actions, the sparse index served from GitHub Pages, and a free Mistral key for the generated answers. The receipt comes to €0.00, and here is the maths behind it.">
+<link rel="canonical" href="https://www.grontved.xyz/blog/inference-free-splade/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Semantic search for the price of a git push">
+<meta property="og:description" content="Inference-free SPLADE on GitHub Actions, GitHub Pages and a free Mistral key. A €0.00 receipt, itemised and checked.">
+<meta property="og:url" content="https://www.grontved.xyz/blog/inference-free-splade/">
+<meta property="article:published_time" content="2026-09-08">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/site.css?v=b31c0d02">
+<link rel="stylesheet" href="/blog/blog.css?v=1">
+<link rel="stylesheet" href="/search/search.css?v=8">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting",
+ "headline":"Semantic search for the price of a git push",
+ "datePublished":"2026-09-08","inLanguage":"en",
+ "author":{"@type":"Person","name":"Kasper Rømer Grøntved","url":"https://www.grontved.xyz"},
+ "url":"https://www.grontved.xyz/blog/inference-free-splade/",
+ "about":["Learned sparse retrieval","SPLADE","GitHub Pages","GitHub Actions"]}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><i></i><i></i></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/">Kasper <span>Grøntved</span></a>
+    <nav class="main">
+      <a href="/knowledge/">Knowledge</a>
+      <a href="/blog/" aria-current="page">Blog</a>
+      <a href="/publications.html">Publications</a>
+      <a href="/cv.html">CV</a>
+      <a href="/search/">Search</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap narrow">
+<article class="post">
+
+  <div class="post-hero">
+    <p class="eyebrow">Inference-free SPLADE · GitHub Actions · GitHub Pages · one free API key</p>
+    <h1>Semantic search for the price of a <em>git push</em></h1>
+    <p class="lede">The <a href="/search/">search on this site</a> knows that <em>someone lost in the
+    woods</em> is a search-and-rescue question. It runs no model in your browser and no server
+    anywhere, and my monthly invoice for it is €0.00. This is the receipt, itemised, with the maths
+    that makes each line hold.</p>
+    <div class="post-meta">
+      <span><b>Kasper Rømer Grøntved</b></span><span>8 September 2026</span><span>≈ 16 min</span>
+      <span>Every number below is measured on the live index or cited</span>
+    </div>
+  </div>
+
+  <!-- The thing the post is about, before the post. Same widget as /search/,
+       same index; nothing is fetched until the box is focused. -->
+  <section class="demo" aria-labelledby="demo-title">
+    <div class="demo-head">
+      <h2 class="demo-title" id="demo-title">Try it first</h2>
+      <p class="demo-lede">The index this post measures, running in this tab.</p>
+    </div>
+    <div class="sp-field-wrap">
+      <div class="sp-field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <label for="q" class="skip">Search this site</label>
+        <input id="q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search"
+               role="combobox" aria-expanded="false" aria-controls="ac-list"
+               aria-autocomplete="list" aria-describedby="ac-hint"
+               placeholder="say it the way a person would">
+        <button id="clear" class="sp-clear" type="button" hidden aria-label="Clear the search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="sp-ac" id="ac" hidden>
+        <ul class="sp-ac-list" id="ac-list" role="listbox" aria-label="Search results"></ul>
+        <p class="sp-ac-foot" id="ac-foot"></p>
+      </div>
+    </div>
+    <p class="skip" id="ac-hint">Results appear as you type. Arrow keys move through them, Enter
+    opens the scoring for one, Escape dismisses the list.</p>
+    <div class="sp-examples" id="examples">
+      <span>Try</span>
+      <button class="sp-ex" type="button">finding someone lost in the woods</button>
+      <button class="sp-ex" type="button">how do drones divide up a search area?</button>
+      <button class="sp-ex" type="button">cardiac arrest</button>
+    </div>
+    <div class="sp-skel" id="skeleton" hidden aria-hidden="true"><i></i><i></i></div>
+    <div class="demo-foot">
+      <p class="sp-status" id="status" role="status">Nothing downloaded until you focus the box.</p>
+      <p class="demo-note">A result opens its scoring on <a href="/search/">the search page</a>. The
+      third example is deliberate; <a href="#dot">§5</a> explains the silence.</p>
+    </div>
+    <noscript><p class="demo-note">The box needs JavaScript, because the search runs in your
+    browser rather than on a server. The post reads fine without it.</p></noscript>
+  </section>
+
+  <div class="receipt" role="figure" aria-label="A receipt totalling zero euros">
+    <h3>grontved.xyz</h3>
+    <p class="sub">semantic site search · monthly statement</p>
+    <div class="row"><span>Document encoder, 67M params, Apache-2.0</span><span>€0.00</span></div>
+    <div class="row"><span>Encoding compute (GitHub Actions, public repo)</span><span>€0.00</span></div>
+    <div class="row"><span>Hosting, 285 KB of index (GitHub Pages)</span><span>€0.00</span></div>
+    <div class="row"><span>Query-time inference</span><span>n/a</span></div>
+    <div class="row"><span>Key holder for the LLM (Workers Free)</span><span>€0.00</span></div>
+    <div class="row"><span>Generated answers (Mistral, Experiment tier)</span><span>€0.00</span></div>
+    <div class="row total"><span>TOTAL</span><span>€0.00</span></div>
+    <p class="foot">no payment method on file · limits fail, never bill</p>
+  </div>
+
+  <p>I should be clear about my motives. This is not a post about frugality as a virtue. I am simply
+  cheap, and I wanted a search box on a static site that understands meaning. Those two wants are
+  usually in conflict: <em>meaning</em> tends to imply an embedding model, which implies a GPU or at
+  least a process that stays up, which implies a monthly line item I will eventually resent. What
+  follows is how a specific piece of retrieval research lets you have the meaning without the
+  process, and what it honestly costs instead.</p>
+
+  <h2 id="constraints"><span class="num">01</span>The things I refused to pay for</h2>
+
+  <p>This site is plain HTML pushed to GitHub Pages. No build step, no framework, no server, and I
+  intended to keep it that way. That rules out the ordinary answer to "make search understand
+  meaning", which is to run an encoder on every query. It also rules out the fashionable answer,
+  which is to ship the encoder to the browser as WebAssembly: the document encoder I ended up using
+  is a 268 MB <code>safetensors</code> file, and asking a reader to download it so they can find a
+  PDF is not a trade I will make on their behalf.</p>
+
+  <p>But keyword search would not do either. The corpus is my papers, slides, projects and CV, and
+  it is written in the register of people who say <em>wilderness search and rescue</em> when they
+  mean <em>finding someone lost in the woods</em>. A reader types the second. BM25 matches the
+  first. They never meet.</p>
+
+  <p>So the requirement was: retrieval that bridges vocabulary, on a static host, with the browser
+  downloading something closer to a stylesheet than a model. The trick that makes this possible is
+  that <strong>SPLADE is asymmetric</strong>, and one family of SPLADE models pushes the asymmetry
+  all the way to its conclusion.</p>
+
+  <h2 id="splade"><span class="num">02</span>SPLADE in one breath</h2>
+
+  <p>SPLADE <a href="#ref-splade">[1]</a> takes a BERT-style masked language model and uses the
+  head it was pre-trained with, the one that predicts a vocabulary token at every position, for
+  something else. For an input of <span class="math">n</span> tokens the MLM head produces an
+  <span class="math">n × |V|</span> matrix of logits, where <span class="math">|V|</span> is the
+  30,522-entry WordPiece vocabulary. SPLADE squashes it into one vector per passage:</p>
+
+  <p style="text-align:center;margin:26px 0"><span class="math">w<sub>j</sub> = max<sub>i</sub>
+  <span class="r">log</span>(1 + <span class="r">log</span>(1 + <span class="r">ReLU</span>(ℓ<sub>ij</sub>)))</span></p>
+
+  <p>The ReLU keeps only positive evidence, the max over positions keeps the strongest occurrence
+  of each vocabulary term, and the double logarithm is the v3 saturation the OpenSearch models use
+  <a href="#ref-l0">[3]</a>; the original paper used a single log. Training adds a sparsity
+  regulariser, so the vector that comes out has a few hundred non-zero entries rather than thirty
+  thousand. Each non-zero entry has a name, because each dimension <em>is</em> a token. A passage
+  about UAVs may come out with a weight on <code>drone</code> even though the word never appears.
+  That is the "expansion" in <em>Sparse Lexical and Expansion</em>, and it is what BM25 cannot
+  do.</p>
+
+  <p>In the standard, symmetric setup both the query and the document go through the model.
+  Scoring is then a dot product of two sparse vectors, which an inverted index does well. The
+  quality is competitive with dense retrieval on the BEIR suite <a href="#ref-splade2">[2]</a>,
+  and unlike dense retrieval you can read the vector and see why a result matched.</p>
+
+  <h2 id="asymmetry"><span class="num">03</span>The asymmetry, which is the whole trick</h2>
+
+  <p>Here is the observation that pays for everything. Vocabulary bridging only has to happen
+  <em>once</em>, on one side. If the document side is expanded aggressively enough at index time,
+  the query side can be almost nothing: tokenize, look up a weight per token, done. Models trained
+  this way are called <em>inference-free</em>, because no neural network runs when a query
+  arrives.</p>
+
+  <p>There are two schools. The naver <code>splade-v3-doc</code> line gives every query token the
+  weight 1.0, a bag of words. The OpenSearch line <a href="#ref-if">[4]</a><a href="#ref-l0">[3]</a>
+  gives each query token a fixed, learned IDF-style weight, shipped with the model as a text
+  file, and trains the document encoder to expect exactly those weights. I used
+  <a href="https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill"><code>opensearch-neural-sparse-encoding-doc-v3-distill</code></a>:
+  67M parameters, Apache-2.0, an average NDCG@10 of 0.517 on the model card's thirteen BEIR sets.
+  The weights matter more than they sound. From the table this site actually ships:</p>
+
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>Query token</th><th class="num">Static weight</th><th>Reading</th></tr></thead>
+    <tbody>
+      <tr><td><code>the</code></td><td class="num">0.135</td><td>almost nothing; a stopword by arithmetic, not by list</td></tr>
+      <tr><td><code>a</code></td><td class="num">0.402</td><td></td></tr>
+      <tr><td><code>how</code></td><td class="num">2.76</td><td>question words carry a little</td></tr>
+      <tr><td><code>?</code></td><td class="num">3.33</td><td>punctuation is a token too, and it has a weight</td></tr>
+      <tr><td><code>search</code></td><td class="num">4.62</td><td></td></tr>
+      <tr><td><code>drones</code></td><td class="num">9.22</td><td>68× the weight of <code>the</code></td></tr>
+      <tr><td><code>sp</code> · <code>##lad</code> · <code>##e</code></td><td class="num">4.76 · 7.90 · 3.04</td><td>what SPLADE thinks of the word SPLADE</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>With bag-of-words weights, <em>the</em> and <em>drones</em> would count the same and a passage
+  that mentions <em>the</em> a lot would win. With these weights the query side already knows what
+  is worth matching, in general, before it has seen a single document. It knows nothing about
+  <em>this</em> corpus; that is the price, and I come back to it in <a href="#limits">§10</a>.</p>
+
+  <figure class="fig" aria-labelledby="fig1-cap">
+    <svg viewBox="0 0 760 360" role="img" aria-label="A balance scale. The heavy left pan, labelled index time on GitHub Actions, holds a 268 megabyte model and takes about three minutes. The light right pan, labelled query time in your browser, holds a tokenizer and a 61 kilobyte weight table and takes under a millisecond. The beam tilts hard to the left.">
+      <defs>
+        <marker id="f1arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0 0L10 5 0 10z" fill="var(--faint)"/></marker>
+      </defs>
+      <!-- fulcrum -->
+      <path d="M380 296 L352 318 H408 Z" fill="var(--hair)"/>
+      <rect x="376" y="150" width="8" height="150" rx="3" fill="var(--hair)"/>
+      <!-- beam, tilted: left low, right high -->
+      <g transform="rotate(-11 380 150)">
+        <rect x="90" y="146" width="580" height="8" rx="4" fill="var(--ink-2)"/>
+        <!-- left strings + pan -->
+        <path d="M110 154 L80 214 M110 154 L140 214" stroke="var(--faint)" stroke-width="1.5" fill="none"/>
+        <path d="M60 214 H160 q0 34 -50 34 q-50 0 -50 -34z" fill="var(--accent-faint)" stroke="var(--accent)" stroke-width="1.5"/>
+        <!-- the model on the pan -->
+        <g transform="translate(110 176)">
+          <rect x="-40" y="-2" width="80" height="40" rx="7" fill="var(--ink)"/>
+          <text x="0" y="16" font-size="10" font-weight="600" fill="var(--canvas)" text-anchor="middle" font-family="IBM Plex Mono,monospace">67M params</text>
+          <text x="0" y="30" font-size="10" fill="var(--canvas)" text-anchor="middle" font-family="IBM Plex Mono,monospace">268 MB</text>
+        </g>
+        <!-- right strings + pan -->
+        <path d="M650 154 L620 214 M650 154 L680 214" stroke="var(--faint)" stroke-width="1.5" fill="none"/>
+        <path d="M600 214 H700 q0 34 -50 34 q-50 0 -50 -34z" fill="var(--canvas-2)" stroke="var(--faint)" stroke-width="1.5"/>
+        <!-- the feather: tokenizer + table -->
+        <g transform="translate(650 180)">
+          <rect x="-38" y="0" width="76" height="14" rx="4" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/>
+          <text x="0" y="10.5" font-size="8.5" fill="var(--accent)" text-anchor="middle" font-family="IBM Plex Mono,monospace">WordPiece</text>
+          <rect x="-38" y="18" width="76" height="14" rx="4" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/>
+          <text x="0" y="28.5" font-size="8.5" fill="var(--accent)" text-anchor="middle" font-family="IBM Plex Mono,monospace">61 KB table</text>
+        </g>
+      </g>
+      <!-- labels -->
+      <text x="24" y="334" font-size="12" font-weight="600" fill="var(--ink)">Index time</text>
+      <text x="24" y="350" font-size="11" fill="var(--muted)">GitHub Actions · about 3 minutes · once per content change</text>
+      <text x="736" y="334" font-size="12" font-weight="600" fill="var(--ink)" text-anchor="end">Query time</text>
+      <text x="736" y="350" font-size="11" fill="var(--muted)" text-anchor="end">your browser · 0.7 ms · on every keystroke</text>
+      <text x="380" y="40" font-size="13" font-weight="600" fill="var(--ink)" text-anchor="middle">Where the weight lives</text>
+      <text x="380" y="58" font-size="11.5" fill="var(--muted)" text-anchor="middle">All the intelligence is spent before anyone types a query</text>
+    </svg>
+    <figcaption id="fig1-cap"><b>Figure 1.</b> Inference-free SPLADE moves all of the model to
+    index time. The right pan holds everything the browser needs to turn a query into a vector: a
+    WordPiece tokenizer, about a hundred lines of JavaScript, and one static weight per vocabulary
+    entry. Timings are from <a href="#pages">§7</a>.</figcaption>
+  </figure>
+
+  <h2 id="vector"><span class="num">04</span>A vector you can read</h2>
+
+  <p>Dense embeddings ask you to trust them. A sparse one shows its working, and I think that is
+  reason enough to prefer it for a personal site where the point is partly to <em>explain</em> the
+  retrieval. Here is the abstract of the <a href="/publications.html#pub-sarenv">SAREnv paper</a>
+  as the document encoder sees it: 160 activated terms, 88 of which appear in the text and 72 of
+  which the model added.</p>
+
+  <figure class="fig" aria-labelledby="fig2-cap">
+    <svg viewBox="0 0 760 400" role="img" aria-label="Horizontal bar chart of sixteen terms from the SAREnv abstract's sparse vector. Terms present in the text, in teal: sar 0.79, wilderness 0.73, search 0.71, data 0.67, path 0.57, drones 0.56, unmanned 0.55, rescue 0.50, lost 0.48. Terms the model added, in orange: drone 0.60, map 0.45, mapping 0.37, wild 0.37, camping 0.29, hunting 0.29, forest 0.28.">
+      <text x="0" y="16" font-size="13" font-weight="600" fill="var(--ink)">SAREnv abstract, top of its sparse vector</text>
+      <text x="0" y="34" font-size="11.5" fill="var(--muted)">weight per vocabulary term · teal is in the passage, orange the model added</text>
+      <g font-size="12" font-family="IBM Plex Mono,monospace">
+        <!-- rows: y from 60, step 21; bar x=120, scale 620px per 0.8 -->
+        <g transform="translate(0 52)">
+          <text x="112" y="11" fill="var(--ink)" text-anchor="end">sar</text><rect x="120" y="2" width="612" height="12" rx="3" fill="var(--accent)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.79</text>
+        </g>
+        <g transform="translate(0 73)">
+          <text x="112" y="11" fill="var(--ink)" text-anchor="end">wilderness</text><rect x="120" y="2" width="566" height="12" rx="3" fill="var(--accent)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.73</text>
+        </g>
+        <g transform="translate(0 94)">
+          <text x="112" y="11" fill="var(--ink)" text-anchor="end">search</text><rect x="120" y="2" width="550" height="12" rx="3" fill="var(--accent)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.71</text>
+        </g>
+        <g transform="translate(0 115)">
+          <text x="112" y="11" fill="var(--ink)" text-anchor="end">data</text><rect x="120" y="2" width="519" height="12" rx="3" fill="var(--accent)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.67</text>
+        </g>
+        <g transform="translate(0 136)">
+          <text x="112" y="11" fill="var(--accent-2)" font-weight="500" text-anchor="end">drone *</text><rect x="120" y="2" width="465" height="12" rx="3" fill="var(--accent-2)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.60</text>
+        </g>
+        <g transform="translate(0 157)">
+          <text x="112" y="11" fill="var(--ink)" text-anchor="end">path</text><rect x="120" y="2" width="442" height="12" rx="3" fill="var(--accent)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.57</text>
+        </g>
+        <g transform="translate(0 178)">
+          <text x="112" y="11" fill="var(--ink)" text-anchor="end">drones</text><rect x="120" y="2" width="434" height="12" rx="3" fill="var(--accent)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.56</text>
+        </g>
+        <g transform="translate(0 199)">
+          <text x="112" y="11" fill="var(--ink)" text-anchor="end">unmanned</text><rect x="120" y="2" width="426" height="12" rx="3" fill="var(--accent)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.55</text>
+        </g>
+        <g transform="translate(0 220)">
+          <text x="112" y="11" fill="var(--ink)" text-anchor="end">rescue</text><rect x="120" y="2" width="388" height="12" rx="3" fill="var(--accent)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.50</text>
+        </g>
+        <g transform="translate(0 241)">
+          <text x="112" y="11" fill="var(--ink)" text-anchor="end">lost</text><rect x="120" y="2" width="372" height="12" rx="3" fill="var(--accent)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.48</text>
+        </g>
+        <g transform="translate(0 262)">
+          <text x="112" y="11" fill="var(--accent-2)" font-weight="500" text-anchor="end">map *</text><rect x="120" y="2" width="349" height="12" rx="3" fill="var(--accent-2)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.45</text>
+        </g>
+        <g transform="translate(0 283)">
+          <text x="112" y="11" fill="var(--accent-2)" font-weight="500" text-anchor="end">mapping *</text><rect x="120" y="2" width="287" height="12" rx="3" fill="var(--accent-2)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.37</text>
+        </g>
+        <g transform="translate(0 304)">
+          <text x="112" y="11" fill="var(--accent-2)" font-weight="500" text-anchor="end">wild *</text><rect x="120" y="2" width="287" height="12" rx="3" fill="var(--accent-2)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.37</text>
+        </g>
+        <g transform="translate(0 325)">
+          <text x="112" y="11" fill="var(--accent-2)" font-weight="500" text-anchor="end">camping *</text><rect x="120" y="2" width="225" height="12" rx="3" fill="var(--accent-2)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.29</text>
+        </g>
+        <g transform="translate(0 346)">
+          <text x="112" y="11" fill="var(--accent-2)" font-weight="500" text-anchor="end">hunting *</text><rect x="120" y="2" width="225" height="12" rx="3" fill="var(--accent-2)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.29</text>
+        </g>
+        <g transform="translate(0 367)">
+          <text x="112" y="11" fill="var(--accent-2)" font-weight="500" text-anchor="end">forest *</text><rect x="120" y="2" width="217" height="12" rx="3" fill="var(--accent-2)"/><text x="124" y="11.5" font-size="10" fill="#fff">0.28</text>
+        </g>
+      </g>
+      <text x="760" y="396" font-size="10.5" fill="var(--faint)" text-anchor="end">* not in the text · 144 further terms omitted</text>
+    </svg>
+    <figcaption id="fig2-cap"><b>Figure 2.</b> Sixteen of the 160 terms, read straight out of
+    <code>search/index.json</code>. The paper never says <em>camping</em>, <em>hunting</em> or
+    <em>forest</em>. The model decided a paper about wilderness search and rescue is the kind of
+    document those words retrieve, which is exactly right and slightly eerie. Note the singular
+    <em>drone</em> was added even though the plural is in the text: expansion is also
+    morphology.</figcaption>
+  </figure>
+
+  <p>Across the whole corpus the picture is the same. Of 31,556 postings in the index, 59.5% are
+  terms not literally present in their passage. The 203 passages between them touch 5,757 of the
+  30,522 dimensions. So the "sparse" vector is sparse in the sense that matters, at about 0.5%
+  density per passage, but it is far from a bag of the words on the page.</p>
+
+  <h2 id="dot"><span class="num">05</span>The dot product, with the working shown</h2>
+
+  <p>Retrieval is now a sparse dot product between a query vector that cost nothing and a document
+  vector that was paid for weeks ago. Take the query from the top of this post.</p>
+
+  <figure class="fig" aria-labelledby="fig3-cap">
+    <svg viewBox="0 0 760 300" role="img" aria-label="A worked scoring ledger. The query 'finding someone lost in the woods' is tokenized into six terms with static weights: finding 5.92, someone 4.75, lost 5.42, in 0.50, the 0.14, woods 7.18. Against the passage 'Modeling Lost Person Locations' the products are: lost 5.42 times 1.00 equals 5.42; someone 4.75 times 0.19 equals 0.90; woods 7.18 times 0.12 equals 0.86; finding 5.92 times 0.12 equals 0.71; in and the contribute 0. Total 7.90.">
+      <text x="0" y="16" font-size="13" font-weight="600" fill="var(--ink)">finding someone lost in the woods</text>
+      <text x="0" y="34" font-size="11.5" fill="var(--muted)">scored against the top passage, “Modeling Lost Person Locations” (SAREnv §4)</text>
+      <!-- header -->
+      <g font-size="10.5" font-family="IBM Plex Mono,monospace" fill="var(--faint)">
+        <text x="0" y="66">TOKEN</text><text x="230" y="66" text-anchor="end">QUERY w</text>
+        <text x="270" y="66">×</text><text x="400" y="66" text-anchor="end">DOC w</text>
+        <text x="440" y="66">=</text><text x="560" y="66" text-anchor="end">SCORE</text>
+        <text x="600" y="66">SOURCE</text>
+      </g>
+      <line x1="0" y1="74" x2="760" y2="74" stroke="var(--hair)"/>
+      <g font-size="13" font-family="IBM Plex Mono,monospace">
+        <g transform="translate(0 96)">
+          <text x="0" y="0" fill="var(--ink)">lost</text><text x="230" y="0" fill="var(--ink-2)" text-anchor="end">5.42</text>
+          <text x="400" y="0" fill="var(--ink-2)" text-anchor="end">1.00</text><text x="560" y="0" fill="var(--accent)" font-weight="500" text-anchor="end">5.42</text>
+          <text x="600" y="0" fill="var(--accent)" font-size="11">in the passage</text>
+        </g>
+        <g transform="translate(0 122)">
+          <text x="0" y="0" fill="var(--ink)">someone</text><text x="230" y="0" fill="var(--ink-2)" text-anchor="end">4.75</text>
+          <text x="400" y="0" fill="var(--ink-2)" text-anchor="end">0.19</text><text x="560" y="0" fill="var(--accent-2)" font-weight="500" text-anchor="end">0.90</text>
+          <text x="600" y="0" fill="var(--accent-2)" font-size="11">added by the model</text>
+        </g>
+        <g transform="translate(0 148)">
+          <text x="0" y="0" fill="var(--ink)">woods</text><text x="230" y="0" fill="var(--ink-2)" text-anchor="end">7.18</text>
+          <text x="400" y="0" fill="var(--ink-2)" text-anchor="end">0.12</text><text x="560" y="0" fill="var(--accent-2)" font-weight="500" text-anchor="end">0.86</text>
+          <text x="600" y="0" fill="var(--accent-2)" font-size="11">added by the model</text>
+        </g>
+        <g transform="translate(0 174)">
+          <text x="0" y="0" fill="var(--ink)">finding</text><text x="230" y="0" fill="var(--ink-2)" text-anchor="end">5.92</text>
+          <text x="400" y="0" fill="var(--ink-2)" text-anchor="end">0.12</text><text x="560" y="0" fill="var(--accent-2)" font-weight="500" text-anchor="end">0.71</text>
+          <text x="600" y="0" fill="var(--accent-2)" font-size="11">added by the model</text>
+        </g>
+        <g transform="translate(0 200)" fill="var(--faint)">
+          <text x="0" y="0">in</text><text x="230" y="0" text-anchor="end">0.50</text>
+          <text x="400" y="0" text-anchor="end">—</text><text x="560" y="0" text-anchor="end">0</text>
+          <text x="600" y="0" font-size="11">not in the vector</text>
+        </g>
+        <g transform="translate(0 226)" fill="var(--faint)">
+          <text x="0" y="0">the</text><text x="230" y="0" text-anchor="end">0.14</text>
+          <text x="400" y="0" text-anchor="end">—</text><text x="560" y="0" text-anchor="end">0</text>
+          <text x="600" y="0" font-size="11">not in the vector</text>
+        </g>
+      </g>
+      <line x1="0" y1="242" x2="760" y2="242" stroke="var(--ink)" stroke-width="1.5"/>
+      <g font-size="13" font-family="IBM Plex Mono,monospace">
+        <text x="0" y="268" fill="var(--ink)" font-weight="500">Σ</text>
+        <text x="560" y="268" fill="var(--accent)" font-weight="600" text-anchor="end">7.90</text>
+        <text x="600" y="268" fill="var(--muted)" font-size="11">rank 1 of 203</text>
+      </g>
+      <text x="0" y="294" font-size="10.5" fill="var(--faint)">weights shown to two decimals; the sum uses the unrounded query table</text>
+    </svg>
+    <figcaption id="fig3-cap"><b>Figure 3.</b> Six query tokens, four of which land. Only
+    <em>lost</em> is in the passage. <em>Someone</em>, <em>woods</em> and <em>finding</em> were put
+    into the document vector by the encoder, at index time, in anticipation of a query like this
+    one. The stopwords were given almost no weight by the table and no weight at all by the model,
+    and cancel out of the arithmetic entirely.</figcaption>
+  </figure>
+
+  <p>Now the honest counter-example, because this is where inference-free stops being magic and
+  starts being a design choice. Type <em>heart attack</em> into this site and the top result is a
+  section of a U-space planning paper, with a score of 1.01, entirely from an expansion term
+  <code>heart</code> the model put on a passage about UAV corridors. Type <em>cardiac arrest</em>
+  and you get nothing at all. In a symmetric SPLADE the query encoder would have expanded
+  <em>cardiac</em> towards <em>heart</em>. Here the query side has no encoder, so the bridge has to
+  have been built from the document side, and no document on this site is about hearts. Inference-free
+  retrieval can only be as clever as the document encoder's guesses about future queries.</p>
+
+  <h2 id="actions"><span class="num">06</span>The factory: GitHub Actions</h2>
+
+  <p>The heavy pan of Figure 1 is a workflow. Any push that touches an indexed page, a deck, a paper
+  text or the build script itself triggers <a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/.github/workflows/search-index.yml"><code>search-index.yml</code></a>,
+  which installs the CPU wheel of torch, pulls the model from the Hub, encodes every passage and
+  commits the result back to the branch. GitHub-hosted runners are free for public repositories,
+  and the whole thing takes between two and three and a half minutes on the runs I have on record,
+  most of it <code>pip install</code>.</p>
+
+  <pre class="code"><span class="c"># the part that does the work, trimmed</span>
+<span class="k">- name:</span> Install dependencies
+  <span class="k">run:</span> |
+    pip install torch --index-url https://download.pytorch.org/whl/cpu   <span class="c"># not the CUDA wheel, no GPU here</span>
+    pip install -r tools/requirements.txt
+<span class="k">- uses:</span> actions/cache@v4                 <span class="c"># ~/.cache/huggingface, so the 268 MB is fetched once</span>
+<span class="k">- run:</span> python tools/build_search_index.py --out search
+<span class="k">- run:</span> python tools/check_search_index.py     <span class="c"># browser tokenizer == HuggingFace tokenizer, or fail</span>
+<span class="k">- run:</span> |
+    git add search/index.json search/qweights.u16.bin search/vocab.txt search/corpus.json
+    git diff --cached --quiet || { git commit -m <span class="s">"Rebuild the SPLADE search index"</span>; git push;
+                                   gh workflow run pages.yml --ref <span class="s">"$GITHUB_REF_NAME"</span>; }</pre>
+
+  <p>Four details earned their place the hard way.</p>
+
+  <ol>
+    <li><strong>Determinism.</strong> Multi-threaded CPU reductions sum in a nondeterministic
+    order, which moves the odd weight by a hundredth and reshuffles ties. Invisible on the page,
+    but it made every rebuild a fresh diff, so the "index unchanged, nothing to commit" branch could
+    never fire. <code>torch.set_num_threads(1)</code> costs a few seconds on a corpus this size and
+    buys byte-identical output on the same runner image. Not across images: the rebuild
+    this very post triggered landed on a fresh runner with newer wheels, and twelve of the 203
+    passages moved by one quantisation step, one posting appeared, and the diff was a single
+    line of JSON. The numbers in this post are read from that rebuilt index.</li>
+    <li><strong>The token gotcha.</strong> A push made with the workflow's own
+    <code>GITHUB_TOKEN</code> deliberately does not trigger other workflows, so the commit carrying
+    the new index never started the Pages deploy. Every rebuilt index was sitting undeployed until
+    my next human push. The job now dispatches the deploy itself.</li>
+    <li><strong>The check step.</strong> The browser has its own WordPiece implementation, and a
+    tokenizer that disagrees with the one the model was trained with fails silently: results are
+    merely, quietly wrong. So the build tokenizes a fixture of awkward strings (<em>grøntved</em>,
+    <em>ESP-NOW</em>, <em>TrajAllocPy</em>, <em>café résumé naïve</em>) both ways and scores the
+    same queries both ways, and the job fails if either disagrees beyond 10<sup>−4</sup>.</li>
+    <li><strong>Truncation.</strong> The encoder reads 512 tokens. Paper sections are chunked to
+    about 1,800 characters between sentences, so nothing the model is scored on was cut off
+    unseen.</li>
+  </ol>
+
+  <h2 id="pages"><span class="num">07</span>The shop floor: GitHub Pages</h2>
+
+  <p>The light pan is three files and a script. Nothing is fetched until the reader focuses the
+  search box, so a visitor who never searches pays nothing for the feature.</p>
+
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>File</th><th>What it is</th><th class="num">Bytes</th><th class="num">gzipped</th></tr></thead>
+    <tbody>
+      <tr><td><code>index.json</code></td><td>203 passages: postings, quantised weights, a literal/expansion bit, title, URL, snippet</td><td class="num">431,055</td><td class="num">123,362</td></tr>
+      <tr><td><code>vocab.txt</code></td><td>line <span class="math">n</span> is token <span class="math">n</span>; needed to tokenize and to name any dimension</td><td class="num">231,508</td><td class="num">110,507</td></tr>
+      <tr><td><code>qweights.u16.bin</code></td><td>one <code>uint16</code> per vocabulary entry, the query table at 1/1000 resolution</td><td class="num">61,044</td><td class="num">51,096</td></tr>
+      <tr><td><code>splade.js</code></td><td>tokenizer, scorer, loader; no dependencies</td><td class="num">8,796</td><td class="num">3,446</td></tr>
+      <tr class="total"><td>Total</td><td>versus 267,954,768 bytes of model</td><td class="num">732,403</td><td class="num">288,411</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>That is a 930× reduction in what the reader downloads, for the same document vectors. The
+  quantisation is deliberate and its error is bounded: document weights are stored as
+  <code>round(100·w)</code> in one byte, so the absolute error is at most 0.005. The smallest weight
+  kept is 0.05 (anything below is dropped, then the top 160 terms are kept), so the worst relative
+  error on the least important term is 10%, and on the terms that decide a ranking, which sit
+  around 0.5 to 0.8, it is under 1%. Query weights are stored at 1/1000 and the error there is
+  negligible. The CI check above compares the browser's scores to an unquantised reference, so the
+  bound is not just argued, it is tested on every build.</p>
+
+  <p>Scoring is brute force: for every passage, walk its postings and multiply where the query has
+  a weight. There are 31,556 postings in total. In Node on a laptop-class CPU that is
+  <strong>0.7 ms per query</strong>, and building the engine from the fetched files is 11 ms, both
+  measured with the same <code>splade.js</code> the browser runs. An inverted index would make each
+  query cheaper and the code less legible, and at this scale legibility wins; the point of
+  <a href="/search/">the search page</a> is to show the arithmetic, not to hide it.</p>
+
+  <div class="aside">
+    <p><strong>Why not a pure static inverted index?</strong> You could ship one posting list per
+    vocabulary term as its own file and fetch only the lists a query touches, and then a static
+    host would scale to hundreds of thousands of passages. It is the obvious next step and I have
+    not needed it. The scaling table in <a href="#limits">§10</a> says when I would.</p>
+  </div>
+
+  <h2 id="mistral"><span class="num">08</span>The one part that talks to a server</h2>
+
+  <p>Retrieval is the whole of the search page and the whole of the front page until someone
+  presses <em>Answer this</em>. Then, and only then, the four best passages are handed to a
+  language model that writes two to four sentences with bare <code>[n]</code> citations. This is the
+  part that costs money in most RAG systems, and it is the part where being cheap took the most
+  engineering.</p>
+
+  <p>The problem is not the model. Mistral's Experiment tier is free and is enough for a personal
+  site by a wide margin. The problem is that a static site <strong>cannot hold a secret</strong>.
+  Every byte GitHub Pages serves is public, so an API key in the JavaScript is an API key on the
+  internet. Something has to hold the key, and it has to be free too.</p>
+
+  <p>That something is a Cloudflare Worker on its own hostname, on the Workers Free plan. It does
+  one job: the browser sends it passage <em>ids</em>, never text, it resolves them against a copy of
+  the corpus fetched from this site, and it forwards the question and those passages to Mistral
+  with the key attached. Because it only accepts ids, it can only ever generate from this site's own
+  corpus: you cannot paste in a document and have it summarised on my key.</p>
+
+  <figure class="fig" aria-labelledby="fig4-cap">
+    <svg viewBox="0 0 760 268" role="img" aria-label="A request passes through five gates in a row before reaching Mistral: shape, origin, breaker, cache, and budget. Any gate that refuses drops down to a fallback lane labelled quote the best retrieved passage. The cache gate can also return a stored answer without reaching the model.">
+      <defs>
+        <marker id="f4a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0 0L10 5 0 10z" fill="var(--faint)"/></marker>
+        <marker id="f4b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0 0L10 5 0 10z" fill="var(--accent-2)"/></marker>
+      </defs>
+      <text x="0" y="16" font-size="13" font-weight="600" fill="var(--ink)">One question’s path through the worker</text>
+      <text x="0" y="34" font-size="11.5" fill="var(--muted)">every gate fails to an error, and every error means the reader still gets the retrieved passage</text>
+      <g transform="translate(0 18)">
+      <!-- browser -->
+      <rect x="0" y="70" width="78" height="46" rx="9" fill="var(--accent-faint)" stroke="var(--accent)" stroke-width="1.3"/>
+      <text x="39" y="89" font-size="11" font-weight="600" fill="var(--ink)" text-anchor="middle">browser</text>
+      <text x="39" y="104" font-size="9.5" fill="var(--muted)" text-anchor="middle" font-family="IBM Plex Mono,monospace">q + 4 ids</text>
+      <!-- gates -->
+      <g font-size="10.5" text-anchor="middle">
+        <g transform="translate(104 66)">
+          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--hair)"/>
+          <text x="46" y="20" font-weight="600" fill="var(--ink)">shape</text>
+          <text x="46" y="35" fill="var(--muted)" font-size="9.5">≤ 4 KB, 3–200 chars</text>
+          <text x="46" y="47" fill="var(--muted)" font-size="9.5">≤ 4 ids</text>
+        </g>
+        <g transform="translate(212 66)">
+          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--hair)"/>
+          <text x="46" y="20" font-weight="600" fill="var(--ink)">origin</text>
+          <text x="46" y="35" fill="var(--muted)" font-size="9.5">only this site’s</text>
+          <text x="46" y="47" fill="var(--muted)" font-size="9.5">pages may ask</text>
+        </g>
+        <g transform="translate(320 66)">
+          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--hair)"/>
+          <text x="46" y="20" font-weight="600" fill="var(--ink)">breaker</text>
+          <text x="46" y="35" fill="var(--muted)" font-size="9.5">upstream 429/5xx</text>
+          <text x="46" y="47" fill="var(--muted)" font-size="9.5">pauses 15 min</text>
+        </g>
+        <g transform="translate(428 66)">
+          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--accent)" stroke-width="1.3"/>
+          <text x="46" y="20" font-weight="600" fill="var(--ink)">cache</text>
+          <text x="46" y="35" fill="var(--muted)" font-size="9.5">same question,</text>
+          <text x="46" y="47" fill="var(--muted)" font-size="9.5">same answer, 24 h</text>
+        </g>
+        <g transform="translate(536 66)">
+          <rect width="92" height="54" rx="9" fill="var(--card)" stroke="var(--hair)"/>
+          <text x="46" y="20" font-weight="600" fill="var(--ink)">budget</text>
+          <text x="46" y="35" fill="var(--muted)" font-size="9.5">40 / IP / day</text>
+          <text x="46" y="47" fill="var(--muted)" font-size="9.5">800 / site / day</text>
+        </g>
+      </g>
+      <!-- mistral -->
+      <rect x="654" y="66" width="106" height="54" rx="9" fill="var(--ink)"/>
+      <text x="707" y="88" font-size="11" font-weight="600" fill="var(--canvas)" text-anchor="middle">Mistral</text>
+      <text x="707" y="103" font-size="9.5" fill="var(--canvas)" text-anchor="middle" font-family="IBM Plex Mono,monospace">≤ 220 tokens out</text>
+      <!-- arrows along the top lane -->
+      <g stroke="var(--faint)" stroke-width="1.4" fill="none" marker-end="url(#f4a)">
+        <line x1="80" y1="93" x2="100" y2="93"/><line x1="198" y1="93" x2="208" y2="93"/>
+        <line x1="306" y1="93" x2="316" y2="93"/><line x1="414" y1="93" x2="424" y2="93"/>
+        <line x1="522" y1="93" x2="532" y2="93"/><line x1="630" y1="93" x2="650" y2="93"/>
+      </g>
+      <!-- cache hit shortcut back to the browser -->
+      <path d="M474 66 C474 44 300 44 60 44 L60 66" stroke="var(--accent)" stroke-width="1.3" fill="none" stroke-dasharray="4 4" marker-end="url(#f4a)"/>
+      <text x="270" y="40" font-size="9.5" fill="var(--accent)" text-anchor="middle" style="paint-order:stroke" stroke="var(--card)" stroke-width="4">cache hit: no model call at all</text>
+      <!-- fallback lane -->
+      <rect x="104" y="180" width="524" height="40" rx="9" fill="color-mix(in srgb,var(--accent-2) 10%,transparent)" stroke="var(--accent-2)" stroke-width="1.2" stroke-dasharray="5 4"/>
+      <text x="366" y="198" font-size="11" font-weight="600" fill="var(--accent-2)" text-anchor="middle">refused, rate-limited, paused or unreachable</text>
+      <text x="366" y="212" font-size="10" fill="var(--muted)" text-anchor="middle">the page quotes the best retrieved passage instead, and says so</text>
+      <g stroke="var(--accent-2)" stroke-width="1.2" fill="none" marker-end="url(#f4b)">
+        <line x1="150" y1="122" x2="150" y2="176"/><line x1="258" y1="122" x2="258" y2="176"/>
+        <line x1="366" y1="122" x2="366" y2="176"/><line x1="582" y1="122" x2="582" y2="176"/>
+        <path d="M707 122 L707 150 L636 150 L636 176" />
+      </g>
+      <text x="0" y="244" font-size="10.5" fill="var(--faint)">per-IP counters are salted hashes in the Cache API, so no address is stored; the breaker is the only KV write, once per incident</text>
+      </g>
+    </svg>
+    <figcaption id="fig4-cap"><b>Figure 4.</b> The gates in the order a request meets them, from
+    <a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/worker/src/index.js"><code>worker/src/index.js</code></a>.
+    Nothing above the budget gate spends a model call. The cache is keyed on the normalised
+    question plus the sorted passage ids, so two readers asking the same thing cost one
+    generation.</figcaption>
+  </figure>
+
+  <p>The design principle is that this stays free <em>structurally</em> rather than carefully.
+  Workers Free has no overage billing. The Cloudflare account has no payment method. The Mistral
+  organisation is on the Experiment tier, whose limits are per second, per minute and per month and
+  live in the admin console rather than the docs. So every limit in the system, when hit, produces
+  an error, and every error the browser sees means it leaves the retrieved passage on screen and
+  stops offering to generate. The caps inside the worker make that degradation rare and quiet.
+  They do not prevent a bill, because there is no bill to prevent.</p>
+
+  <p>Two constraints on the model's output are worth stealing. It is told to cite as bare
+  <code>[1]</code>, <code>[2]</code> and never to write a URL; the page resolves those numbers
+  against the ordered id list it sent, so a hallucinated link is not representable, it just stays as
+  text. And the passages come with their full text, not their 240-character snippets, because I
+  once shipped the snippets and had the model confidently answer from four opening sentences.</p>
+
+  <h2 id="ledger"><span class="num">09</span>The receipt, itemised</h2>
+
+  <p>Every free tier has a limit that would bind first if this site were popular. Here they are,
+  with what actually happens at the limit, as documented by each provider at the time of
+  writing.</p>
+
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>Line item</th><th>Binding limit</th><th>At the limit</th></tr></thead>
+    <tbody>
+      <tr><td>Document encoder</td><td>none; Apache-2.0, 268 MB download, cached in CI</td><td>—</td></tr>
+      <tr><td>GitHub Actions</td><td>unmetered on standard runners for public repositories</td><td>—</td></tr>
+      <tr><td>GitHub Pages</td><td>1 GB published site; soft 100 GB/month bandwidth; not for commercial SaaS</td><td>a polite email, historically</td></tr>
+      <tr><td>Workers Free</td><td>100,000 requests/day; 10 ms CPU per invocation; KV 1,000 writes/day</td><td>requests fail with an error; the page quotes the passage</td></tr>
+      <tr><td>Mistral Experiment</td><td>rate-limited per second, minute and month; figures in the console</td><td>429; the breaker pauses for 15 minutes</td></tr>
+      <tr><td>My own caps</td><td>40 answers per IP per day, 800 per day site-wide, 200 characters in, 220 tokens out</td><td>429 from the worker, same fallback</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>The 10 ms CPU budget is the tightest one and it shaped the code. Parsing the 317 KB corpus
+  measures 0.66 ms, streaming the answer back is done by handing Mistral's response body straight
+  through with a <code>clone()</code> for the cache rather than transforming it, and the per-IP
+  counters are the Cache API rather than KV because KV allows a thousand writes a day and a busy
+  afternoon would spend them on accounting.</p>
+
+  <h2 id="limits"><span class="num">10</span>Where the cheapness stops</h2>
+
+  <p>Being rigorous about cost means being rigorous about where the argument fails.</p>
+
+  <h3>Scale</h3>
+  <p>The index is 2.1 KB per passage uncompressed and 0.6 KB gzipped, and brute-force scoring is
+  linear in postings. Extrapolating from the measured figures:</p>
+
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>Passages</th><th class="num">Index, raw</th><th class="num">Index, gzipped</th><th class="num">Brute-force query</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>203 (today)</td><td class="num">431 KB</td><td class="num">123 KB</td><td class="num">0.7 ms</td><td>measured</td></tr>
+      <tr><td>1,000</td><td class="num">2.1 MB</td><td class="num">0.6 MB</td><td class="num">3.5 ms</td><td>fine</td></tr>
+      <tr><td>10,000</td><td class="num">21 MB</td><td class="num">6 MB</td><td class="num">35 ms</td><td>the download is now the problem</td></tr>
+      <tr><td>100,000</td><td class="num">212 MB</td><td class="num">61 MB</td><td class="num">350 ms</td><td>split postings by term, or admit you need a server</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Those are estimates from a 203-passage measurement and should be read as such; the download
+  size is the reliable column, the timing assumes the loop stays cache-friendly, which it will
+  not. The honest reading is that this architecture is right for a corpus you could read in an
+  afternoon and wrong for one you could not. Around a few thousand passages the per-term
+  posting-file variant from <a href="#pages">§7</a> becomes worth writing. Somewhere past that,
+  Lucene-based engines do this natively and OpenSearch ships this exact model for the purpose
+  <a href="#ref-if">[4]</a>, which is the not-free path.</p>
+
+  <h3>What the query side cannot know</h3>
+  <p>The static weights are a learned IDF over the training corpora, mostly MS MARCO-shaped web
+  text. They know <em>drone</em> is far more discriminative than <em>system</em> in general, and the
+  table says so: 8.71 against 3.43. They do not know that on this site the two words are equally
+  ordinary, with <em>drone</em> in the vectors of 38% of the passages and <em>system</em> in 36%. A corpus-specific IDF would fix that, and I could compute one in CI, but it would break the
+  contract the document encoder was trained under, and I have not measured whether the trade is
+  worth it on 203 passages. That is a real experiment I have not run, so I will not claim the
+  answer.</p>
+
+  <h3>Known items</h3>
+  <p>WordPiece shreds proper nouns: <em>ICUAS 2024</em> becomes <code>ic ##ua ##s 202 ##4</code>,
+  and <em>Grøntved</em> becomes <code>gr ##ø ##nt ##ved</code>. The fragments happen to be rare
+  enough here that the right thing still surfaces, but that is luck, not design. Meaning is what
+  this is for. Finding a specific known thing is what a metadata filter is for, and the search page
+  has those.</p>
+
+  <h3>English only, and the other kind of cost</h3>
+  <p>The model is English. Danish queries tokenize into fragments that match by accident. And the
+  free tiers are not free in the sense of costing nobody anything: a free API tier is typically paid
+  for in the prompts you send, so read the current terms before you route anything sensitive
+  through one. The questions readers ask this site are about my papers, which are public, and the
+  passages are already on the internet. That is the case where the trade is fine. It is not every
+  case.</p>
+
+  <h2 id="steal"><span class="num">11</span>Steal it</h2>
+
+  <p>Everything is in <a href="https://github.com/kasperg3/kasperg3.github.io">the repository</a>
+  and none of it is clever enough to deserve a package:</p>
+
+  <ul>
+    <li><a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/tools/build_search_index.py"><code>tools/build_search_index.py</code></a>:
+    extract passages from HTML with the standard library, encode them, quantise, write the three
+    files. The v3 activation is the double logarithm; do not "simplify" it to the v1 formula.</li>
+    <li><a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/search/splade.js"><code>search/splade.js</code></a>:
+    WordPiece, the dot product, the loader. The search itself is six lines inside
+    <code>search()</code>.</li>
+    <li><a href="https://github.com/kasperg3/kasperg3.github.io/blob/master/.github/workflows/search-index.yml"><code>.github/workflows/search-index.yml</code></a>:
+    the factory, including the two lines that dispatch the deploy.</li>
+    <li><a href="https://github.com/kasperg3/kasperg3.github.io/tree/master/worker"><code>worker/</code></a>:
+    the key holder and its gates, with the grounding prompt in a file of its own because the
+    prompt is the interesting part and hiding it would only hide it from people acting in good
+    faith.</li>
+  </ul>
+
+  <p>And go and <a href="/search/">type something into the search</a>. Pick a result, and the page
+  shows you the query decomposed, the terms that scored, and the whole 30,522-dimensional vector
+  as a strip of mostly nothing. Then try <em>cardiac arrest</em>, and enjoy the silence. It is the
+  most instructive result on the site.</p>
+
+  <h2 id="next"><span class="num">12</span>Up next, if the receipt stays at zero</h2>
+
+  <p>Three things I want to try, in rising order of how likely they are to cost money.</p>
+
+  <h3>Inference-free <em>visual</em> SPLADE</h3>
+  <p>The document encoder does not have to read text. V-SPLADE <a href="#ref-vsplade">[7]</a>
+  puts a vision-language model on the document side, reads the page as an image, and still
+  leaves the query side as a tokenizer and a weight table. Caption-gated supervision teaches it
+  which vocabulary terms a picture should light up, and the paper reports it more than doubling
+  recall over a same-scale dense model on an 18.7M-document corpus. The vocabulary is larger, but
+  the shape of the query table is identical, and <code>splade.js</code> was written not to care
+  about the vocabulary size for exactly this reason. My slides are already images with structure,
+  and the papers have figures nobody can search. The open question is whether a VLM encoding a few
+  hundred page images fits inside a free CPU runner's six-hour job limit. I expect it does, slowly,
+  and I intend to time it rather than guess.</p>
+
+  <h3>A vocabulary of my own</h3>
+  <p><em>Grøntved</em> becomes <code>gr ##ø ##nt ##ved</code> because the vocabulary was cut for
+  English web text in 2018. Yu, Mallia and Petri <a href="#ref-vocab">[8]</a> show that
+  pre-training the encoder on a corpus-specific vocabulary improves learned sparse retrieval by up
+  to 12% and, because the posting lists get shorter, cuts latency by up to half. For this site the
+  interesting version is a Danish-and-robotics vocabulary. It means training the document encoder
+  again, which is the first thing on this list that a CPU runner might refuse to do for free. A 67M
+  model, in pieces, across several six-hour jobs, with the checkpoint committed between them, is
+  either a clever use of a free tier or an abuse of one, and I have not decided which.</p>
+
+  <h3>SPLARE, and the end of readable dimensions</h3>
+  <p>The dimensions of a SPLADE vector are words. That is what made <a href="#vector">§4</a>
+  possible. SPLARE <a href="#ref-splare">[9]</a> gives that up: it trains a sparse autoencoder on
+  an LLM's hidden states and retrieves over the autoencoder's latent features instead of the
+  vocabulary, which buys a representation that is multilingual and holds up out of domain. The
+  latents are interpretable in the mechanistic sense, but they no longer have a WordPiece spelling,
+  so the figures in this post would need a legend generated by a model rather than read off a
+  file. It is also not inference-free: the query goes through the LLM too. Whether a static table
+  from tokens to latents can stand in for that, the way an IDF table stands in for the query
+  encoder here, is a research question rather than a weekend, and the honest teaser is that I do
+  not know. It is the one on this list most likely to end with a GPU invoice, which is how I will
+  know it was worth it.</p>
+
+  <hr>
+
+  <h2 id="refs"><span class="num">Sources</span>Reading list</h2>
+  <ol class="refs">
+    <li id="ref-splade">T. Formal, B. Piwowarski, S. Clinchant. <em>SPLADE: Sparse Lexical and
+    Expansion Model for First Stage Ranking.</em> SIGIR 2021.
+    <a href="https://arxiv.org/abs/2107.05720">arXiv:2107.05720</a></li>
+    <li id="ref-splade2">T. Formal, C. Lassance, B. Piwowarski, S. Clinchant. <em>SPLADE v2:
+    Sparse Lexical and Expansion Model for Information Retrieval.</em> 2021.
+    <a href="https://arxiv.org/abs/2109.10086">arXiv:2109.10086</a></li>
+    <li id="ref-l0">X. Shen, Z. Geng, Y. Yang. <em>Exploring ℓ<sub>0</sub> Sparsification for
+    Inference-free Sparse Retrievers.</em> SIGIR 2025. The paper behind the v3 models.
+    <a href="https://arxiv.org/abs/2504.14839">arXiv:2504.14839</a></li>
+    <li id="ref-if">Z. Geng, Y. Wang, D. Ru, Y. Yang. <em>Towards Competitive Search Relevance For
+    Inference-Free Learned Sparse Retrievers.</em> 2024. Where the IDF-weighted query side comes
+    from. <a href="https://arxiv.org/abs/2411.04403">arXiv:2411.04403</a></li>
+    <li id="ref-model">OpenSearch Project.
+    <a href="https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill"><em>opensearch-neural-sparse-encoding-doc-v3-distill</em></a>,
+    model card with the BEIR table and the reference encoding code. Apache-2.0.</li>
+    <li id="ref-kshivendu">K. Shivendu. <a href="https://blog.kshivendu.dev/blog/if-splade"><em>Inference-Free
+    SPLADE: Full Quality, 13× Faster Queries.</em></a> 2026. A proper benchmark of inference-free
+    versus full SPLADE on BEIR SciFact across two engines; the post that nudged me to write this
+    one up, and the place to go if you want the numbers rather than the receipt.</li>
+    <li id="ref-vsplade">G.-H. Cho, Y. Lee, K. Jeong, S. Lee, S. Han, H. Déjean, S. Clinchant,
+    S.-w. Hwang. <em>Inference-Free Multimodal Learned Sparse Retrieval for Production-Scale Visual
+    Document Search.</em> 2026. V-SPLADE. <a href="https://arxiv.org/abs/2605.30917">arXiv:2605.30917</a></li>
+    <li id="ref-vocab">P. Yu, A. Mallia, M. Petri. <em>Improved Learned Sparse Retrieval with
+    Corpus-Specific Vocabularies.</em> ECIR 2024.
+    <a href="https://arxiv.org/abs/2401.06703">arXiv:2401.06703</a></li>
+    <li id="ref-splare">T. Formal, M. Louis, H. Déjean, S. Clinchant. <em>Learning Retrieval Models
+    with Sparse Autoencoders.</em> ICLR 2026. SPLARE.
+    <a href="https://arxiv.org/abs/2603.13277">arXiv:2603.13277</a></li>
+    <li>Provider limits, as read on 8 September 2026:
+    <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits">GitHub Pages</a>,
+    <a href="https://docs.github.com/billing/managing-billing-for-github-actions/about-billing-for-github-actions">GitHub Actions billing</a>,
+    <a href="https://developers.cloudflare.com/workers/platform/pricing/">Workers pricing</a>,
+    <a href="https://docs.mistral.ai/admin/billing-usage/usage-limits">Mistral usage limits</a>.</li>
+  </ol>
+
+</article>
+</div>
+</main>
+<script type="module" src="/blog/inference-free-splade/demo.js?v=1"></script>
+</body>
+</html>

@@ -29,19 +29,34 @@ content/publications/   full paper text, read at build time (public, like everyt
 worker/                 the Cloudflare Worker behind "Answer this" (see below)
 tools/build_search_index.py   extracts the corpus and encodes it
 site/site.css           shared design system for the site pages
-site/theme.js           the light/dark toggle in the header
 deck/deck.css           slide styles, same tokens as site.css
 deck/deck.js            slide runtime (~200 lines, vanilla JS)
 assets/img/             web-optimized images
 assets/cv/cv.pdf        downloadable CV (generated — see below)
 assets/cv/cv-print.html the print source the PDF is rendered from
-blog/ posts/ hop-database/   redirect stubs for the retired blog (see below)
+blog/index.html         the blog index
+blog/<slug>/index.html  one post = one HTML file, hand-written; inline SVG for figures
+blog/blog.css           article styles (prose, figures, tables, the receipt), on top of site.css
+blog/*/ posts/ hop-database/  redirect stubs for the retired Jekyll blog (see below)
 publications/ cv/         redirect stubs for the old Jekyll nav URLs
 sitemap.xml robots.txt CNAME .nojekyll
 ```
 
 `.nojekyll` matters: without it GitHub Pages runs Jekyll and ignores files starting
 with `_`, which would break `knowledge/_template/`.
+
+## Blog
+
+`/blog/` is the prose counterpart to `/knowledge/`: one hand-written `index.html` per post, no
+generator. Figures are inline SVG that use the colour tokens (`fill="var(--accent)"`), so a
+palette change in `site.css` reaches them too. To add a post, copy an existing one, add a row to
+`blog/index.html`, a card to `knowledge/index.html` if it belongs there, and the URL to
+`sitemap.xml`. The first post, `blog/inference-free-splade/`, is the write-up of the site search
+below; the numbers in it are read off the built index, so if the corpus changes materially the
+post's figures are the thing to re-check.
+
+The two old Jekyll post directories under `blog/` (`swarm-simulator`, `hop-database`) are
+redirect stubs, not posts.
 
 ## Legacy URL redirects
 
@@ -160,28 +175,10 @@ Colour and type tokens live in the `:root` block at the top of both `site/site.c
 system. Change `--accent` and `--canvas` and everything follows. For a one-off deck
 palette, add `<style>:root{--accent:#7a3ea1}</style>` to that deck's `<head>`.
 
-Dark mode is a choice, not a system setting. Both the site and the decks open light and opt
-in through `:root[data-theme="dark"]`, and both remember it under the same `localStorage`
-key (`deck-theme`), so the toggle in the site header and the `t` key in a deck are the same
-switch — flip it anywhere and the whole site follows.
-
-Two things are easy to get wrong here. The attribute is applied by a two-line inline script
-in each page's `<head>`, because it has to run before the first paint or the page flashes the
-wrong colour; `site/theme.js` only wires the button. And the `@media print` block overrides
-`:root,:root[data-theme="dark"]` rather than `:root` alone — a bare `:root` loses on
-specificity, and a CV printed in dark mode would come out dark.
-
-Both rules apply to any theme-dependent token, not just the palette. `search/search.css` has
-one more: `--heat`, the ceiling on the passage tint in the meeting section, which is lowered
-on the dark canvas so light text stays legible against it. It is keyed to
-`:root[data-theme="dark"]` like everything else, and its print override carries the same
-doubled selector so a page printed from dark mode still gets the light ceiling.
-
-There is one theme-dependent thing CSS cannot fix by itself: the sparsity strip on `/search/`
-is painted into a `<canvas>` from these tokens, so it has to be *redrawn* when they change.
-`search-ui.js` watches both the media query and `[data-theme]` on the root for that reason —
-watching only the media query left the strip in the old palette when the header switch was
-pressed.
+The site pages are light only: there is no dark palette in `site.css`, no toggle in the
+header and no theme script. The decks keep their own `t` key and `:root[data-theme="dark"]`
+block in `deck/deck.css`, stored under `localStorage` key `deck-theme`; the site pages no
+longer read that key, so a deck left in dark mode does not darken the rest of the site.
 
 ## Animation
 

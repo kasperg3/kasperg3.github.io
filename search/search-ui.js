@@ -397,12 +397,6 @@ addEventListener('resize', () => {
 // The strip is painted from CSS custom properties, so it has to be repainted
 // when the OS theme flips underneath it.
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => drawStrip(stripDoc));
-// The site now opens light and dark is opted into via [data-theme] on the root,
-// so the media query above is no longer the only way the palette moves — the
-// header switch has to redraw it too, or the strip keeps the old colours until
-// something else forces a repaint.
-new MutationObserver(() => drawStrip(stripDoc))
-  .observe(document.documentElement, { attributeFilter: ['data-theme'] });
 
 // Arriving with ?q= (from the front page, or a shared link) loads immediately;
 // otherwise nothing is fetched until the box is focused.
