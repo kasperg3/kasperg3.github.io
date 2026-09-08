@@ -299,8 +299,10 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
               <p data-live="secondary">Both sides are already collapsed to one vector, so the query
               and the whole passage meet exactly once.</p>
               <p class="mt-extra">Both sides are compressed before either knows what the other will
-              ask. That is the whole trade: one vector per asset is unbeatably cheap to store and
-              search, and it has to decide what to keep in advance.</p>
+              ask. That is the whole trade: one fixed-size vector per asset is cheap to store and
+              cheap to search, and it has to decide what to keep in advance. Cheap is not the same
+              as cheapest &mdash; the cost panel below has it losing to the sparse column per
+              passage, and paying an encoder pass the sparse column does not.</p>
             </div>
           </article>
 
@@ -525,8 +527,8 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <div class="sp-panel">
       <header>
         <h2>What each one costs</h2>
-        <p>FLOPs to score one passage, and to score a whole corpus. Log scale &mdash; the span is
-        eight orders of magnitude.</p>
+        <p>FLOPs per query, including the encoder pass dense and late interaction need before
+        they can score anything. Log axis, decades marked.</p>
       </header>
       <div class="sp-body">
         <div class="sp-facet mt-corpus">
@@ -539,6 +541,34 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         wordpieces you actually typed.</p>
       </div>
     </div>
+
+    <h3 class="mt-src-h">Where this comes from</h3>
+    <ul class="mt-sources">
+      <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage
+        Search via Contextualized Late Interaction over BERT</a> &mdash; Khattab &amp; Zaharia.
+        MaxSim, and the per-token dimension the cost model uses.</li>
+      <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval
+        via Lightweight Late Interaction</a></li>
+      <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-Vector
+        Search: A Late Interaction Field Guide</a> &mdash; Am&eacute;lie Chatelain. The
+        three-architecture figure is adapted from hers, by way of
+        <a href="/knowledge/late-interaction-primer/">the primer</a> and
+        <a href="/knowledge/ml-and-data-at-colourbox/#18">slide 18</a>; the MS MARCO counts the
+        cost panel reproduces are her worked example.</li>
+      <li><a href="https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill">opensearch-neural-sparse-encoding-doc-v3-distill</a>
+        &mdash; the encoder that produced every document vector on this page.</li>
+      <li><a href="/knowledge/ml-and-data-at-colourbox/#24">Slide 24</a> for the naive-MaxSim
+        arithmetic and <a href="/knowledge/ml-and-data-at-colourbox/#25">slide 25</a> for the
+        funnel that is the answer to it.</li>
+    </ul>
+    <p class="mt-caveat"><strong>What the cost panel does not model.</strong> Index size and memory
+    traffic, which is late interaction's real constraint far more often than FLOPs are. The funnel,
+    so the exhaustive totals are an upper bound on a plan nobody executes. And the difference
+    between an architecture's cost and this script's: the learned-sparse row is the idealised sparse
+    dot product as an inverted index would pay it, whereas <code>splade.js</code> is brute force
+    over all 78 passages, because at this corpus size an index would buy nothing. Transformer
+    passes are counted as 2&nbsp;&middot;&nbsp;params&nbsp;&middot;&nbsp;tokens, which overstates by
+    roughly a third &mdash; embeddings are gathers, not multiply-adds.</p>
   </section>
 
   <!-- ============ how it works ============ -->

@@ -52,8 +52,28 @@ const DENSE_DIM = 1024;   // a current text embedding: one vector, this wide
 const TOKEN_DIM = 128;    // ColBERT's per-token dimension after projection
 const DOC_TOKENS = 80;    // tokens per passage — the deck's MS MARCO average
 const CE_PARAMS = 110e6;  // a base-size cross-encoder reranker
+/* The query encoder dense and late interaction each need. 110M is the small end
+   of what is actually deployed — plenty of dense retrievers are billions — so
+   this is the assumption most charitable to the two architectures the page is
+   implicitly arguing against, which is the direction an assumption should err. */
+const QENC_PARAMS = 110e6;
 const MSMARCO_NQ = 32;    // query tokens, same worked example, used as a stand-in
                           // before the reader has typed anything
+
+/* When no result is selected there is no measured overlap, and the query's own
+   dimension count is a bad stand-in for it — over this corpus the top-5 hits of
+   ten sample queries shared a median of 2 dimensions and never more than 7,
+   against queries of 4-13 dimensions. So the unmeasured case gets a constant,
+   labelled as one on the page, rather than a number dressed as a measurement. */
+const ASSUMED_SHARED = 3;
+
+/* FLOPs for a transformer forward pass are counted as 2 · params · tokens
+   (Kaplan et al.'s convention). It overstates by roughly a third here, because
+   ~24M of a base model's 110M parameters are embeddings, which are gathers and
+   not multiply-adds; attention's quadratic term gives a couple of per cent
+   back at these sequence lengths. On an axis spanning nine decades neither
+   matters, but the convention should be named rather than implied. */
+const FLOPS_PER_PARAM_TOKEN = 2;
 
 /* Corpus sizes worth comparing. The first is this site, the last is the corpus
    the deck does its arithmetic on, so the numbers here can be checked against
@@ -110,7 +130,6 @@ export class Meet {
     this.terms = [];
     this.hit = null;
     this.corpus = 0;        // index into CORPORA
-    this.focus = null;      // vocabulary id being hovered, or null
     this.wireStatic();
   }
 
@@ -226,7 +245,7 @@ export class Meet {
     /* Geometry. The SVG is authored at a fixed width and scaled by CSS, so the
        type sizes below are in the same units as the coordinates. */
     const W = 760, ROW = 30, GAP = 6, PAD = 10;
-    const colW = 218, midGap = 60;
+    const colW = 218;
     const xL = PAD, xR = W - PAD - colW;
     const rowsL = leftShown.length;
     const rowsR = rightShown.length + (rest || hiddenMatched ? 1 : 0);
@@ -255,7 +274,8 @@ export class Meet {
     }
 
     const chip = (x, y, cls, label, sub, frac) => `
-      <g class="mt-node ${cls}" data-id="${label.id}">
+      <g class="mt-node ${cls}" data-id="${label.id}" tabindex="0" role="button"
+         aria-label="${escapeHTML(sub)} — ${escapeHTML(this.engine.tokenOf(label.id))}">
         <rect x="${x}" y="${y}" width="${colW}" height="${ROW}" rx="8"/>
         <rect class="mt-fill" x="${x}" y="${y + ROW - 3}" height="3"
               width="${Math.max(4, (colW - 2) * frac).toFixed(1)}" rx="1.5"/>
@@ -304,7 +324,6 @@ export class Meet {
         <g class="mt-edges">${edges.join('')}</g>
         ${leftRows}${rightRows}${leftover}${overflowL}
       </svg>`;
-    void midGap;
 
     this.wireGraphHover(host);
 
@@ -329,7 +348,11 @@ export class Meet {
       + `to the score of ${fmt(hit.score)}.`;
   }
 
-  /** Hovering either end of an edge isolates it and reads the arithmetic out. */
+  /**
+   * Hovering either end of an edge isolates it and reads the arithmetic out.
+   * Keyboard focus does the same thing: the nodes are focusable, so the readout
+   * is reachable without a pointer rather than being mouse-only trivia.
+   */
   wireGraphHover(host) {
     const svg = host.querySelector('svg');
     if (!svg) return;
@@ -361,6 +384,8 @@ export class Meet {
     for (const n of svg.querySelectorAll('[data-id]')) {
       n.addEventListener('pointerenter', () => enter(+n.dataset.id));
       n.addEventListener('pointerleave', leave);
+      n.addEventListener('focus', () => enter(+n.dataset.id));
+      n.addEventListener('blur', leave);
     }
     svg.addEventListener('pointerleave', leave);
   }
@@ -484,7 +509,15 @@ export class Meet {
       if (a) a.innerHTML = primary;
       if (b) b.innerHTML = secondary;
       const r = card.querySelector('[data-live="ratio"]');
-      if (r) r.textContent = ratio(per[arch] / dense);
+      if (r) {
+        // Per passage scored, against dense — which is what the figure above it
+        // describes. The query-encoder pass that dense and late interaction also
+        // pay is a per-query cost, so it belongs in the cost panel, not here;
+        // the title says so rather than leaving the reader to assume.
+        r.textContent = ratio(per[arch] / dense);
+        r.title = `${si(per[arch])} FLOPs to score one passage, against dense's `
+          + `${si(dense)}. Excludes the once-per-query encoder pass — see the cost panel.`;
+      }
     };
 
     const q = m.measured
@@ -497,12 +530,15 @@ export class Meet {
       + `meet exactly once. Nothing about the passage survives that the pooling threw away.`);
 
     fill('sparse',
-      `<b>${m.shared || '—'}</b> multiply-add${m.shared === 1 ? '' : 's'}`,
-      m.measured && this.hit
+      `<b>${m.shared}</b> multiply-add${m.shared === 1 ? '' : 's'}`
+        + (m.sharedMeasured ? '' : ' <small>(assumed)</small>'),
+      m.sharedMeasured
         ? `Measured, not assumed: this is the graph at the top of this section. Only the `
           + `dimensions both sides activate cost anything, and an inverted index never even `
-          + `visits a passage that shares none.`
-        : `One per shared dimension. Type a query and this number becomes a measurement.`);
+          + `visits a passage that shares none. The query side is a table lookup, so unlike `
+          + `its two neighbours it pays no encoder pass either.`
+        : `One per shared dimension — a stand-in until you pick a result, since over this `
+          + `corpus a query's overlap runs nearer 2 or 3 than its own length.`);
 
     fill('late',
       `<b>${si(m.nq * DOC_TOKENS)}</b> dot products of <b>${TOKEN_DIM}</b> floats`,
@@ -518,25 +554,50 @@ export class Meet {
 
   /* ------------------------------------------------------- view 4: the cost */
 
-  /** What the reader's query actually is, or the deck's stand-in if there isn't one. */
+  /**
+   * What the reader's query actually is, or a labelled stand-in where there
+   * isn't one. `measured` and `sharedMeasured` are tracked separately because
+   * they fail independently: a typed query with no result selected gives a
+   * measured length and an unmeasured overlap.
+   */
   measure() {
     const live = this.terms.filter(t => !t.unknown && t.weight > 0);
     const ids = new Set(live.map(t => t.id));
     return {
       measured: ids.size > 0,
       nq: ids.size || MSMARCO_NQ,
-      shared: this.hit ? this.hit.parts.length : 0,
+      sharedMeasured: !!this.hit,
+      shared: this.hit ? this.hit.parts.length : ASSUMED_SHARED,
     };
   }
 
   /** FLOPs to score one document. A multiply-add is two, throughout. */
   perDoc(m) {
     return {
-      sparse: 2 * (m.shared || m.nq),      // one product per shared dimension
+      sparse: 2 * m.shared,                // one product per shared dimension
       dense: 2 * DENSE_DIM,                // one dot product, pooled to pooled
       late: 2 * m.nq * DOC_TOKENS * TOKEN_DIM,
-      full: 2 * CE_PARAMS * (m.nq + DOC_TOKENS),
+      full: FLOPS_PER_PARAM_TOKEN * CE_PARAMS * (m.nq + DOC_TOKENS),
     };
+  }
+
+  /**
+   * FLOPs paid once per query, before any document is scored — and the term
+   * this panel used to leave out, which was the worst thing about it. Dense and
+   * late interaction have to run the query through an encoder; at this site's
+   * 78 passages that single forward pass is 44,000× the entire scoring cost of
+   * dense, so a scoring-only chart got the answer wrong by four orders of
+   * magnitude at its own default setting.
+   *
+   * It is also exactly the term that makes inference-free SPLADE what it is:
+   * zero here, because the query side is a tokenizer and a table lookup. A
+   * comparison that omits it silently drops the page's whole thesis. The
+   * cross-encoder pays nothing separately because it encodes each pair, so its
+   * query cost is already inside perDoc.
+   */
+  perQuery(m) {
+    const enc = FLOPS_PER_PARAM_TOKEN * QENC_PARAMS * m.nq;
+    return { sparse: 0, dense: enc, late: enc, full: 0 };
   }
 
   renderCost() {
@@ -544,48 +605,106 @@ export class Meet {
     if (!host) return;
     const m = this.measure();
     const per = this.perDoc(m);
+    const once = this.perQuery(m);
     const N = CORPORA[this.corpus].n || this.engine.docs.length;
 
+    const shared = m.sharedMeasured
+      ? `${m.shared} shared dim${m.shared === 1 ? '' : 's'}`
+      : `${m.shared} shared dims (assumed)`;
+    const nq = m.measured ? `${m.nq}` : `${m.nq} (assumed)`;
+
     const rows = [
-      ['sparse', 'Learned sparse', 'this page', `${m.shared || m.nq} shared dimensions`],
+      ['sparse', 'Learned sparse', 'this page', shared],
       ['dense', 'Dense, pooled', 'one vector each', `dim ${DENSE_DIM}`],
       ['late', 'Late interaction', 'MaxSim, token by token',
-        `${m.nq} × ${DOC_TOKENS} × dim ${TOKEN_DIM}`],
+        `${nq} × ${DOC_TOKENS} × dim ${TOKEN_DIM}`],
       ['full', 'Full interaction', 'cross-encoder',
-        `${si(CE_PARAMS)} params × ${m.nq + DOC_TOKENS} tokens`],
+        `${si(CE_PARAMS)} params × ${m.nq + DOC_TOKENS} tokens, per pair`],
     ];
 
-    const totals = rows.map(([k]) => per[k] * N);
-    const max = Math.max(...totals);
-    const min = Math.min(...totals);
-    // Eight orders of magnitude on a linear axis is three visible bars and one
-    // invisible one. Log, with the smallest bar still wide enough to read.
-    const span = Math.log10(max / min) || 1;
-    const width = v => (6 + 94 * (Math.log10(v / min) / span)).toFixed(1);
+    const total = k => once[k] + per[k] * N;
+    const totals = rows.map(([k]) => total(k));
+    const max = Math.max(...totals), min = Math.min(...totals);
+
+    /* This span is nine to twelve decades depending on the query, and on a
+       linear axis that is three visible bars and one invisible one — so the
+       axis is log. A log axis whose decades are not marked is decoration
+       rather than a measurement, which is what the ticks below are for. */
+    const lo = Math.pow(10, Math.floor(Math.log10(min)));
+    const hi = Math.pow(10, Math.ceil(Math.log10(max)));
+    const span = Math.log10(hi / lo) || 1;   // guard the degenerate single-decade case
+    const at = v => (100 * Math.log10(v / lo) / span);
+    const decades = [];
+    for (let e = Math.log10(lo); e <= Math.log10(hi) + 1e-9; e++) {
+      decades.push({ x: at(Math.pow(10, e)), e: Math.round(e) });
+    }
+    // Twelve decades of labels collide even in a wide bar; four or five fit.
+    const step = Math.ceil(decades.length / 5);
 
     host.innerHTML = rows.map(([k, name, kind, how], i) => `
       <li class="mt-cost-row mt-${k}">
-        <span class="mt-cost-name">${name}<small>${kind}</small></span>
-        <span class="mt-cost-bar"><i style="width:${width(totals[i])}%"></i></span>
-        <span class="mt-cost-how">${escapeHTML(how)}</span>
+        <span class="mt-cost-name">${name}<small>${kind}</small>
+          <code>${escapeHTML(how)}</code></span>
+        <span class="mt-cost-bar"><i style="width:${Math.max(0.6, at(totals[i])).toFixed(1)}%"></i></span>
         <span class="mt-cost-val"><b>${si(totals[i])}</b> FLOPs
-          <small>${si(per[k])} per passage</small></span>
-      </li>`).join('');
+          <small>${once[k] ? `${si(once[k])} encode + ` : ''}${si(per[k])} × ${si(N)}</small></span>
+      </li>`).join('')
+      + `<li class="mt-cost-axis" aria-hidden="true"><span></span>
+          <span class="mt-ticks">${decades.map((d, i) => i % step ? '' :
+            `<i style="left:${d.x.toFixed(1)}%"><b>10<sup>${d.e}</sup></b></i>`).join('')}</span>
+          <span></span></li>`;
 
     if (this.el.costNote) {
-      const li = totals[2] / (2 * TOKEN_DIM);   // back out the dot-product count
+      // 99.997% rounds to "100%", which would be a false claim: scoring is a
+      // small share, not a zero one.
+      const encShare = 100 * once.dense / total('dense');
+      const shareText = encShare > 99.5 ? 'over 99%'
+        : encShare > 1 ? `${encShare.toFixed(0)}%` : 'under 1%';
+      const li = per.late * N / (2 * TOKEN_DIM);   // back out the dot-product count
       this.el.costNote.innerHTML =
         `Scoring <b>${si(N)}</b> passages exhaustively, with `
         + (m.measured
             ? `the <b>${m.nq}</b> wordpieces you actually typed`
             : `an assumed <b>${m.nq}</b>-token query`)
-        + `. Late interaction comes to <b>${si(li)}</b> dot products per query here`
+        + (m.sharedMeasured ? '' : ', and an assumed overlap because no result is selected')
+        + `. Totals include the <b>one</b> query-encoder pass dense and late interaction each need `
+        + `before they can score anything — <b>${shareText}</b> of dense's bill at this corpus `
+        + `size, and the term inference-free SPLADE does not pay at all. Late interaction's `
+        + `scoring alone is <b>${si(li)}</b> dot products`
         + (N === 9e6 && !m.measured
             ? ` — the deck's 23B, since these are the deck's assumptions.` : `.`)
+        /* At small N both are just one encoder pass, so they land on top of each
+           other. That is the most useful thing the corrected accounting says and
+           it looks like a rendering fault unless it is named. */
+        + (Math.abs(total('late') / total('dense') - 1) < 0.1
+            ? ` Which is why dense and late interaction come out level here: at this corpus size `
+              + `both are one encoder pass and a rounding error, and the choice between them is `
+              + `not a cost decision at all.`
+            : '')
         + ` The point of the ordering is not that the right-hand columns are unaffordable: it is `
         + `that they are unaffordable <em>over the whole corpus</em>. Every deployed system runs `
         + `the cheap column wide and the expensive one narrow — `
         + `<a href="/knowledge/ml-and-data-at-colourbox/#25">that funnel is a slide of its own</a>.`;
     }
   }
+
+  /* ------------------------------------------------------------ what is not here
+
+     Three limits this panel does not model, listed because a number without its
+     boundaries is worse than no number:
+
+       · index size and memory traffic. Late interaction stores one vector per
+         token, so its real constraint is usually bytes moved, not FLOPs. On a
+         corpus this small nothing is ever paged in from anywhere.
+       · the funnel. Every architecture right of dense is deployed behind an
+         approximate index, so the exhaustive totals here are an upper bound on
+         a plan nobody executes — which is the point the closing note makes.
+       · what this page actually runs. The sparse row is the idealised sparse
+         dot product: one multiply-add per shared dimension, as an inverted
+         index would pay it. `splade.js` is brute force over all 78 documents
+         (~11,600 map lookups per query) because at this corpus size an index
+         would buy nothing. The row is the architecture's cost, not this
+         script's.
+     -------------------------------------------------------------------------- */
+
 }

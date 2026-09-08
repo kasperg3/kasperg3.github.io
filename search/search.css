@@ -370,6 +370,8 @@
 .mt-graph.focused .mt-node.lit{opacity:1}
 .mt-graph.focused .mt-edge.lit{stroke-opacity:.95}
 .mt-graph .mt-node{cursor:default}
+.mt-graph .mt-node:focus{outline:none}
+.mt-graph .mt-node:focus-visible rect:first-child{stroke:var(--accent);stroke-width:2}
 
 .mt-readout{margin-top:14px;min-height:2.6em;font-size:13.5px;line-height:1.5;
   color:var(--muted);max-width:70ch}
@@ -500,20 +502,38 @@
 .mt-extra{padding-top:12px;border-top:1px solid var(--hair-soft)}
 .mt-extra em{font-style:italic}
 
+/* ---------- sources and limits ---------- */
+.mt-src-h{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--faint);margin:26px 0 12px}
+.mt-sources{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.mt-sources li{font-size:13.5px;line-height:1.55;color:var(--muted);
+  padding-left:16px;position:relative}
+.mt-sources li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:1px;
+  background:var(--hair)}
+.mt-sources a{color:var(--accent)}
+.mt-caveat{margin-top:18px;padding:14px 16px;border-left:2px solid var(--hair);
+  font-size:13px;line-height:1.6;color:var(--muted);max-width:74ch}
+.mt-caveat strong{color:var(--ink-2)}
+.mt-caveat code{font:500 12px var(--mono);color:var(--ink-2)}
+
 /* ---------- 4 · the cost ---------- */
 .mt-corpus{margin:0 0 18px}
 .mt-chip-n{font:500 10.5px/1 var(--mono);opacity:.6;margin-left:5px}
 
-.mt-cost{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.mt-cost-row{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(90px,2fr) auto auto;
-  gap:6px 14px;align-items:center}
+/* One grid for the whole table, with every row a subgrid of it, so the axis
+   ticks land on the same track as the bars they measure. Four independent
+   per-row grids would size their `auto` columns to their own content and the
+   ticks would be off by however wide the numbers happen to be. */
+.mt-cost{list-style:none;margin:0;padding:0;display:grid;gap:12px;
+  grid-template-columns:minmax(150px,1fr) minmax(120px,2.4fr) auto}
+.mt-cost-row,.mt-cost-axis{display:grid;grid-column:1/-1;
+  grid-template-columns:subgrid;gap:6px 14px;align-items:center}
 .mt-cost-name{display:flex;flex-direction:column;gap:2px;
   font:600 13px/1.25 var(--sans);color:var(--ink)}
 .mt-cost-name small{font:400 11px/1.3 var(--sans);color:var(--faint)}
+.mt-cost-name code{font:400 11px/1.35 var(--mono);color:var(--faint);margin-top:2px}
 .mt-cost-bar{height:12px;border-radius:6px;background:var(--hair-soft);overflow:hidden}
 .mt-cost-bar i{display:block;height:100%;border-radius:6px;background:var(--accent);opacity:.85}
-.mt-cost-how{font:400 11.5px/1.3 var(--mono);color:var(--faint);text-align:right;
-  white-space:nowrap}
 .mt-cost-val{text-align:right;font:400 11px/1.35 var(--sans);color:var(--muted);
   display:flex;flex-direction:column;gap:1px;white-space:nowrap}
 .mt-cost-val b{font:600 14px/1 var(--mono);color:var(--ink)}
@@ -525,15 +545,28 @@
 .mt-late .mt-cost-bar i{background:color-mix(in srgb,var(--accent) 45%,var(--accent-2))}
 .mt-full .mt-cost-bar i{background:var(--accent-2)}
 
+.mt-cost-axis{margin-top:-2px}
+.mt-ticks{position:relative;height:15px}
+.mt-ticks i{position:absolute;top:0;width:1px;height:5px;background:var(--hair);
+  transform:translateX(-.5px)}
+.mt-ticks b{position:absolute;top:6px;left:0;transform:translateX(-50%);
+  font:400 9.5px/1 var(--mono);color:var(--faint);white-space:nowrap}
+.mt-ticks sup{font-size:7.5px;vertical-align:super}
+
 #meet-cost-note b{font:600 14px/1 var(--mono);color:var(--ink)}
 #meet-cost-note a{color:var(--accent)}
 
 /* ============================================================
    narrow screens · the four columns fold to two, then one
    ============================================================ */
+/* The rail's four marks sit above the four columns. Below the breakout the grid
+   is two columns, so the marks would imply a correspondence that isn't there —
+   the gradient still reads as an axis without them. */
+.mt-rail g{display:none}
 @media (min-width:1180px){
   .mt-wide{margin-inline:-160px}
   .mt-arch-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .mt-rail g{display:initial}
 }
 @media (max-width:600px){
   .mt-arch-grid{grid-template-columns:minmax(0,1fr)}
@@ -542,8 +575,9 @@
   .mt-axis{font-size:10.5px}
   .mt-passage{font-size:15.5px;line-height:1.8}
   /* Two of the four columns are arithmetic; the totals are the point. */
-  .mt-cost-row{grid-template-columns:minmax(100px,1fr) minmax(70px,1.4fr) auto}
-  .mt-cost-how{display:none}
+  .mt-cost{grid-template-columns:minmax(110px,1fr) minmax(80px,1.6fr) auto}
+  /* The formula is the first thing to go when there is no room for it. */
+  .mt-cost-name code{display:none}
 }
 
 @media (prefers-reduced-motion:reduce){
