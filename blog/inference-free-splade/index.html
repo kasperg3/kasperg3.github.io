@@ -329,7 +329,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     morphology.</figcaption>
   </figure>
 
-  <p>Across the whole corpus the picture is the same. Of 31,555 postings in the index, 59.5% are
+  <p>Across the whole corpus the picture is the same. Of 31,556 postings in the index, 59.5% are
   terms not literally present in their passage. The 203 passages between them touch 5,757 of the
   30,522 dimensions. So the "sparse" vector is sparse in the sense that matters, at about 0.5%
   density per passage, but it is far from a bag of the words on the page.</p>
@@ -436,7 +436,10 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     order, which moves the odd weight by a hundredth and reshuffles ties. Invisible on the page,
     but it made every rebuild a fresh diff, so the "index unchanged, nothing to commit" branch could
     never fire. <code>torch.set_num_threads(1)</code> costs a few seconds on a corpus this size and
-    buys byte-identical output.</li>
+    buys byte-identical output on the same runner image. Not across images: the rebuild
+    this very post triggered landed on a fresh runner with newer wheels, and twelve of the 203
+    passages moved by one quantisation step, one posting appeared, and the diff was a single
+    line of JSON. The numbers in this post are read from that rebuilt index.</li>
     <li><strong>The token gotcha.</strong> A push made with the workflow's own
     <code>GITHUB_TOKEN</code> deliberately does not trigger other workflows, so the commit carrying
     the new index never started the Pages deploy. Every rebuilt index was sitting undeployed until
@@ -459,11 +462,11 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <div class="tbl-wrap"><table class="tbl">
     <thead><tr><th>File</th><th>What it is</th><th class="num">Bytes</th><th class="num">gzipped</th></tr></thead>
     <tbody>
-      <tr><td><code>index.json</code></td><td>203 passages: postings, quantised weights, a literal/expansion bit, title, URL, snippet</td><td class="num">431,046</td><td class="num">123,368</td></tr>
+      <tr><td><code>index.json</code></td><td>203 passages: postings, quantised weights, a literal/expansion bit, title, URL, snippet</td><td class="num">431,055</td><td class="num">123,362</td></tr>
       <tr><td><code>vocab.txt</code></td><td>line <span class="math">n</span> is token <span class="math">n</span>; needed to tokenize and to name any dimension</td><td class="num">231,508</td><td class="num">110,507</td></tr>
       <tr><td><code>qweights.u16.bin</code></td><td>one <code>uint16</code> per vocabulary entry, the query table at 1/1000 resolution</td><td class="num">61,044</td><td class="num">51,096</td></tr>
       <tr><td><code>splade.js</code></td><td>tokenizer, scorer, loader; no dependencies</td><td class="num">8,796</td><td class="num">3,446</td></tr>
-      <tr class="total"><td>Total</td><td>versus 267,954,768 bytes of model</td><td class="num">732,394</td><td class="num">288,417</td></tr>
+      <tr class="total"><td>Total</td><td>versus 267,954,768 bytes of model</td><td class="num">732,403</td><td class="num">288,411</td></tr>
     </tbody>
   </table></div>
 
@@ -477,7 +480,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   bound is not just argued, it is tested on every build.</p>
 
   <p>Scoring is brute force: for every passage, walk its postings and multiply where the query has
-  a weight. There are 31,555 postings in total. In Node on a laptop-class CPU that is
+  a weight. There are 31,556 postings in total. In Node on a laptop-class CPU that is
   <strong>0.7 ms per query</strong>, and building the engine from the fetched files is 11 ms, both
   measured with the same <code>splade.js</code> the browser runs. An inverted index would make each
   query cheaper and the code less legible, and at this scale legibility wins; the point of
