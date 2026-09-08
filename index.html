@@ -16,9 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=aa0af2e6">
-<script>try{var t=localStorage.getItem("deck-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
-<link rel="stylesheet" href="/search/search.css?v=6">
+<link rel="stylesheet" href="/site/site.css?v=b31c0d02">
+<link rel="stylesheet" href="/search/search.css?v=7">
 <noscript><style>/* the conversation cannot work without scripting */
 .asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
 <script type="application/ld+json">
@@ -44,15 +43,11 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <a class="brand" href="/">Kasper <span>Grøntved</span></a>
     <nav class="main">
       <a href="/knowledge/">Knowledge</a>
+      <a href="/blog/">Blog</a>
       <a href="/publications.html">Publications</a>
       <a href="/cv.html">CV</a>
       <a href="/search/">Search</a>
     </nav>
-    <button class="theme" id="theme" type="button" aria-pressed="false"
-            aria-label="Switch to dark mode">
-      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
-      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.2 12H2M22 12h-2.2M6.5 6.5 5 5M19 19l-1.5-1.5M17.5 6.5 19 5M5 19l1.5-1.5"/></svg>
-    </button>
   </div>
 </header>
 
@@ -88,28 +83,27 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <section class="asksite" id="ask">
     <div class="ask-inner">
       <div class="ask-head">
-        <p class="ask-eyebrow"><i class="dot" aria-hidden="true"></i>Grounded in the full
-          papers, slides and CV</p>
         <h2 class="ask-title">Ask this site</h2>
+        <p class="ask-eyebrow"><i class="dot" aria-hidden="true"></i>Grounded in the papers,
+          slides and CV</p>
       </div>
 
       <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
+
+      <form class="composer" id="hform" autocomplete="off">
+        <label for="hq" class="skip">Ask this site a question</label>
+        <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
+               placeholder="Ask a question about the work">
+        <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
+        </button>
+      </form>
 
       <div class="chat-tries" id="htries">
         <button class="sp-ex" type="button">How do drones divide up a search area?</button>
         <button class="sp-ex" type="button">What is late interaction?</button>
         <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
       </div>
-
-      <form class="composer" id="hform" autocomplete="off">
-        <label for="hq" class="skip">Ask this site a question</label>
-        <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
-               placeholder="Ask about the research, the projects, or the CV">
-        <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
-    </button>
-      </form>
-
 
       <noscript><p class="ask-note">Needs JavaScript.</p></noscript>
     </div>
@@ -219,6 +213,5 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 </div>
 
 <script type="module" src="/search/home-search.js?v=5"></script>
-<script type="module" src="/site/theme.js?v=1"></script>
 </body>
 </html>
