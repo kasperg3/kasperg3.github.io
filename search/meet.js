@@ -20,6 +20,10 @@
      4. what it costs      FLOPs per document scored, and per query if you were
                            foolish enough to run it over the whole corpus.
 
+   Every paper behind this is cited in the reference list at the foot of the
+   section in index.html, grouped by what it supports, and the constants below
+   carry their arXiv identifiers inline.
+
    Views 3 and 4 are the reason the numbers here are labelled so heavily. The
    query side is measured — it is whatever the reader typed. The document side
    is measured for SPLADE and assumed for everything else, because this site
@@ -46,19 +50,26 @@ function tokenSVG(token) {
 /* ------------------------------------------------------------- assumptions */
 
 /* The document side of three architectures this site does not run. Each is a
-   round number from the literature rather than a measurement, and each is
-   printed on the page beside whatever it produced. */
-const DENSE_DIM = 1024;   // a current text embedding: one vector, this wide
-const TOKEN_DIM = 128;    // ColBERT's per-token dimension after projection
-const DOC_TOKENS = 80;    // tokens per passage — the deck's MS MARCO average
-const CE_PARAMS = 110e6;  // a base-size cross-encoder reranker
+   round number from the literature rather than a measurement, each is printed
+   on the page beside whatever it produced, and each is cited in the reference
+   list at the foot of the section. */
+const DENSE_DIM = 1024;   // a current text embedding: one vector, this wide.
+                          // The architecture is DPR's, arXiv:2004.04906.
+const TOKEN_DIM = 128;    // ColBERT's per-token projection, arXiv:2004.12832
+const DOC_TOKENS = 80;    // tokens per passage. Not from the MS MARCO paper —
+                          // Chatelain's worked example over that corpus, which
+                          // the deck's slide 24 reproduces and credits to her
+const CE_PARAMS = 110e6;  // a base-size cross-encoder reranker: BERT-base
+                          // (arXiv:1810.04805) as Nogueira & Cho used it
+                          // for reranking (arXiv:1901.04085)
 /* The query encoder dense and late interaction each need. 110M is the small end
    of what is actually deployed — plenty of dense retrievers are billions — so
    this is the assumption most charitable to the two architectures the page is
    implicitly arguing against, which is the direction an assumption should err. */
 const QENC_PARAMS = 110e6;
-const MSMARCO_NQ = 32;    // query tokens, same worked example, used as a stand-in
-                          // before the reader has typed anything
+const MSMARCO_NQ = 32;    // query tokens, same worked example and the same
+                          // caveat, used as a stand-in before the reader has
+                          // typed anything
 
 /* When no result is selected there is no measured overlap, and the query's own
    dimension count is a bad stand-in for it — over this corpus the top-5 hits of
@@ -67,8 +78,8 @@ const MSMARCO_NQ = 32;    // query tokens, same worked example, used as a stand-
    labelled as one on the page, rather than a number dressed as a measurement. */
 const ASSUMED_SHARED = 3;
 
-/* FLOPs for a transformer forward pass are counted as 2 · params · tokens
-   (Kaplan et al.'s convention). It overstates by roughly a third here, because
+/* FLOPs for a transformer forward pass are counted as 2 · params · tokens —
+   Kaplan et al., arXiv:2001.08361. It overstates by roughly a third here, because
    ~24M of a base model's 110M parameters are embeddings, which are gathers and
    not multiply-adds; attention's quadratic term gives a couple of per cent
    back at these sequence lengths. On an axis spanning nine decades neither
@@ -82,7 +93,8 @@ const CORPORA = [
   { n: 0, label: 'this site', note: 'the corpus you are searching' },
   { n: 1e4, label: '10k', note: 'one team\'s document store' },
   { n: 1e6, label: '1M', note: 'a mid-size DAM tenant' },
-  { n: 9e6, label: '9M', note: 'MS MARCO — the deck\'s worked example' },
+  { n: 9e6, label: '9M',
+    note: 'MS MARCO\'s 8,841,823 passages (arXiv:1611.09268) — the deck\'s worked example' },
 ];
 
 const GRAPH_LEFT_MAX = 12;   // query rows before the graph stops drawing them

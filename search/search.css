@@ -502,10 +502,18 @@
 .mt-extra{padding-top:12px;border-top:1px solid var(--hair-soft)}
 .mt-extra em{font-style:italic}
 
-/* ---------- sources and limits ---------- */
+/* ---------- references and limits ---------- */
 .mt-src-h{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;
-  color:var(--faint);margin:26px 0 12px}
+  color:var(--faint);margin:30px 0 10px}
+.mt-src-note{font-size:13.5px;line-height:1.6;color:var(--muted);max-width:74ch;margin-bottom:18px}
+.mt-src-g{font:600 12.5px/1.3 var(--sans);color:var(--ink-2);letter-spacing:-.005em;
+  margin:20px 0 9px}
+.mt-src-g:first-of-type{margin-top:0}
 .mt-sources{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.mt-sources code{font:500 12px var(--mono);color:var(--ink-2);overflow-wrap:anywhere}
+.mt-sources strong{color:var(--ink-2)}
+.mt-sources em{font-style:italic}
+.mt-sources sub{font-size:.75em}
 .mt-sources li{font-size:13.5px;line-height:1.55;color:var(--muted);
   padding-left:16px;position:relative}
 .mt-sources li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:1px;

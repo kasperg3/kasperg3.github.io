@@ -542,33 +542,93 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       </div>
     </div>
 
-    <h3 class="mt-src-h">Where this comes from</h3>
+    <h3 class="mt-src-h">References</h3>
+
+    <p class="mt-src-note">Grouped by what each one supports. Every arXiv identifier below was
+    checked against arXiv rather than recalled, and the encoder is cited as its own model card
+    cites it &mdash; which is not the paper you would guess from the model's name.</p>
+
+    <h4 class="mt-src-g">The model this page runs</h4>
     <ul class="mt-sources">
-      <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage
-        Search via Contextualized Late Interaction over BERT</a> &mdash; Khattab &amp; Zaharia.
-        MaxSim, and the per-token dimension the cost model uses.</li>
-      <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval
-        via Lightweight Late Interaction</a></li>
-      <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-Vector
-        Search: A Late Interaction Field Guide</a> &mdash; Am&eacute;lie Chatelain. The
-        three-architecture figure is adapted from hers, by way of
-        <a href="/knowledge/late-interaction-primer/">the primer</a> and
-        <a href="/knowledge/ml-and-data-at-colourbox/#18">slide 18</a>; the MS MARCO counts the
-        cost panel reproduces are her worked example.</li>
-      <li><a href="https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill">opensearch-neural-sparse-encoding-doc-v3-distill</a>
-        &mdash; the encoder that produced every document vector on this page.</li>
-      <li><a href="/knowledge/ml-and-data-at-colourbox/#24">Slide 24</a> for the naive-MaxSim
-        arithmetic and <a href="/knowledge/ml-and-data-at-colourbox/#25">slide 25</a> for the
-        funnel that is the answer to it.</li>
+      <li><a href="https://arxiv.org/abs/2504.14839">Exploring &#8467;<sub>0</sub> Sparsification
+        for Inference-free Sparse Retrievers</a> &middot; arXiv:2504.14839. The paper the model card
+        for <code>opensearch-neural-sparse-encoding-doc-v3-distill</code> names as its own.</li>
+      <li><a href="https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill">The
+        model card itself</a> &middot; Apache-2.0. Source for the 67M parameters, the 30,522
+        dimensions, and the fact that the query side is a tokenizer and an IDF lookup table with no
+        network at all. It also reports an average of <strong>1.8 float operations per
+        query&ndash;document pair</strong> over its BEIR subset &mdash; an independent check on the
+        cost panel's cheapest row, and properly below the handful of multiply-adds a <em>top</em>
+        hit shows here, since their average includes all the pairs that share nothing.</li>
+      <li><a href="https://arxiv.org/abs/2107.05720">SPLADE: Sparse Lexical and Expansion Model for
+        First Stage Ranking</a> &middot; Formal, Piwowarski &amp; Clinchant, SIGIR&nbsp;2021,
+        arXiv:2107.05720. The architecture: sparsity regularisation and log-saturated term weights
+        over the vocabulary.</li>
+      <li><a href="https://arxiv.org/abs/2109.10086">SPLADE v2: Sparse Lexical and Expansion Model
+        for Information Retrieval</a> &middot; arXiv:2109.10086. Introduces the document-only
+        variant, which is what makes an inference-free query side possible at all.</li>
+      <li><a href="https://arxiv.org/abs/2205.04733">From Distillation to Hard Negative Sampling:
+        Making Sparse Neural IR Models More Effective</a> &middot; Formal, Lassance, Piwowarski
+        &amp; Clinchant, arXiv:2205.04733. The distillation the model's <code>-distill</code>
+        suffix refers to.</li>
     </ul>
+
+    <h4 class="mt-src-g">The three architectures it is compared against</h4>
+    <ul class="mt-sources">
+      <li><a href="https://arxiv.org/abs/2004.04906">Dense Passage Retrieval for Open-Domain
+        Question Answering</a> &middot; Karpukhin et al., arXiv:2004.04906. The pooled dual encoder
+        in the first figure.</li>
+      <li><a href="https://arxiv.org/abs/2004.12832">ColBERT: Efficient and Effective Passage Search
+        via Contextualized Late Interaction over BERT</a> &middot; Khattab &amp; Zaharia,
+        arXiv:2004.12832. MaxSim, and the 128-dimensional per-token projection the cost model
+        assumes.</li>
+      <li><a href="https://arxiv.org/abs/2112.01488">ColBERTv2: Effective and Efficient Retrieval
+        via Lightweight Late Interaction</a> &middot; arXiv:2112.01488.</li>
+      <li><a href="https://arxiv.org/abs/1901.04085">Passage Re-ranking with BERT</a> &middot;
+        Nogueira &amp; Cho, arXiv:1901.04085. The cross-encoder in the fourth figure &mdash; one
+        encoder over the concatenated pair, nothing precomputable.</li>
+      <li><a href="https://arxiv.org/abs/2205.09707">PLAID: An Efficient Engine for Late Interaction
+        Retrieval</a> &middot; Santhanam, Khattab, Potts &amp; Zaharia, arXiv:2205.09707. Why the
+        exhaustive totals in the cost panel are an upper bound on a plan nobody executes; see
+        <a href="/knowledge/ml-and-data-at-colourbox/#25">slide 25</a>.</li>
+    </ul>
+
+    <h4 class="mt-src-g">Where the cost panel's numbers come from</h4>
+    <ul class="mt-sources">
+      <li><a href="https://arxiv.org/abs/1810.04805">BERT: Pre-training of Deep Bidirectional
+        Transformers for Language Understanding</a> &middot; Devlin, Chang, Lee &amp; Toutanova,
+        arXiv:1810.04805. WordPiece, the 30,522-token vocabulary every sparse vector on this page is
+        indexed by, and the base size used for both the cross-encoder and the query encoder.</li>
+      <li><a href="https://arxiv.org/abs/2001.08361">Scaling Laws for Neural Language Models</a>
+        &middot; Kaplan et al., arXiv:2001.08361. The 2&nbsp;&middot;&nbsp;params&nbsp;&middot;&nbsp;tokens
+        convention for a forward pass, used for the cross-encoder and the query encoder.</li>
+      <li><a href="https://arxiv.org/abs/1611.09268">MS MARCO: A Human Generated MAchine Reading
+        COmprehension Dataset</a> &middot; arXiv:1611.09268. Its 8,841,823 passages are the
+        <code>9M</code> corpus setting. The 32 query tokens and 80 passage tokens the panel assumes
+        are <em>not</em> from this paper &mdash; they are Chatelain's worked example over this
+        corpus, which <a href="/knowledge/ml-and-data-at-colourbox/#24">slide 24</a> reproduces and
+        attributes to her, and which is why the panel and the slide agree at that setting.</li>
+    </ul>
+
+    <h4 class="mt-src-g">The figure</h4>
+    <ul class="mt-sources">
+      <li><a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/">Multi-Vector
+        Search: A Late Interaction Field Guide</a> &middot; Am&eacute;lie Chatelain. The
+        three-architecture drawing is adapted from hers, by way of
+        <a href="/knowledge/late-interaction-primer/">the primer</a> and
+        <a href="/knowledge/ml-and-data-at-colourbox/#18">slide 18</a>, with a fourth column added
+        for the learned-sparse case. Her original goes considerably further than this does.</li>
+    </ul>
+
     <p class="mt-caveat"><strong>What the cost panel does not model.</strong> Index size and memory
     traffic, which is late interaction's real constraint far more often than FLOPs are. The funnel,
     so the exhaustive totals are an upper bound on a plan nobody executes. And the difference
     between an architecture's cost and this script's: the learned-sparse row is the idealised sparse
     dot product as an inverted index would pay it, whereas <code>splade.js</code> is brute force
-    over all 78 passages, because at this corpus size an index would buy nothing. Transformer
-    passes are counted as 2&nbsp;&middot;&nbsp;params&nbsp;&middot;&nbsp;tokens, which overstates by
-    roughly a third &mdash; embeddings are gathers, not multiply-adds.</p>
+    over all 78 passages, because at this corpus size an index would buy nothing. Transformer passes
+    are counted as 2&nbsp;&middot;&nbsp;params&nbsp;&middot;&nbsp;tokens, which overstates by roughly
+    a third &mdash; embeddings are gathers, not multiply-adds &mdash; and the document lengths are
+    MS MARCO's, held constant across every corpus setting including this site's own.</p>
   </section>
 
   <!-- ============ how it works ============ -->

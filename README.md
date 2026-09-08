@@ -257,6 +257,36 @@ a continuation piece's `##` in a `<span>`, and an HTML element inside an `<svg>`
 parser break out of foreign content — one `##token` in the meeting graph spilled the rest of the
 figure into the document as plain text. `meet.js` has a `tokenSVG()` that emits `<tspan>` instead.
 
+### References
+
+The section closes with a grouped reference list, and the constants in `meet.js` carry their arXiv
+identifiers inline. Every identifier was checked against arXiv rather than written from memory,
+which is not pedantry: the encoder this site runs is cited by its own model card as
+[**Exploring ℓ₀ Sparsification for Inference-free Sparse Retrievers**](https://arxiv.org/abs/2504.14839)
+(arXiv:2504.14839), which is *not* the paper you would guess from the model's name, and a citation
+written from memory would have named the wrong one.
+
+| Supports | Work |
+| --- | --- |
+| the encoder here | [2504.14839](https://arxiv.org/abs/2504.14839) Exploring ℓ₀ Sparsification for Inference-free Sparse Retrievers |
+| the architecture | [2107.05720](https://arxiv.org/abs/2107.05720) SPLADE (Formal, Piwowarski & Clinchant, SIGIR 2021) |
+| the document-only variant | [2109.10086](https://arxiv.org/abs/2109.10086) SPLADE v2 |
+| the `-distill` suffix | [2205.04733](https://arxiv.org/abs/2205.04733) From Distillation to Hard Negative Sampling |
+| the pooled dual encoder | [2004.04906](https://arxiv.org/abs/2004.04906) Dense Passage Retrieval (Karpukhin et al.) |
+| MaxSim, `TOKEN_DIM` | [2004.12832](https://arxiv.org/abs/2004.12832) ColBERT · [2112.01488](https://arxiv.org/abs/2112.01488) ColBERTv2 |
+| the cross-encoder | [1901.04085](https://arxiv.org/abs/1901.04085) Passage Re-ranking with BERT (Nogueira & Cho) |
+| the funnel | [2205.09707](https://arxiv.org/abs/2205.09707) PLAID |
+| WordPiece, 30,522 dims, `CE_PARAMS` | [1810.04805](https://arxiv.org/abs/1810.04805) BERT |
+| the 2·params·tokens convention | [2001.08361](https://arxiv.org/abs/2001.08361) Scaling Laws for Neural Language Models |
+| the 9M setting | [1611.09268](https://arxiv.org/abs/1611.09268) MS MARCO — 8,841,823 passages |
+| `DOC_TOKENS` and `MSMARCO_NQ` (80 and 32) | Chatelain's worked example over MS MARCO, *not* the MS MARCO paper — credited to her on slide 24 |
+| the figure's lineage | [Chatelain's Late Interaction Field Guide](https://meet.ameliechatelain.com/lectures/multi-vector-search/) |
+
+The model card is also an independent check on the cost panel's cheapest row: it reports an average
+of **1.8 float operations per query–document pair** over its BEIR subset, which sits just below the
+handful of multiply-adds a *top* hit shows here — as it should, since their average includes every
+pair that shares nothing.
+
 ### The two search surfaces
 
 `search/autocomplete.js` is the widget: a combobox whose listbox holds the top five results, each
