@@ -666,4 +666,14 @@
   .mt-corpus{display:none}
 }
 
-@media print{.mt-jump{display:none}}
+@media print{
+  .mt-jump{display:none}
+
+  /* site.css resets the colour tokens for print at :root,:root[data-theme="dark"]
+     specificity so that paper stays paper — which makes print look like the light
+     theme. --heat is the same kind of token, so it resets to the light value too;
+     printed from dark mode it would otherwise keep the lowered ceiling and wash
+     the weight gradient out against a white page. */
+  :root .mt-passage,:root[data-theme="dark"] .mt-passage,
+  :root .mt-legend,:root[data-theme="dark"] .mt-legend{--heat:58%}
+}

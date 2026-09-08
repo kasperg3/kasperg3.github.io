@@ -99,7 +99,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <!-- ============ the breakdown ============ -->
   <section class="sp-breakdown">
     <div class="sec-head"><h2>What just happened</h2>
-      <span class="sec-note" id="corpus-note">203 passages · 30,522 dimensions</span></div>
+      <span class="sec-note" id="corpus-note">78 passages · 30,522 dimensions</span></div>
 
     <p class="sp-picker-label" id="picker-label" hidden>Dissecting result</p>
     <div class="sp-picker sp-scroll" id="picker" role="tablist"
@@ -665,8 +665,8 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <div class="prose">
       <p>The query weights are <strong>static MS MARCO term weights</strong> — a learned IDF, fixed
       at training time. They know <em>drone</em> is more discriminative than <em>system</em> in
-      general; they know nothing about this corpus. On <span data-corpus-n>78</span> passages that
-      is fine, and it is why no model is needed at query time.</p>
+      general; they know nothing about this corpus. On 78 passages that is fine, and it is why no
+      model is needed at query time.</p>
 
       <p>The model is <strong>English-only</strong>, and it expands documents rather than reasoning
       about them. It has no idea <code>Grøntved</code> is a name — it sees

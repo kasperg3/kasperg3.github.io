@@ -150,11 +150,6 @@ export class Meet {
   ready(engine) {
     this.engine = engine;
     this.buildCorpusChips();
-    // The page states the corpus size in prose as well as in the section head,
-    // and it has changed twice already. Nothing should carry it as a literal.
-    for (const n of document.querySelectorAll('[data-corpus-n]')) {
-      n.textContent = engine.docs.length.toLocaleString('en');
-    }
     this.render();
   }
 

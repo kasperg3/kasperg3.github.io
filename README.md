@@ -171,6 +171,18 @@ wrong colour; `site/theme.js` only wires the button. And the `@media print` bloc
 `:root,:root[data-theme="dark"]` rather than `:root` alone — a bare `:root` loses on
 specificity, and a CV printed in dark mode would come out dark.
 
+Both rules apply to any theme-dependent token, not just the palette. `search/search.css` has
+one more: `--heat`, the ceiling on the passage tint in the meeting section, which is lowered
+on the dark canvas so light text stays legible against it. It is keyed to
+`:root[data-theme="dark"]` like everything else, and its print override carries the same
+doubled selector so a page printed from dark mode still gets the light ceiling.
+
+There is one theme-dependent thing CSS cannot fix by itself: the sparsity strip on `/search/`
+is painted into a `<canvas>` from these tokens, so it has to be *redrawn* when they change.
+`search-ui.js` watches both the media query and `[data-theme]` on the root for that reason —
+watching only the media query left the strip in the old palette when the header switch was
+pressed.
+
 ## Animation
 
 Two patterns, both pure CSS in `deck/deck.css`, both gated on `.slide.active` so they replay every
