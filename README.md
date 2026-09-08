@@ -20,6 +20,7 @@ search/index.html       SPLADE site search (see below)
 search/splade.js        retrieval engine: WordPiece + sparse dot product
 search/autocomplete.js  the search box and results dropdown, shared by both pages
 search/search-ui.js     /search/ only: the breakdown panels
+search/meet.js          /search/ only: "when the query meets the document"
 search/home-search.js   the front page band: the widget, and the generated answer
 search/search.css       styles for the box, the dropdown and the panels
 search/index.json …     the built index (generated — CI rebuilds it)
@@ -247,6 +248,76 @@ So the browser downloads the table, the vocabulary and the postings, and `search
 rest in about 200 lines with no dependencies. Retrieval is still the whole of `/search/`, and it is
 still the whole of the front page until someone presses **Answer this** — see *The generated
 answer* below, which is the one part of this site that talks to a server.
+
+### What the page shows after a search
+
+The four panels under **What just happened** dissect one ranking: the query's WordPiece
+decomposition, the per-term products that make up the score, all 30,522 dimensions as a sparsity
+strip, and the activated terms as words.
+
+Under those, **When the query meets the document** (`search/meet.js`) answers the question that
+ranking raises — *where* did the two sides touch, and what would the same comparison have cost
+somewhere else:
+
+1. **The meeting.** A bipartite graph: your wordpieces on the left, the passage's ~160 activated
+   dimensions on the right, an edge wherever the two coincide, thickness proportional to the
+   product. Hovering either end isolates the edge and reads the arithmetic out. The point is the
+   *non*-edges — the pieces that hit nothing and the hundred-odd dimensions the query never
+   mentions.
+2. **That vector, over the passage.** The same document vector painted back onto the text, each
+   word tinted by its weight, matched words underlined. Terms that scored but have no anchor in the
+   prose are listed beneath it, split by *why*: the model invented them, or they sit past the
+   240-character excerpt the index ships.
+3. **Four ways to let them meet.** Dense, learned sparse, late interaction and full interaction, as
+   four figures in the same grammar — a query column, a document column, and a glyph where the two
+   are allowed to touch. This is slide 18 of
+   [the Colourbox deck](knowledge/ml-and-data-at-colourbox/), re-authored against `site.css` tokens
+   and extended with the learned-sparse column the reader has just used. The figures are static SVG
+   in `search/index.html` so they survive with scripting off; only the counts inside them are live.
+4. **What each one costs.** FLOPs to score one passage and to score a corpus, on a log scale that
+   spans eight orders of magnitude. The query side is *measured* — whatever you typed. The document
+   side is measured for SPLADE and assumed for the other three (`DENSE_DIM`, `TOKEN_DIM`,
+   `DOC_TOKENS`, `CE_PARAMS` at the top of `meet.js`), because this site ships no dense vectors and
+   no token embeddings to measure. Every assumption is printed next to the number it produced, and
+   at the 9M-passage setting the late-interaction figure reproduces the deck's 23B dot products.
+
+The ordering is not a claim that the right-hand columns are unaffordable — it is that they are
+unaffordable *over the whole corpus*, which is what the funnel on slide 25 is for.
+
+One trap worth naming, since it cost a debugging round: `tokenHTML()` from `autocomplete.js` wraps
+a continuation piece's `##` in a `<span>`, and an HTML element inside an `<svg>` makes the HTML
+parser break out of foreign content — one `##token` in the meeting graph spilled the rest of the
+figure into the document as plain text. `meet.js` has a `tokenSVG()` that emits `<tspan>` instead.
+
+### References
+
+The section closes with a grouped reference list, and the constants in `meet.js` carry their arXiv
+identifiers inline. Every identifier was checked against arXiv rather than written from memory,
+which is not pedantry: the encoder this site runs is cited by its own model card as
+[**Exploring ℓ₀ Sparsification for Inference-free Sparse Retrievers**](https://arxiv.org/abs/2504.14839)
+(arXiv:2504.14839), which is *not* the paper you would guess from the model's name, and a citation
+written from memory would have named the wrong one.
+
+| Supports | Work |
+| --- | --- |
+| the encoder here | [2504.14839](https://arxiv.org/abs/2504.14839) Exploring ℓ₀ Sparsification for Inference-free Sparse Retrievers |
+| the architecture | [2107.05720](https://arxiv.org/abs/2107.05720) SPLADE (Formal, Piwowarski & Clinchant, SIGIR 2021) |
+| the document-only variant | [2109.10086](https://arxiv.org/abs/2109.10086) SPLADE v2 |
+| the `-distill` suffix | [2205.04733](https://arxiv.org/abs/2205.04733) From Distillation to Hard Negative Sampling |
+| the pooled dual encoder | [2004.04906](https://arxiv.org/abs/2004.04906) Dense Passage Retrieval (Karpukhin et al.) |
+| MaxSim, `TOKEN_DIM` | [2004.12832](https://arxiv.org/abs/2004.12832) ColBERT · [2112.01488](https://arxiv.org/abs/2112.01488) ColBERTv2 |
+| the cross-encoder | [1901.04085](https://arxiv.org/abs/1901.04085) Passage Re-ranking with BERT (Nogueira & Cho) |
+| the funnel | [2205.09707](https://arxiv.org/abs/2205.09707) PLAID |
+| WordPiece, 30,522 dims, `CE_PARAMS` | [1810.04805](https://arxiv.org/abs/1810.04805) BERT |
+| the 2·params·tokens convention | [2001.08361](https://arxiv.org/abs/2001.08361) Scaling Laws for Neural Language Models |
+| the 9M setting | [1611.09268](https://arxiv.org/abs/1611.09268) MS MARCO — 8,841,823 passages |
+| `DOC_TOKENS` and `MSMARCO_NQ` (80 and 32) | Chatelain's worked example over MS MARCO, *not* the MS MARCO paper — credited to her on slide 24 |
+| the figure's lineage | [Chatelain's Late Interaction Field Guide](https://meet.ameliechatelain.com/lectures/multi-vector-search/) |
+
+The model card is also an independent check on the cost panel's cheapest row: it reports an average
+of **1.8 float operations per query–document pair** over its BEIR subset, which sits just below the
+handful of multiply-adds a *top* hit shows here — as it should, since their average includes every
+pair that shares nothing.
 
 ### The two search surfaces
 
