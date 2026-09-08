@@ -21,11 +21,15 @@ search/splade.js        retrieval engine: WordPiece + sparse dot product
 search/autocomplete.js  the search box and results dropdown, shared by both pages
 search/search-ui.js     /search/ only: the breakdown panels
 search/meet.js          /search/ only: "when the query meets the document"
-search/home-search.js   the compact widget in the front page spotlight
+search/home-search.js   the front page band: the widget, and the generated answer
 search/search.css       styles for the box, the dropdown and the panels
 search/index.json …     the built index (generated — CI rebuilds it)
+search/corpus.json      the same passages without their vectors (generated)
+content/publications/   full paper text, read at build time (public, like everything here)
+worker/                 the Cloudflare Worker behind "Answer this" (see below)
 tools/build_search_index.py   extracts the corpus and encodes it
 site/site.css           shared design system for the site pages
+site/theme.js           the light/dark toggle in the header
 deck/deck.css           slide styles, same tokens as site.css
 deck/deck.js            slide runtime (~200 lines, vanilla JS)
 assets/img/             web-optimized images
@@ -156,8 +160,16 @@ Colour and type tokens live in the `:root` block at the top of both `site/site.c
 system. Change `--accent` and `--canvas` and everything follows. For a one-off deck
 palette, add `<style>:root{--accent:#7a3ea1}</style>` to that deck's `<head>`.
 
-Dark mode: the site follows `prefers-color-scheme`; decks toggle with `t` and remember
-the choice in `localStorage`.
+Dark mode is a choice, not a system setting. Both the site and the decks open light and opt
+in through `:root[data-theme="dark"]`, and both remember it under the same `localStorage`
+key (`deck-theme`), so the toggle in the site header and the `t` key in a deck are the same
+switch — flip it anywhere and the whole site follows.
+
+Two things are easy to get wrong here. The attribute is applied by a two-line inline script
+in each page's `<head>`, because it has to run before the first paint or the page flashes the
+wrong colour; `site/theme.js` only wires the button. And the `@media print` block overrides
+`:root,:root[data-theme="dark"]` rather than `:root` alone — a bare `:root` loses on
+specificity, and a CV printed in dark mode would come out dark.
 
 ## Animation
 
@@ -210,12 +222,23 @@ screen while it does. It runs on GitHub Pages with no inference server because S
 - **Documents** are encoded by a 67M-parameter masked LM
   ([`opensearch-neural-sparse-encoding-doc-v3-distill`](https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill),
   Apache-2.0) into sparse vectors over BERT's 30,522-token vocabulary. That happens here, offline.
+- **Passages** are the abstracts on `publications.html`, the slides, the projects and the CV
+  rows — and, for the papers that may be redistributed, the *body* of the paper too.
+  `content/publications/<id>.txt` is split on its numbered headings into passages the size of
+  the rest of the corpus, each deep-linking to the paper it came from. The search UI never
+  downloads these files — the browser only gets `index.json` — but the repo is uploaded to Pages
+  as-is, so they are public, which is why only redistributable versions are kept here. The IEEE
+  and Springer published versions are deliberately absent — indexing them
+  would mean committing a publisher's typesetting to a public repository — so those two papers
+  are still indexed from their abstracts alone.
 - **Queries** need no model at all — just a WordPiece tokenizer and a static per-token weight table
   that ships as a text file. Scoring is a sparse dot product over every document; at this corpus
   size an inverted index would buy nothing.
 
 So the browser downloads the table, the vocabulary and the postings, and `search/splade.js` does the
-rest in about 200 lines with no dependencies.
+rest in about 200 lines with no dependencies. Retrieval is still the whole of `/search/`, and it is
+still the whole of the front page until someone presses **Answer this** — see *The generated
+answer* below, which is the one part of this site that talks to a server.
 
 ### What the page shows after a search
 
@@ -289,20 +312,77 @@ pair that shares nothing.
 
 ### The two search surfaces
 
-`search/autocomplete.js` is the widget: a combobox whose listbox holds the top five results, each
-with its rank, kind, score and a bar splitting that score by contributing term. Both pages use it
-and differ only in `onSelect`:
+`search/autocomplete.js` is the widget: a combobox whose listbox holds the top results — five on
+`/search/`, four on the front page — each with its rank, kind, score and a bar splitting that score
+by contributing term. Both pages use it and differ only in `onSelect`:
 
 - **`/search/`** — pressing a result dissects it in the panels below, and the URL picks up
   `?q=…&r=<doc id>` so any view of the page is shareable.
-- **the front page** — the spotlight card's right-hand panel (which used to be a decorative MaxSim
-  grid) carries a compact copy. Pressing a result hands off to `/search/?q=…&r=…`, so the reader
-  lands on the analysis of the thing they picked.
+- **the front page** — the `.asksite` band carries a compact copy, quotes the top hit back under
+  *Closest passage*, and offers to generate an answer from it. Pressing a result hands off to
+  `/search/?q=…&r=…`, so the reader lands on the analysis of the thing they picked.
 
 Each row also carries a corner link straight to the source page, so you can skip the analysis. That
 link is the one real `<a>` in a row: the row itself is a listbox option, activated by click or
 Enter. Nothing is fetched until the box is focused, so the front page pays no bytes for this unless
-someone actually searches.
+someone actually searches, and nothing leaves the browser until someone presses a button.
+
+### The generated answer
+
+The front page band is a conversation. You ask, the page answers, and the answer carries the
+passages it was built from. `/search/` is unchanged — it is still the surface that shows the
+retrieval itself.
+
+Retrieval has not moved: `search/splade.js` still scores every passage in the browser, and no
+query is sent anywhere to be retrieved. Only generation leaves the machine, and only after
+retrieval has already chosen the passages it may use.
+
+Three things shape it:
+
+- **Each question stands alone.** Nothing is carried between turns, so a follow-up is not
+  understood as one. The thread is a record, not a memory, and the copy never implies otherwise.
+- **Generation is the optional half.** If the worker 4xxs, 5xxs, is rate limited or simply is not
+  there, the turn falls back to quoting the best retrieved passage. Retrieval alone is still an
+  answer, so no failure leaves the reader with nothing. This is the common path in local
+  development, where the worker rejects `localhost` on origin.
+- **The analysis moved, it did not go.** Every turn has a *How this was retrieved* button opening
+  the query terms and their weights, the ranked passages, and which of them the model was
+  actually given. It renders with the same `.sp-opt` rows `/search/` uses, so the two agree by
+  construction.
+
+The worker behind it is `worker/`, on `ask.grontved.xyz` — its own hostname rather than a route on
+`www`, so nothing it does can reach the static pages. If it breaks, runs out of quota, or is
+deleted, the front page keeps working and stops offering to answer.
+
+Two constraints on the worker:
+
+- **The client sends passage ids, never passage text.** It resolves them against
+  `search/corpus.json`, fetched from this site at runtime, so it can only generate from this
+  site's own corpus. Fetching rather than bundling means CI never needs a Cloudflare deploy token.
+- **Citations cannot be fabricated.** The model cites as bare `[1]`, `[2]` and never writes a URL.
+  `search/home-search.js` resolves those against the ordered id list it sent, so an invented link
+  is not representable — it stays plain text.
+
+It stays free structurally rather than carefully: Workers Free has no overage billing, the account
+carries no payment method, and Mistral stays on the Experiment tier, so every limit produces an
+error rather than a charge. The caps inside the worker — 200 characters of question, an origin
+check, a per-IP daily budget, a site-wide daily ceiling, an answer cache and a circuit breaker —
+make that degradation rare and quiet; they do not prevent a bill that cannot happen.
+
+Deploying it:
+
+```bash
+npx wrangler login
+npx wrangler kv namespace create ASK_KV      # ids go in worker/wrangler.toml
+npx wrangler secret put MISTRAL_API_KEY
+npx wrangler secret put IP_SALT
+npx wrangler deploy                          # from worker/
+```
+
+`wrangler deploy` claims the custom domain from `wrangler.toml`. The one WAF rate limiting rule
+(`http.request.uri.path eq "/ask"`, 5 requests per 10 seconds per IP) is dashboard-only, and must
+be scoped to that path: the free plan allows exactly one, and its expression can match on path but
+not on hostname, so an unscoped rule would throttle the whole zone.
 
 ### Rebuilding the index
 
@@ -320,7 +400,9 @@ python3 tools/check_search_index.py              # client vs. reference implemen
 ```
 
 The build writes `search/index.json` (postings and metadata), `search/qweights.u16.bin` (the query
-table) and `search/vocab.txt` (line N is vocabulary token N).
+table) and `search/vocab.txt` (line N is vocabulary token N). It also writes `search/corpus.json`,
+the same passages without their vectors, which the answer worker reads — that one belongs to the
+extraction stage, so `--dry-run` regenerates it in a second and it never needs torch.
 
 ### Adding content the index can reach
 

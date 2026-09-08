@@ -1,0 +1,183 @@
+Automated Task Generation for Multi-Drone Search and Rescue Operations
+
+Automated Task Generation for
+Multi-Drone Search and Rescue
+Operations
+
+Published as: Grøntved, K. A. R., Christensen, A., & Bahodi, M.-T. (2025). "Automated Task Generation for Multi-Drone Search and Rescue Operations". In Distributed
+Computing and Artificial Intelligence, Special Sessions II, 21st International Conference
+(pp. 266-271). Springer. https: // doi. org/ 10. 1007/ 978-3-031-80946-0_ 26 [9]
+
+Chapter Abstract Drones are currently an indispensable tool for emergency response
+teams performing wilderness Search And Rescue (SAR), as they can cover large and possibly inaccessible areas efficiently. It is, however, still unclear how a drone operator can
+effectively engage and control a system composed of multiple autonomous robots, especially in unstructured and outdoor environments. This paper reports on ongoing work
+in the project HERD - Human-AI Collaboration: Engaging and Controlling Swarms
+of Robots and Drones [10], in which we focus on how to enable an operator to control
+multi-drone systems.
+We present a tool for generating tasks and plans for multiple drones in wilderness
+SAR scenarios. The central aspect of our approach is to improve the search quality by
+automatically generating tasks to ensure timely coverage of high-risk areas, such as ditches,
+lake/sea banks, and beneath tree lines, where distressed people are likely to be found.
+
+4.1 Introduction
+Drones have become a valuable tool for emergency response teams conducting search-andrescue operations [2]. Drones can effectively cover large and possibly inaccessible areas [4,
+10], while capable of solving complex missions effectively [85]. Single-drone systems are
+typically operated through remote control or have limited autonomous decision-making
+capabilities. On the other hand, multi-drone systems have a lot of potential since the
+drones can work in parallel, covering a search area more effectively than a single-drone
+system. It is, however, still unclear how a drone operator can effectively engage and control
+
+a system composed of multiple autonomous robots, especially in unstructured and outdoor
+environments. This paper reports on ongoing Ph.D. research in the project HERD -
+Human-AI Collaboration: Engaging and Controlling Swarms of Robots and Drones [10],
+in which we focus on how to enable an operator to control multi-drone systems. However,
+to effectively conduct a search using a multi-drone system, it needs to be controllable
+by a single operator, which means that the system must have a relatively high level of
+autonomy. For example, it should be able to automatically assign search trajectories to
+drones based on a high-level mission specification [2, 11]. Multiple solutions to the task
+allocation problem, both centralized and decentralized, have been presented [11,45,51,91],
+as well as extensions to accommodate for convergence time [92] and complex tasks [11].
+However, it is still unclear (i) how to automatically generate realistic SAR tasks, and
+(ii) how to prioritize the tasks to conduct a SAR mission most efficiently. It is important
+to model the priorities of the drones appropriately to ensure that urgent tasks are addressed
+first. Additionally, any changes in the priorities need to be effectively communicated to the
+drone(s), to convey the intent of the operator. This is vital to ensure the rescue team can
+respond quickly and efficiently to changing situations. Especially when potential targets
+are located, the next steps need to be planned carefully. In my Ph.D., we aim to find
+answers to these questions regarding autonomous search-and-rescue operations.
+
+4.2 Problem Statement
+In multi-drone systems for search and rescue, the problem of multi-task assignment arises
+frequently [4]. One such use case is in SAR missions, where multiple drones need to
+be assigned different tasks, such as reconnaissance or area coverage. To solve this problem, a decentralized algorithm, called the consensus-based bundle algorithm (CBBA) [51],
+has been proposed. CBBA is an auction-based algorithm that can be used to solve the
+multi-drone multi-task assignment problem. The algorithm iterates between a bundleconstruction phase, in which tasks are assembled into bundles based on their availability
+and priority, and a conflict-resolution phase, in which consensus is reached on the allocation of tasks to drones. The task-allocation algorithm aims to assign a list of Na drones
+to Nt tasks without any conflicts while maximizing a global objective. In a mission, the
+global objective function is the sum of all local objective functions for each drone. The
+local reward is based on the tasks assigned to the drone and the order of their execution.
+The underlying problem of CBBA, the multi-drone and multi-task assignment problem,
+can also be formulated as a mixed-integer linear programming (MILP) problem [93]:
+N
+X a N
+Xt
+
+max Fij (x, τ )xij
+x,τ
+i=1 j=1
+(4.1)
+s.t. H(x, τ ) ≤ d
+Na ×Nt
+x ∈ {0, 1}Na ×Nt , τ ∈ R+ ∪ ∅
+
+,
+where Fij is the score function for drone i servicing the task j, with respect to the
+tasks assigned to the drone. H and d define a set of Nc possibly non-linear constraints
+x ∈ {0, 1}Na ×Nt , is a set of Na × Nt binary decision variables, xij , to indicate the assigned
+
+task j to an drone i. τ is a set of real-positive variables τij , describing when drone i will
+service the task j [93]. In the context of a SAR operation, Fij represents the value for
+covering a search area, or a part of a search area, for instance following a certain trajectory [11], and the constraints H represent energy limitations, no-fly zones, and so on. In
+this Ph.D. project, we have proposed to utilize CBBA [51], to solve the multi-drone multitask assignment problem in equation 4.1, where each drone creates a greedy assignment
+of the tasks and creates a consensus with other drones about the allocation. The greedy
+assignment is made using a trajectory task assignment extension to CBBA, which allows
+for evaluating tasks modeled as trajectories, such as coverage tasks [11]. Additionally,
+using bid warping [93] allows for more complex objectives. However, whenever a complex
+mission is changed dynamically, it becomes necessary to develop strategies for efficient
+reallocation of resources.
+
+4.3 OFS: The Overview, Focused, Systematic search
+method
+In this Ph.D., the main focus is cooperation between autonomous drones toward solving
+a common goal while allowing operators to control the overall objective. Therefore, it is
+important to consider existing frameworks and domain experience. The Danish Emergency Management Agency (DEMA) has developed a framework called: Overview, Focus,
+Systematic (OFS), for conducting SAR operations using drones, including prioritization
+of tasks in different environments. Our approach utilizes the OFS-method as the foundational reasoning tool, to ensure that the operator can conduct a mission efficiently using
+our multi-drone approach. By utilizing the OFS-method we can model tasks and facilitate
+dynamic re-planning strategies, making SAR operations more efficient. The OFS-method
+has been developed based on multiple international best practice reports and guides to
+manual search and rescue in two internal field trials conducted by DEMA, where their best
+practice methods were compared to the OFS-method [94]. DEMA has conducted extensive
+research on drones for emergency management, including interviews with key personnel
+and workshops with national emergency management agency divisions. They used various
+sources such as IEDO best practice report [94], EENA drone efficacy study [95], and Lost
+Person Behavior application which is based on the International Search and Rescue Incident Database (ISRID) [20], with over 50.000 incidents. Based on this research, DEMA
+conducted four field trials comprising 18 experiments and 180 simulated missing persons.
+The OFS search method has three phases: Overview, Focused, and Systematic. Before
+starting, it is important to know about the missing person's mental state, behavior, and
+last known location. The overview phase consists of an overview rotation and an overview
+route, where a drone covers the search area and creates markers used in the next phase
+based on the missing person's behavioral profile. An overview route is illustrated in Fig.
+4.1a.
+The focused search consists of a high-risk-search and a probabilistic-search, where both
+types are identified in the overview phase. The high-risk-search has the highest priority,
+as the person's health might be at risk, and, therefore, it is important to cover. The
+probabilistic-search consists of places where the person is most likely to end up and is based
+
+(a) (b) (c)
+
+Figure 4.1: (a) Shows a search in an urban area with a overview route marked with
+the dashed red line, including targets of value illustrated by the red map markers. (b)
+Illustrates the tasks in the focused phase, where roads and wetlands are marked with red
+and blue respectively. (c) The coverage pattern is illustrated as red dashed lines and is
+used in the systematic phase.
+
+on statistics from the ISRID dataset, and is illustrated in Fig. 4.1b. The systematic phase
+consists of a search using a set of boustrophedon coverage patterns [86] with a specific
+flight configuration, consisting of an altitude, camera angle, and speed, that enables a
+drone operator assistant to analyze the camera feed in real-time and is shown in Fig. 4.1c.
+In some scenarios, a second coverage is performed, but perpendicular to the previous
+search, which increases the probability of detection.
+
+4.4 Translating OFS into Multi-Drone Objectives and
+Tasks
+In search-and-rescue operations, drone operators often face a wide range of environments
+in which the type of coverage tasks vary widely. These tasks are usually created manually
+and require careful consideration of various environmental factors and seasonal changes.
+However, to improve efficiency and accuracy, we are exploring automated approaches to
+task generation. We utilize data from OpenStreetMap [96] and local weather information,
+we propose a system that automatically generates tasks for drones based on the current
+environment. Our previous work [11] generalized the notion of tasks to include trajectories,
+taking into account the spatial nature of coverage planning in the decentralized marketbased task allocation algorithm CBBA, which will be utilized in the task generation. In
+the OFS-method, DEMA identifies potential pitfalls in conducting a search-and-rescue
+operation in different environments. To determine high-probability areas, modelling the
+
+individual's profile is crucial. Our tool, TrajGenPy 1 , automates the task generation based
+on environmental features while taking into account the OFS-method. Flat terrain may
+appear easy to navigate using drones, but assuming complete coverage can be dangerous as
+environmental features such as gorges, ditches, and vegetation may obstruct the view. Hilly
+terrain presents a challenge in discovering targets because of the landscape, often covered
+by forests or foliage, which complicates target identification. In areas containing wetlands,
+careful consideration must be given to wind and water currents because waves can create
+blind spots, which impact the effectiveness of the systematic search patterns. Urban
+searches are complex due to the number of locations where a person might seek shelter.
+During emergency response missions, teams have to adapt to changes in information and
+adjust their priorities accordingly. This means that operators need to be able to engage
+with a multi-drone system and make changes on the fly. In the event of a potential
+survivor being detected or a change in mission priorities, drones may need to apply different
+strategies based on their circumstances. For instance, withholding information from drones
+that cannot perform the task in a suitable time frame may be necessary to allow for more
+efficient use of resources. By not considering drones that are unlikely to accept the task,
+time and energy can be focused on drones that are more likely to complete it within the
+desired time frame. We evaluate a drone's ability to perform a certain task based on
+different criteria, such as the minimum travel time in the environment or a deadheaded
+travel time to the task. To assess the performance of the re-planning strategies and the
+objective functions based on the OFS-method, we will define a common performance
+metric. Commonly, a performance measure of a CBBA system is given as the sum of
+objective functions for each drone or the amount of allocated tasks [45,92,93]. Though this
+might not be representative of a SAR operation, as the global goal is to find a potential
+survivor as fast as possible, therefore a more fitting metric is to evaluate the time to
+detection given an environment with targets sampled throughout the environment, based
+on real incident data, for example from the ISRID database.
+
+4.5 Discussion and Future work
+In this paper, we presented ongoing work on a tool, TrajGenPy, for generating tasks for
+search-and-rescue operations. This tool leverages environmental features and specifications
+from the OFS-method to generate effective search-and-rescue tasks. Further research will
+be conducted to test this tool using the same field trials provided by DEMA and sampled
+data from real SAR incident reports. Additionally, we plan to explore multi-drone searchand-rescue scenarios, prioritizing tasks in a manner similar to the OFS-method. Our
+ultimate goal is to allow operators to engage with multi-drone systems and improve the
+efficiency of search-and-rescue operations.
+
+1
+https://github.com/kasperg3/trajgenpy

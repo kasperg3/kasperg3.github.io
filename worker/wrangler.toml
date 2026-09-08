@@ -1,0 +1,34 @@
+# The answer endpoint for the "Ask this site" band on grontved.xyz.
+#
+# Deliberately its own hostname rather than a route on www: a worker route
+# shares a hostname with the live site, and this way nothing that happens here
+# can reach the static pages. If this worker breaks, 404s, or runs out of quota,
+# the front page keeps working and simply stops offering generated answers.
+#
+# The path is /ask rather than / because the free plan allows exactly one WAF
+# rate limiting rule and its expression may only match on Path, not hostname.
+# A rule on "/" would also match www.grontved.xyz/ and throttle the homepage.
+
+name = "ask-grontved"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# No workers.dev URL: a second, unprotected endpoint with no Cache API is
+# exactly the thing we do not want quietly existing.
+workers_dev = false
+
+# A Custom Domain, not a route: it resolves to this worker and nothing else, so
+# www.grontved.xyz is never in the request path. Cloudflare creates the DNS
+# record itself. The Cache API works here; it would not on workers.dev.
+routes = [
+  { pattern = "ask.grontved.xyz", custom_domain = true }
+]
+
+# Set by `wrangler secret put`, never in this file:
+#   MISTRAL_API_KEY  — the Mistral Experiment-tier key
+#   IP_SALT          — any random string; salts the hashed per-IP counters
+
+[[kv_namespaces]]
+binding = "ASK_KV"
+id = "28c443f99e554eb190d893e190f6741d"
+preview_id = "69b2a8d2908b42ffbb9c053824a8df78"

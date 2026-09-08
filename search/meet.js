@@ -150,6 +150,11 @@ export class Meet {
   ready(engine) {
     this.engine = engine;
     this.buildCorpusChips();
+    // The page states the corpus size in prose as well as in the section head,
+    // and it has changed twice already. Nothing should carry it as a literal.
+    for (const n of document.querySelectorAll('[data-corpus-n]')) {
+      n.textContent = engine.docs.length.toLocaleString('en');
+    }
     this.render();
   }
 
@@ -597,9 +602,9 @@ export class Meet {
    * FLOPs paid once per query, before any document is scored — and the term
    * this panel used to leave out, which was the worst thing about it. Dense and
    * late interaction have to run the query through an encoder; at this site's
-   * 78 passages that single forward pass is 44,000× the entire scoring cost of
-   * dense, so a scoring-only chart got the answer wrong by four orders of
-   * magnitude at its own default setting.
+   * couple of hundred passages that single forward pass is four orders of
+   * magnitude more than the entire scoring cost of dense, so a scoring-only
+   * chart got the answer wrong by that much at its own default setting.
    *
    * It is also exactly the term that makes inference-free SPLADE what it is:
    * zero here, because the query side is a tokenizer and a table lookup. A

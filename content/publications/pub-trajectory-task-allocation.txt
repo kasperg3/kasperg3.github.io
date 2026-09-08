@@ -1,0 +1,421 @@
+Decentralized Multi-UAV Trajectory Task Allocation in Search and Rescue Applications
+
+Decentralized Multi-UAV Trajectory
+Task Allocation in Search and Rescue
+Applications
+
+Published as: Grøntved, K. A. R., Lundquist, U. P. S., & Christensen, A. L. (2023).
+"Decentralized Multi-UAV Trajectory Task Allocation in Search and Rescue Applications". In 2023 21st International Conference on Advanced Robotics (ICAR) (pp. 35-41).
+IEEE. https: // doi. org/ 10. 1109/ icar58858. 2023. 10406912 [16]
+
+Chapter Abstract Multi-UAV systems have significant potential to enhance search
+and rescue (SAR) operations, since a search area can be covered faster than current approaches when multiple UAVs operate in parallel. While recent advancements within
+the field of multi-robot coverage planning have yielded promising results, current algorithms are predominately centralized. In this paper, we present a generalization of the
+well-known decentralized consensus-based bundle algorithm (CBBA), that enables efficient
+task allocation in multi-UAV SAR operations. The generalized algorithm considers tasks
+as trajectories between two points where the traversal direction for each task is optimized
+in the task allocation process. We carry out a series of simulation-based experiments on
+benchmark problems and compare our results to a state-of-the-art centralized solution.
+We find that our novel decentralized approach yields times to completion similar to those
+achieved with a centralized coverage path planning approach, with only 1.9% overhead
+cost. We furthermore find that our approach performs 6% better than point allocations
+while scaling well with the number of UAVs involved in the search effort.
+
+5.1 Introduction
+Unmanned aerial vehicles (UAVs) are being employed in an increasingly broad range of
+domains, including SAR operations [4, 10], due to their high degree of freedom and capabilities of moving mostly unobstructed through an environment [85]. Currently, single-unit
+systems are primarily used, and they tend to be either remote-controlled or have limited
+autonomous decision-making authority. Multi-UAV systems, on the other hand, have sig-
+
+nificant potential as the UAVs can operate in parallel and thus cover a search area faster
+than a single-unit system. However, for efficient multi-UAV operation, a system needs to
+be controllable by a single operator, which means that the system must have a relatively
+high level of autonomy, such as the ability to automatically allocate search trajectories to
+UAVs given a high-level mission specification [2].
+In SAR operations, the search area is commonly specified as a polygon, see Fig. 5.1
+for an example. As can be seen in the figure, the search area is further subdivided into
+a number of regions, and a set of trajectories (trajectory tasks, shown in red) is defined
+for each sub-region. In the example, there are a total of 43 trajectory tasks. The task
+allocation problem then consists of allocating a set of UAVs to carry out all trajectory
+tasks, such that the time to completion is minimized [7, 8]. This problem is also known as
+coverage path planning [86]. For single-unit systems, this often results in the lines being
+covered in a boustrophedon pattern [86, 87].
+
+Search area
+Line task
+
+Figure 5.1: Example of a search area for a SAR operation given as a polygon (thick black
+line). The search area is divided into four sub-regions (dashed lines), and trajectory tasks
+(in red) are defined for each sub-region.
+
+The problem of coverage planning is a widely studied field in robotics, see [45,87,97,98]
+for examples. Nevertheless, most approaches are centralized and thus require reliable,
+continuous connectivity between a base station and all UAVs, which may not be available
+in SAR operations that are conducted in large search areas and in remote locations where
+communication infrastructure is sparse or non-existent. Also, in multi-robot coverage
+planning, it is a common assumption that the area and the available units remain static
+throughout a mission. However, since SAR operations often are conducted in a dynamic
+and unstructured environment, the search area and sub-regions often change during an
+
+operation [12].
+In this paper, we focus on a decentralized algorithm called the consensus-based bundle
+algorithm (CBBA) [51]. CBBA is an auction-based algorithm, which iterates between
+a bundle-construction phase, in which tasks are assembled into bundles, and a conflictresolution phase, in which consensus is reached. The CBBA does not require direct connectivity between all UAVs in a system to converge to a conflict-free task allocation. In
+the original formulation of CBBA, tasks are modelled as points, and the algorithm does
+thus not take the trajectorial nature of SAR tasks (lines in the simplest case) into account.
+The contribution of this paper is a generalization of CBBA [51] to handle trajectory
+tasks to enable decentralized coverage path planning in SAR scenarios. The travel direction for each trajectory task is considered in the task evaluation, which is used when the
+UAVs bid for tasks. We establish the efficacy of our algorithm on a coverage path planning
+benchmark dataset by converting it into trajectory task allocation problems. Experiments
+are carried out to show that the enhancement can improve the baseline CBBA algorithm
+by an average of 6% in a range of multi-UAV system sizes and environments. Comparative
+experiments show that our decentralized planner has low overhead (only 1.9% overhead
+cost compared to the state-of-the-art centralized heuristic solvers for line coverage problems [45]).
+
+5.2 Related Work
+Area coverage algorithms can be categorized based on the assumptions they make on the
+geometry of an area [4]. One of the more general assumptions is that a search area can
+be decomposed into convex cells, which can be covered by a search pattern, such as the
+boustrophedon pattern [86]. This search pattern is widely used for pre-operation planning
+in SAR operations [45, 87, 88]. Other methods assume that a search area can be covered
+by a grid, where each square has to be visited to be considered covered. The latter has
+the downside of complexity, where the number of squares increases quadratically with
+the size of the search area. A SAR operational area is commonly specified as one or
+more polygons [99], along with any interior regions (e.g. obstacles) that robots should
+not enter. The area is divided into non-intersecting convex polygons called cells using
+a decomposition technique [85-87]. This approach is especially popular since it is easily
+understandable by human operators.
+The mTSP (Multiple Travelling Salesman Problem) is a well-known NP-hard combinatorial optimization problem [100], for which several heuristic-based methods have
+been proposed for solving task allocation problems for multi-robot systems, see for instance [45,87,101]. In a recent study [102], the authors proposed a novel environment partitioning algorithm and modelled it as a mTSP to solve the multi-robot coverage problem.
+By minimizing turns, the authors showed that coverage time was reduced significantly for
+teams of 1-5 robots in 25 indoor environments. In [98], the MEM heuristic algorithm was
+proposed to solve large-scale multi-robot line coverage problems in a centralized manner.
+In [45], MEM was then combined with an approach that considers asymmetric costs for
+servicing (covering a task) and deadheading (travelling to a task) to model environmental
+features such as wind. This allows for solving the area coverage problem for capacity-
+
+constrained robots using constrained optimisation methods, though still in a centralized
+manner.
+While the above-mentioned algorithms yield promising results, they are centralized.
+For multi-UAV SAR in real-world conditions, such a centralized approach would require
+the planning to be done by a single centralized entity, that can reliably and frequently communicate with all the UAVs involved in the search effort. For large-scale SAR operations
+which often take place in areas where communication infrastructure may be damaged or
+absent, such communication requirements may be challenging to meet. Also, the reliance
+on a central entity constitutes a single point of failure, which is a major drawback in SAR
+operations where robustness is particularly important.
+A decentralized system can potentially overcome the shortcomings associated with a
+centralized approach. By relying on peer-to-peer communication [103], the task allocation
+algorithm can run on each agent simultaneously and the allocation is obtained through the
+exchange of information between the agents [104, 105]. The single point of failure can be
+eliminated by using decentralized architectures such as auction-based methods [51]. Some
+of the simplest auction-based methods are single-assignment approaches where each agent
+can only be assigned a single task and where tasks are auctioned one-by-one [12].
+One can achieve a near-optimal allocation of a set of tasks when using single-round
+combinatorial auctions [106], where bids are calculated based on sets of tasks (bundles)
+instead of individual tasks. Each agent's bid corresponds to the minimum path cost of a
+bundle, based on the position of the agent. Each agent has to try all permutations of tasks
+as a bundle, which is computationally expensive since the number of bids grows exponentially with the number of tasks. The above-mentioned methods rely on a central broker or
+auctioneer, whereas other methods, such as the consensus-based bundle algorithm (CBBA)
+discussed in further detail below, are fully decentralized [51]. CBBA iterates between two
+phases, (i) the bundle-construction phase, where each agent builds its own bundle of tasks;
+and (ii) the conflict-resolution phase, where the agents communicate with their neighbours
+to reach consensus on who has won which auctions. These phases are repeated until the
+algorithm converges to a conflict-free assignment of all tasks. Several extensions to CBBA
+have been proposed to expand its applicability, such as asynchronicity [107], heterogeneous
+agents [108], time-critical tasks [109] and maximisation of the total number of tasks allocated, thus ensuring the tasks are distributed more evenly [91]. Decentralized methods,
+such as CBBA, can have a large impact on the execution of a SAR operation because decentralized algorithms have the general advantage of being more robust to changes in the
+environment and not having to rely on stable communication with a ground station [103].
+Current auction-based methods often assume that tasks are independent of one another
+and that each task can be solved in a single, unique way. This assumption is valid in
+previous applications of auction-based methods to non-coverage-based SAR problems, such
+as in [110], where each task corresponds to a site with victims. Each task is thus only a
+point. However, to solve the coverage path planning problem in SAR for victim localisation,
+the spatial nature of coverage tasks, namely that a path between two points must be
+travelled to satisfy a trajectory task, and should be taken into account to achieve optimal
+plans. Given that a line segment, for instance, can be travelled in two directions, the
+distance between two tasks depends on the direction in which each of them is covered.
+In this paper, we therefore propose a generalization of the highly popular decentralized
+
+market-based task allocation algorithm, CBBA, where different possible travel directions
+are explicitly considered in the computation of plan costs. The resulting algorithm enables
+effective decentralized coverage planning for multi-UAV systems in SAR and seamless
+integration of special costs for generating task bids, such as including the cost of turning
+in the bid.
+
+5.3 The Consensus-based Bundle Algorithm
+CBBA [51] is a fully decentralized multi-assignment task allocation algorithm, which implements a greedy auction strategy, and enables agents to auction tasks based on task
+bundles built sequentially. CBBA is a well-known and tested algorithm, that provides solutions with a minimum performance guarantee of 50% optimality, assuming that agents
+have accurate knowledge about auction winners [51]. The goal of the task allocation
+problem is to find a conflict-free allocation of tasks to agents which optimizes a scoring
+function, given a list of Nt tasks and Nu agents, where each agent is able to get assigned
+Lt tasks [51]. The scoring function assigns a score to a task based on either the time or
+distance to the task.
+CBBA consists of two phases, a bundle-construction phase where each agent, i, greedily generates a bundle of ordered tasks and a conflict-resolution phase where conflicting
+assignments are identified and resolved through local communication. These two phases alternate until a conflict-free task allocation is obtained and satisfies Nmin ≜ min {Nt , Nu Lt },
+which means convergence is achieved when either the total capacity, Nu Lt , is reached or
+all the tasks, Nt , have been assigned. In CBBA, every agent maintains two different lists
+of tasks, the bundle bi and their path pi , where the tasks in the bundle are ordered based
+on when the task was added during the bundle-construction phase. The path pi is an
+ordered list of non-conflicting tasks added after the conflict-resolution phase, where the
+sequence is based on the marginal score improvement in Eq. (5.1), such that the path has
+an optimal sequence.
+(
+0, if j ∈ bi
+cij [bi ] = pi ⊕n {j} (5.1)
+maxn≤|pi | Si − Si , otherwise,
+pi
+
+where | · | denotes the cardinality of the list and the operation ⊕n inserts the second list
+after the nth element in the first list. Furthermore, the task j will not provide any reward
+if the task is already in the task.
+The bundle and path are recursively updated as:
+
+bi = bi ⊕end {Ji } , pi = pi ⊕ni,Ji {Ji } , (5.2)
+
+where Ji is the task resulting in the largest increase of score and ni is the optimal index
+in agent i's path.
+In the bundle-construction phase, the agents' perception of which agent has the highest
+bid for a task is important, as an agent will only add a task to its bundle if it believes that
+it has the largest marginal increase in score. Therefore, in the conflict-resolution phase,
+
+each agent communicates both its beliefs about the winning bids, the winning agents, and
+the timestamps of the last information update from each of the other agents, and potential
+conflicts are then resolved locally using a set of action rules [51]. When an agent is outbid,
+the tasks that have been added after the outbid task in the bundle will also be removed,
+as the tasks which the scores were calculated from are no longer valid. Otherwise, the
+agent could continue to make decisions based on outdated information, which can lead to
+degraded performance.
+CBBA is a polynomial-time algorithm [51] with the worst-case complexity of the
+bundle-construction phase for a single agent of:
+
+O (Nt Lt ) , (5.3)
+
+and has a convergence guarantee within max {Nt , Lt Nu } D iterations, where D is the
+network diameter, which can be Nu at most.
+
+5.4 Trajectory tasks
+Consider a multi-UAV system tasked with performing a SAR operation in a bounded area.
+The goal is to locate any survivors as quickly as possible and thus minimize coverage time.
+Assume that the search area, given as one or more polygons, has been divided into line
+segments according to some method, e.g. [102] or [45]. To cover the search area, each line
+segment must be travelled once by one of the UAVs, and for non-trivial problems, each
+UAV must be assigned multiple segments, making the problem a multi-assignment task
+allocation problem. For the trajectory tasks generalization, we consider a task, ji , as a
+subset of two points, an entry point and a departure point:
+
+ji ≜ {u0 , u1 } (5.4)
+
+The trajectory task abstraction is different from simple point tasks, as we assume that
+after a task is completed, a UAV is not in the same location as where the task started
+(unless for the special case for non-linear trajectories where u0 = u1 ). For tasks where
+u0 ̸= u1 , such as line segment tasks, the scores calculated by the scoring function are
+different to those of a point task. The set of tasks that the bidder must evaluate to create
+a bid frequently exhibits significant synergistic potential. The synergy for an agent is
+considered positive when the combined cost for executing the tasks together is less than
+the sum of performing them individually [111]. The synergies between trajectory tasks
+affect the bid more than that of a point task because the agent will end a trajectory task
+in a different location than where it started the task. This means that not only the entry
+point of a task contributes to the synergies between tasks, but also the departure point.
+When an agent adds a trajectory task to its bundle, it has to evaluate the marginal
+change in score for adding this task, by calculating the cost of travelling to the task and
+the cost of travelling after the task. To maximize the marginal score gain of acquiring
+the task, the cost must be calculated for both directions in which a trajectory task can
+be performed. Therefore, the agents have to be able to permute the trajectory tasks by
+changing the direction of travel based on this optimization.
+
+5.4.1 Trajectory task scoring function
+CBBA is a versatile algorithm where task-specific constraints or objectives can be taken
+into account by modelling the scoring function. Though the scoring function has to satisfy
+a vital property in CBBA called diminishing marginal gain (DMG) [51]. DMG states that
+a tasks score cannot increase in value as another task is added to the path before it and
+can also be expressed as:
+cij [bi ] ≥ cij [bi ⊕end b] (5.5)
+In this paper, we use the time-discounted reward as the scoring function which can be
+seen in Eq. (5.6):
+X τ j (pi )
+Sipi = λji c̄j (5.6)
+
+where τij (pi ) is the estimated time for agent i to reach task j, on the current path pi , c̄j
+is the static reward for completing the task and λ ∈ (0, 1) the discount factor. In search
+and rescue scenarios, specific tasks can have different priorities, these priorities can be
+translated into this static reward, to provide a stronger incentive to acquire urgent tasks.
+In this paper, we keep the reward constant for all tasks but different rewards can be used
+to prioritise critical tasks. To better approximate SAR operations, where UAVs perform
+many sharp turns, which results in the UAV having to decelerate to a near stop, the turn
+cost is modelled as a velocity-ramp function in the scoring function to ensure correct cost
+estimates. This is done by calculating the time it takes to travel from one point by using
+a finite acceleration, and can be approximated using a velocity-ramp function, thereby
+adding an extra cost of travel between tasks by enforcing a complete stop between tasks.
+The time it takes to travel the distance dji , the cumulative distance to the task j
+in agent i's path pi using a maximum velocity and acceleration, vmax and amax , can be
+estimated using a velocity-ramp model as follows [45, 87]:
+ r
+4dji
+if dji < da 2
+
+
+amax ,
+vmax
+τij (pi ) = , where da = (5.7)
+dji amax
+ vmax + if dji ≥ da
+
+amax vmax ,
+
+The velocity ramp in equation 5.4.1 is a conditional function where the case dji < da
+describes the time it takes to travel a distance dji if the maximum velocity is not reached,
+where the latter case dji > da describes the time travelling the distance da if the maximum
+velocity is reached within the distance da . When a task is given as a trajectory, the function
+τi (pi ) calculates the time it takes for an agent to traverse a set of trajectory tasks, from
+the departure point of the previous task to the entry point of the next task, for each task
+in the path pi . The direction in which the agent traverses the tasks thus greatly impacts
+the score of the entire path Sipi . This means that when the agents construct their bundles
+and bids on tasks, the direction of approach has to be taken into account for each task in
+the local path bi , resulting in a task no longer only containing a reward c¯j and a point
+but employ the trajectory task generalization in Eq. 5.4.
+When an agent i builds its bundle and wants to add the task j to its bundle it will
+swap the u0 and u1 if τ (puij1 ) < τ (puij0 ) and maximizing the marginal increase of the scoring
+function (Eq. (5.8)):
+
+(
+0, if j ∈ bi
+cij [bi ] = p ⊕ {j } (5.8)
+maxn≤|pi | maxdir Si i n dir − Sipi , otherwise,
+where jdir is the direction of approach to the trajectory task j and that results in the
+highest reward based on the previous tasks and directions, effectively performing a greedy
+optimization. When the first task is added, the agent calculates the score with respect to
+its starting position.
+Once an agent has won an auction for a task ji , before consensus, the agent will update
+its own path list and reverse the candidate task ji if this provides the highest marginal gain,
+before inserting it into pi at the position in the path which yields the highest marginal
+gain, as per Eq. (5.2). The information about whether a task has been reversed or not
+is not communicated to other agents, as this is not important for the allocation of the
+tasks, similarly, the agent does not communicate the order of the tasks in their paths, but
+only the information regarding the actual allocation, and thereby does not increase the
+communication load of the CBBA algorithm.
+
+5.5 Simulation and experiments
+We first assess the performance of our decentralized trajectory task allocation approach
+against a state-of-the-art centralized method [45], and we then assess scalability on the
+AC300 benchmark dataset [87].
+In the experiments, we use the discounted reward scoring function in Eq. (5.6) with
+the discount factor λ = 0.95. The capacity of each robot Lt is the maximum flight time
+in seconds, and the sum of a UAV's path costs cannot exceed this capacity. We use the
+velocity-ramp model to estimate the time for an agent to travel between points, with
+vmax = 3 m/s and amax = 1 m/s2 in all experiments. Furthermore, the agents use a
+fully connected network topology for communication, though this is not always possible
+in search and rescue missions, the effects of network topology and inconsistent situational
+awareness have shown to be minimal [51]. To guarantee convergence, we use a maximal
+assignment factor ω = 15, which avoids auctioning the same tasks repeatedly in certain
+situations as proposed in [91].
+The algorithms and software developed in this study were implemented in Python, and
+the experiments were performed on a workstation with an Intel Core i5-9400F 2.90 GHz
+CPU and 16 GB of RAM running Ubuntu 20.04.
+We compare our approach of decentralized trajectory task allocation against a state-ofthe-art centralized algorithm [45] using the AC300 dataset [87] to assess performance and
+potential overhead resulting from using our decentralized method. The AC300 dataset
+contains 300 realistic outdoor environments. This dataset is based on the EPFL aerial
+rooftop dataset [112] to provide coverage areas with realistic environments including obstacles. The dataset consists of 300 environments each with a total area of 10, 000 m2 and
+containing between 0 and 15 obstacles. The aerial robot used in the simulation has a 3 m2
+field-of-view, which results in between 35 to 161 trajectory tasks generated for sufficient
+coverage. The trajectory tasks are generated by decomposing the polygon including the
+obstacles into sub-polygons and generating a boustrophedon (lawn-mower) coverage pat-
+
+tern for each sub-polygon [45]. We use the coverage lines generated in [45] and convert
+them to trajectory tasks for our decentralized task allocation algorithm to enable a fair
+comparison.
+The sum of the agent route costs, in seconds, is evaluated for all the environments and
+summarized as a total duration for the dataset for both methods using two agents with
+1200 s capacity each. The centralized method achieved a total duration of 544592 s and our
+method achieved 554920 s, and shows that our decentralized trajectory task generalization
+and methods of estimating the costs only use 10328 s more time resulting in an overhead
+cost of 1.9% using multiple UAVs when compared to the state-of-the-art centralized areacoverage planning method.
+
+5.5.1 Point tasks vs. trajectory tasks
+To assess the efficacy and scalability of our solution for multi-UAV coverage planning in
+realistic environments, we use the AC300 dataset [87]. The initial position, the depot,
+is randomised for all the problems and is common for all agents, to ensure an unbiased
+comparison with our solution and the current state-of-the-art centralized methods, which
+uses a common depot for all agents. This is not a constraint and decentralized planning
+can be conducted regarding the initial positions of the agents. The original datasets are
+available in [113], and we have made our datasets with the extracted trajectory tasks
+publicly available in [114].
+
+Figure 5.2: Shows a comparison of the total travel time of all routes computed using the
+point scoring function and trajectory scoring function. The results are computed for two
+UAVs, each with a capacity of 1200 s.
+
+The impact of our decentralized task allocation algorithm is validated by comparing
+
+(a) Point estimation (b) Trajectory estimation
+
+Figure 5.3: Shows a comparison of example routes generated by using (a) the point estimation method, and (b) the trajectory estimation method using an environment with the
+size of 100 × 100m from the AC300 dataset. The coverage plans were generated by two
+UAVs with a capacity of 1200 s, whose paths are orange and blue, respectively.
+
+two different types of scoring functions, (i) a single point cost estimation, by calculating
+the Euclidean distance to the entry point of the trajectory task, and (ii) optimizing the
+direction of the task and choosing the lowest-cost direction of travel on the task. We
+conducted the experiments considering two agents, each with a 1200 s capacity. The
+comparison of the total travel cost between the two different methods is shown in Fig 5.2.
+As can be seen in the figure, our trajectory task approach generates lower-cost routes over
+different numbers of UAVs, with an average improvement of 6% over the point estimation
+method.
+It is important to note that the performance improvement of the trajectory task estimation method is not the only improvement to the decentralized coverage planning problem.
+When allowing permutation of the direction for a coverage task, it is possible to generate
+routes that are intuitive for a human operator. In Fig 5.3, examples of routes generated
+using the two different evaluation methods are shown, and here it is clear that the routes
+calculated using our method are simpler and more intuitive. Simplicity is paramount for
+the situational awareness of the operator in a SAR mission and might be a critical factor
+for an operator to accept an autonomous system [2].
+To test the scalability of the proposed approach, we ran the trajectory task allocation
+algorithm on multi-UAV systems consisting of 2 to 14 agents, see Fig. 5.4. As can be seen
+in the figure, the time to completion is significantly improved when adding more UAVs,
+with an average maximum travel time of 972 s for two UAVs, down to an average travel
+time of 229 s when 14 UAVs are used. However, the reduction in time to completion of
+adding more agents stagnates at around 10 UAVs and there is no significant improvement
+using more than 10 units. The optimal number of UAVs will vary based on the size of the
+environment.
+
+Figure 5.4: Comparison between the highest travel time for a single agent in the AC300
+problems, across 2 to 14 agents in steps of 2 agents with the capacity constraints set to
+1500 s, 750 s, 600 s and the remaining to 500 s, respectively.
+
+5.5.2 Convergence
+The convergence and stability of the system are critical in a SAR operation, therefore it is
+important to ensure that the algorithm converges within a reasonable timeframe while still
+providing good solutions. We conducted a set of experiments to determine the number
+of iterations required to converge for different numbers of agents, see Fig. 5.5. As can be
+seen in the figure, the trajectory planning algorithm scales efficiently with the number of
+agents. There is only a slight increase in iterations when the number of agents is increased,
+which means that the trajectory task allocation algorithm scales well.
+The computational complexity of the trajectory algorithm shares the same computational complexity as CBBA for the bundle construction, see Eq. (5.3). This means that
+if the capacity of the agents is decreasing proportionally to the increase in the number of
+agents, the computation time of constructing the bundle does not increase. As a result, the
+proposed algorithm converges quickly for multi-robot scenarios containing many capacityconstrained robots, and as the results show, decentralization comes with low overhead
+when compared to state-of-the-art centralized coverage planning algorithms.
+
+5.6 Conclusions
+Search and rescue scenarios are time-critical operations, and robust, effective task allocation is crucial when multi-UAV systems are used. In this paper, we presented a
+novel approach to decentralized task allocation for capacity-constrained robots for cover-
+
+Figure 5.5: Comparison between the different number of agents and their respective iterations to convergence using the AC300 dataset across 2 to 14 agents in steps of 2 agents
+with the capacity constraints set to 1500 s, 750 s, 600 s and the remaining to 500 s, respectively, for all environments in the AC300 dataset. Diamonds represent outliers.
+
+age planning problems. We generalized the notion of tasks to include trajectories, taking
+into account the spatial nature of coverage planning in the decentralized marked-based
+task allocation algorithm CBBA. The results show that (i) the approach presented in this
+paper is capable of generating coverage plans that are competitive with state-of-the-art
+centralized planners despite being decentralized, and (ii) that it scales well with system
+size.
+In this study, we considered that each trajectory task was a line segment that could
+be travelled in two different directions. However, a trajectory task can, in principle, be a
+collection of several line segments or even some non-linear path. The number of tasks that
+are auctioned during the task allocation process can thus be adjusted based on the available
+resources: if a search area is very large and a large number of line segments must be covered,
+each trajectory task could be a cluster of line segments; while if an area is small, more finegrained trajectory tasks could be defined. In future work, we will investigate clustering
+line segments to optimize the task allocation process and study dynamic scenarios where
+UAVs may become available or unavailable during a mission. Our long-term objective is to
+showcase the efficacy of the proposed methods within a realistic simulation environment
+that systematically considers dynamic and volatile communication conditions, along with
+physical constraints. This environment will facilitate the deployment of our proposed
+methods on physical multi-UAV systems in the field.

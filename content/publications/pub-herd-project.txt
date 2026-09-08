@@ -1,0 +1,266 @@
+The HERD Project: Human-Multi-Robot Interaction
+in Search & Rescue and in Farming
+Anders Lyhne Christensen∗, Kasper Andreas Rømer Grøntved∗, Maria-Theresa Oanh Hoang†,
+Alexandra Hettich‡, Niels van Berkel†, Mikael Skov†, Alea Scovill§, Gareth Edwards§, Kenneth Richard Geipel¶,
+Lars Dalgaard∥, Ulrik Pagh Schultz Lundquist∗, Ioanna Constantiou‡, Christiane Lehrer‡, Timothy Merritt†
+∗University of Southern Denmark, †Aalborg University, ‡Copenhagen Business School,
+§Agro Intelligence ApS, ¶Robotto ApS, ∥Danish Technological Institute
+Abstract-Large-scale multi-robot systems have numerous potential real-world applications. It is, however, still unclear how a
+human operator can effectively engage and control a system composed of multiple autonomous robots, especially in unstructured
+and outdoor environments. This paper reports on ongoing work
+in the project HERD - Human-AI Collaboration: Engaging and
+Controlling Swarms of Robots and Drones, in which we focus on
+two concrete use cases from industrial partners, namely farming
+and search & rescue. One of the industrial partners, Agro
+Intelligence ApS, currently sells autonomous farming robots,
+while the other, Robotto ApS, develops autonomous drone-based
+monitoring solutions for emergency responders. Both partners
+aim to scale their technologies to multi-robot/multi-drone operations. In this paper, we present the two use cases, their differences
+and similarities, challenges and preliminary results.
+Index Terms-human-robot interaction, search and rescue,
+agricultural robotics, swarm robotics
+I. INTRODUCTION
+Robots and drones take on an increasingly broad set of
+tasks, such as the autonomous farming robot by Agro Intelligence (AgroIntelli) and the drone-based emergency response
+systems from Robotto, see Fig. 1. Currently, however, such
+robots are limited in their capacity to cooperate with one
+another and with humans. In the case of AgroIntelli, for
+instance, only one robot can currently be deployed on a field at
+any time and is unable to respond effectively to the presence of
+a human-driven tractor or even another farming robot working
+in the same field. In the future, AgroIntelli wants to leverage
+the potential benefits of having multiple robots working in
+parallel on the same field to reduce time to completion. A
+straightforward way to achieve this is to partition the field
+into several distinct areas corresponding to the number of
+robots available and then assign each robot its own area.
+However, such an approach is inflexible and requires detailed
+a priori planning. If, instead, the robots were given the task
+collectively, they could potentially coordinate their operation
+on the fly and adapt based on local conditions to achieve
+optimal or near-optimal task performance.
+Similarly, Robotto's system architecture currently requires
+one control unit to manage each deployed drone. In largeThis work is supported by the Innovation Fund Denmark for the project
+DIREC (9142-00001B).
+area search scenarios and operations with complex terrain, the
+coverage provided by a single drone is insufficient. Multiple
+drones can provide real-time data on a larger surface area
+and from multiple perspectives - thereby aiding emergency
+response teams in their time-critical operations. In the current
+system, however, additional drones each require a dedicated
+operator and control unit. Coordination between operators
+introduces an overhead and it can become a struggle to
+maintain a shared understanding of the rapidly evolving situation. There is thus a need to develop autonomous droneto-drone coordination and interfaces that enable high-level
+management of a multi-drone system from a single control
+console. The complexity requires advanced interaction mechanisms to keep the data actionable, simple, and yet support the
+critical demands of the operation. This challenge is relevant
+to search & rescue (SAR) as well as other service offerings
+in the roadmap, including firefighting, inspections, and firstresponder missions.
+The move to multi-robot systems raises a whole new set of
+challenges compared to the current paradigm where there is a
+one-to-one mapping between operator and robot. The operator
+must be able to interact with the whole system as a single
+entity to set mission priorities and constraints, and at the same
+time, be able to intervene and take control of a single robot or
+a subset of robots. An emergency responder may, for instance,
+want to take control of a drone to follow a civilian or a group
+of personnel close to a search area, while a farmer may wish
+to reassign one or more of the farming robots to another field.
+In the HERD project, we selected two application domains,
+SAR and farming, which have several common characteristics
+and distinct differences. Both domains involve time-sensitive
+missions carried out across geographical areas with planning
+conducted by domain experts. Both domains contain inherent
+stochastic elements, such as weather conditions. In both cases,
+the robots/drones are mobile and have substantial onboard
+sensor systems and processing capabilities and must collaborate with other robots/drones and humans. To distinguish the
+domains, the SAR drone operating space is in the air with a
+focus on a chaotic and rapidly evolving emergency, while the
+agricultural operating space is terrestrial and involves longer
+timescales with more complex planning and coordination with
+(a) (b)
+Fig. 1: The robot/drone platforms used by the industrial partners: (a) the autonomous farming robot from AgroIntelli, and
+(b) drone with software from Robotto for emergency response
+a variety of co-located equipment and personnel.
+II. METHODOLOGY
+In the HERD project, we divide our overarching goal of
+enabling end-users to engage and control multi-robot systems
+into four different, but closely related challenges:
+• Pre-operation and on-the-y planning: Prior to a mission, the user should be able to provide a plan or a
+specification of the mission to be carried out by the multirobot systems, such as the task area, mission priorities,
+and constraints. A plan may contain a significant amount
+of detail, such as in the case of farming where the robots
+must precisely follow crop rows, or only a rough initial
+specification of the search area in a SAR operation. In
+both cases, however, the end-user must be able to adjust
+the plan on the fly, e.g., change the turn radius of farming
+robots or modify search priorities in a SAR operation.
+• Situational awareness: To be able to trust and use a
+multi-robot system, the end-user needs to have confidence
+that the system is operating as intended and that it will
+continue to do so. This often requires that the user
+understands what the system has done, what it is currently
+doing, and can approximate what the system will do in
+the future [1].
+• User intervention: Users need to be able to intervene and
+take control of parts of the system, and to dynamically
+add and remove units. An emergency responder may, for
+instance, wish to take manual control of a drone after
+it has detected a heat signature to confirm whether or
+not it originates from a person in distress. When a user
+is manually operating a single unit or a subset of the
+units in the multi-robot system, the remaining robots must
+continue to operate correctly and safely.
+• Workow and governance: The use of multi-robot
+systems changes workflows and roles in the end-user
+organizations. When the current one-to-one relationship
+between operator and robot shifts to a one-to-many
+relationship, some existing roles will become redundant,
+while new roles will be created, e.g., related to creating
+plans and monitoring the systems during operation. In
+the project, we will investigate and design governance
+structures that enable efficient interactions between humans and multi-robot systems from an organizational
+perspective.
+To develop and study methods that enable end-users to
+engage and control multi-robot systems in real-world outdoor
+environments, we conduct research on planning, multi-agent
+systems, and human-robot interaction, combined with frequent
+discussions and prototype evaluations with end-users throughout the project. Our two use cases and preliminary results are
+presented in the two subsequent sections.
+III. USE CASE: MULTI-ROBOT FIELD OPERATIONS
+Advances within the field of agricultural robots have made
+it possible for Unmanned Ground Vehicles (UGVs) to perform
+a variety of tasks, including precision farming. Many farming
+tasks are monotonous and repetitive, such as seeding, weeding,
+and herbicide spraying which in recent years have seen much
+attention in both research and industry [2]. A decrease in
+available human labor in agriculture has created a market for
+autonomous robotic solutions [3], such as the general mobile
+farming robot produced by AgroIntelli, see Fig. 1a.
+AgroIntelli's solution relies on a proprietary centralized
+coverage planning algorithm that creates static plans for a
+single robot, see Fig. 2. Multi-robot systems in agriculture
+present some general challenges, such as (i) creating user interfaces (UIs) that are easy to learn and master, (ii) supporting
+the farmer in creating and adjusting complex field operations,
+and (iii) developing robust and effective multi-robot planning
+algorithms. The unstructured outdoor environment can present
+situations not foreseen during the planning process, which
+in turn can decrease performance. Issues must therefore be
+resolved as quickly as possible whether autonomously, through
+user intervention, or a combination of the two. Examples of
+unforeseen situations are, a fallen branch from a tree at the
+edge of a field, a newly formed wetland, or a malfunctioning
+implement, which often require manual intervention. It is
+important that the operator is aware that an unforeseen event
+Fig. 2: A section of AgroIntelli's dashboard displaying a plan
+and live progress of an ongoing operation
+is likely to occur or has already occurred. When dealing
+with multi-robot systems, it is vital that the user has a
+good understanding of the state of the operation and has the
+means to take action against or mitigate issues compromising
+performance or safety. Visualizing a highly complex state of an
+operation while minimizing the cognitive load of the operator
+is one of the main challenges addressed in the HERD project.
+Research on route optimization for autonomous robot farming is mostly focused on static planning methods, such as the
+vehicle routing problem (VRP), which is a special case of the
+traveling salesperson problem [4]. VRP has been generalized
+to farming tasks for both single-robot systems and multi-robot
+systems [2], [4]-[7]. One of the most important aspects of a
+system for real-world use is how it is operated and maintained
+by the user. In the project, we will concurrently develop and
+fine-tune the UI for human-multi-robot interaction and the
+multi-robot control algorithms through an iterative process.
+The iterative process combined with periodic feedback from
+end-users will help ensure the effectiveness and usability of
+the developed solutions in real-world scenarios.
+IV. USE CASE: MULTI-DRONE SEARCH & RESCUE
+Progress within the field of drone technology has provided
+a general platform for sensing for both civil and commercial
+use, which has pushed the capabilities of what single-drone
+systems can achieve. Our work in the HERD project focuses on enabling the use of multiple autonomous Unmanned
+Aerial Vehicles (UAVs) for SAR operations in close collaboration with Robotto and The Danish Emergency Management
+Agency (DEMA). SAR operations often have a duration of
+several hours. Due to the limited flight time of UAVs, which
+is currently a few tens of minutes, an autonomous multi-robot
+system needs to take the UAV flight time into account during
+pre-operation and on-the-fly planning [8]. The batteries will
+eventually deplete and have to be replaced or charged.
+A SAR operation's success is highly dependent on elapsed
+time, and it is essential that the available resources are
+distributed efficiently to minimize the time of the SAR operation [9] as the chance of the distressed person surviving
+decreases rapidly with time [10]. In our ongoing work, we are
+focusing on minimizing the SAR operation time by enabling
+the operator to effectively configure and control the search
+effort for multiple, autonomous drones.
+In SAR operations, the search strategy is vital and will
+change from one mission to another, either based on operator
+preferences or the strategy might change based on any available knowledge about the distressed person's condition, the
+search area's geographical topology, and so on. It is therefore
+important that the operator has the right tools to easily alter the
+strategy of the autonomous UAVs, collectively, individually, or
+by taking manual control of a single UAV.
+SAR operations are often conducted in unstructured, natural
+environments, and priorities can change frequently based on
+new information received from external sources and on the
+results of the ongoing search. The new information can lead
+to modification of the search area, the direction of search,
+or even the search strategy [11]. In our ongoing work, we are
+developing a UI that enables the operator to efficiently change
+the behavior of the multi-drone system and respond to the flow
+of information about the complex state of a SAR operation.
+This will require multi-robot path planning algorithms that are
+highly flexible and can accommodate the variability of natural
+environments, frequently changing task specifications, and the
+dynamic removal and addition of UAVs to the search effort.
+The search area is commonly specified as a polygon, along
+with any interior no-fly zones. The area is divided into
+non-intersecting regions called cells using a decomposition
+technique [11]-[13]. A common method for creating coverage plans of a polygonal area is the boustrophedon/snake
+pattern [12], and has been widely used for pre-operation
+planning in SAR operations [8], [13], [14]. This search pattern
+is especially attractive because it is easily understandable
+for the operator and can be optimized for quad-rotor UAVs
+by minimizing the number of turns in the coverage pattern,
+which effectively reduces the time of the operation [15].
+An alternative to these methods is formation flying which
+is another well-known technique in swarm robotics [16] and
+search & rescue [17], and is efficient for covering a large area
+continuously and provides robustness to failures of individual
+agents within the swarm. Our work focuses on designing dynamic multi-drone planning and coordination algorithms that
+are robust to changes in the environment and in the number
+of UAVs participating in the search, while still providing the
+operator with situational awareness.
+Our current prototype allows the user to see active drones on
+a map and to allocate multiple drones to the same destination.
+We conducted a pilot study where two senior sergeants from
+Fig. 3: Early UI prototype for multi-drone control in SAR
+operations
+DEMA provided their feedback on the prototype, and Fig. 3
+is an iteration of the UI based on their feedback. Initial results
+are presented in [18], with findings that suggest some level of
+UAV autonomy beyond search is needed to safely incorporate
+our solution in a real-world SAR environment, as independent
+actors such as helicopters and other search personnel will be
+present in the search area. One of the senior sergeants also
+raised concerns about an operator's ability to reliably examine
+video data from multiple drones in real-time, which could lead
+to load-induced image blindness. In order for a multi-drone
+system to work well, we will study how to provide situational
+awareness of not only the drones' behavior, but also determine
+when and in what way to process and present the camera
+feeds [19], [20].
+V. CONCLUSIONS
+In this paper, we have discussed our ongoing work on
+enabling end-users to effectively engage and control multirobot systems in real-world outdoor scenarios in the context
+of the HERD project. The HERD project started in November
+2021 and will finish in July 2025. By the end of the project,
+we expect to have conducted multiple field experiments with
+our industrial partners using the technologies developed in
+the project along with their hardware platforms. The field
+experiments are intended to demonstrate the effectiveness of
+the solutions and to identify additional improvements. We
+expect the solutions developed in the project and findings
+from the evaluations will have a direct impact on the products
+and services of the partner organizations and lead to increased
+efficiencies in agriculture and more effective search & rescue
+operations.

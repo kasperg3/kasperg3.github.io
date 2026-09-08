@@ -10,8 +10,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=974e5dde">
-<link rel="stylesheet" href="/search/search.css?v=4">
+<link rel="stylesheet" href="/site/site.css?v=aa0af2e6">
+<script>try{var t=localStorage.getItem("deck-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/search/search.css?v=7">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
@@ -24,12 +25,16 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <div class="wrap">
     <a class="brand" href="/">Kasper <span>Grøntved</span></a>
     <nav class="main">
-      <a href="/projects.html">Projects</a>
       <a href="/knowledge/">Knowledge</a>
       <a href="/publications.html">Publications</a>
       <a href="/cv.html">CV</a>
       <a href="/search/" aria-current="page">Search</a>
     </nav>
+    <button class="theme" id="theme" type="button" aria-pressed="false"
+            aria-label="Switch to dark mode">
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.2 12H2M22 12h-2.2M6.5 6.5 5 5M19 19l-1.5-1.5M17.5 6.5 19 5M5 19l1.5-1.5"/></svg>
+    </button>
   </div>
 </header>
 
@@ -58,7 +63,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
                placeholder="how do drones divide up a search area?">
         <button id="clear" class="sp-clear" type="button" hidden aria-label="Clear the search">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
+    </button>
       </div>
 
       <div class="sp-ac" id="ac" hidden>
@@ -94,7 +99,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <!-- ============ the breakdown ============ -->
   <section class="sp-breakdown">
     <div class="sec-head"><h2>What just happened</h2>
-      <span class="sec-note" id="corpus-note">78 passages · 30,522 dimensions</span></div>
+      <span class="sec-note" id="corpus-note">203 passages · 30,522 dimensions</span></div>
 
     <p class="sp-picker-label" id="picker-label" hidden>Dissecting result</p>
     <div class="sp-picker sp-scroll" id="picker" role="tablist"
@@ -625,7 +630,8 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     so the exhaustive totals are an upper bound on a plan nobody executes. And the difference
     between an architecture's cost and this script's: the learned-sparse row is the idealised sparse
     dot product as an inverted index would pay it, whereas <code>splade.js</code> is brute force
-    over all 78 passages, because at this corpus size an index would buy nothing. Transformer passes
+    over every passage in the index, because at this corpus size an index would buy nothing.
+    Transformer passes
     are counted as 2&nbsp;&middot;&nbsp;params&nbsp;&middot;&nbsp;tokens, which overstates by roughly
     a third &mdash; embeddings are gathers, not multiply-adds &mdash; and the document lengths are
     MS MARCO's, held constant across every corpus setting including this site's own.</p>
@@ -659,8 +665,8 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <div class="prose">
       <p>The query weights are <strong>static MS MARCO term weights</strong> — a learned IDF, fixed
       at training time. They know <em>drone</em> is more discriminative than <em>system</em> in
-      general; they know nothing about this corpus. On 78 passages that is fine, and it is why no
-      model is needed at query time.</p>
+      general; they know nothing about this corpus. On <span data-corpus-n>78</span> passages that
+      is fine, and it is why no model is needed at query time.</p>
 
       <p>The model is <strong>English-only</strong>, and it expands documents rather than reasoning
       about them. It has no idea <code>Grøntved</code> is a name — it sees
@@ -684,27 +690,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 </div>
 </main>
 
-<footer class="site">
-  <div class="wrap">
-    <div class="col">
-      <strong style="font:600 16px/1 var(--sans)">Kasper Rømer Grøntved</strong>
-      <p class="fine">Machine learning for search, run on European infrastructure. Odense, Denmark.</p>
-    </div>
-    <div class="col">
-      <a href="/projects.html">Projects</a>
-      <a href="/publications.html">Publications</a>
-      <a href="/cv.html">CV</a>
-      <a href="/knowledge/">Knowledge</a>
-      <a href="/search/">Search</a>
-    </div>
-    <div class="col">
-      <a href="https://github.com/kasperg3">GitHub</a>
-      <a href="https://www.linkedin.com/in/kaspergrontved/">LinkedIn</a>
-      <a href="https://scholar.google.com/citations?user=NuJ_4VAAAAAJ&amp;hl=en">Google Scholar</a>
-    </div>
-  </div>
-</footer>
-
 <script type="module" src="/search/search-ui.js?v=3"></script>
+<script type="module" src="/site/theme.js?v=1"></script>
 </body>
 </html>

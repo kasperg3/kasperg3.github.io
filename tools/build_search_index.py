@@ -45,9 +45,16 @@ QRY_SCALE = 1000
 TOP_TERMS = 160        # keep at most this many activated terms per document
 MIN_WEIGHT = 0.05      # ...and drop anything below this before the cut
 
-# `cv-fact` rows (Skills: Languages -> "Python · C / C++ · Rust") are
-# `·`-separated list fragments, not passages. SPLADE produces noise from them.
-INCLUDE_CV_FACTS = False
+# The Skills / Research output / Contact blocks are `dl.kv` rows. Indexed one
+# row at a time they are `·`-separated fragments rather than passages, and
+# SPLADE makes noise of them — which is why they were skipped entirely. Indexed
+# one *section* at a time, with the separators read as prose, they are ordinary
+# passages and the only place on the site that answers "what does he work in".
+CV_FACT_SECTIONS = {
+    "Skills": "cv-skills",
+    "Research output": "cv-research-output",
+    "Contact": "cv-contact",
+}
 
 # A slide with fewer words than this is a divider (title / section / closing),
 # not content.
@@ -83,6 +90,7 @@ SLUG_MAP = {
         "project-sarenv",
         "project-hopdatabase",
     ],
+    "cv-facts": ["cv-skills", "cv-research-output", "cv-contact"],
     "cv-role": [
         "cv-colourbox",
         "cv-esoft",
@@ -246,6 +254,69 @@ def require_anchors(found: list, kind: str) -> None:
         )
 
 
+# Full paper text, indexed but never served. A paper's abstract says what it
+# claims; the body says how. Splitting on the numbered headings gives passages
+# the size of the rest of the corpus, each one deep-linking to the paper it came
+# from — there are no in-page anchors for sections, and inventing some would be
+# a promise the HTML does not keep.
+FULLTEXT = REPO / "content" / "publications"
+SECTION_RE = re.compile(r"^ *(?:[0-9]+(?:\.[0-9]+)*\.?|[IVXL]+\.)\s+([A-Z][^\n]{2,60})$")
+SECTION_MAX = 1800   # characters; the document encoder truncates near 512 tokens
+SECTION_MIN = 220    # below this a section is a stub — a figure caption or a header
+
+
+def read_sections(path: Path) -> list:
+    """Split a paper into (heading, body) pairs on its numbered headings."""
+    out, head, buf = [], None, []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = SECTION_RE.match(line.rstrip())
+        if m:
+            if head and buf:
+                out.append((head, "\n".join(buf)))
+            head, buf = m.group(1).strip(), []
+        elif head:
+            buf.append(line)
+    if head and buf:
+        out.append((head, "\n".join(buf)))
+    return out
+
+
+def fit(para: str, limit: int) -> list:
+    """A single paragraph past the limit is broken between sentences instead.
+
+    pdftotext output is not reliably paragraphed — a whole section can arrive as
+    one block — so packing paragraphs alone leaves passages the encoder would
+    truncate.
+    """
+    if len(para) <= limit:
+        return [para]
+    out, cur = [], ""
+    for sent in re.split(r"(?<=[.!?])\s+", para):
+        if cur and len(cur) + len(sent) + 1 > limit:
+            out.append(cur)
+            cur = sent
+        else:
+            cur = f"{cur} {sent}".strip()
+    if cur:
+        out.append(cur)
+    return out
+
+
+def chunk(text: str, limit: int = SECTION_MAX) -> list:
+    """Pack paragraphs up to the limit, breaking between them where possible."""
+    parts, cur = [], ""
+    for para in (p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()):
+        for piece in fit(para, limit):
+            if cur and len(cur) + len(piece) + 1 > limit:
+                parts.append(cur)
+                cur = piece
+            else:
+                cur = f"{cur} {piece}".strip()
+    if cur:
+        parts.append(cur)
+    return parts
+
+
 def extract_publications() -> list:
     root = parse(REPO / "publications.html")
     docs, pub_ids, thesis_ids, sup_ids = [], [], [], []
@@ -275,6 +346,27 @@ def extract_publications() -> list:
                 meta=normalise(f"{meta_txt} · {year}" if year else meta_txt),
                 text=normalise(f"{title}. {venue}. {body}"),
             ))
+
+            # …then the body of the paper, where a full text is available.
+            source = FULLTEXT / f"{slug}.txt"
+            if source.exists():
+                n = 0
+                for head, section in read_sections(source):
+                    # chunk() splits on blank lines, so it has to see the raw
+                    # text — normalise() collapses newlines and would hand it
+                    # one unbreakable paragraph.
+                    for raw in chunk(section):
+                        part = normalise(raw)
+                        if len(part) < SECTION_MIN:
+                            continue
+                        n += 1
+                        docs.append(Doc(
+                            id=f"{slug}-s{n:02d}", kind="paper-section",
+                            title=normalise(head),
+                            url=f"/publications.html#{slug}",
+                            meta=normalise(f"{title} · {venue}"),
+                            text=normalise(f"{head}. {part}"),
+                        ))
 
     # -- theses and supervision, as dt/dd pairs -----------------------------
     for section in main.find_all("section"):
@@ -337,7 +429,7 @@ def extract_projects() -> list:
 
 def extract_cv() -> list:
     root = parse(REPO / "cv.html")
-    docs, role_ids = [], []
+    docs, role_ids, fact_ids = [], [], []
     main = root.find("main")
 
     for section in main.find_all("section"):
@@ -367,27 +459,30 @@ def extract_cv() -> list:
                 ))
             continue
 
-        if not INCLUDE_CV_FACTS:
-            continue
+        slug = CV_FACT_SECTIONS.get(label)
         dl = section.find("dl", "kv")
-        if dl is None:
+        if slug is None or dl is None:
             continue
-        pending = None
+        fact_ids.append(section.attrs.get("id", ""))
+        rows, pending = [], None
         for child in dl.children:
             if not isinstance(child, Node):
                 continue
             if child.tag == "dt":
                 pending = child.text()
             elif child.tag == "dd" and pending is not None:
-                slug = f"cv-fact-{re.sub(r'[^a-z0-9]+', '-', pending.lower()).strip('-')}"
-                docs.append(Doc(
-                    id=slug, kind="cv-fact", title=normalise(pending),
-                    url="/cv.html", meta=normalise(label),
-                    text=normalise(f"{pending}: {child.text()}"),
-                ))
+                # "Python · C / C++ · Rust" is a list read aloud as a sentence.
+                rows.append(f"{pending}: {child.text().replace(' · ', ', ')}.")
                 pending = None
+        if rows:
+            docs.append(Doc(
+                id=slug, kind="cv-facts", title=normalise(label),
+                url=f"/cv.html#{slug}", meta="CV",
+                text=normalise(f"{label}. " + " ".join(rows)),
+            ))
 
     require_anchors(role_ids, "cv-role")
+    require_anchors(fact_ids, "cv-facts")
     return docs
 
 
@@ -451,6 +546,32 @@ def report(docs: list) -> None:
     for d in docs:
         print(f"  {d.url:<48} {words(d.text):>5}w  {d.title[:52]}")
     print()
+
+
+def write_corpus(docs: list, out: Path) -> None:
+    """Write the passages without their vectors, keyed by id.
+
+    The answer worker grounds a generated answer in whatever the browser
+    retrieved, so it needs titles, urls and snippets — and has no use for the
+    postings, which are four fifths of index.json. This belongs to the
+    extraction stage rather than the encoding one, so it regenerates in a
+    second with `--dry-run` and never needs torch. The index is the expensive
+    artefact; the corpus is a projection of it.
+    """
+    out.mkdir(parents=True, exist_ok=True)
+    corpus = {}
+    for d in docs:
+        entry = {k: v for k, v in d.as_index_entry().items() if k != "id"}
+        # `snippet` is 240 characters because that is a sensible thing to show.
+        # The answer worker needs the passage it was scored on, not its opening
+        # sentence, so carry the text as well and let each side take what it
+        # wants. This is the difference between the model reading a passage and
+        # reading the start of one.
+        entry["text"] = d.text
+        corpus[d.id] = entry
+    (out / "corpus.json").write_text(
+        json.dumps(corpus, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"  {'corpus.json':<22}{(out / 'corpus.json').stat().st_size:>10,} B\n")
 
 
 # ---------------------------------------------------------------------------
@@ -586,6 +707,7 @@ def main() -> None:
 
     docs = extract_all()
     report(docs)
+    write_corpus(docs, REPO / args.out)
     if args.dry_run:
         return
     encode(docs, REPO / args.out)

@@ -394,8 +394,13 @@ addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => drawStrip(stripDoc), 120);
 });
-// The strip is painted from CSS custom properties, so it has to be repainted
-// when the OS theme flips underneath it.
+// The strip is painted into a canvas from CSS custom properties, so it has to be
+// repainted whenever those change. The site used to follow the OS, and this
+// listened for that; it now opens light with dark opted into via [data-theme] on
+// the root, so watching the media query alone left the strip in the old palette
+// until something else forced a redraw.
+new MutationObserver(() => drawStrip(stripDoc))
+  .observe(document.documentElement, { attributeFilter: ['data-theme'] });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => drawStrip(stripDoc));
 
 // Arriving with ?q= (from the front page, or a shared link) loads immediately;
