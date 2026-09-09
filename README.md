@@ -9,7 +9,7 @@ the repo as-is to Pages.
 ## Layout
 
 ```
-index.html              landing page (masthead, fact bar, Ask this site, the Contents list that is the site's navigation)
+index.html              landing page (masthead, fact bar, then a board of tiles: Ask this site, the featured lecture, the four pages, the latest post)
 publications.html       full publication list with abstracts
 cv.html                 CV in HTML  ·  assets/cv/cv.pdf is the downloadable version
 404.html
@@ -46,10 +46,9 @@ with `_`, which would break `knowledge/_template/`.
 
 ## Navigation
 
-There is no navigation bar. The front page is the map: its **Contents** list
-(`index.html`, `#explore`) has one entry per page, set like a table of contents, with the
-featured lecture and the latest post as sub-entries under Knowledge. That list is the whole
-of the site's navigation. Every other page carries a slim, non-sticky header with the brand (home) and a single
+There is no navigation bar. The front page is the map: the board of tiles below the fact
+bar (`index.html`, `#explore`) has one tile per page, and those tiles are the whole of the
+site's navigation. Every other page carries a slim, non-sticky header with the brand (home) and a single
 *Explore the site →* link back to that list — so adding a page means adding a row to the list, not
 editing a menu on every page. `projects.html` is retired and deliberately not in the list.
 

@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=eec66012">
-<link rel="stylesheet" href="/search/search.css?v=9">
+<link rel="stylesheet" href="/site/site.css?v=354f653b">
+<link rel="stylesheet" href="/search/search.css?v=10">
 <noscript><style>/* the conversation cannot work without scripting */
 .asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
 <script type="application/ld+json">
@@ -62,76 +62,80 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </div>
 
-  <!-- Below the fact bar: a contents page. No cards, only type and hairlines.
-       Left, the conversation: one ruled line to write on. Right, the contents
-       of the site, set like a table of contents with dotted leaders; the
-       featured lecture and the latest post are sub-entries under Knowledge.
-       There is no menu bar; every other page links back to #explore. -->
-  <div class="front">
+  <!-- Below the fact bar: one board of tiles, one gap, one radius. The
+       conversation is the large tile; the featured lecture is the dark one and
+       carries the deck's own argument as its figure; the four pages are the
+       second row and are the site's navigation. There is no menu bar; every
+       other page links back to #explore. -->
+  <div class="bento" id="explore">
 
     <!-- Ask this site: a conversation, not a search box. Retrieval still runs
          entirely in the browser and is still the whole of the feature; the thread
          is only what makes it legible. Each question is retrieved and answered on
          its own, so nothing here implies a memory it does not have, and the
          scoring behind any answer is one press away in the modal. -->
-    <section class="asksite" id="ask" aria-labelledby="ask-title">
-      <h2 class="ask-title" id="ask-title">Ask this site</h2>
-      <p class="ask-lede">Every answer is built from these pages: the papers, the slides and the CV,
+    <section class="tile t-ask asksite" id="ask" aria-labelledby="ask-title">
+      <div class="kick">Ask this site</div>
+      <h2 class="ask-title" id="ask-title">What would you like to know?</h2>
+      <p class="ask-lede">Every answer is built from these pages, the papers, the slides and the CV,
       retrieved in your browser and cited passage by passage.</p>
 
       <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
 
-      <form class="composer" id="hform" autocomplete="off">
-        <label for="hq" class="skip">Ask this site a question</label>
-        <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
-               placeholder="What would you like to know?">
-        <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
-        </button>
-      </form>
-
       <div class="chat-tries" id="htries" aria-label="Questions to try">
-        <span>Try</span>
         <button class="sp-ex" type="button">How do drones divide up a search area?</button>
         <button class="sp-ex" type="button">What is late interaction?</button>
         <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
       </div>
       <noscript><p class="ask-note">The conversation needs JavaScript; the rest of the site does not.</p></noscript>
+
+      <form class="composer" id="hform" autocomplete="off">
+        <label for="hq" class="skip">Ask this site a question</label>
+        <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
+               placeholder="Ask about the research, the search, or the CV">
+        <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
+        </button>
+      </form>
     </section>
 
-    <nav class="toc" id="explore" aria-labelledby="toc-title">
-      <div class="toc-head"><h2 id="toc-title">Contents</h2><span>04 chapters</span></div>
-      <ol>
-        <li>
-          <a href="/knowledge/">
-            <span class="n">01</span><span class="t">Knowledge</span><span class="lead" aria-hidden="true"></span>
-            <span class="d">Talks, decks, writing</span>
-          </a>
-          <ul class="sub">
-            <li><a href="/knowledge/ml-and-data-at-colourbox/"><span class="k">Featured lecture</span>ML and Data at Colourbox<span class="arw">→</span></a></li>
-            <li><a href="/blog/inference-free-splade/"><span class="k">Latest post</span>Semantic search for the price of a git push<span class="arw">→</span></a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="/publications.html">
-            <span class="n">02</span><span class="t">Publications</span><span class="lead" aria-hidden="true"></span>
-            <span class="d">Peer-reviewed work</span>
-          </a>
-        </li>
-        <li>
-          <a href="/cv.html">
-            <span class="n">03</span><span class="t">CV</span><span class="lead" aria-hidden="true"></span>
-            <span class="d">Roles and education</span>
-          </a>
-        </li>
-        <li>
-          <a href="/search/">
-            <span class="n">04</span><span class="t">Search</span><span class="lead" aria-hidden="true"></span>
-            <span class="d">Vectors on screen</span>
-          </a>
-        </li>
-      </ol>
-    </nav>
+    <!-- The featured lecture. Its figure is the deck's own thesis: one query
+         holds several independent constraints, so give each one its own vector
+         rather than pooling them into one. -->
+    <a class="tile t-feat" href="/knowledge/ml-and-data-at-colourbox/">
+      <div class="kick">Featured lecture · 32 slides</div>
+      <h3>ML and Data at Colourbox</h3>
+      <p>Why cold starts are hard when the open Danish data does not exist yet, what a DAM archive
+      actually contains, and how dense embeddings and late interaction split the work.</p>
+      <div class="clue" aria-hidden="true">
+        <p class="clue-q">"two people laughing in a bright office, wide shot, copy space on the left"</p>
+        <div class="clue-chips"><span>2 people</span><span>laughing</span><span>office</span><span>wide shot</span><span>copy space left</span></div>
+        <div class="clue-row">
+          <div class="clue-vecs">
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+          </div>
+          <p class="clue-cap">Five constraints, five vectors. Nothing gets averaged.</p>
+        </div>
+      </div>
+      <span class="go">Explore the deck →</span>
+    </a>
+
+    <a class="tile t-page" href="/knowledge/"><div class="n">01</div><h3>Knowledge</h3><p>Talks, slide decks and writing</p><span class="go">→</span></a>
+    <a class="tile t-page" href="/publications.html"><div class="n">02</div><h3>Publications</h3><p>Peer-reviewed robotics and AI work</p><span class="go">→</span></a>
+    <a class="tile t-page" href="/cv.html"><div class="n">03</div><h3>CV</h3><p>Roles, education and research stays</p><span class="go">→</span></a>
+    <a class="tile t-page" href="/search/"><div class="n">04</div><h3>Search</h3><p>The whole site, with the vectors showing</p><span class="go">→</span></a>
+
+    <a class="tile t-post" href="/blog/inference-free-splade/">
+      <div class="kick">Latest post · 9 min</div>
+      <h3>Semantic search for the price of a git push</h3>
+      <p>Dense retrieval, SPLADE and late interaction side by side, and how a semantic search runs
+      from three static files with no server.</p>
+      <span class="go">Read the post →</span>
+    </a>
 
   </div>
 
