@@ -295,8 +295,7 @@
 
 /* the composer: the tile's footer. The field and the button share one
    outlined box, so the place to type reads as a single control. */
-.composer{display:block;margin:auto 0 0;padding:14px 18px 18px;
-          border-top:1px solid var(--hair-soft);background:var(--canvas)}
+.composer{display:block;margin:auto 0 0;padding:10px 24px 22px;background:var(--card)}
 .composer-box{display:flex;align-items:center;gap:8px;background:var(--card);
               border:1.5px solid var(--faint);border-radius:12px;padding:4px 4px 4px 14px;
               transition:border-color .16s,box-shadow .16s}
@@ -375,7 +374,7 @@
 @media (max-width:480px){
   .ask-head{padding:16px 18px 14px}
   .ask-body{padding:14px 18px 2px}
-  .composer{padding:12px 14px 14px}
+  .composer{padding:8px 18px 18px}
   .composer-box{padding-left:12px}
   .composer input{font-size:15px}
   .composer-send{width:38px;height:38px}
