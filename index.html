@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=ebffb497">
-<link rel="stylesheet" href="/search/search.css?v=11">
+<link rel="stylesheet" href="/search/search.css?v=12">
 <noscript><style>/* the conversation cannot work without scripting */
 .asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
 <script type="application/ld+json">
@@ -98,11 +98,13 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
       <form class="composer" id="hform" autocomplete="off">
         <label for="hq" class="skip">Ask this site a question</label>
-        <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
-               placeholder="Ask about the research, the search, or the CV">
-        <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
-        </button>
+        <div class="composer-box">
+          <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
+                 placeholder="Ask about the research, the search, or the CV">
+          <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
+          </button>
+        </div>
       </form>
     </section>
 

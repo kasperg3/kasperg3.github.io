@@ -293,17 +293,19 @@
 .asksite .sp-ex:hover{color:var(--accent);padding-left:12px}
 .asksite .sp-ex:hover::after{color:var(--accent)}
 
-/* the composer: the tile's footer */
-.composer{display:flex;align-items:center;gap:10px;margin:auto 0 0;padding:14px 18px 18px;
+/* the composer: the tile's footer. The field and the button share one
+   outlined box, so the place to type reads as a single control. */
+.composer{display:block;margin:auto 0 0;padding:14px 18px 18px;
           border-top:1px solid var(--hair-soft);background:var(--canvas)}
-.composer input{flex:1;min-width:0;outline:none;background:var(--card);color:var(--ink);
-                border:1px solid var(--hair);border-radius:10px;padding:12px 14px;
-                font:400 15.5px/1.5 var(--sans);text-overflow:ellipsis;
-                transition:border-color .16s,box-shadow .16s}
+.composer-box{display:flex;align-items:center;gap:8px;background:var(--card);
+              border:1.5px solid var(--faint);border-radius:12px;padding:4px 4px 4px 14px;
+              transition:border-color .16s,box-shadow .16s}
+.composer-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-faint)}
+.composer input{flex:1;min-width:0;border:0;outline:none;background:transparent;color:var(--ink);
+                font:400 15.5px/1.5 var(--sans);padding:10px 0;text-overflow:ellipsis}
 .composer input::placeholder{color:var(--faint)}
-.composer input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-faint)}
-.composer-send{flex:none;display:grid;place-items:center;width:46px;height:46px;
-               border:0;border-radius:10px;cursor:pointer;background:var(--accent);color:#fff}
+.composer-send{flex:none;display:grid;place-items:center;width:40px;height:40px;
+               border:0;border-radius:9px;cursor:pointer;background:var(--accent);color:#fff}
 .composer-send:hover:not(:disabled){filter:brightness(1.08)}
 .composer-send:disabled{opacity:.35;cursor:default}
 .composer-send svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;
@@ -374,8 +376,9 @@
   .ask-head{padding:16px 18px 14px}
   .ask-body{padding:14px 18px 2px}
   .composer{padding:12px 14px 14px}
-  .composer input{font-size:15px;padding:11px 12px}
-  .composer-send{width:42px;height:42px}
+  .composer-box{padding-left:12px}
+  .composer input{font-size:15px}
+  .composer-send{width:38px;height:38px}
   .sp-opt{gap:0 10px;padding:10px}
   .sp-rank{width:23px;height:23px;font-size:11.5px}
   .sp-opt-title{font-size:14.5px}
