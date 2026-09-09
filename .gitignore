@@ -1,6 +1,11 @@
 _site/
 *.lock
 tools/__pycache__/
+.claude/skills/*/scripts/__pycache__/
+
+# Renders of an imported source deck: the parity reference while writing a
+# deck, not part of the site.
+knowledge/*/.source-pages/
 
 # Cloudflare Worker (worker/) — local state and the plaintext Mistral key.
 node_modules/

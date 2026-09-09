@@ -175,7 +175,8 @@ screenshot of a formula is not acceptable. Place the explanation in cards beside
 Diagrams: the reference deck builds pipelines out of `.card`s in a `.cols` row with arrow
 glyphs, or hand-written inline SVG using `fill="var(--accent)"`. Redraw a Google Slides
 flow chart this way rather than pasting a screenshot of it, so the text stays searchable
-and the palette stays consistent. Existing SVG figures live in `knowledge/_shared/figures/`;
+and the palette stays consistent. This applies to diagrams whose content is words in
+boxes, not to figures that carry data. Existing SVG figures live in `knowledge/_shared/figures/`;
 reuse them when the topic overlaps.
 
 ## 5. Card semantics
@@ -228,10 +229,12 @@ What a Google Slides export contains and what it becomes here.
 | Section number chrome (`00 /`, `01 /`), overview markers (`◳ overview`), footers, slide numbers | Drop. The engine numbers slides and the kicker carries the running header |
 | An uppercase label plus a subtitle at the top | Label becomes the kicker, subtitle becomes the `h1`, rewritten as a claim |
 | A numbered feature list (01 … 04, each with a heading and a line) | Recipe C, `.grid-4` or two rows of `.grid-2`. The numbers go, or become `.cap` |
-| A flow chart of boxes and arrows | Redraw: `.cols` of `.card`s with `→` between, or inline SVG. Never a screenshot of text |
+| A flow chart of boxes and arrows | Redraw: `.cols` of `.card`s with `→` between, or inline SVG. Never a screenshot of text. Write the extracted image off in the manifest, naming the slide that replaced it |
 | A bullet list of more than five | Split across slides or promote the strongest three to cards |
 | A formula slide | Recipe F; HTML maths, explanation in cards |
-| A screenshot or photo with a caption | Recipe A, `img.zoom`, `figcaption` with provenance |
+| A screenshot or photo with a caption | Recipe A, `img.zoom`, `figcaption` with provenance. The image comes over as it was |
+| A plot, a chart with data, a simulation render, a map | Recipe A with the figure taking the width. Place the extracted image; do not redraw a measurement |
+| A chart, a SmartArt block or a drawing the file stores as shapes | Already cropped out of the slide render as `sNN-drawing-N.webp`. Use it, or redraw it and write it off |
 | "Demo time" with a URL | A `.section` slide; the URL as a link in `.sub`; the demo plan in `.notes` |
 | Material icon names leaking into text (`trending_up`, `verified_user`, `place`) | Drop them; they were icons |
 | Emoji and ✓ ✕ ? markers in a diagram | Use `--good` / `--bad` coloured text or drop |
@@ -245,8 +248,11 @@ report at the end says what moved.
 
 ## 9. Images
 
+The rewriting stops at the picture frame. A figure that was on a source slide is on a slide
+here, showing the same thing at a size the room could read.
+
 - Everything lives in `knowledge/<slug>/assets/`. Rename from `s10-image4.png` to what it shows: `tagger-example.webp`, `pipeline.svg`.
-- Re-encode anything over 300 KB or wider than 1800 px before committing (README, Images):
+- The importer has already cropped, rotated, deduplicated and re-encoded what it extracted. Re-encode by hand only what the outline still lists as too large (over 300 KB or 1800 px):
   ```bash
   python3 -c "
   from PIL import Image
@@ -255,19 +261,24 @@ report at the end says what moved.
   ```
   Screenshots of UI stay PNG if they contain small text and are under the limit.
 - Every `img` has an `alt`. `class="zoom"` on anything the audience would want to see larger.
-- A tiny image (under 1 KB) in the export is a spacer or a bullet glyph. Drop it.
+- Give a figure the room it had. A plot that filled two thirds of the source slide is the slide's subject here too (recipe A with `figure.grow`), not a 300 px thumbnail beside three cards.
+- A tiny image (under 1 KB) in the export is a spacer or a bullet glyph, and the importer has already written it off. So are corner logos.
 - Do not embed the speaker photo again; link the existing one.
-- **A figure you cannot get yet** gets a placeholder in the figure's slot, so the layout is final
-  and the checker counts what is missing:
+- **Redraw a diagram, never a measurement.** Labelled boxes and arrows become `.cols` of `.card`s or inline SVG, and the source image gets written off in `assets/source-images.json` with the slide that replaced it. A plot, a data chart, a screenshot, a photo, a simulation render or a map is evidence: place the image. Redrawing one from the numbers you think you see in it invents data.
+- **A figure the source deck did not have yet** gets a placeholder, so the layout is final and the checker counts what is missing:
   ```html
   <figure style="flex:0 0 620px;min-height:0">
-    <div class="fig-todo"><span class="todo">Range plot from the defence deck (source slide 30)</span></div>
+    <div class="fig-todo"><span class="todo">Range plot, to come from the follow-up experiment</span></div>
     <figcaption>What the figure will show, with provenance.</figcaption>
   </figure>
   ```
   with, in the deck's `<style>`: `.fig-todo{flex:1;min-height:360px;display:flex;align-items:center;
   justify-content:center;text-align:center;border:2px dashed var(--hair);border-radius:18px;padding:32px;
   color:var(--faint);font:400 20px/1.5 var(--sans)}`.
+
+  A placeholder for a figure that was on the source slide is a bug. The extractor either
+  wrote that image out already or cropped it out of the slide render, and
+  `crop_figure.py` gets the ones it missed.
 
 ## 10. Gotchas the engine cannot catch
 
