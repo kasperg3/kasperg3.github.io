@@ -104,7 +104,14 @@ cp -r knowledge/_template knowledge/my-new-talk
 # edit knowledge/my-new-talk/index.html
 # add a card to knowledge/index.html (Featured or Archive)
 # add the URL to sitemap.xml
+# add ("my-new-talk", "Title") to DECKS in tools/build_search_index.py
 ```
+
+To port a Google Slides deck, use the `import-slides` skill in `.claude/skills/`: it exports the
+presentation, extracts text, notes and images with `scripts/extract_pptx.py`, and lays down the
+house style from `references/style-guide.md`. `scripts/check_deck.py` validates a deck against
+the engine rules and the writing rules in `CLAUDE.md`; `scripts/snap_deck.sh` screenshots every
+slide with headless Chromium so overflow is caught before it is pushed.
 
 ### How the deck engine works
 

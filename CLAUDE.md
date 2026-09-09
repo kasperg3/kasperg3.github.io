@@ -3,6 +3,11 @@
 Plain static HTML site, no build step. `README.md` describes the layout, the search
 index build and the Cloudflare Worker; read it before touching `search/` or `worker/`.
 
+Decks under `knowledge/` share one visual language. To add one from Google Slides, a `.pptx`
+or a `.pdf`, use the `import-slides` skill (`.claude/skills/import-slides/`); for any new or
+edited deck, run its `scripts/check_deck.py` and look at `scripts/snap_deck.sh` output before
+committing.
+
 ## Writing rules for blog posts and page copy
 
 These apply to everything a reader sees: headings, prose, figure captions, table cells,
