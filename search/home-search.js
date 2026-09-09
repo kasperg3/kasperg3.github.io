@@ -130,6 +130,56 @@ function addFoot(turn, cited) {
   turn.node.scrollIntoView({ block: 'nearest' });
 }
 
+/**
+ * How long to wait, in words. The worker knows the exact second generation
+ * comes back; the reader only needs it to the nearest unit worth acting on, and
+ * a rounded number does not look wrong ten seconds after it is printed.
+ */
+function waitPhrase(secs) {
+  if (!Number.isFinite(secs) || secs <= 0) return '';
+  if (secs < 50) return `in about ${Math.max(5, Math.round(secs / 5) * 5)} seconds`;
+  if (secs < 3600) {
+    const m = Math.max(1, Math.round(secs / 60));
+    return `in about ${m} minute${m === 1 ? '' : 's'}`;
+  }
+  const h = Math.round(secs / 3600);
+  return `in about ${h} hour${h === 1 ? '' : 's'}`;
+}
+
+/**
+ * Every failure the worker returns is temporary and says so in retryAfter, so
+ * name the reason and when it lifts. "Could not generate an answer just now"
+ * is what is left when the worker did not get to speak at all — an origin it
+ * refuses, or a status from in front of it.
+ */
+function failNote(status, info) {
+  const when = waitPhrase(info?.retryAfter);
+  switch (info?.error) {
+    case 'ip daily limit':
+      return when
+        ? `That is every question you get today — your allowance resets ${when}.`
+        : 'That is every question you get today.';
+    case 'site daily limit':
+      return when
+        ? `The site has answered all the questions it will today — it resets ${when}.`
+        : 'The site has answered all the questions it will today.';
+    case 'rate limited':
+      return when
+        ? `You are asking faster than the model service allows — try again ${when}.`
+        : 'You are asking faster than the model service allows.';
+    case 'paused':
+    case 'upstream error':
+    case 'upstream unreachable':
+      return when
+        ? `Generated answers are paused while the model service recovers — try again ${when}.`
+        : 'Generated answers are paused while the model service recovers.';
+    default:
+      return status === 429
+        ? 'Asked too often just now.'
+        : 'Could not generate an answer just now.';
+  }
+}
+
 /** Retrieval still answered, even when generation did not. */
 function fallback(turn, hits, note) {
   const d = hits[0].doc;
@@ -202,10 +252,10 @@ async function ask(question) {
 
   if (!res.ok || !(res.headers.get('content-type') || '').includes('text/event-stream')) {
     clearTimeout(timer);
-    const note = res.status === 429
-      ? 'Asked too often just now.'
-      : 'Could not generate an answer just now.';
-    return done(turn, cited, () => fallback(turn, hits, note));
+    // The worker answers every failure with JSON that says which limit was hit
+    // and when it lifts, so read it rather than inferring from the status.
+    const info = await res.json().catch(() => null);
+    return done(turn, cited, () => fallback(turn, hits, failNote(res.status, info)));
   }
 
   // The worker passes Mistral's stream through untouched, which costs it no
