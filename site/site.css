@@ -165,20 +165,20 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
    content; the tiles are white so they lift off it. */
 .ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
   background:
-    radial-gradient(60% 38% at 82% -8%,color-mix(in srgb,var(--aurora-2) 34%,transparent),transparent 70%),
-    radial-gradient(48% 30% at 8% 4%,color-mix(in srgb,var(--aurora-1) 30%,transparent),transparent 70%),
-    radial-gradient(40% 26% at 58% 18%,color-mix(in srgb,var(--aurora-3) 18%,transparent),transparent 70%)}
-.ambient i{position:absolute;border-radius:50%;filter:blur(64px);opacity:.75;will-change:transform}
-.ambient i:nth-child(1){width:78vw;height:22vw;top:-9vw;left:6vw;transform:rotate(-13deg);
+    radial-gradient(85% 55% at 85% -12%,color-mix(in srgb,var(--aurora-2) 22%,transparent),transparent 80%),
+    radial-gradient(75% 48% at 4% 0%,color-mix(in srgb,var(--aurora-1) 20%,transparent),transparent 80%),
+    radial-gradient(70% 45% at 55% 20%,color-mix(in srgb,var(--aurora-3) 12%,transparent),transparent 80%)}
+.ambient i{position:absolute;border-radius:50%;filter:blur(120px);opacity:.5;will-change:transform}
+.ambient i:nth-child(1){width:96vw;height:34vw;top:-16vw;left:0;transform:rotate(-12deg);
   background:linear-gradient(90deg,transparent,
-    color-mix(in srgb,var(--aurora-1) 55%,transparent) 28%,
-    color-mix(in srgb,var(--aurora-2) 60%,transparent) 62%,
-    color-mix(in srgb,var(--aurora-3) 35%,transparent) 84%,transparent);
+    color-mix(in srgb,var(--aurora-1) 42%,transparent) 26%,
+    color-mix(in srgb,var(--aurora-2) 46%,transparent) 60%,
+    color-mix(in srgb,var(--aurora-3) 28%,transparent) 84%,transparent);
   animation:aurora-a 28s ease-in-out infinite alternate}
-.ambient i:nth-child(2){width:64vw;height:18vw;top:9vw;right:-12vw;transform:rotate(11deg);opacity:.6;
+.ambient i:nth-child(2){width:80vw;height:28vw;top:4vw;right:-18vw;transform:rotate(10deg);opacity:.38;
   background:linear-gradient(90deg,transparent,
-    color-mix(in srgb,var(--aurora-3) 45%,transparent) 36%,
-    color-mix(in srgb,var(--aurora-2) 55%,transparent) 70%,transparent);
+    color-mix(in srgb,var(--aurora-3) 36%,transparent) 36%,
+    color-mix(in srgb,var(--aurora-2) 42%,transparent) 70%,transparent);
   animation:aurora-b 36s ease-in-out infinite alternate}
 @keyframes aurora-a{to{transform:rotate(-9deg) translate(5vw,4vw)}}
 @keyframes aurora-b{to{transform:rotate(15deg) translate(-6vw,3vw)}}
