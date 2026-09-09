@@ -4,8 +4,11 @@
    the slide decks read as one thing.
    ============================================================ */
 :root{
-  --canvas:#f7f5f1;
-  --canvas-2:#f1eee8;
+  --canvas:#e9eff5;      /* cold: a pale, blue-grey ground */
+  --canvas-2:#dfe7ef;
+  --aurora-1:#3fbeb2;    /* the lights: teal, amber, rose */
+  --aurora-2:#f0a458;
+  --aurora-3:#d96b93;
   --ink:#15181d;
   --ink-2:#2f3a44;
   --muted:#57616d;
@@ -40,18 +43,18 @@ a:hover{color:var(--accent)}
 .skip{position:absolute;left:-9999px}
 .skip:focus{left:16px;top:16px;background:var(--card);padding:12px 18px;border-radius:8px;z-index:99}
 
-/* ---------- masthead ---------- */
-header.top{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);
-           background:var(--canvas);
-           border-bottom:1px solid var(--hair-soft)}
-header.top .wrap{display:flex;align-items:center;gap:28px;height:68px}
+/* ---------- slim header (sub-pages only) ----------
+   There is no navigation bar. Every other page carries only the brand, which
+   goes home, and one "Front page" link. It is a line, not a bar: it scrolls
+   away with the page and draws no border. The front page has no header at
+   all; the masthead is the header. */
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;
+                 padding-top:26px}
 .brand{font:600 19px/1 var(--serif);text-decoration:none;letter-spacing:-.01em;flex:none}
 .brand span{color:var(--accent)}
-nav.main{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
-nav.main a{font:500 15px/1 var(--sans);text-decoration:none;color:var(--muted);
-           padding:9px 14px;border-radius:8px}
-nav.main a:hover{background:var(--accent-faint);color:var(--accent)}
-nav.main a[aria-current="page"]{color:var(--ink);background:var(--hair-soft)}
+header.top .explore{display:inline-flex;align-items:center;gap:7px;font:500 14px/1 var(--sans);
+                    text-decoration:none;color:var(--muted);padding:8px 0;white-space:nowrap}
+header.top .explore:hover{color:var(--accent)}
 
 /* ---------- hero ---------- */
 .hero{padding:clamp(64px,10vw,124px) 0 clamp(48px,7vw,84px)}
@@ -155,11 +158,30 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
 /* ============================================================
    concise front page
    ============================================================ */
-.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.ambient i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
-.ambient i:nth-child(1){width:46vw;height:46vw;top:-14vw;right:-10vw;background:var(--accent-faint)}
-.ambient i:nth-child(2){width:38vw;height:38vw;bottom:-14vw;left:-12vw;
-                        background:color-mix(in srgb,var(--accent) 9%,transparent)}
+/* the ambient layer: northern lights over a cold ground. Two blurred ribbons
+   drift slowly; the container paints a third, still glow so the top of the
+   page is never flat. Everything here is decoration and stays behind the
+   content; the tiles are white so they lift off it. */
+.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+  background:
+    radial-gradient(85% 55% at 85% -12%,color-mix(in srgb,var(--aurora-2) 22%,transparent),transparent 80%),
+    radial-gradient(75% 48% at 4% 0%,color-mix(in srgb,var(--aurora-1) 20%,transparent),transparent 80%),
+    radial-gradient(70% 45% at 55% 20%,color-mix(in srgb,var(--aurora-3) 12%,transparent),transparent 80%)}
+.ambient i{position:absolute;border-radius:50%;filter:blur(120px);opacity:.5;will-change:transform}
+.ambient i:nth-child(1){width:96vw;height:34vw;top:-16vw;left:0;transform:rotate(-12deg);
+  background:linear-gradient(90deg,transparent,
+    color-mix(in srgb,var(--aurora-1) 42%,transparent) 26%,
+    color-mix(in srgb,var(--aurora-2) 46%,transparent) 60%,
+    color-mix(in srgb,var(--aurora-3) 28%,transparent) 84%,transparent);
+  animation:aurora-a 28s ease-in-out infinite alternate}
+.ambient i:nth-child(2){width:80vw;height:28vw;top:4vw;right:-18vw;transform:rotate(10deg);opacity:.38;
+  background:linear-gradient(90deg,transparent,
+    color-mix(in srgb,var(--aurora-3) 36%,transparent) 36%,
+    color-mix(in srgb,var(--aurora-2) 42%,transparent) 70%,transparent);
+  animation:aurora-b 36s ease-in-out infinite alternate}
+@keyframes aurora-a{to{transform:rotate(-9deg) translate(5vw,4vw)}}
+@keyframes aurora-b{to{transform:rotate(15deg) translate(-6vw,3vw)}}
+@media (prefers-reduced-motion:reduce){.ambient i{animation:none}}
 
 .hero.lead{padding:clamp(72px,13vh,150px) 0 clamp(40px,6vw,64px)}
 .hero.lead h1{font-size:clamp(36px,5.4vw,58px);max-width:26ch}
@@ -187,21 +209,13 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
 .featured p{color:var(--muted);font-size:16px;max-width:60ch}
 .featured .go{display:inline-block;margin-top:14px;font:500 14px/1 var(--sans);color:var(--accent)}
 
-/* index rows */
-.index-list{border-top:1px solid var(--hair-soft);margin-top:8px}
-.index-list a{display:flex;align-items:baseline;gap:18px;padding:22px 4px;text-decoration:none;
-              border-bottom:1px solid var(--hair-soft);transition:padding-left .16s}
-.index-list a:hover{padding-left:12px}
-.index-list .n{font:500 12px/1.6 var(--mono);color:var(--faint);flex:none;width:28px}
-.index-list .t{font:600 19px/1.4 var(--sans);color:var(--ink);flex:none}
-.index-list a:hover .t{color:var(--accent)}
-.index-list .d{color:var(--muted);font-size:16px}
-.index-list .arw{margin-left:auto;color:var(--faint);flex:none}
-.index-list a:hover .arw{color:var(--accent)}
-@media (max-width:620px){
-  .index-list a{flex-wrap:wrap;gap:6px 14px}
-  .index-list .d{flex-basis:100%;padding-left:46px}
-}
+/* writing rows — the posts on /knowledge/: date, serif title, one paragraph */
+.post-list{margin-top:8px}
+.post-list a{display:block;text-decoration:none;padding:26px 0;border-top:1px solid var(--hair-soft)}
+.post-list .when{font:500 12px/1 var(--mono);letter-spacing:.06em;color:var(--faint);display:block;margin-bottom:9px}
+.post-list h3{font:600 22px/1.3 var(--serif);color:var(--ink);letter-spacing:-.01em}
+.post-list a:hover h3{color:var(--accent)}
+.post-list p{color:var(--muted);font-size:16px;margin:8px 0 0;max-width:62ch}
 
 /* featured badge on a knowledge entry */
 .card .featured-badge,.featured .featured-badge{display:inline-flex;align-items:center;gap:6px;
@@ -209,11 +223,11 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
   background:var(--accent);border-radius:999px;padding:6px 11px;margin-bottom:12px;align-self:flex-start}
 
 /* ============================================================
-   front page — wide two-column masthead, fact bar, spotlight,
-   and the right-hand index column
+   front page — masthead, fact bar, the explore index, the ask band.
+   No header above it: the masthead is the header.
    ============================================================ */
 .masthead{display:grid;grid-template-columns:1fr 350px;gap:clamp(32px,5vw,64px);
-          align-items:start;padding:clamp(48px,7vw,86px) 0 clamp(26px,3.4vw,38px)}
+          align-items:start;padding:clamp(56px,9vw,110px) 0 clamp(26px,3.4vw,38px)}
 .masthead .eyebrow{margin-bottom:16px}
 .name{font:700 clamp(40px,5.9vw,70px)/1.02 var(--serif);letter-spacing:-.025em;
       color:var(--accent);max-width:11ch}
@@ -237,115 +251,85 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
 .factlinks a.cta{background:var(--accent);border-color:var(--accent);color:#fff}
 .factlinks a.cta:hover{color:#fff;filter:brightness(1.08)}
 
-/* spotlight */
-.spotlight{display:grid;grid-template-columns:1fr 292px;margin-top:30px;background:var(--card);
-           border:1px solid var(--hair);border-radius:18px;overflow:hidden;text-decoration:none;
-           transition:border-color .18s,transform .18s,box-shadow .18s}
-.spotlight:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
-/* grid items default to min-width:auto, so a wide child can push the track
-   past its container — that scrolled the page sideways on small phones */
-.spotlight > *{min-width:0}
-.spot-main{padding:28px 32px 30px;display:flex;flex-direction:column;min-width:0}
-.spot-top{display:flex;align-items:baseline;gap:16px;margin-bottom:12px}
-.spot-top b{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-            color:var(--accent)}
-.spot-top .when{margin-left:auto;font:500 12px/1 var(--mono);color:var(--faint)}
-.spotlight .stitle{font:600 clamp(23px,3.1vw,32px)/1.22 var(--serif);color:var(--ink);
-                   letter-spacing:-.012em}
-.spotlight:hover .stitle{color:var(--accent)}
-.spotlight .ssub{font-size:15.5px;color:var(--ink-2);margin-top:7px;font-weight:500}
-.spotlight p{color:var(--muted);font-size:15.5px;max-width:56ch;margin-top:11px}
-.spot-go{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;margin-top:20px;
-         font:500 14px/1 var(--sans);color:#fff;background:var(--accent);
-         border-radius:9px;padding:12px 18px}
-.spotlight:hover .spot-go{filter:brightness(1.08)}
+/* below the fact bar: the board. Twelve columns, one gap, one radius; every
+   block is a tile. The conversation's internal styles live in search/search.css
+   with the rest of the ask feature; the tile shell is here. */
+.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;
+       margin:26px 0 clamp(64px,9vw,120px)}
+.tile{background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:22px 24px;
+      min-width:0;display:flex;flex-direction:column;text-decoration:none;
+      transition:border-color .16s,box-shadow .16s}
+.bento > section.tile{border-top:1px solid var(--hair)}   /* undo the section rhythm */
+a.tile:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.tile .kick{font:600 10.5px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;
+            color:var(--accent);margin-bottom:12px}
+.tile h3{font:600 21px/1.28 var(--serif);color:var(--ink);letter-spacing:-.01em}
+a.tile:hover h3{color:var(--accent)}
+.tile p{color:var(--muted);font-size:14.5px;line-height:1.55;margin-top:8px}
+.tile .go{margin-top:auto;padding-top:16px;font:500 13.5px/1 var(--sans);color:var(--accent)}
 
-/* the dark decorative panel */
-.spot-art{background:var(--dark);padding:20px 22px;display:flex;flex-direction:column;gap:14px;
-          color:#e9edf2}
-.art-top{display:flex;gap:12px;font:500 9.5px/1 var(--mono);letter-spacing:.16em;
-         text-transform:uppercase;color:#6f7c89}
-.art-top span:last-child{margin-left:auto;color:#3fbeb2}
-.art-grid{display:grid;grid-template-columns:auto repeat(3,1fr);gap:5px;align-items:center}
-.art-grid .hd{font:500 9px/1.3 var(--mono);color:#6f7c89;text-align:center;padding-bottom:2px}
-.art-grid .rw{font:500 10px/1 var(--mono);color:#98a4b0;padding-right:8px}
-.art-grid .cell{height:26px;border-radius:5px;background:rgba(255,255,255,.055);
-                display:flex;align-items:center;justify-content:center;
-                font:500 10.5px/1 var(--mono);color:#6f7c89}
-.art-grid .cell.on{background:rgba(63,190,178,.22);color:#7fd1c6;
-                   box-shadow:inset 0 0 0 1px rgba(63,190,178,.4)}
-.art-cap{font:400 11px/1.45 var(--sans);color:#8b96a2;margin:auto 0 0}
+.t-ask{grid-column:span 7}
+.t-feat{grid-column:span 5;background:var(--dark);border-color:var(--dark)}
+.t-feat:hover{border-color:#3fbeb2}
+.t-feat h3,.t-feat:hover h3{color:#fff}
+.t-feat p{color:#98a4b0}
+.t-feat .kick{color:#3fbeb2}
+.t-feat .go{color:#7fd1c6}
 
-/* lower duo: panel + index column */
-.duo{display:grid;grid-template-columns:1fr 384px;gap:24px;margin-top:24px;align-items:start}
-/* Grid items default to min-width:auto, so a wide child can push the track
-   past the container — which it did below ~420px, scrolling the page
-   sideways. Let them shrink and wrap instead. */
-.duo > *{min-width:0}
-.panel{background:var(--card);border:1px solid var(--hair-soft);border-radius:18px;
-       padding:26px 30px 10px}
-.panel-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
-.panel-head b{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-              color:var(--faint)}
-.panel-head .count{margin-left:auto;font:500 11px/1 var(--mono);color:var(--faint)}
-.panel .ptitle2{font:600 25px/1.25 var(--serif);color:var(--ink);letter-spacing:-.01em}
-.panel .pnote{color:var(--muted);font-size:15px;margin-top:8px;max-width:52ch}
-.rows{margin-top:18px}
-.rows a{display:flex;align-items:baseline;gap:18px;padding:17px 2px;text-decoration:none;
-        border-top:1px solid var(--hair-soft);transition:padding-left .16s}
-.rows a:hover{padding-left:8px}
-.rows .n{font:500 11px/1.6 var(--mono);color:var(--faint);flex:none;width:20px}
-.rows .rt{font:600 16px/1.4 var(--sans);color:var(--ink);min-width:0}
-.rows a:hover .rt{color:var(--accent)}
-.rows .rd{font-size:14px;color:var(--muted);display:block;font-weight:400;margin-top:2px}
-.rows .arw{margin-left:auto;color:var(--faint);flex:none;font-size:15px}
-.rows a:hover .arw{color:var(--accent)}
+.t-latest{grid-column:span 12}
+.latest-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
+.latest-head .kick{margin-bottom:8px}
+.btn.small{padding:10px 16px;font-size:13.5px}
+.latest{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 32px}
+.latest li{border-top:1px solid var(--hair-soft)}
+.latest a{display:flex;align-items:baseline;gap:14px;padding:13px 2px;text-decoration:none;
+          transition:padding-left .16s}
+.latest a:hover{padding-left:8px}
+.latest .k{flex:none;width:158px;font:500 10.5px/1.7 var(--mono);letter-spacing:.04em;color:var(--faint);
+           white-space:nowrap}
+.latest .t{min-width:0;font:600 15px/1.4 var(--sans);color:var(--ink)}
+.latest a:hover .t{color:var(--accent)}
+.latest .arw{margin-left:auto;flex:none;color:var(--faint)}
+.latest a:hover .arw{color:var(--accent)}
 
-aside.idx{position:sticky;top:92px}
-.idx-head{display:flex;align-items:baseline;gap:14px;margin-bottom:4px}
-.idx-head b{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-            color:var(--faint)}
-.idx-head .count{margin-left:auto;font:500 11px/1 var(--mono);color:var(--faint)}
-.idx-title{font:600 25px/1.25 var(--serif);color:var(--ink);letter-spacing:-.01em;
-           padding-bottom:14px;border-bottom:1px solid var(--hair-soft);margin-bottom:12px}
-.idx a{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--card);
-       border:1px solid var(--hair-soft);border-radius:14px;text-decoration:none;
-       margin-bottom:9px;transition:border-color .16s,transform .16s,box-shadow .16s}
-.idx a:hover{border-color:var(--accent);transform:translateX(3px);box-shadow:var(--shadow)}
-.idx .n{font:500 10px/1 var(--mono);color:var(--faint);flex:none;width:16px}
-.idx .ico{width:34px;height:34px;border-radius:10px;background:var(--accent-faint);flex:none;
-          display:flex;align-items:center;justify-content:center;color:var(--accent)}
-.idx .ico svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;
-              stroke-linecap:round;stroke-linejoin:round}
-.idx .tx{min-width:0}
-.idx .tx b{font:600 15.5px/1.3 var(--sans);color:var(--ink);display:block}
-.idx a:hover .tx b{color:var(--accent)}
-.idx .tx b,.idx .tx span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.idx .tx span{display:block;font-size:13.5px;line-height:1.45;color:var(--muted)}
-.idx .arw{margin-left:auto;color:var(--faint);flex:none;font-size:15px}
-.idx a:hover .arw{color:var(--accent)}
+/* the featured tile's figure: the deck's argument in one glance. A query that
+   holds five independent constraints, and one vector per constraint. */
+.clue{margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);
+      display:flex;flex-direction:column;gap:12px}
+.clue-q{font:600 italic 15.5px/1.4 var(--serif);color:#eef2f6;margin:0}
+.clue-chips{display:flex;flex-wrap:wrap;gap:5px}
+.clue-chips span{font:500 10.5px/1 var(--mono);color:#7fd1c6;background:rgba(63,190,178,.14);
+                 border:1px solid rgba(63,190,178,.3);border-radius:999px;padding:5px 8px}
+.clue-row{display:flex;align-items:flex-end;gap:16px}
+.clue-vecs{display:flex;gap:9px}
+.clue-vec{display:flex;flex-direction:column;gap:3px}
+.clue-vec i{display:block;width:24px;height:6px;border-radius:2px;background:#3fbeb2}
+.clue-vec i:nth-child(1){opacity:.9}.clue-vec i:nth-child(2){opacity:.6}
+.clue-vec i:nth-child(3){opacity:.38}.clue-vec i:nth-child(4){opacity:.2}
+/* each vector its own shape: shift which bar is bright */
+.clue-vec:nth-child(2) i:nth-child(1){opacity:.3}.clue-vec:nth-child(2) i:nth-child(3){opacity:.9}
+.clue-vec:nth-child(3) i:nth-child(1){opacity:.45}.clue-vec:nth-child(3) i:nth-child(4){opacity:.85}
+.clue-vec:nth-child(4) i:nth-child(2){opacity:.95}.clue-vec:nth-child(4) i:nth-child(1){opacity:.25}
+.clue-vec:nth-child(5) i:nth-child(3){opacity:.9}.clue-vec:nth-child(5) i:nth-child(1){opacity:.5}
+.clue-cap{margin:0 0 0 auto;font:400 11.5px/1.45 var(--sans);color:#8b96a2;max-width:20ch;text-align:right}
 
 @media (max-width:980px){
   .masthead{grid-template-columns:1fr;gap:22px}
   .masthead .bio{padding-top:0;max-width:60ch}
-  .spotlight{grid-template-columns:1fr}
-  .spot-art{flex-direction:row;align-items:center;gap:20px}
-  .spot-art .art-grid{max-width:340px}
-  .duo{grid-template-columns:1fr}
-  aside.idx{position:static}
+  /* narrower: the two big tiles stack, the latest list goes to one column */
+  .t-ask,.t-feat{grid-column:span 12}
+  .latest{grid-template-columns:1fr}
 }
 @media (max-width:560px){
   .factlinks{margin-left:0;width:100%}
-  .spot-art{flex-direction:column;align-items:stretch}
-
-  /* The nav wraps to several rows on a phone, and a fixed-height masthead
-     then lets it spill over the page. Give it its own row instead. */
-  header.top .wrap{height:auto;min-height:68px;flex-wrap:wrap;gap:0;
-                   padding-top:12px;padding-bottom:12px}
-  nav.main{margin-left:0;width:100%;margin-top:8px;gap:2px}
-  nav.main a{font-size:14px;padding:8px 11px}
-  /* ...which makes the masthead taller, so anchored targets need more room */
-  details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:128px}
+  header.top .wrap{padding-top:18px}
+  .bento{gap:12px}
+  .tile{padding:20px 20px}
+  .latest a{flex-wrap:wrap;gap:2px 12px}
+  .latest .k{width:100%}
+  .latest .t{flex:1}   /* the arrow stays beside a wrapping title */
+  .clue-row{flex-direction:column;align-items:flex-start;gap:10px}
+  .clue-cap{margin-left:0;text-align:left;max-width:none}
 }
 
 /* ============================================================
@@ -355,9 +339,9 @@ aside.idx{position:sticky;top:92px}
    A polished 2-page PDF also lives at /assets/cv/cv.pdf.
    ============================================================ */
 /* ---------- fragment targets ----------
-   Search results deep-link into these. The masthead is sticky, so without a
-   scroll margin the browser parks the target underneath it. */
-details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:84px}
+   Search results deep-link into these. Nothing sticks to the top any more,
+   so this is only breathing room above the target. */
+details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:24px}
 
 @media print{
   @page{size:A4;margin:16mm 15mm 14mm}
@@ -373,7 +357,7 @@ details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:84px}
   body{background:#fff;color:#000;font-size:10.2pt;line-height:1.48}
 
   /* chrome and decoration off the paper */
-  .ambient,.skip,header.top,.hero-actions,nav.main{display:none!important}
+  .ambient,.skip,header.top,.hero-actions{display:none!important}
 
   .wrap,.wrap.narrow{max-width:none;padding:0}
 
@@ -399,7 +383,7 @@ details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:84px}
     break-after:avoid;page-break-after:avoid
   }
   p,li,dd{orphans:2;widows:2}
-  .kv dt,.kv dd,.card,.featured,details.pub,.index-list a{
+  .kv dt,.kv dd,.card,.featured,details.pub,.tile{
     break-inside:avoid;page-break-inside:avoid
   }
 

@@ -9,11 +9,11 @@ the repo as-is to Pages.
 ## Layout
 
 ```
-index.html              landing page (hero, current work, projects, talks, research)
+index.html              landing page (masthead, fact bar, then a board of tiles: Ask this site, the featured lecture, the four latest talks and posts)
 publications.html       full publication list with abstracts
 cv.html                 CV in HTML  ·  assets/cv/cv.pdf is the downloadable version
 404.html
-knowledge/index.html    knowledge-dissemination index (featured + archive)
+knowledge/index.html    the talks + writing index (featured deck, posts, decks) — the blog index merged into it
 knowledge/<slug>/index.html  one deck = one HTML file
 knowledge/_template/    copy this to start a new deck
 search/index.html       SPLADE site search (see below)
@@ -33,7 +33,7 @@ deck/deck.js            slide runtime (~200 lines, vanilla JS)
 assets/img/             web-optimized images
 assets/cv/cv.pdf        downloadable CV (generated — see below)
 assets/cv/cv-print.html the print source the PDF is rendered from
-blog/index.html         the blog index
+blog/index.html         redirect stub → /knowledge/ (the posts are listed there)
 blog/<slug>/index.html  one post = one HTML file, hand-written; inline SVG for figures
 blog/blog.css           article styles (prose, figures, tables, the receipt), on top of site.css
 blog/*/ posts/ hop-database/  redirect stubs for the retired Jekyll blog (see below)
@@ -44,15 +44,26 @@ sitemap.xml robots.txt CNAME .nojekyll
 `.nojekyll` matters: without it GitHub Pages runs Jekyll and ignores files starting
 with `_`, which would break `knowledge/_template/`.
 
+## Navigation
+
+There is no navigation bar. The fact bar on the front page carries the outward links (GitHub,
+Scholar, LinkedIn, the CV as PDF), the latest tile links to `/knowledge/`, and every other page
+carries a slim, non-sticky header with the brand and a single *Front page →* link. There is no
+index of pages: `publications.html`, `cv.html` and `search/` are reached from the pages that
+cite them (the CV, the Knowledge page, the SPLADE post, the 404) rather than from the front page.
+`projects.html` is retired and deliberately not in the list.
+
 ## Blog
 
-`/blog/` is the prose counterpart to `/knowledge/`: one hand-written `index.html` per post, no
-generator. Figures are inline SVG that use the colour tokens (`fill="var(--accent)"`), so a
-palette change in `site.css` reaches them too. To add a post, copy an existing one, add a row to
-`blog/index.html`, a card to `knowledge/index.html` if it belongs there, and the URL to
-`sitemap.xml`. The first post, `blog/inference-free-splade/`, is the write-up of the site search
-below; the numbers in it are read off the built index, so if the corpus changes materially the
-post's figures are the thing to re-check.
+The posts live under `/blog/<slug>/`, one hand-written `index.html` per post, no generator, but
+the blog has no index page of its own: `/blog/` redirects to `/knowledge/`, which lists the talks
+and the posts together (a *Writing* section between *Featured* and *Talks & decks*). Figures are
+inline SVG that use the colour tokens (`fill="var(--accent)"`), so a palette change in `site.css`
+reaches them too. To add a post, copy an existing one, add a row to the *Writing* list in
+`knowledge/index.html`, and the URL to `sitemap.xml`. The first post,
+`blog/inference-free-splade/`, is the write-up of the site search below; the numbers in it are read
+off the built index, so if the corpus changes materially the post's figures are the thing to
+re-check.
 
 The two old Jekyll post directories under `blog/` (`swarm-simulator`, `hop-database`) are
 redirect stubs, not posts.
@@ -69,7 +80,8 @@ top of each names the page or post it replaces.
 
 | Old URL | Now goes to |
 | --- | --- |
-| `/posts/` (blog index) | `/` |
+| `/posts/` (old blog index) | `/` |
+| `/blog/` (blog index, merged) | `/knowledge/` |
 | `/blog/swarm-simulator/` | `/knowledge/` |
 | `/hop-database/` and `/blog/hop-database/` | `/projects.html` |
 | `/posts/2025/08/trajgenpy-guide/` | `/projects.html` |
@@ -181,8 +193,8 @@ Colour and type tokens live in the `:root` block at the top of both `site/site.c
 system. Change `--accent` and `--canvas` and everything follows. For a one-off deck
 palette, add `<style>:root{--accent:#7a3ea1}</style>` to that deck's `<head>`.
 
-The site pages are light only: there is no dark palette in `site.css`, no toggle in the
-header and no theme script. The decks keep their own `t` key and `:root[data-theme="dark"]`
+The site pages are light only: there is no dark palette in `site.css`, no theme toggle and no
+theme script. The decks keep their own `t` key and `:root[data-theme="dark"]`
 block in `deck/deck.css`, stored under `localStorage` key `deck-theme`; the site pages no
 longer read that key, so a deck left in dark mode does not darken the rest of the site.
 

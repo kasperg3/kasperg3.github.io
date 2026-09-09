@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Knowledge dissemination — Kasper Rømer Grøntved</title>
-<meta name="description" content="Lectures, talks and slide decks on machine learning, search, retrieval architectures and multi-robot systems. Each deck runs in the browser.">
+<title>Knowledge — Kasper Rømer Grøntved</title>
+<meta name="description" content="Talks, slide decks and long-form writing on machine learning, search, retrieval architectures and multi-robot systems. Each deck runs in the browser; each post says what was built, what it cost, and what the numbers say.">
 <link rel="canonical" href="https://www.grontved.xyz/knowledge/">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=b31c0d02">
+<link rel="stylesheet" href="/site/site.css?v=766687e4">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
@@ -20,26 +20,21 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="top">
-  <div class="wrap">
+  <div class="wrap narrow">
     <a class="brand" href="/">Kasper <span>Grøntved</span></a>
-    <nav class="main">
-      <a href="/knowledge/" aria-current="page">Knowledge</a>
-      <a href="/blog/">Blog</a>
-      <a href="/publications.html">Publications</a>
-      <a href="/cv.html">CV</a>
-      <a href="/search/">Search</a>
-    </nav>
+    <a class="explore" href="/">Front page →</a>
   </div>
 </header>
 
 <main id="main">
 <div class="wrap narrow">
   <div class="hero lead">
-    <p class="eyebrow">Lectures &amp; talks</p>
-    <h1>Knowledge dissemination</h1>
-    <p class="lede">Explaining the work — internally, at conferences, and to anyone who inherits a
-    system I built. Each deck below is a single HTML file that runs in your browser, so every slide
-    has its own URL and nothing depends on a hosting service that might not be here in five years.</p>
+    <p class="eyebrow">Talks, decks &amp; writing</p>
+    <h1>Knowledge</h1>
+    <p class="lede">Explaining the work: internally, at conferences, in writing, and to anyone who
+    inherits a system I built. The decks are single HTML files that run in your browser, so every
+    slide has its own URL. The posts are the prose counterpart: what was built, what it cost, and
+    what the numbers say.</p>
   </div>
 
   <section style="padding-top:0;border:0">
@@ -49,7 +44,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <h3>ML and Data at Colourbox</h3>
       <p>Why content understanding is the only answer to DAM cold start, what EU sovereignty actually
       commits you to architecturally, how dense embeddings and patch-level late interaction divide the
-      work between a stock library and a DAM system — then the multimodal field case, the production
+      work between a stock library and a DAM system. Then the multimodal field case, the production
       objections, and why a benchmark score is not a customer finding their asset.</p>
       <div class="foot" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
         <span class="pill">32 slides</span><span class="pill">Search</span>
@@ -60,7 +55,21 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   </section>
 
   <section>
-    <div class="sec-head"><h2>Archive</h2></div>
+    <div class="sec-head"><h2>Writing</h2></div>
+    <div class="post-list">
+      <a href="/blog/inference-free-splade/">
+        <span class="when">8 September 2026 · ≈ 9 min</span>
+        <h3>Semantic search for the price of a git push</h3>
+        <p>How this site's search understands meaning with no server and no model at query time.
+        Dense retrieval, SPLADE and late interaction drawn side by side, the asymmetry that lets
+        inference-free SPLADE drop the query encoder, a passage's sparse vector read term by term,
+        and the whole pipeline in one picture.</p>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Talks &amp; decks</h2></div>
     <div class="grid two" style="margin-top:20px">
       <a class="card" href="/knowledge/late-interaction-primer/">
         <span class="tag">Primer · ~25 min · adapted</span>
@@ -68,7 +77,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         <p>Why one fixed-size embedding has to decide what to keep before it knows what will be asked,
         and how late interaction and MaxSim avoid that. Adapted with attribution from Amélie
         Chatelain's <em>Late Interaction Field Guide</em>; the original goes considerably further.
-        Kept as a standalone talk — the Colourbox deck carries the same eleven slides with our own
+        Kept as a standalone talk; the Colourbox deck carries the same eleven slides with our own
         examples.</p>
         <div class="foot"><span class="pill">12 slides</span><span class="pill">Retrieval</span>
           <span class="pill">Sourced</span></div>
@@ -97,22 +106,11 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         <h3>Search, with the vectors showing</h3>
         <p>Inference-free SPLADE over this entire site. The document vectors were built offline by a
         67M-parameter masked LM; the query side is a tokenizer and a lookup table, so your browser
-        runs no model at all. The page puts the sparse vectors on screen — the query's WordPiece
+        runs no model at all. The page puts the sparse vectors on screen: the query's WordPiece
         decomposition, which terms produced each score, and the words the model added that the text
         never contained.</p>
         <div class="foot"><span class="pill">Learned sparse</span><span class="pill">No inference</span>
           <span class="pill">Vanilla JS</span></div>
-      </a>
-
-      <a class="card" href="/blog/inference-free-splade/">
-        <span class="tag">Blog post · ~9 min read</span>
-        <h3>Semantic search for the price of a git push</h3>
-        <p>The write-up behind the search: dense retrieval, SPLADE and late interaction side by side,
-        why inference-free SPLADE can hand the browser a tokenizer and a 61 KB table instead of a
-        model, what a passage's sparse vector actually contains, and the pipeline that builds it for
-        €0.00.</p>
-        <div class="foot"><span class="pill">Learned sparse</span><span class="pill">Dense vs sparse</span>
-          <span class="pill">Measured</span></div>
       </a>
 
       <div class="card" style="justify-content:center;border-style:dashed;background:transparent">
@@ -123,9 +121,9 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   </section>
 
   <section>
-    <div class="sec-head"><h2>How these work</h2></div>
+    <div class="sec-head"><h2>How the decks work</h2></div>
     <div class="prose">
-      <p>The engine is about 200 lines of vanilla JavaScript in <code>/deck/deck.js</code> — no
+      <p>The engine is about 200 lines of vanilla JavaScript in <code>/deck/deck.js</code>, with no
       framework, no build step. Slides live on a fixed 1920×1080 canvas that gets scaled to whatever
       window you open it in, so a deck looks identical on a laptop, a projector, and a phone.</p>
       <h3>While presenting</h3>
@@ -139,7 +137,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       code and lectures behind whatever is on screen, with a count badge in the corner so you can see
       at a glance whether a claim is sourced.</p>
       <p>Swipe works on touch. The URL tracks the slide number, so
-      <code>/knowledge/&lt;name&gt;/#7</code> opens directly on slide 7 — useful when someone asks you
+      <code>/knowledge/&lt;name&gt;/#7</code> opens directly on slide 7, useful when someone asks you
       to send "that one chart".</p>
       <p>Borrow it if you like: copy <code>/deck/</code> and <code>/knowledge/_template/</code> from
       <a href="https://github.com/kasperg3/kasperg3.github.io">the repo</a>.</p>

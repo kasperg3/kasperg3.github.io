@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=b31c0d02">
-<link rel="stylesheet" href="/search/search.css?v=7">
+<link rel="stylesheet" href="/site/site.css?v=766687e4">
+<link rel="stylesheet" href="/search/search.css?v=13">
 <noscript><style>/* the conversation cannot work without scripting */
 .asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
 <script type="application/ld+json">
@@ -38,19 +38,6 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 <div class="ambient" aria-hidden="true"><i></i><i></i></div>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="top">
-  <div class="wrap">
-    <a class="brand" href="/">Kasper <span>Grøntved</span></a>
-    <nav class="main">
-      <a href="/knowledge/">Knowledge</a>
-      <a href="/blog/">Blog</a>
-      <a href="/publications.html">Publications</a>
-      <a href="/cv.html">CV</a>
-      <a href="/search/">Search</a>
-    </nav>
-  </div>
-</header>
-
 <main id="main">
 <div class="wrap">
 
@@ -60,7 +47,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <h1 class="name">Kasper Rømer Grøntved</h1>
     </div>
     <p class="bio">PhD in multi-robot systems turned AI engineer, building the
-    <strong>multimodal search</strong> behind Colourbox and Skyfish — and running the models for it
+    <strong>multimodal search</strong> behind Colourbox and Skyfish, and running the models for it
     inside European jurisdiction.</p>
   </div>
 
@@ -75,121 +62,92 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </div>
 
-  <!-- Ask this site: a conversation, not a search box. Retrieval still runs
-       entirely in the browser and is still the whole of the feature; the thread
-       is only what makes it legible. Each question is retrieved and answered on
-       its own, so nothing here implies a memory it does not have, and the
-       scoring behind any answer is one press away in the modal. -->
-  <section class="asksite" id="ask">
-    <div class="ask-inner">
+  <!-- Below the fact bar: one board of tiles, one gap, one radius. The
+       conversation is the large tile; the featured lecture is the dark one and
+       carries the deck's own argument as its figure; the latest talks and posts
+       are the wide tile beneath, with the way to the rest of them. There is no
+       menu bar: the fact bar carries the outward links, and every other page
+       carries a link back to the front page. -->
+  <div class="bento">
+
+    <!-- Ask this site: a conversation, not a search box. Retrieval still runs
+         entirely in the browser and is still the whole of the feature; the thread
+         is only what makes it legible. Each question is retrieved and answered on
+         its own, so nothing here implies a memory it does not have, and the
+         scoring behind any answer is one press away in the modal. -->
+    <section class="tile t-ask asksite" id="ask" aria-labelledby="ask-title">
       <div class="ask-head">
-        <h2 class="ask-title">Ask this site</h2>
-        <p class="ask-eyebrow"><i class="dot" aria-hidden="true"></i>Grounded in the papers,
-          slides and CV</p>
+        <div>
+          <div class="kick"><i class="dot" aria-hidden="true"></i>Grounded in the papers, slides and CV</div>
+          <h2 class="ask-title" id="ask-title">Ask this site</h2>
+        </div>
+        <span class="ask-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 3.5V16A2.5 2.5 0 0 1 4 13.5z"/><path d="M8.5 9h7M8.5 12h4.5"/></svg></span>
       </div>
 
-      <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
+      <div class="ask-body">
+        <p class="ask-lede">Ask about the research, the search systems, or how the models stay inside
+        Europe. Every answer is built from this site's own pages and cites the passages it came from.</p>
+        <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
+        <div class="chat-tries" id="htries" aria-label="Questions to try">
+          <button class="sp-ex" type="button">How do drones divide up a search area?</button>
+          <button class="sp-ex" type="button">What is late interaction?</button>
+          <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
+          <button class="sp-ex" type="button">What is SAREnv?</button>
+        </div>
+        <noscript><p class="ask-note">The conversation needs JavaScript; the rest of the site does not.</p></noscript>
+      </div>
 
       <form class="composer" id="hform" autocomplete="off">
         <label for="hq" class="skip">Ask this site a question</label>
-        <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
-               placeholder="Ask a question about the work">
-        <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
-        </button>
+        <div class="composer-box">
+          <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
+                 placeholder="Ask about the research, the search, or the CV">
+          <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
+          </button>
+        </div>
       </form>
+    </section>
 
-      <div class="chat-tries" id="htries">
-        <button class="sp-ex" type="button">How do drones divide up a search area?</button>
-        <button class="sp-ex" type="button">What is late interaction?</button>
-        <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
-      </div>
-
-      <noscript><p class="ask-note">Needs JavaScript.</p></noscript>
-    </div>
-  </section>
-
-  <a class="spotlight" href="/knowledge/ml-and-data-at-colourbox/">
-    <div class="spot-main">
-      <div class="spot-top"><b>Featured lecture</b><span class="when">Draft · 59 slides</span></div>
-      <span class="stitle">ML and Data at Colourbox</span>
-      <span class="ssub">Multimodal search, and why the models run on our own hardware</span>
+    <!-- The featured lecture. Its figure is the deck's own thesis: one query
+         holds several independent constraints, so give each one its own vector
+         rather than pooling them into one. -->
+    <a class="tile t-feat" href="/knowledge/ml-and-data-at-colourbox/">
+      <div class="kick">Featured lecture · 32 slides</div>
+      <h3>ML and Data at Colourbox</h3>
       <p>Why cold starts are hard when the open Danish data does not exist yet, what a DAM archive
-      actually contains, and how dense embeddings and late interaction split the work between a stock
-      library and a customer's own assets.</p>
-      <span class="spot-go">Explore the deck →</span>
-    </div>
-    <div class="spot-art" aria-hidden="true">
-      <div class="art-top"><span>Local evidence</span><span>MaxSim</span></div>
-      <div class="art-grid">
-        <span class="hd"></span><span class="hd">lokalplan</span><span class="hd">kabel</span><span class="hd">bilag</span>
-        <span class="rw">image</span><span class="cell on">0.94</span><span class="cell"></span><span class="cell"></span>
-        <span class="rw">drawing</span><span class="cell"></span><span class="cell on">0.91</span><span class="cell"></span>
-        <span class="rw">pdf</span><span class="cell"></span><span class="cell"></span><span class="cell on">0.88</span>
+      actually contains, and how dense embeddings and late interaction split the work.</p>
+      <div class="clue" aria-hidden="true">
+        <p class="clue-q">"two people laughing in a bright office, wide shot, copy space on the left"</p>
+        <div class="clue-chips"><span>2 people</span><span>laughing</span><span>office</span><span>wide shot</span><span>copy space left</span></div>
+        <div class="clue-row">
+          <div class="clue-vecs">
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+            <span class="clue-vec"><i></i><i></i><i></i><i></i></span>
+          </div>
+          <p class="clue-cap">Five constraints, five vectors. Nothing gets averaged.</p>
+        </div>
       </div>
-      <p class="art-cap">Know the corpus. Then pick the model.</p>
-    </div>
-  </a>
+      <span class="go">Explore the deck →</span>
+    </a>
 
-  <div class="duo">
-    <div class="panel">
-      <div class="panel-head"><b>Selected work</b><span class="count">04 of many</span></div>
-      <div class="ptitle2">What I have been building</div>
-      <p class="pnote">Robotics research that became open tooling, and the search systems that came
-      after it.</p>
-      <div class="rows">
-        <a href="/publications.html">
-          <span class="n">01</span>
-          <span class="rt">SAREnv<span class="rd">Open dataset and benchmark for informed wilderness search and rescue · Drones, 2025</span></span>
-          <span class="arw">→</span>
-        </a>
-        <a href="/projects.html">
-          <span class="n">02</span>
-          <span class="rt">TrajAllocPy<span class="rd">Decentralized trajectory task allocation for multi-robot area coverage</span></span>
-          <span class="arw">→</span>
-        </a>
-        <a href="/knowledge/late-interaction-primer/">
-          <span class="n">03</span>
-          <span class="rt">Multi-vector search primer<span class="rd">Where single-vector retrieval loses evidence, and what late interaction keeps</span></span>
-          <span class="arw">→</span>
-        </a>
-        <a href="/cv.html">
-          <span class="n">04</span>
-          <span class="rt">Human–swarm interaction<span class="rd">The PhD: one operator engaging with and controlling swarms of autonomous robots</span></span>
-          <span class="arw">→</span>
-        </a>
+    <!-- The four latest talks and posts, newest first, and the way to the rest. -->
+    <section class="tile t-latest" aria-labelledby="latest-title">
+      <div class="latest-head">
+        <div><div class="kick">Latest</div><h3 id="latest-title">Talks and writing</h3></div>
+        <a class="btn small" href="/knowledge/">All talks &amp; writing →</a>
       </div>
-    </div>
+      <ul class="latest">
+        <li><a href="/blog/inference-free-splade/"><span class="k">Post · 8 Sep 2026</span><span class="t">Semantic search for the price of a git push</span><span class="arw">→</span></a></li>
+        <li><a href="/knowledge/ml-and-data-at-colourbox/"><span class="k">Lecture · 32 slides</span><span class="t">ML and Data at Colourbox</span><span class="arw">→</span></a></li>
+        <li><a href="/knowledge/cooperative-multirobot-control/"><span class="k">PhD defence · 40 slides</span><span class="t">Cooperative Control of Multi-Robot Systems in Real-World Applications</span><span class="arw">→</span></a></li>
+        <li><a href="/knowledge/late-interaction-primer/"><span class="k">Primer · 12 slides</span><span class="t">Late Interaction, Up Close</span><span class="arw">→</span></a></li>
+      </ul>
+    </section>
 
-    <aside class="idx">
-      <div class="idx-head"><b>Index</b><span class="count">04 chapters</span></div>
-      <div class="idx-title">Explore the site</div>
-
-      <a href="/knowledge/">
-        <span class="n">01</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14v10H3zM3 17h14M8 14v3M12 14v3"/></svg></span>
-        <span class="tx"><b>Knowledge</b><span>Slide decks, lectures and talks</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="/cv.html">
-        <span class="n">02</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3h12v14H4zM7 7h6M7 10h6M7 13h4"/></svg></span>
-        <span class="tx"><b>CV</b><span>Roles, education and research stays</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="/publications.html">
-        <span class="n">03</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 5C8 3.5 5.5 3.5 3 4v11c2.5-.5 5 -.5 7 1 2-1.5 4.5-1.5 7-1V4c-2.5-.5-5-.5-7 1zM10 5v12"/></svg></span>
-        <span class="tx"><b>Publications</b><span>Peer-reviewed robotics and AI work</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="https://www.linkedin.com/in/kaspergrontved/">
-        <span class="n">04</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14v10H3zM3 5l7 5 7-5"/></svg></span>
-        <span class="tx"><b>Get in touch</b><span>LinkedIn, GitHub and Scholar</span></span>
-        <span class="arw">↗</span>
-      </a>
-    </aside>
   </div>
 
 </div>
