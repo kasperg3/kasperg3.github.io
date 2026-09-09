@@ -9,7 +9,7 @@ the repo as-is to Pages.
 ## Layout
 
 ```
-index.html              landing page (masthead, fact bar, then a board of tiles: Ask this site, the featured lecture, the four pages, the latest post)
+index.html              landing page (masthead, fact bar, then a board of tiles: Ask this site, the featured lecture, the four latest talks and posts)
 publications.html       full publication list with abstracts
 cv.html                 CV in HTML  ·  assets/cv/cv.pdf is the downloadable version
 404.html
@@ -46,11 +46,12 @@ with `_`, which would break `knowledge/_template/`.
 
 ## Navigation
 
-There is no navigation bar. The front page is the map: the board of tiles below the fact
-bar (`index.html`, `#explore`) has one tile per page, and those tiles are the whole of the
-site's navigation. Every other page carries a slim, non-sticky header with the brand (home) and a single
-*Explore the site →* link back to that list — so adding a page means adding a row to the list, not
-editing a menu on every page. `projects.html` is retired and deliberately not in the list.
+There is no navigation bar. The fact bar on the front page carries the outward links (GitHub,
+Scholar, LinkedIn, the CV as PDF), the latest tile links to `/knowledge/`, and every other page
+carries a slim, non-sticky header with the brand and a single *Front page →* link. There is no
+index of pages: `publications.html`, `cv.html` and `search/` are reached from the pages that
+cite them (the CV, the Knowledge page, the SPLADE post, the 404) rather than from the front page.
+`projects.html` is retired and deliberately not in the list.
 
 ## Blog
 
