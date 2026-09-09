@@ -10,6 +10,10 @@ Checks:
   engine   every <section> in #stage has class "slide" and a data-t; exactly the
            first slide carries "active"; <title> and meta description exist;
            content slides have a .slide-foot; every <img src> resolves on disk
+  images   every figure-sized image the source deck had, as recorded in
+           assets/source-images.json by extract_pptx.py or extract_pdf.py, is
+           either shown by a slide or written off in the manifest's `dropped`
+           array with a reason. A placeholder is not a disposition
   layout   no `flex:0 0 <n>px` on a direct child of a column container
            (.stack or an inline flex-direction:column), the README gotcha
   writing  no em-dash and no § in reader-visible text (CLAUDE.md rules);
@@ -22,6 +26,12 @@ import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import slidemedia as sm
+
+REF = re.compile(r"""(?:src|srcset|href|poster|data-src)\s*=\s*["']([^"']+)["']"""
+                 r"""|url\(\s*['"]?([^'")]+)""", re.I)
 
 
 class Deck(HTMLParser):
@@ -95,6 +105,87 @@ class Deck(HTMLParser):
             self.text.append((self.getpos()[0], data))
 
 
+def referenced(html):
+    """Basenames of every file the page points at, from markup and CSS alike."""
+    out = set()
+    for a, b in REF.findall(html):
+        for value in (a, b):
+            for candidate in value.split(","):
+                url = candidate.strip().split()[0] if candidate.strip() else ""
+                if url:
+                    out.add(url.split("?")[0].split("#")[0].rsplit("/", 1)[-1])
+    return out
+
+
+def check_images(deck_dir, html, fails, warns, oks):
+    """Hold the deck to the images the source deck had.
+
+    The importers write assets/source-images.json listing every figure-sized
+    visual on every source slide. A deck that quietly leaves one out looks
+    finished and is not: the audience saw that figure. So each one has to be on
+    a slide, or written off in the manifest's `dropped` array with a reason.
+    """
+    assets = deck_dir / "assets"
+    man = sm.load_manifest(assets)
+    used = referenced(html)
+    if man is None:
+        if assets.exists():
+            warns.append("no assets/source-images.json: if this deck came from slides, rerun "
+                         "extract_pptx.py or extract_pdf.py so the figures can be accounted for")
+        return
+
+    dropped = {}
+    for item in man.get("dropped", []):
+        if isinstance(item, str):
+            dropped[item] = ""
+        elif isinstance(item, dict) and item.get("file"):
+            dropped[item["file"]] = (item.get("reason") or "").strip()
+
+    figures, seen = [], set()
+    for e in man.get("images", []):
+        f = e.get("file")
+        if not f or f in seen or e.get("auto_drop") or e.get("role") not in sm.FIGURE_ROLES:
+            continue
+        seen.add(f)
+        figures.append(e)
+
+    missing, written_off, placed = [], [], []
+    for e in figures:
+        f = e["file"]
+        if f in used:
+            placed.append(e)
+            if not (assets / f).exists():
+                fails.append(f"assets/{f} is used by the deck but is not on disk")
+        elif f in dropped:
+            if len(dropped[f]) < 8:
+                fails.append(f"assets/{f} is in the manifest's dropped list with no real reason; "
+                             f"say why the deck does not need a figure the audience saw")
+            else:
+                written_off.append(e)
+        else:
+            missing.append(e)
+
+    for e in missing:
+        where = f"source slide {e['slide']}"
+        fails.append(f"assets/{e['file']} ({e['role']}, {e['area_pct']}% of {where}) is neither "
+                     f"shown by a slide nor dropped with a reason in assets/"
+                     f"{sm.MANIFEST_NAME}: the source slide had it, so this deck is not at parity")
+    if missing and re.search(r'class="[^"]*(?:fig-todo|todo)', html):
+        fails.append("a placeholder stands in for a figure the source deck actually contained: "
+                     "place the extracted image, or crop it out of the render with crop_figure.py")
+    if figures:
+        oks.append(f"{len(placed)}/{len(figures)} source figures placed" +
+                   (f", {len(written_off)} dropped with a reason" if written_off else ""))
+
+    if assets.exists():
+        stray = sorted(p.name for p in assets.iterdir()
+                       if p.is_file() and p.name != sm.MANIFEST_NAME and p.name not in used)
+        if stray:
+            warns.append(f"assets/ holds {len(stray)} file(s) the deck never references, delete "
+                         f"them or use them: {', '.join(stray[:6])}"
+                         + (" …" if len(stray) > 6 else ""))
+
+
 def main():
     if len(sys.argv) != 2:
         print(__doc__)
@@ -140,6 +231,9 @@ def main():
             fails.append(f"line {line}: <img src=\"{src}\"> does not exist on disk")
     if d.imgs:
         oks.append(f"{len(d.imgs)} images resolve" if not any("img src" in f for f in fails) else "")
+
+    # images: parity with the source deck
+    check_images(path.parent, html, fails, warns, oks)
 
     # layout
     for line, msg in d.layout:
