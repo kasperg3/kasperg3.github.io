@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=b31c0d02">
-<link rel="stylesheet" href="/blog/blog.css?v=1">
+<link rel="stylesheet" href="/blog/blog.css?v=2">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
@@ -46,13 +46,12 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <section style="padding-top:0;border:0">
     <div class="post-list">
       <a href="/blog/inference-free-splade/">
-        <span class="when">8 September 2026 · ≈ 14 min</span>
+        <span class="when">8 September 2026 · ≈ 9 min</span>
         <h3>Semantic search for the price of a git push</h3>
-        <p>How this site's search understands meaning with no server and no model in the browser:
-        inference-free SPLADE, with the encoder run once on GitHub Actions, the sparse index served
-        from GitHub Pages, and a free Mistral key held by a free Worker for the generated answers. A
-        €0.00 receipt, itemised, with the maths that makes each line hold and the scale at which it
-        stops holding.</p>
+        <p>How this site's search understands meaning with no server and no model at query time.
+        Dense retrieval, SPLADE and late interaction drawn side by side, the asymmetry that lets
+        inference-free SPLADE drop the query encoder, a passage's sparse vector read term by term,
+        and the whole pipeline in one picture.</p>
       </a>
     </div>
   </section>
