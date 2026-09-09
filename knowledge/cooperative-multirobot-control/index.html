@@ -1,0 +1,1140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cooperative Control of Multi-Robot Systems in Real-World Applications</title>
+<meta name="description" content="PhD defence: how a Danish search and rescue operation becomes tasks a drone can take, decentralized trajectory task allocation with CBBA, a programming interface for swarms, infrastructure-less communication on €10 hardware, and SAREnv, a dataset and benchmark for informed wilderness search.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/deck/deck.css">
+<style>
+  /* placeholders for figures that did not survive the export; remove with the .todo spans */
+  .fig-todo{flex:1;min-height:360px;display:flex;align-items:center;justify-content:center;text-align:center;
+    border:2px dashed var(--hair);border-radius:18px;padding:32px;color:var(--faint);font:400 20px/1.5 var(--sans)}
+  .card p.formula{font:600 34px/1.6 var(--serif);color:var(--ink)}
+  .card p.formula small{font:500 20px/1.4 var(--sans);color:var(--muted);display:block;margin-top:8px}
+  .flow{display:flex;align-items:stretch;gap:0}
+  .flow .card{flex:1}
+  .flow .arrow{flex:0 0 56px;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--faint)}
+</style>
+</head>
+<body>
+
+<div id="viewport"><div id="stage">
+
+<!-- ============ 1 · title ============ -->
+<section class="slide title-slide active" data-t="Cooperative Control of Multi-Robot Systems">
+  <div class="draft-flag">Draft</div>
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> PhD defence · University of Southern Denmark</div>
+  <h1><span class="word">Cooperative control</span><span class="word">of multi-robot systems</span><span class="word accent">in the real world</span></h1>
+  <p class="sub">What it takes to go from a search and rescue procedure on paper to a swarm of drones that
+  plans, talks and searches without a server, a network, or a pilot per aircraft.</p>
+  <div class="meta"><span>Kasper Andreas Rømer Grøntved</span><span>SDU UAS Center</span><span>Defended 2025</span></div>
+  <div class="notes">One sentence of framing before the first slide: this thesis is five components of one toolchain, each pushed by a real Danish rescue operation and each tested outside the lab.
+
+Ported from the Google Slides defence deck. Images that lived only in that deck are marked as draft placeholders; drop them in and remove the Draft badge.</div>
+</section>
+
+<!-- ============ 2 · HERD ============ -->
+<section class="slide tight" data-t="The HERD project set the frame">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Context · HERD</div>
+  <h1 class="t">The HERD project set the frame</h1>
+  <p class="sub">Human-AI collaboration: <strong>engaging and controlling swarms of robots and drones</strong>, so that
+  one operator can direct many autonomous systems at once.</p>
+  <div class="body">
+    <div class="cols" style="flex:none">
+      <div class="stack grow" style="gap:16px">
+        <div class="card solid">
+          <h3>Cooperative behaviour</h3>
+          <p>Several drones have to fulfil one shared mission objective, not several private ones.</p>
+        </div>
+        <div class="card solid">
+          <h3>From human intent to autonomous behaviour</h3>
+          <p>A mission objective spoken by an operator has to become something a system can execute.</p>
+        </div>
+        <div class="card solid">
+          <h3>Tasks that match real procedures</h3>
+          <p>Formalise and automate tasks that align with how operations are actually run, not how a
+          benchmark says they are.</p>
+        </div>
+      </div>
+      <div class="stack" style="flex:0 0 560px;gap:16px">
+        <div class="card dark">
+          <span class="num">TRL 4</span>
+          <h3>Prototypes and lab experiments</h3>
+          <p>The project's technology readiness level bounds the scope. Everything here is a validated
+          component, not a certified product.</p>
+        </div>
+        <div class="card accent">
+          <h3>The thread through the thesis</h3>
+          <p>Every component exists because a rescue operation needed it, and each was taken outdoors at
+          least once.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li>The HERD Project: Human Multi-Robot Interaction in Search &amp; Rescue and in Farming · Christensen et al., Human-Multi-Robot Systems Workshop, Kyoto 2022</li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Keep this to the three challenges. The TRL card manages expectations early: nobody will ask "why is it not deployed" if you have said prototype out loud on slide two.</div>
+</section>
+
+<!-- ============ 3 · agenda ============ -->
+<section class="slide" data-t="Five pieces of one toolchain">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Agenda</div>
+  <h1 class="t">Five pieces of one toolchain</h1>
+  <p class="sub">The order follows the operation: define it, divide it, command it, connect it, then measure it.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card"><h3>1 · Defining SAR operations in Denmark</h3><p>How the emergency agency searches today, and what a drone system must respect.</p></div>
+      <div class="card"><h3>2 · Decentralized task allocation</h3><p>Trajectory tasks and a consensus-based bundle algorithm that needs no coordinator.</p></div>
+      <div class="card"><h3>3 · Swarm control through programming interfaces</h3><p>Two declarative languages between the operator and the mission.</p></div>
+      <div class="card"><h3>4 · Communication without infrastructure</h3><p>SwarmTalk: broadcast messaging on €10 hardware, tested in the air.</p></div>
+      <div class="card"><h3>5 · A dataset and benchmark for informed search</h3><p>SAREnv: lost-person probability maps and three metrics.</p></div>
+      <div class="card"><h3>6 · Other contributions</h3><p>User studies, wildlife monitoring and where the work goes next.</p></div>
+    </div>
+  </div>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Ten seconds. The one thing to plant: these are not five projects, they are the five things an autonomous search needs at the same time.</div>
+</section>
+
+<!-- ============ 4 · section one ============ -->
+<section class="slide section" data-t="Defining SAR operations in Denmark">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part one</div>
+  <h1>Defining SAR operations in Denmark</h1>
+  <p class="sub">Before a drone can help with a search, someone has to write down what a search is.</p>
+</section>
+
+<!-- ============ 5 · how a search runs today ============ -->
+<section class="slide tight" data-t="The quality of the search depends on the operator">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Danish SAR · today</div>
+  <h1 class="t">The quality of the search depends on the operator</h1>
+  <p class="sub">A drone-assisted search today is manual coverage and point-of-interest inspection, run by two or
+  three people under a chain of command.</p>
+  <div class="body">
+    <div class="cols" style="flex:none">
+      <div class="grow">
+        <ul class="bullets">
+          <li><strong>One operator pilots.</strong> Coverage is flown by hand, one aircraft at a time.</li>
+          <li><strong>One or two inspect video.</strong> Detection is a person watching a feed.</li>
+          <li><strong>A chain of command decides.</strong> New information and priorities flow through people.</li>
+          <li><strong>The bottleneck is human attention.</strong> How much new information an operator can absorb
+          sets the ceiling on the search.</li>
+        </ul>
+      </div>
+      <div class="stack" style="flex:0 0 600px;gap:16px">
+        <div class="card dark">
+          <h3>The finding that motivates the thesis</h3>
+          <p>The quality of a search is highly dependent on the operator. Any system that helps has to reduce
+          that dependence rather than add another screen.</p>
+        </div>
+        <div class="card solid">
+          <h3>Where this comes from</h3>
+          <p>A field study of Danish drone-supported rescue operations with the emergency management agency, DEMA.</p>
+          <div class="cap">Hoang et al., 2023</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1007/978-3-031-28138-9_11">Drone Swarms to Support Search and Rescue Operations: Opportunities and Challenges · Hoang, Grøntved, van Berkel, Skov, Christensen &amp; Merritt, Cultural Robotics, Springer 2023</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Describe an actual operation for thirty seconds: the van, the pilot, the two people squinting at a tablet. Then read the dark card. Everything after this slide is an attempt to move work off that pilot.</div>
+</section>
+
+<!-- ============ 6 · a search is dynamic ============ -->
+<section class="slide" data-t="A search is a moving target">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Danish SAR · the environment</div>
+  <h1 class="t">A search is a moving target</h1>
+  <p class="sub">Four things change while the drones are in the air, and the plan has to change with them.</p>
+  <div class="body">
+    <div class="grid-4">
+      <div class="card"><h3>Search area</h3><p>Grows, shrinks and moves as witnesses report and terrain is cleared.</p></div>
+      <div class="card"><h3>Direction of search</h3><p>Where the person was last seen and where they are likely to go decide the sweep.</p></div>
+      <div class="card"><h3>Number of drones</h3><p>Aircraft land to swap batteries and rejoin; the team size is never constant.</p></div>
+      <div class="card"><h3>Search priority</h3><p>The incident commander re-weights areas as the operation unfolds.</p></div>
+    </div>
+    <div class="card accent" style="margin-top:30px">
+      <h3>Completeness and redundancy are the requirement</h3>
+      <p>A missed patch is a failed search. A system that is fast but leaves gaps is worse than a slow one that
+      does not, so every method in this thesis is judged first on whether it covers everything.</p>
+    </div>
+  </div>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">The point is not the four variables, it is that the plan must be recomputed while flying. That rules out anything that needs the whole problem known in advance, and sets up Part two.</div>
+</section>
+
+<!-- ============ 7 · OFS ============ -->
+<section class="slide tight" data-t="The OFS method makes searches consistent">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Danish SAR · the procedure</div>
+  <h1 class="t">The OFS method makes searches consistent</h1>
+  <p class="sub">The Danish Emergency Management Agency searches in a fixed order: <strong>Overview, Focused,
+  Systematic</strong>. We evaluated it in the field.</p>
+  <div class="body">
+    <div class="cols" style="align-items:flex-start;flex:none">
+      <div class="stack grow" style="gap:16px">
+        <div class="flow">
+          <div class="card solid"><h3>Overview</h3><p>Get the whole area in view. Where are the roads, the water, the edges?</p></div>
+          <div class="arrow">→</div>
+          <div class="card solid"><h3>Focused</h3><p>Inspect the points of interest the overview surfaced.</p></div>
+          <div class="arrow">→</div>
+          <div class="card solid"><h3>Systematic</h3><p>Sweep what remains with coverage lines, so nothing is left to chance.</p></div>
+        </div>
+        <div class="card" style="border-color:var(--accent-2)">
+          <h3 style="color:var(--accent-2)">Where it still falls short</h3>
+          <p>OFS ensures consistency over best practice. It does not make the <em>task generation</em> consistent:
+          two operators given the same map still draw different lines and pick different points.</p>
+        </div>
+      </div>
+      <div class="stack" style="flex:0 0 480px;gap:16px">
+        <div class="card dark">
+          <span class="num">18</span>
+          <h3>field experiments</h3>
+          <p>Across four different geographical areas, with 180 simulated missing persons between them.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Say the three words slowly; they return on the next slide as task types. The caveat card is the hinge: the procedure is consistent, the tasks it produces are not, and that is exactly what software is good at.</div>
+</section>
+
+<!-- ============ 8 · OFS to tasks ============ -->
+<section class="slide tight" data-t="From OFS to tasks a drone can take">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Danish SAR · task generation</div>
+  <h1 class="t">From OFS to tasks a drone can take</h1>
+  <p class="sub">If the procedure is fixed, the tasks can be generated automatically from the environment.</p>
+  <div class="body">
+    <div class="flow" style="flex:none">
+      <div class="card"><h3>Environment</h3><p>The search polygon, terrain, roads, water, buildings, and the environmental features
+      that shape where people end up.</p><div class="cap">get familiar with the ground</div></div>
+      <div class="arrow">→</div>
+      <div class="card accent"><h3>The OFS rules</h3><p>Overview becomes a perimeter pass, Focused becomes interest points, Systematic
+      becomes coverage lines over what is left.</p><div class="cap">the procedure, encoded</div></div>
+      <div class="arrow">→</div>
+      <div class="card dark"><h3>Tasks</h3><p>Coverage lines and interest points, generated the same way every time, ready for
+      an allocator to divide between drones.</p><div class="cap">consistent by construction</div></div>
+    </div>
+    <div class="card solid" style="margin-top:30px">
+      <h3>Why this matters for everything after it</h3>
+      <p>The rest of the thesis assumes tasks exist. This is where they come from, and it is why the allocator in
+      Part two has to handle <em>lines</em>, not just points.</p>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1007/978-3-031-80946-0_26">Automated Task Generation for Multi-Drone Search and Rescue Operations · Grøntved, Christensen &amp; Bahodi, DCAI 2025, Springer</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Walk the three cards left to right. The last sentence of the bottom card is the bridge to the next section, so land on it.</div>
+</section>
+
+<!-- ============ 9 · section two ============ -->
+<section class="slide section" data-t="Decentralized task allocation">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part two</div>
+  <h1>How can drones plan a search together?</h1>
+  <p class="sub">The field study set the requirements: cheap, lightweight, low overhead, an ad hoc infrastructure,
+  and complete. We do not want to miss anything.</p>
+  <div class="notes">Two requirements do the work: no infrastructure, and completeness. Hold them up against every method that follows.</div>
+</section>
+
+<!-- ============ 10 · state of the art ============ -->
+<section class="slide" data-t="Coverage planning assumes you know everything in advance">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Task allocation · state of the art</div>
+  <h1 class="t sm">Coverage planning assumes you know everything in advance</h1>
+  <p class="sub">The strongest multi-robot coverage methods are near-optimal, centralized, and solved before take-off.</p>
+  <div class="body">
+    <div class="cols">
+      <div class="grow">
+        <ul class="bullets">
+          <li><strong>Everything known pre-operation.</strong> Area, robots, capacities and costs are inputs to one solve.</li>
+          <li><strong>No on-the-fly planning.</strong> A change in the field means a new problem and a new solution from scratch.</li>
+          <li><strong>Near-optimal.</strong> Which is exactly why the community likes them, and why they are the benchmark to beat.</li>
+          <li><strong>One computer in the loop.</strong> A centralized system might not always fit a rescue operation in a forest.</li>
+        </ul>
+      </div>
+      <div class="stack" style="flex:0 0 560px">
+        <div class="card solid">
+          <h3>Representative example</h3>
+          <p>Area coverage with multiple capacity-constrained robots: an exact formulation with strong guarantees,
+          and a planning horizon that ends before the first drone leaves the ground.</p>
+          <div class="cap">Agarwal &amp; Akella, IEEE RA-L 2022</div>
+        </div>
+        <div class="card dark">
+          <h3>The mismatch</h3>
+          <p>Part one said the search changes while flying. A plan that must be complete before take-off cannot follow it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li>Area Coverage With Multiple Capacity-Constrained Robots · Agarwal &amp; Akella, IEEE Robotics and Automation Letters 7(2), 2022</li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Be generous to the centralized work; it is the yardstick on the results slide. The critique is about fit, not quality.</div>
+</section>
+
+<!-- ============ 11 · the problem ============ -->
+<section class="slide tight" data-t="The allocation problem, formally">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Task allocation · the problem</div>
+  <h1 class="t">The allocation problem, formally</h1>
+  <p class="sub">Assign <em>N<sub>a</sub></em> drones to <em>N<sub>t</sub></em> tasks without conflicts, maximising a global goal
+  under a set of constraints.</p>
+  <div class="body">
+    <div class="cols" style="align-items:flex-start;flex:none">
+      <div class="card solid grow">
+        <div class="cap" style="margin:0 0 14px">the objective</div>
+        <p class="formula">maximise &nbsp;Σ<sub><em>i</em></sub> Σ<sub><em>j</em></sub> <em>F<sub>ij</sub></em>(<em>x<sub>ij</sub></em>)
+          <small>the sum of every drone's local objective over the tasks it wins</small></p>
+        <p class="formula" style="margin-top:22px">subject to &nbsp;<em>H</em>
+          <small>each task to at most one drone, plus the operational constraints on the right</small></p>
+        <div class="cap" style="margin-top:22px">formalised as a mixed-integer linear program (MILP)</div>
+      </div>
+      <div class="stack" style="flex:0 0 560px;gap:16px">
+        <div class="card"><h3>No-fly zones</h3><p>Airspace the plan may not enter, however cheap the path through it would be.</p></div>
+        <div class="card"><h3>Time criticality</h3><p>Some areas must be searched first; the objective discounts late arrival.</p></div>
+        <div class="card"><h3>Energy limits</h3><p>A bundle of tasks has to fit in one battery, or it is not a valid bundle.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Do not derive anything. The audience needs to see that the problem is a standard assignment problem with a twist in the constraints, so that "we solve it decentrally" lands as the interesting part.</div>
+</section>
+
+<!-- ============ 12 · single item auctions ============ -->
+<section class="slide tight" data-t="Single-item auctions leave capacity on the table">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Task allocation · the usual approach</div>
+  <h1 class="t sm">Single-item auctions leave capacity on the table</h1>
+  <p class="sub">The current approach: tasks are points or clusters of points, auctioned one at a time.</p>
+  <div class="body">
+    <div class="cols" style="flex:none">
+      <div class="grow">
+        <ul class="bullets">
+          <li><strong>Points or clusters.</strong> The task model has no notion of a path, so a coverage line is a cluster of waypoints.</li>
+          <li><strong>One task per round.</strong> Sequential single-item auctions converge, but slowly.</li>
+          <li><strong>Suboptimal by design.</strong> An agent can almost always have acquired more tasks than the auction gave it.</li>
+          <li><strong>Strong assumptions.</strong> Communication must be complete and situational awareness must be
+          consistent across agents before the bids mean anything.</li>
+        </ul>
+      </div>
+      <div class="stack" style="flex:0 0 620px;gap:16px">
+        <div class="card solid">
+          <h3>Centralized auction</h3>
+          <p>One auctioneer collects every bid and announces every winner. Simple, and a single point of failure.</p>
+        </div>
+        <div class="card accent">
+          <h3>Decentralized auction</h3>
+          <p>Every agent is its own auctioneer and the fleet has to agree on who won. Harder, and the only kind that
+          survives losing the ground station.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">The two cards on the right are the fork in the road. The source deck showed the same slide twice with an animation; the animation is the second card appearing.</div>
+</section>
+
+<!-- ============ 13 · our approach ============ -->
+<section class="slide" data-t="Go decentralized, and bid on bundles">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Task allocation · our approach</div>
+  <h1 class="t">Go decentralized, and bid on bundles</h1>
+  <p class="sub">Decentralized algorithms buy robustness in an unstructured environment. The consensus-based bundle
+  algorithm, CBBA, is the one we start from.</p>
+  <div class="body">
+    <div class="grid-4">
+      <div class="card"><h3>Robust where there is no structure</h3><p>No node whose loss ends the mission, in a forest with no coverage.</p></div>
+      <div class="card"><h3>Less overhead</h3><p>No reliance on existing infrastructure; the drones are the network.</p></div>
+      <div class="card"><h3>Ad hoc re-planning</h3><p>A drone that lands to swap batteries triggers a re-bid, not a restart.</p></div>
+      <div class="card"><h3>Dynamic task inclusion</h3><p>New tasks join the auction as the operation changes, the way Part one said it would.</p></div>
+    </div>
+    <div class="card dark" style="margin-top:30px">
+      <h3>CBBA in one line</h3>
+      <p>Each drone greedily builds a <em>bundle</em> of tasks it can serve cheaply, then the fleet reaches consensus on the
+      winning bids. Decentralized, auction based, and it considers the whole bundle while bidding rather than one task at a time.</p>
+    </div>
+  </div>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Four reasons, then the algorithm's name. The next slide shows how it works; this one only says why it is the right family.</div>
+</section>
+
+<!-- ============ 14 · CBBA ============ -->
+<section class="slide tight" data-t="CBBA: build a bundle, then agree">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Task allocation · CBBA</div>
+  <h1 class="t">CBBA: build a bundle, then agree</h1>
+  <p class="sub">Two phases repeat until nobody's bid changes: bundle construction on each drone, consensus between them.</p>
+  <div class="body">
+    <div class="cols" style="flex:none">
+      <div class="stack grow" style="gap:16px">
+        <div class="card solid">
+          <h3>Bundle construction</h3>
+          <p>Agent <em>i</em> adds task <em>j</em> to its bundle <em>b</em> and path <em>p</em> whenever the reward <em>S</em> improves.
+          It bids the marginal gain of adding that task where it fits best in the path.</p>
+        </div>
+        <div class="card solid">
+          <h3>Consensus</h3>
+          <p>Neighbours exchange winning bids and who holds them. A set of consensus rules resolves every conflict locally, so
+          the fleet agrees on who is winning and what the bid is, over any communication topology that changes while flying.</p>
+        </div>
+      </div>
+      <div class="stack" style="flex:0 0 620px;gap:16px">
+        <div class="card accent">
+          <h3>The condition: diminishing marginal gain</h3>
+          <p>No task added to a bundle may decrease the cost of the whole bundle. A time-discounted reward satisfies this:
+          adding a point to a path always adds time.</p>
+        </div>
+        <div class="card" style="border-color:var(--accent-2)">
+          <h3 style="color:var(--accent-2)">Two limits</h3>
+          <p>Optimality is not guaranteed. And the original is limited to <strong>point tasks</strong>, while Part one
+          produced <strong>lines</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li>Consensus-Based Decentralized Auctions for Robust Task Allocation · Choi, Brunet &amp; How, IEEE Transactions on Robotics 25(4), 2009</li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Bid, share, resolve, repeat. Then point at the rust card: the second limit is the contribution of the next two slides.</div>
+</section>
+
+<!-- ============ 15 · line tasks ============ -->
+<section class="slide" data-t="Trajectories, not points">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Task allocation · the contribution</div>
+  <h1 class="t">Trajectories, not points</h1>
+  <p class="sub">A task becomes a path between two points, and <strong>which end you start from</strong> is part of what
+  the allocator decides.</p>
+  <div class="body">
+    <div class="cols">
+      <figure class="grow" style="min-height:0">
+        <img class="zoom" style="flex:1;min-height:0" src="assets/tasks.svg" alt="Left, point tasks joined by an incidental path. Right, directed trajectory tasks where the allocator also picks the traversal direction.">
+        <figcaption>Point tasks against directed trajectory tasks. Figure from the ICAR 2023 talk.</figcaption>
+      </figure>
+      <div class="stack" style="flex:0 0 600px;gap:16px">
+        <div class="card solid">
+          <h3>Still satisfies diminishing marginal gain</h3>
+          <p>The spatial difference between a line's start and end is what the bid scores, so CBBA's convergence carries over.</p>
+        </div>
+        <div class="card accent">
+          <h3>A task abstraction that generalises</h3>
+          <p>Points, lines and areas (as line coverage) are all the same object to the allocator.</p>
+        </div>
+        <div class="card dark">
+          <h3>The price</h3>
+          <p>Higher complexity, because tasks now depend on each other: the order in the path and the direction of
+          traversal both change the cost.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1109/ICAR58858.2023.10406912">Decentralized Multi-UAV Trajectory Task Allocation in Search and Rescue Applications · Grøntved, Lundquist &amp; Christensen, ICAR 2023, IEEE</a></li>
+    <li><a href="https://github.com/kasperg3/trajallocpy">TrajAllocPy, the reference implementation</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Point at the arrows in the right panel of the figure: they are the contribution. A line has two ways to be flown, and the choice changes the cost of the next task in the bundle.</div>
+</section>
+
+<!-- ============ 16 · results ============ -->
+<section class="slide tight" data-t="Within 5% of centralized, without the centre">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Task allocation · results</div>
+  <h1 class="t">Within 5% of centralized, without the centre</h1>
+  <p class="sub">Against a branch-and-bound MILP that knows everything in advance, the decentralized allocator gives up
+  almost nothing.</p>
+  <div class="body">
+    <div class="cols" style="align-items:flex-start;flex:none">
+      <figure style="flex:0 0 720px;min-height:0">
+        <img class="zoom" style="max-height:520px;width:auto;align-self:flex-start" src="/assets/img/trajallocpy.webp" alt="A coverage plan from TrajAllocPy: line tasks laid over a rotated site polygon with buildings, one drone's path in magenta.">
+        <figcaption>Line coverage tasks over a real site, allocated with TrajAllocPy.
+          <span class="todo">Replace with the results plots from the defence deck (near-optimal comparison and scaling curves).</span></figcaption>
+      </figure>
+      <div class="stack grow" style="gap:16px">
+        <div class="card dark">
+          <span class="num">&lt; 5%</span>
+          <h3>from near-optimal</h3>
+          <p>Compared with centralized branch-and-bound MILP solutions on the same benchmark problems.</p>
+        </div>
+        <div class="card solid">
+          <h3>Scales with robots, less so with tasks</h3>
+          <p>Adding drones is cheap. Adding tasks grows the bundle search, since each line can be flown two ways and
+          slotted anywhere in the path.</p>
+        </div>
+        <div class="card solid">
+          <h3>Direction is optimised, not guessed</h3>
+          <p>Each line task is scored in both directions before it enters a bundle.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1109/ICAR58858.2023.10406912">Decentralized Multi-UAV Trajectory Task Allocation in Search and Rescue Applications · Grøntved, Lundquist &amp; Christensen, ICAR 2023, IEEE</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Read the 5% and stop. If asked about the scaling, the honest answer is that task count is the axis that hurts, and the reason is the two traversal directions per line.</div>
+</section>
+
+<!-- ============ 17 · section three ============ -->
+<section class="slide section" data-t="Swarm control through programming interfaces">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part three</div>
+  <h1>Swarm control through programming interfaces</h1>
+  <p class="sub">Combining domain-specific knowledge with planning algorithms: two declarative languages between the
+  operator and the mission.</p>
+</section>
+
+<!-- ============ 18 · two languages ============ -->
+<section class="slide tight" data-t="Two languages between the operator and the swarm">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Programming interfaces · the languages</div>
+  <h1 class="t sm">Two languages between the operator and the swarm</h1>
+  <p class="sub">High-level planning, automatic task generation and swarm monitoring, on top of a built-in UAV
+  infrastructure of Gazebo, PX4 SITL and ROS.</p>
+  <div class="body">
+    <div class="cols" style="flex:none">
+      <div class="card solid grow">
+        <h3>Agent language</h3>
+        <p>Describes what a drone <em>is</em>: its capabilities such as flight time and sensors, and the environmental
+        conditions and limitations it operates under.</p>
+        <div class="cap">integrates environment and capability</div>
+      </div>
+      <div class="card accent grow">
+        <h3>Operation language</h3>
+        <p>Describes what the operator <em>wants</em>: tasks and constraints in the operator's own terms. It is the
+        translation layer between a human mission objective and its execution.</p>
+        <div class="cap">the operator's side of the contract</div>
+      </div>
+      <div class="card dark" style="flex:0 0 520px">
+        <h3>Why declarative</h3>
+        <p>An operator states the goal and the rules, not the flight plan. The planner from Part two fills in the rest,
+        and the same operation file runs in simulation and on aircraft.</p>
+      </div>
+    </div>
+    <div class="chips" style="margin-top:30px">
+      <span class="chip on">high-level planning</span><span class="chip on">automatic task generation</span>
+      <span class="chip on">swarm monitoring</span><span class="chip">Gazebo</span><span class="chip">PX4 SITL</span><span class="chip">ROS</span>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1109/ICUAS60882.2024.10556983">Towards Autonomous Multi-UAV U-Space Operation Planning · Grøntved, Jepsen, Christensen, Jensen, Schultz Lundquist &amp; Campusano, ICUAS 2024, IEEE</a></li>
+    <li><a href="https://github.com/kasperg3/u-space-mission-planning">U-space mission planning, source</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Two languages because two people write them: the integrator describes the aircraft once, the operator describes each mission. Show a snippet of the operation language if there is time.</div>
+</section>
+
+<!-- ============ 19 · still one node ============ -->
+<section class="slide" data-t="Still one node holding the strings">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Programming interfaces · the limit</div>
+  <h1 class="t">Still one node holding the strings</h1>
+  <p class="sub">The languages are decentralized by nature. The implementation was not, yet.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card"><h3>Dynamic re-planning</h3><p>Handled, but governed centrally: one process re-runs the allocation.</p></div>
+      <div class="card"><h3>Failure detection</h3><p>Handled, but a single node watches every aircraft's heartbeat.</p></div>
+      <div class="card"><h3>Communication</h3><p>Handled over MAVLink, through the one node that maintains every connection.</p></div>
+    </div>
+    <div class="card dark" style="margin-top:30px;border-color:var(--accent)">
+      <h3 style="color:var(--accent)">Which sets the next requirement</h3>
+      <p>The Operation language is inherently decentralized, but the solution still depends on a single node that maintains
+      the connection using MAVLink. What is missing is a communication protocol without a single point of failure.</p>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1109/ICUAS60882.2024.10556983">Towards Autonomous Multi-UAV U-Space Operation Planning · Grøntved et al., ICUAS 2024, IEEE</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">This is a self-critique slide and it should sound like one. The dark card is the motivation for Part four; read its last sentence as a question.</div>
+</section>
+
+<!-- ============ 20 · section four ============ -->
+<section class="slide section" data-t="Communication without infrastructure">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part four</div>
+  <h1>Communication without infrastructure</h1>
+  <p class="sub">Simple broadcast messaging between aircraft, inexpensive, open source, and tested in the air.</p>
+</section>
+
+<!-- ============ 21 · nothing fit ============ -->
+<section class="slide tight" data-t="Nothing off the shelf fit">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Communication · the options</div>
+  <h1 class="t">Nothing off the shelf fit</h1>
+  <p class="sub">The requirements: an ad hoc network with decentralized communication, adaptable message formats, and hardware
+  that is open and easy to get.</p>
+  <div class="body">
+    <div class="grid-4">
+      <div class="card" style="border-color:var(--accent-2)"><h3 style="color:var(--accent-2)">MAVLink</h3><p>The standard drone protocol, and it does not support ad hoc drone-to-drone communication.</p></div>
+      <div class="card" style="border-color:var(--accent-2)"><h3 style="color:var(--accent-2)">MQTT and Zigbee</h3><p>Both need a centralized broker or coordinator, the very node we are trying to remove.</p></div>
+      <div class="card" style="border-color:var(--accent-2)"><h3 style="color:var(--accent-2)">B.A.T.M.A.N.</h3><p>A real mesh protocol, but it relies on the Linux kernel, so the hardware gets expensive.</p></div>
+      <div class="card" style="border-color:var(--accent-2)"><h3 style="color:var(--accent-2)">LoRa</h3><p>Long range, but proprietary and with data rates too low to carry bids and positions.</p></div>
+    </div>
+    <div class="card accent" style="margin-top:30px">
+      <h3>So we built one</h3>
+      <p>Broadcast on the data link layer, on a microcontroller that costs about ten euros, with a message format the
+      application defines.</p>
+    </div>
+  </div>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Four rust cards, one reason each. Do not defend the choices at length; the next slide is the argument.</div>
+</section>
+
+<!-- ============ 22 · SwarmTalk ============ -->
+<section class="slide tight" data-t="SwarmTalk: a €10 plug-and-play module">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Communication · SwarmTalk</div>
+  <h1 class="t">SwarmTalk: a €10 plug-and-play module</h1>
+  <p class="sub">No central coordinator and no network configuration in advance. A commodity ESP32 broadcasting on 2.4 GHz.</p>
+  <div class="body">
+    <div class="cols" style="align-items:flex-start;flex:none">
+      <div class="stack grow" style="gap:16px">
+        <div class="flow">
+          <div class="card solid"><h3>Physical layer</h3><p>2.4 GHz Wi-Fi radio on an off-the-shelf ESP32.</p><div class="cap">COTS</div></div>
+          <div class="arrow">→</div>
+          <div class="card solid"><h3>Protocol layer</h3><p>ESP-NOW: lightweight, connectionless messaging on OSI layer 2.
+          1490-byte packets, about 372 floats each.</p><div class="cap">no association, no router</div></div>
+          <div class="arrow">→</div>
+          <div class="card solid"><h3>Application layer</h3><p>A ROS 2 bridge that serialises messages to binary and back:
+          positions, task assignments, status.</p><div class="cap">publish and subscribe</div></div>
+        </div>
+        <div class="card solid">
+          <h3>Open sourced, all of it</h3>
+          <p>Firmware, example code, the ROS 2 middleware and a 3D-printable enclosure. Quick to prototype with and easy to extend.</p>
+        </div>
+      </div>
+      <div class="stack" style="flex:0 0 460px;gap:16px">
+        <div class="card dark">
+          <span class="num">≈ €10</span>
+          <h3>per aircraft</h3>
+          <p>The whole module. Cheap enough to put on every drone in a fleet and lose a few.</p>
+        </div>
+        <div class="card accent">
+          <span class="num">1,500 m</span>
+          <h3>tested in the air</h3>
+          <p>Successfully exchanged packets between airborne UAVs up to 1.5 km apart.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1109/ICUAS65942.2025.11007928">Communication for UAV Swarms: an Open-source, Low-cost Solution Based on ESP-NOW · Grøntved, Ladig &amp; Christensen, ICUAS 2025, IEEE</a></li>
+    <li><a href="https://github.com/kasperg3/swarmtalk">SwarmTalk on GitHub</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Hold the module up if you have one. The layered picture matters because the ROS 2 bridge is what makes it usable by the planner from Part two without anyone writing radio code.</div>
+</section>
+
+<!-- ============ 23 · range ============ -->
+<section class="slide tight" data-t="Tested in the air, up to 1.5 km">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Communication · outdoor performance</div>
+  <h1 class="t">Tested in the air, up to 1.5 km</h1>
+  <p class="sub">Two outdoor experiments with real aircraft, one for throughput at working range and one to find the edge.</p>
+  <div class="body">
+    <div class="cols" style="align-items:flex-start;flex:none">
+      <div class="stack grow" style="gap:16px">
+        <div class="grid-2">
+          <div class="card solid">
+            <span class="num">0.16%</span>
+            <h3>packet loss at 200 to 400 m</h3>
+            <p>Three UAVs at 50 to 100 m altitude, exchanging positions continuously.</p>
+          </div>
+          <div class="card solid">
+            <span class="num">≈ 6%</span>
+            <h3>packet loss out to 1,500 m</h3>
+            <p>Two UAVs, packets at 2 Hz, range swept from 0 to 1.5 km.</p>
+          </div>
+        </div>
+        <div class="card dark">
+          <h3>Where it sits</h3>
+          <p>Range: LoRa &gt; SwarmTalk &gt; Wi-Fi. Less reach than LoRa, far more data; more reach than infrastructure Wi-Fi,
+          with no access point.</p>
+        </div>
+      </div>
+      <figure style="flex:0 0 620px;min-height:0">
+        <div class="fig-todo"><span class="todo">Range and packet-loss plots from the defence deck (source slides 30 and 31)</span></div>
+        <figcaption>Outdoor experiments, ICUAS 2025.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1109/ICUAS65942.2025.11007928">Communication for UAV Swarms: an Open-source, Low-cost Solution Based on ESP-NOW · Grøntved, Ladig &amp; Christensen, ICUAS 2025, IEEE</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Two numbers, two experiments. The 6% at 1.5 km is with a broadcast protocol and no retransmission, so say so before someone asks.</div>
+</section>
+
+<!-- ============ 24 · HITL ============ -->
+<section class="slide tight" data-t="Consensus in under ten seconds, over the air">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Communication · hardware in the loop</div>
+  <h1 class="t sm">Consensus in under ten seconds, over the air</h1>
+  <p class="sub">Parts two and four together: three simulated UAVs run the decentralized allocator, and every bid travels
+  over real SwarmTalk radios.</p>
+  <div class="body">
+    <div class="cols" style="flex:none">
+      <div class="stack grow" style="gap:16px">
+        <div class="card dark">
+          <span class="num">&lt; 10 s</span>
+          <h3>to a conflict-free allocation</h3>
+          <p>The three UAVs reached consensus on the task allocation in under ten seconds.</p>
+        </div>
+        <div class="card solid">
+          <h3>The radio is not the bottleneck</h3>
+          <p>Throughput of 150 kbps against a theoretical maximum of 500 kbps: the allocator used about 30% of the
+          available bandwidth.</p>
+        </div>
+      </div>
+      <div class="stack" style="flex:0 0 720px;gap:16px">
+        <div class="card accent">
+          <h3>What this closes</h3>
+          <p>Slide 19 said the planner still hung off one MAVLink node. Here the same planner runs with no ground station in
+          the loop at all: the drones bid, agree and fly on a network they carry themselves.</p>
+        </div>
+        <div class="card solid">
+          <h3>A platform for decentralized swarms</h3>
+          <p>Commodity hardware at about €10 per aircraft, open-source firmware and middleware, and a planner that already speaks
+          it. Enough to prototype a dynamic swarm in an afternoon.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1109/ICUAS65942.2025.11007928">Communication for UAV Swarms: an Open-source, Low-cost Solution Based on ESP-NOW · Grøntved, Ladig &amp; Christensen, ICUAS 2025, IEEE</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">This is the slide where two parts of the thesis touch. Say that explicitly. The bandwidth number is there to pre-empt "does it scale to more drones".</div>
+</section>
+
+<!-- ============ 25 · section five ============ -->
+<section class="slide section" data-t="A dataset and benchmark for informed search">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part five</div>
+  <h1>A dataset and benchmark for informed search</h1>
+  <p class="sub">In search and rescue you want to look at the right places at the right time. Until now there was no shared
+  way to say whether a planner does.</p>
+</section>
+
+<!-- ============ 26 · no yardstick ============ -->
+<section class="slide" data-t="Four hundred papers a year and no shared yardstick">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> SAREnv · the gap</div>
+  <h1 class="t sm">Four hundred papers a year and no shared yardstick</h1>
+  <p class="sub">The field publishes heuristics faster than it agrees on how to describe the problem or the performance.</p>
+  <div class="body">
+    <div class="cols">
+      <div class="stack" style="flex:0 0 520px">
+        <div class="card solid">
+          <span class="num">≈ 400</span>
+          <h3>SAR publications last year</h3>
+          <p>Of which roughly a hundred are within robotic path planning.</p>
+          <div class="cap">OpenAlex, keyword search-and-rescue</div>
+        </div>
+      </div>
+      <div class="stack grow">
+        <div class="card solid">
+          <h3>A lot of heuristics</h3>
+          <p>Spirals, lawnmowers, greedy frontiers and learned policies, each evaluated on its own map with its own
+          metric, so none of them can be compared.</p>
+        </div>
+        <div class="card dark">
+          <h3>The goal is ambiguous, except for one thing</h3>
+          <p>What a SAR operation optimises is debatable. Finding the lost person is not. A benchmark has to be built
+          around that, and around where lost people actually turn out to be.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://openalex.org/works?page=1&amp;filter=keywords.id:keywords/search-and-rescue">OpenAlex works tagged search and rescue</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">The dark card is the design principle behind SAREnv: ground truth is a probability of where a person is, not a coverage percentage.</div>
+</section>
+
+<!-- ============ 27 · SAREnv ============ -->
+<section class="slide tight" data-t="SAREnv: lost-person behaviour as a dataset">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> SAREnv · the dataset</div>
+  <h1 class="t">SAREnv: lost-person behaviour as a dataset</h1>
+  <p class="sub">An open-source dataset and benchmark tool for informed wilderness search and rescue with UAVs, built with the
+  University of Bristol Flight Lab.</p>
+  <div class="body">
+    <div class="cols" style="align-items:flex-start;flex:none">
+      <div class="stack grow" style="gap:16px">
+        <div class="grid-2">
+          <div class="card"><h3>Lost-person behaviour</h3><p>Statistical models of where people are found relative to where they were last seen.</p></div>
+          <div class="card"><h3>Geospatial features</h3><p>Roads, water, tree cover, buildings and terrain, the features that pull a lost person one way or another.</p></div>
+          <div class="card"><h3>Predefined area sizes</h3><p>Scenarios at fixed extents so results are comparable between papers.</p></div>
+          <div class="card"><h3>Empirical statistics</h3><p>The probabilities come from real incident data, and they generate the maps a planner is scored against.</p></div>
+        </div>
+      </div>
+      <div class="stack" style="flex:0 0 480px;gap:16px">
+        <div class="card dark">
+          <span class="num">60</span>
+          <h3>geospatial scenarios</h3>
+          <p>Across four distinct European environments, each with a high-resolution probability map.</p>
+        </div>
+        <div class="card accent">
+          <h3>What it is for</h3>
+          <p>Use statistical data to generate data for path-planning algorithms, then score any planner the same way.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.3390/drones9090628">SAREnv: An Open-Source Dataset and Benchmark Tool for Informed Wilderness Search and Rescue Using UAVs · Grøntved, Jarabo-Peñas, Reid, Rolland, Watson, Richards, Bullock &amp; Christensen, Drones 9(9):628, MDPI 2025</a></li>
+    <li><a href="https://github.com/namurproject/SAREnv">SAREnv on GitHub</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Name the Bristol collaboration; it is why the environments are European rather than Danish. The 60 scenarios are the thing a reviewer can download tonight.</div>
+</section>
+
+<!-- ============ 28 · probability maps ============ -->
+<section class="slide tight" data-t="Two independent distributions make a probability map">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> SAREnv · probabilistic maps</div>
+  <h1 class="t sm">Two independent distributions make a probability map</h1>
+  <p class="sub">Where a person is likely to be is the product of how far they tend to travel and what kind of ground they
+  tend to end up on.</p>
+  <div class="body">
+    <div class="cols" style="align-items:flex-start;flex:none">
+      <div class="card solid grow">
+        <div class="cap" style="margin:0 0 14px">the model</div>
+        <p class="formula">P(area) &nbsp;∝&nbsp; P<sub>spatial</sub>(<em>x</em>, <em>y</em>) · P<sub>feature</sub>(<em>f</em>(<em>x</em>, <em>y</em>))
+          <small>a continuous spatial probability function, times a discrete distribution over the feature under each cell,
+          assumed statistically independent</small></p>
+        <div class="grid-2" style="margin-top:26px;gap:16px">
+          <div class="card"><h3>Spatial distribution</h3><p>Distance from the last known position, from lost-person statistics.</p></div>
+          <div class="card"><h3>Feature distribution</h3><p>How often people are found on a road, by water, in dense forest, in a building.</p></div>
+        </div>
+      </div>
+      <figure style="flex:0 0 620px;min-height:0">
+        <div class="fig-todo"><span class="todo">Probability map render from the defence deck (source slide 36)</span></div>
+        <figcaption>A SAREnv probability map over one of the four environments.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.3390/drones9090628">SAREnv · Grøntved et al., Drones 9(9):628, MDPI 2025</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">The independence assumption is the thing to own: it is what makes the map computable from two published statistics rather than a joint model nobody has data for.</div>
+</section>
+
+<!-- ============ 29 · metrics ============ -->
+<section class="slide" data-t="Three metrics for one question">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> SAREnv · performance metrics</div>
+  <h1 class="t">Three metrics for one question</h1>
+  <p class="sub">Did the search look at the right places at the right time? Each metric answers a stricter version of it.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card solid">
+        <span class="num">PoD</span>
+        <h3>Accumulated probability of detection</h3>
+        <p>How much of the probability mass the path has seen. Rewards complete coverage of likely ground.</p>
+      </div>
+      <div class="card solid">
+        <span class="num">TD-PoD</span>
+        <h3>Time-discounted probability</h3>
+        <p>The same mass, discounted by when it was seen. Rewards looking in the likely places <em>first</em>.</p>
+      </div>
+      <div class="card dark">
+        <span class="num">LPDS</span>
+        <h3>Lost person discovery score</h3>
+        <p>How quickly sampled lost persons, drawn from the map, are actually found. The one that reads like an operation.</p>
+      </div>
+    </div>
+    <div class="card accent" style="margin-top:30px">
+      <h3>Why three</h3>
+      <p>A planner can score well on coverage and badly on time, or find the sampled people by luck. Reporting all three
+      is what makes two papers comparable.</p>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.3390/drones9090628">SAREnv · Grøntved et al., Drones 9(9):628, MDPI 2025</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">The source deck spent three slides on these; one is enough if you say the key word on each: complete, first, found.</div>
+</section>
+
+<!-- ============ 30 · baselines ============ -->
+<section class="slide tight" data-t="Five baselines, one benchmark">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> SAREnv · baselines and results</div>
+  <h1 class="t">Five baselines, one benchmark</h1>
+  <p class="sub">Predefined coverage patterns give every future planner something to beat, on the same maps with the same
+  metrics.</p>
+  <div class="body">
+    <div class="cols" style="align-items:flex-start;flex:none">
+      <div class="stack grow" style="gap:16px">
+        <div class="chips">
+          <span class="chip on">Spiral</span><span class="chip on">Concentric circles</span><span class="chip on">Pizza zigzag</span>
+          <span class="chip on">Greedy</span><span class="chip on">Random exploration</span>
+        </div>
+        <div class="card solid">
+          <h3>What the comparison shows</h3>
+          <p>The informed planners, those that read the probability map, separate from the uninformed patterns most on the
+          time-discounted metric. Coverage alone hides the difference.
+          <span class="todo">Confirm against the results plot on source slide 41.</span></p>
+        </div>
+        <div class="card dark">
+          <h3>The benchmark is the contribution</h3>
+          <p>Not the baselines' scores, but that any planner published after this can report the same three numbers on the
+          same sixty scenarios.</p>
+        </div>
+      </div>
+      <figure style="flex:0 0 720px;min-height:0">
+        <div class="fig-todo"><span class="todo">Baseline pattern gallery and performance plot from the defence deck (source slides 40 and 41)</span></div>
+        <figcaption>Baseline coverage patterns and their scores, SAREnv.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.3390/drones9090628">SAREnv · Grøntved et al., Drones 9(9):628, MDPI 2025</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">If the plot is on screen, point at the gap on the time-discounted axis. If it is not yet, say the sentence in the first card and move on.</div>
+</section>
+
+<!-- ============ 31 · section six ============ -->
+<section class="slide section" data-t="Contributions and where this goes">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Part six</div>
+  <h1>Contributions and where this goes</h1>
+  <p class="sub">Six peer-reviewed papers, a handful of side quests, and the questions the thesis leaves open.</p>
+</section>
+
+<!-- ============ 32 · papers ============ -->
+<section class="slide dense" data-t="Six peer-reviewed papers">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Contributions · publications</div>
+  <h1 class="t">Six peer-reviewed papers</h1>
+  <p class="sub">One per component, plus the project paper that started it.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card"><h3>The HERD project</h3><p>Human multi-robot interaction in search and rescue and in farming. Christensen, Grøntved et al., Human-Multi-Robot Systems Workshop, Kyoto 2022.</p><div class="cap">context</div></div>
+      <div class="card"><h3>Automated task generation</h3><p>For multi-drone search and rescue operations. Grøntved, Christensen &amp; Bahodi, DCAI 2025, Springer.</p><div class="cap">part one</div></div>
+      <div class="card"><h3>Trajectory task allocation</h3><p>Decentralized multi-UAV trajectory task allocation in search and rescue applications. Grøntved, Lundquist &amp; Christensen, ICAR 2023, IEEE.</p><div class="cap">part two</div></div>
+      <div class="card"><h3>U-space operation planning</h3><p>Towards autonomous multi-UAV U-space operation planning. Grøntved, Jepsen, Christensen, Jensen, Schultz Lundquist &amp; Campusano, ICUAS 2024, IEEE.</p><div class="cap">part three</div></div>
+      <div class="card"><h3>Communication for UAV swarms</h3><p>An open-source, low-cost solution based on ESP-NOW. Grøntved, Ladig &amp; Christensen, ICUAS 2025, IEEE.</p><div class="cap">part four</div></div>
+      <div class="card accent"><h3>SAREnv</h3><p>An open-source dataset and benchmark tool for informed wilderness search and rescue using UAVs. Grøntved, Jarabo-Peñas, Reid, Rolland, Watson, Richards, Bullock &amp; Christensen, Drones 9(9), MDPI 2025.</p><div class="cap">part five</div></div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li>The HERD Project: Human Multi-Robot Interaction in Search &amp; Rescue and in Farming · Christensen et al., HMRS Workshop 2022</li>
+    <li><a href="https://doi.org/10.1007/978-3-031-80946-0_26">Automated Task Generation for Multi-Drone Search and Rescue Operations · DCAI 2025</a></li>
+    <li><a href="https://doi.org/10.1109/ICAR58858.2023.10406912">Decentralized Multi-UAV Trajectory Task Allocation in Search and Rescue Applications · ICAR 2023</a></li>
+    <li><a href="https://doi.org/10.1109/ICUAS60882.2024.10556983">Towards Autonomous Multi-UAV U-Space Operation Planning · ICUAS 2024</a></li>
+    <li><a href="https://doi.org/10.1109/ICUAS65942.2025.11007928">Communication for UAV Swarms: an Open-source, Low-cost Solution Based on ESP-NOW · ICUAS 2025</a></li>
+    <li><a href="https://doi.org/10.3390/drones9090628">SAREnv: An Open-Source Dataset and Benchmark Tool for Informed Wilderness Search and Rescue Using UAVs · Drones 2025</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Do not read the citations. Point at the cap on each card: one paper per part of the talk. The full references are under r.</div>
+</section>
+
+<!-- ============ 33 · other contributions ============ -->
+<section class="slide dense" data-t="Side quests that fed back in">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Contributions · other work</div>
+  <h1 class="t">Side quests that fed back in</h1>
+  <p class="sub">User studies with rescue operators, and the same swarm tools pointed at animals and volcanoes.</p>
+  <div class="body">
+    <div class="cols" style="flex:none">
+      <div class="stack grow" style="gap:16px">
+        <div class="card solid">
+          <h3>Human-swarm interaction in search and rescue</h3>
+          <p>Drone swarms to support search and rescue operations: opportunities and challenges (Cultural Robotics, Springer 2023).
+          Before it falls: supporting drone fleet management through battery visualisations (INTERACT 2025).</p>
+          <div class="cap">with Hoang, Bahodi, van Berkel, Skov, Merritt, Lau</div>
+        </div>
+      </div>
+      <div class="stack grow" style="gap:16px">
+        <div class="card solid">
+          <h3>Wildlife and environmental monitoring</h3>
+          <p>Drone swarms for animal monitoring: multi-perspective data collection (IMAV 2024) and field trials on large mammals
+          (PAAMS 2025). Autonomous UAV volcanic plume sampling based on machine vision and path planning (ICUAS 2024).</p>
+          <div class="cap">with Rolland, Laporte-Devylder, Kline, Meier, Maalouf, Watson, Richardson</div>
+        </div>
+      </div>
+    </div>
+    <div class="card dark" style="margin-top:30px">
+      <h3>Why they belong in a SAR thesis</h3>
+      <p>Every one of them exercised the same toolchain: TrajGenPy for paths, TrajAllocPy for allocation, SwarmTalk in the
+      air. A zebra herd and a volcanic plume are search problems with a different target.</p>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1007/978-3-031-28138-9_11">Drone Swarms to Support Search and Rescue Operations: Opportunities and Challenges · Hoang et al., Cultural Robotics, Springer 2023</a></li>
+    <li>Before It Falls: Supporting Drone Fleet Management Through Battery Visualizations · Bahodi, Lau, van Berkel, Grøntved, Skov &amp; Merritt, INTERACT 2025</li>
+    <li><a href="https://www.imavs.org/papers/2024/38.pdf">Drone Swarms for Animal Monitoring: A Method for Collecting High-Quality Multi-Perspective Data · Rolland et al., IMAV 2024</a></li>
+    <li>Drone Swarms for Multi-Perspective Monitoring of Large Mammals in their Natural Habitats: Deployment and Field Trials · Rolland et al., PAAMS 2025</li>
+    <li><a href="https://doi.org/10.1109/ICUAS60882.2024.10556912">Autonomous UAV Volcanic Plume Sampling Based on Machine Vision and Path Planning · Rolland, Grøntved, Christensen, Watson &amp; Richardson, ICUAS 2024</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">One sentence per column, then the dark card. The backup slides at the end have detail on the plume and the zebras if the committee wants it.</div>
+</section>
+
+<!-- ============ 34 · conclusion ============ -->
+<section class="slide section tight" data-t="Bridging theory and real-world operations">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Conclusion</div>
+  <h1>Bridging theory and <span style="color:var(--accent)">real-world</span> SAR operations</h1>
+  <p class="sub">Decentralized cooperative control can be realised in operational UAV systems. The thesis delivers the
+  components of a complete toolchain to do it, each open source.</p>
+  <div class="body">
+    <div class="grid-4">
+      <div class="card"><h3>Trajectory-based CBBA</h3><p>Decentralized task allocation over lines and areas, within 5% of centralized optima.</p><div class="cap">TrajAllocPy</div></div>
+      <div class="card"><h3>Infrastructure-less communication</h3><p>On physical platforms, at €10 per aircraft, consensus over the air in under ten seconds.</p><div class="cap">SwarmTalk</div></div>
+      <div class="card"><h3>Domain-aware planning and evaluation</h3><p>Task generation from the OFS procedure, path generation, and a benchmark built on lost-person behaviour.</p><div class="cap">TrajGenPy · SAREnv</div></div>
+      <div class="card"><h3>An operator-centric language</h3><p>Operations described in the operator's terms, executed by the planner.</p><div class="cap">Operation language</div></div>
+    </div>
+    <div class="card dark" style="margin-top:30px;border-color:var(--accent)">
+      <h3 style="color:var(--accent)">Key results</h3>
+      <p style="font-size:22px;margin-top:10px">Robust methods for autonomous, cooperative multi-UAV search and rescue. A standardised evaluation
+      framework that makes the research reproducible and comparable. And an open-source release of every tool and dataset, so the
+      next validation can happen in the field rather than the lab.</p>
+    </div>
+  </div>
+  <div class="notes">Four cards, four parts, then the dark card. Then stop; the next slide is the future work and it should feel like a separate breath.</div>
+</section>
+
+<!-- ============ 35 · future work ============ -->
+<section class="slide tight" data-t="Is search and rescue trivial now? No.">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Future work</div>
+  <h1 class="t">Is search and rescue trivial now? No.</h1>
+  <p class="sub">Four directions, in the order the emergency agency would ask for them.</p>
+  <div class="body">
+    <div class="grid-4">
+      <div class="card">
+        <h3>Real-world end-to-end tests</h3>
+        <p>Close collaboration with DEMA is still needed to validate the methods on live operations. Interaction with the humans
+        running them is what decides whether the technology is adopted.</p>
+      </div>
+      <div class="card">
+        <h3>Dynamic and reactive planning</h3>
+        <p>From static to dynamic task models: moving targets, evolving uncertainty, even patrolling. Reactive planning for
+        time-critical search, where the human and the UAV plan together.</p>
+      </div>
+      <div class="card">
+        <h3>Heterogeneous teams</h3>
+        <p>Mixed teams of UAVs, ground units and manned aircraft, with communication and allocation protocols that understand
+        different capabilities.</p>
+      </div>
+      <div class="card">
+        <h3>Interaction and learning</h3>
+        <p>LLM agents for natural, adaptive mission specification and operator control. SAREnv's metrics as a training signal
+        for learned search strategies.</p>
+      </div>
+    </div>
+    <div class="card accent" style="margin-top:30px">
+      <h3>The one to start with</h3>
+      <p>End-to-end field tests with the agency. Every other item on this slide is easier to justify once a real operation has
+      run on the toolchain.</p>
+    </div>
+  </div>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Open the floor from here. If the discussion stalls, the LLM card is the one everybody has an opinion on.</div>
+</section>
+
+<!-- ============ 36 · backup divider ============ -->
+<section class="slide section deep-dive" data-t="Backup slides">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Appendix</div>
+  <h1>Backup slides</h1>
+  <p class="sub">Detail for questions: the volcano, the zebras, the interface work, and the coverage problem after this one.</p>
+</section>
+
+<!-- ============ 37 · plume ============ -->
+<section class="slide deep-dive" data-t="Volcanic plume interception">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Backup · environmental monitoring</div>
+  <h1 class="t">Volcanic plume interception</h1>
+  <p class="sub">The swarm tooling pointed at a plume instead of a person: machine vision finds it, path planning flies through it.</p>
+  <div class="body">
+    <div class="cols">
+      <div class="grow">
+        <ul class="bullets">
+          <li><strong>Software-in-the-loop in a container.</strong> VS Code workspaces wrap Gazebo and PX4 so a realistic flight-dynamics
+          simulation starts with one command.</li>
+          <li><strong>Fast prototyping.</strong> The same workspace ran the plume-interception controller before it flew.</li>
+          <li><strong>YOLOv8 for detection.</strong> The plume is a visual target; the interception path is planned from the detection.</li>
+        </ul>
+      </div>
+      <figure style="flex:0 0 700px;min-height:0">
+        <div class="fig-todo"><span class="todo">Plume interception figure from the defence deck (source slide 47)</span></div>
+        <figcaption>Autonomous UAV volcanic plume sampling, ICUAS 2024.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://doi.org/10.1109/ICUAS60882.2024.10556912">Autonomous UAV Volcanic Plume Sampling Based on Machine Vision and Path Planning · Rolland, Grøntved, Christensen, Watson &amp; Richardson, ICUAS 2024, IEEE</a></li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Only if asked. The point is transfer: nothing SAR-specific had to change.</div>
+</section>
+
+<!-- ============ 38 · zebras ============ -->
+<section class="slide deep-dive" data-t="Monitoring a herd is an art-gallery problem">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Backup · environmental monitoring</div>
+  <h1 class="t">Monitoring a herd is an art-gallery problem</h1>
+  <p class="sub">Monitor as many surfaces as possible using the fewest resources.</p>
+  <div class="body">
+    <div class="cols">
+      <div class="stack grow">
+        <div class="card solid">
+          <h3>The optimisation</h3>
+          <p>Treat every animal as a Lambertian surface and maximise the radiated "light" of the entire herd of zebras that the
+          cameras collect. Camera placement becomes a guarding problem over moving surfaces.</p>
+        </div>
+        <div class="card accent">
+          <h3>Why it is the same toolchain</h3>
+          <p>Viewpoints are tasks, the herd is the search area, and the drones allocate them between themselves the way they
+          allocate coverage lines.</p>
+        </div>
+      </div>
+      <figure style="flex:0 0 700px;min-height:0">
+        <div class="fig-todo"><span class="todo">Herd monitoring figure from the defence deck (source slide 48)</span></div>
+        <figcaption>Multi-perspective monitoring of large mammals, IMAV 2024 and PAAMS 2025.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <ul class="sources">
+    <li><a href="https://www.imavs.org/papers/2024/38.pdf">Drone Swarms for Animal Monitoring: A Method for Collecting High-Quality Multi-Perspective Data · Rolland et al., IMAV 2024</a></li>
+    <li>Drone Swarms for Multi-Perspective Monitoring of Large Mammals in their Natural Habitats: Deployment and Field Trials · Rolland et al., PAAMS 2025, Springer</li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Only if asked.</div>
+</section>
+
+<!-- ============ 39 · UI ============ -->
+<section class="slide deep-dive" data-t="Situational awareness for the operator">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Backup · human-swarm interaction</div>
+  <h1 class="t">Situational awareness for the operator</h1>
+  <p class="sub">The operator from slide 5 is still there. The interface work is about what they see.</p>
+  <div class="body">
+    <div class="grid-3">
+      <div class="card"><h3>UI components</h3><p>Fleet state, task state and battery state in one view rather than one tablet per aircraft.</p></div>
+      <div class="card"><h3>Notifications</h3><p>The system raises what changed; the operator does not have to poll.</p></div>
+      <div class="card dark"><h3>Improved human situational awareness</h3><p>Measured in user studies with operators, not assumed.</p></div>
+    </div>
+  </div>
+  <ul class="sources">
+    <li>Before It Falls: Supporting Drone Fleet Management Through Battery Visualizations · Bahodi, Lau, van Berkel, Grøntved, Skov &amp; Merritt, INTERACT 2025</li>
+  </ul>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Only if asked about the human side.</div>
+</section>
+
+<!-- ============ 40 · probabilistic coverage ============ -->
+<section class="slide deep-dive" data-t="Probabilistic multi-agent coverage">
+  <div class="kicker"><span class="km"><i></i><i></i><i></i><i></i></span> Backup · what comes after SAREnv</div>
+  <h1 class="t">Probabilistic multi-agent coverage</h1>
+  <p class="sub">Cover a known area, distributing the agents most effectively given a distribution of known priors.</p>
+  <div class="body">
+    <div class="cols">
+      <div class="grow">
+        <ul class="bullets">
+          <li><strong>Operator in the loop.</strong> Change the mission parameters while flying: priorities, focus of search.</li>
+          <li><strong>A dynamic environment.</strong> The map changes and the plan follows.</li>
+          <li><strong>Multi-agent reinforcement learning.</strong> Long-term coordination learned rather than scripted.</li>
+        </ul>
+      </div>
+      <div class="stack" style="flex:0 0 560px">
+        <div class="card solid"><h3>Open questions</h3><p>How to represent the environment to a learner, how to model the other agents, and
+        what SAREnv's metrics look like as a reward.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot">Cooperative multi-robot control</div>
+  <div class="notes">Only if asked where the learning direction from the future-work slide goes concretely.</div>
+</section>
+
+</div></div>
+<script src="/deck/deck.js"></script>
+</body>
+</html>

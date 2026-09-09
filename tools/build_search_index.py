@@ -64,6 +64,7 @@ DECKS = [
     ("late-interaction-primer", "Late Interaction, Up Close"),
     ("decentralized-task-allocation", "Decentralized Multi-UAV Task Allocation"),
     ("ml-and-data-at-colourbox", "ML and Data at Colourbox"),
+    ("cooperative-multirobot-control", "Cooperative Control of Multi-Robot Systems in Real-World Applications"),
 ]
 
 # Stable fragment ids. These are the anchors that must exist in the HTML — the
