@@ -31,7 +31,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <div class="hero lead">
     <p class="eyebrow">Talks, decks &amp; writing</p>
     <h1>Knowledge</h1>
-    <p class="lede">Explaining the work — internally, at conferences, in writing, and to anyone who
+    <p class="lede">Explaining the work: internally, at conferences, in writing, and to anyone who
     inherits a system I built. The decks are single HTML files that run in your browser, so every
     slide has its own URL. The posts are the prose counterpart: what was built, what it cost, and
     what the numbers say.</p>
@@ -44,7 +44,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <h3>ML and Data at Colourbox</h3>
       <p>Why content understanding is the only answer to DAM cold start, what EU sovereignty actually
       commits you to architecturally, how dense embeddings and patch-level late interaction divide the
-      work between a stock library and a DAM system — then the multimodal field case, the production
+      work between a stock library and a DAM system. Then the multimodal field case, the production
       objections, and why a benchmark score is not a customer finding their asset.</p>
       <div class="foot" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
         <span class="pill">32 slides</span><span class="pill">Search</span>
@@ -77,7 +77,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         <p>Why one fixed-size embedding has to decide what to keep before it knows what will be asked,
         and how late interaction and MaxSim avoid that. Adapted with attribution from Amélie
         Chatelain's <em>Late Interaction Field Guide</em>; the original goes considerably further.
-        Kept as a standalone talk — the Colourbox deck carries the same eleven slides with our own
+        Kept as a standalone talk; the Colourbox deck carries the same eleven slides with our own
         examples.</p>
         <div class="foot"><span class="pill">12 slides</span><span class="pill">Retrieval</span>
           <span class="pill">Sourced</span></div>
@@ -106,7 +106,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         <h3>Search, with the vectors showing</h3>
         <p>Inference-free SPLADE over this entire site. The document vectors were built offline by a
         67M-parameter masked LM; the query side is a tokenizer and a lookup table, so your browser
-        runs no model at all. The page puts the sparse vectors on screen — the query's WordPiece
+        runs no model at all. The page puts the sparse vectors on screen: the query's WordPiece
         decomposition, which terms produced each score, and the words the model added that the text
         never contained.</p>
         <div class="foot"><span class="pill">Learned sparse</span><span class="pill">No inference</span>
@@ -123,7 +123,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <section>
     <div class="sec-head"><h2>How the decks work</h2></div>
     <div class="prose">
-      <p>The engine is about 200 lines of vanilla JavaScript in <code>/deck/deck.js</code> — no
+      <p>The engine is about 200 lines of vanilla JavaScript in <code>/deck/deck.js</code>, with no
       framework, no build step. Slides live on a fixed 1920×1080 canvas that gets scaled to whatever
       window you open it in, so a deck looks identical on a laptop, a projector, and a phone.</p>
       <h3>While presenting</h3>
@@ -137,7 +137,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       code and lectures behind whatever is on screen, with a count badge in the corner so you can see
       at a glance whether a claim is sourced.</p>
       <p>Swipe works on touch. The URL tracks the slide number, so
-      <code>/knowledge/&lt;name&gt;/#7</code> opens directly on slide 7 — useful when someone asks you
+      <code>/knowledge/&lt;name&gt;/#7</code> opens directly on slide 7, useful when someone asks you
       to send "that one chart".</p>
       <p>Borrow it if you like: copy <code>/deck/</code> and <code>/knowledge/_template/</code> from
       <a href="https://github.com/kasperg3/kasperg3.github.io">the repo</a>.</p>
