@@ -4,8 +4,11 @@
    the slide decks read as one thing.
    ============================================================ */
 :root{
-  --canvas:#f7f5f1;
-  --canvas-2:#f1eee8;
+  --canvas:#e9eff5;      /* cold: a pale, blue-grey ground */
+  --canvas-2:#dfe7ef;
+  --aurora-1:#3fbeb2;    /* the lights: teal, amber, rose */
+  --aurora-2:#f0a458;
+  --aurora-3:#d96b93;
   --ink:#15181d;
   --ink-2:#2f3a44;
   --muted:#57616d;
@@ -156,11 +159,30 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
 /* ============================================================
    concise front page
    ============================================================ */
-.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.ambient i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
-.ambient i:nth-child(1){width:46vw;height:46vw;top:-14vw;right:-10vw;background:var(--accent-faint)}
-.ambient i:nth-child(2){width:38vw;height:38vw;bottom:-14vw;left:-12vw;
-                        background:color-mix(in srgb,var(--accent) 9%,transparent)}
+/* the ambient layer: northern lights over a cold ground. Two blurred ribbons
+   drift slowly; the container paints a third, still glow so the top of the
+   page is never flat. Everything here is decoration and stays behind the
+   content; the tiles are white so they lift off it. */
+.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+  background:
+    radial-gradient(60% 38% at 82% -8%,color-mix(in srgb,var(--aurora-2) 34%,transparent),transparent 70%),
+    radial-gradient(48% 30% at 8% 4%,color-mix(in srgb,var(--aurora-1) 30%,transparent),transparent 70%),
+    radial-gradient(40% 26% at 58% 18%,color-mix(in srgb,var(--aurora-3) 18%,transparent),transparent 70%)}
+.ambient i{position:absolute;border-radius:50%;filter:blur(64px);opacity:.75;will-change:transform}
+.ambient i:nth-child(1){width:78vw;height:22vw;top:-9vw;left:6vw;transform:rotate(-13deg);
+  background:linear-gradient(90deg,transparent,
+    color-mix(in srgb,var(--aurora-1) 55%,transparent) 28%,
+    color-mix(in srgb,var(--aurora-2) 60%,transparent) 62%,
+    color-mix(in srgb,var(--aurora-3) 35%,transparent) 84%,transparent);
+  animation:aurora-a 28s ease-in-out infinite alternate}
+.ambient i:nth-child(2){width:64vw;height:18vw;top:9vw;right:-12vw;transform:rotate(11deg);opacity:.6;
+  background:linear-gradient(90deg,transparent,
+    color-mix(in srgb,var(--aurora-3) 45%,transparent) 36%,
+    color-mix(in srgb,var(--aurora-2) 55%,transparent) 70%,transparent);
+  animation:aurora-b 36s ease-in-out infinite alternate}
+@keyframes aurora-a{to{transform:rotate(-9deg) translate(5vw,4vw)}}
+@keyframes aurora-b{to{transform:rotate(15deg) translate(-6vw,3vw)}}
+@media (prefers-reduced-motion:reduce){.ambient i{animation:none}}
 
 .hero.lead{padding:clamp(72px,13vh,150px) 0 clamp(40px,6vw,64px)}
 .hero.lead h1{font-size:clamp(36px,5.4vw,58px);max-width:26ch}
