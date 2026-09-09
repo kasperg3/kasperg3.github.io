@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=354f653b">
-<link rel="stylesheet" href="/search/search.css?v=10">
+<link rel="stylesheet" href="/search/search.css?v=11">
 <noscript><style>/* the conversation cannot work without scripting */
 .asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
 <script type="application/ld+json">
@@ -75,19 +75,26 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
          its own, so nothing here implies a memory it does not have, and the
          scoring behind any answer is one press away in the modal. -->
     <section class="tile t-ask asksite" id="ask" aria-labelledby="ask-title">
-      <div class="kick">Ask this site</div>
-      <h2 class="ask-title" id="ask-title">What would you like to know?</h2>
-      <p class="ask-lede">Every answer is built from these pages, the papers, the slides and the CV,
-      retrieved in your browser and cited passage by passage.</p>
-
-      <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
-
-      <div class="chat-tries" id="htries" aria-label="Questions to try">
-        <button class="sp-ex" type="button">How do drones divide up a search area?</button>
-        <button class="sp-ex" type="button">What is late interaction?</button>
-        <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
+      <div class="ask-head">
+        <div>
+          <div class="kick"><i class="dot" aria-hidden="true"></i>Grounded in the papers, slides and CV</div>
+          <h2 class="ask-title" id="ask-title">Ask this site</h2>
+        </div>
+        <span class="ask-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 3.5V16A2.5 2.5 0 0 1 4 13.5z"/><path d="M8.5 9h7M8.5 12h4.5"/></svg></span>
       </div>
-      <noscript><p class="ask-note">The conversation needs JavaScript; the rest of the site does not.</p></noscript>
+
+      <div class="ask-body">
+        <p class="ask-lede">Ask about the research, the search systems, or how the models stay inside
+        Europe. Every answer is built from this site's own pages and cites the passages it came from.</p>
+        <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
+        <div class="chat-tries" id="htries" aria-label="Questions to try">
+          <button class="sp-ex" type="button">How do drones divide up a search area?</button>
+          <button class="sp-ex" type="button">What is late interaction?</button>
+          <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
+          <button class="sp-ex" type="button">What is SAREnv?</button>
+        </div>
+        <noscript><p class="ask-note">The conversation needs JavaScript; the rest of the site does not.</p></noscript>
+      </div>
 
       <form class="composer" id="hform" autocomplete="off">
         <label for="hq" class="skip">Ask this site a question</label>
