@@ -9,7 +9,7 @@ the repo as-is to Pages.
 ## Layout
 
 ```
-index.html              landing page (masthead, fact bar, the "Explore the site" index, Ask this site)
+index.html              landing page (masthead, fact bar, Ask this site + featured pieces, the "Explore the site" index)
 publications.html       full publication list with abstracts
 cv.html                 CV in HTML  ·  assets/cv/cv.pdf is the downloadable version
 404.html

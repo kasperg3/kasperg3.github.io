@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=cd7721b8">
+<link rel="stylesheet" href="/site/site.css?v=cf336a13">
 <link rel="stylesheet" href="/search/search.css?v=7">
 <noscript><style>/* the conversation cannot work without scripting */
 .asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
@@ -66,6 +66,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
        the site index one third. The index is the site's navigation — there is
        no menu bar, this list is the map, and every other page links back here. -->
   <div class="below">
+  <div class="col">
 
     <!-- Ask this site: a conversation, not a search box. Retrieval still runs
          entirely in the browser and is still the whole of the feature; the thread
@@ -100,6 +101,31 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
         <noscript><p class="ask-note">Needs JavaScript.</p></noscript>
       </div>
     </section>
+
+    <!-- Featured: the pieces worth a first click, under the conversation.
+         The full lists live on /knowledge/; this is three of them. -->
+    <section class="featured-list" aria-labelledby="featured-title">
+      <div class="sec-head"><h2 id="featured-title">Featured</h2><a class="more" href="/knowledge/">All talks &amp; writing →</a></div>
+      <div class="feat">
+        <a href="/knowledge/ml-and-data-at-colourbox/">
+          <span class="kind">Lecture · 32 slides</span>
+          <span class="tx"><b>ML and Data at Colourbox</b><span>Multimodal search, and why the models run on our own hardware</span></span>
+          <span class="arw">→</span>
+        </a>
+        <a href="/blog/inference-free-splade/">
+          <span class="kind">Blog post · 9 min</span>
+          <span class="tx"><b>Semantic search for the price of a git push</b><span>Dense, SPLADE and late interaction side by side, and a search with no server</span></span>
+          <span class="arw">→</span>
+        </a>
+        <a href="/knowledge/late-interaction-primer/">
+          <span class="kind">Primer · 12 slides</span>
+          <span class="tx"><b>Late Interaction, Up Close</b><span>Where single-vector retrieval loses evidence, and what MaxSim keeps</span></span>
+          <span class="arw">→</span>
+        </a>
+      </div>
+    </section>
+
+  </div>
 
     <section class="explore" id="explore" aria-labelledby="explore-title">
       <div class="sec-head"><h2 id="explore-title">Explore the site</h2><span class="more">04 pages</span></div>

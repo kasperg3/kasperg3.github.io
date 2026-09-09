@@ -248,16 +248,35 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
 .factlinks a.cta{background:var(--accent);border-color:var(--accent);color:#fff}
 .factlinks a.cta:hover{color:#fff;filter:brightness(1.08)}
 
-/* below the fact bar: the conversation on the left (two thirds), the explore
-   index on the right (one third). Both are sections, but they live in a grid,
-   so the section rhythm (padding, hairline) is switched off for them. */
+/* below the fact bar: a left column (the conversation, then the featured
+   pieces under it) taking two thirds, the explore index one third on the
+   right. Sections in here live in a grid, so the section rhythm (padding,
+   hairline) is switched off for them. */
 .below{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:clamp(20px,3vw,36px);
        align-items:start;margin-top:clamp(28px,4vw,44px);margin-bottom:clamp(56px,8vw,110px)}
-.below > section{padding:0;border-top:0;margin:0}
-/* search.css gives .asksite its own margin-top and padding; the rule above
-   outweighs both, so the padding is restated here and the margin stays off */
-.below > section.asksite{margin:0;padding:clamp(16px,2.4vw,22px) clamp(16px,3vw,26px) clamp(14px,2.2vw,20px)}
-.below > .asksite .ask-inner{width:100%}
+.below .col{display:flex;flex-direction:column;gap:clamp(28px,3.4vw,40px);min-width:0}
+.below section{padding:0;border-top:0;margin:0}
+/* search.css gives .asksite a margin-top of its own; the grid owns spacing here */
+.below section.asksite{margin:0;padding:clamp(16px,2.4vw,22px) clamp(16px,3vw,26px) clamp(14px,2.2vw,20px)}
+
+/* featured rows under the conversation: kind, title, one line, arrow */
+.featured-list .sec-head{margin-bottom:6px}
+.feat{border-top:1px solid var(--hair-soft)}
+.feat a{display:grid;grid-template-columns:118px minmax(0,1fr) auto;gap:4px 18px;align-items:baseline;
+        padding:15px 2px 14px;text-decoration:none;border-bottom:1px solid var(--hair-soft);
+        transition:padding-left .16s}
+.feat a:hover{padding-left:8px}
+.feat .kind{font:500 11px/1.6 var(--mono);letter-spacing:.04em;color:var(--faint);white-space:nowrap}
+.feat .tx{min-width:0}
+.feat .tx b{font:600 16.5px/1.35 var(--sans);color:var(--ink);display:block}
+.feat a:hover .tx b{color:var(--accent)}
+.feat .tx span{display:block;font-size:14.5px;line-height:1.5;color:var(--muted);margin-top:2px}
+.feat .arw{color:var(--faint);font-size:15px}
+.feat a:hover .arw{color:var(--accent)}
+@media (max-width:620px){
+  .feat a{grid-template-columns:minmax(0,1fr) auto}
+  .feat .kind{grid-column:1 / -1}
+}
 
 /* the index, in its narrow column: name and arrow on one line, what is there
    on the next, so nothing has to fit beside a long title */
@@ -271,9 +290,8 @@ section.explore .index-list .d{flex-basis:100%;padding-left:36px;font-size:14.5p
 @media (max-width:980px){
   .masthead{grid-template-columns:1fr;gap:22px}
   .masthead .bio{padding-top:0;max-width:60ch}
-  /* one column: the index first, since it is the navigation, then the conversation */
+  /* one column: the conversation, the featured pieces, then the index */
   .below{grid-template-columns:1fr;gap:36px}
-  .below > section.explore{order:-1}
 }
 @media (max-width:560px){
   .factlinks{margin-left:0;width:100%}
