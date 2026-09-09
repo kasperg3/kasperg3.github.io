@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=bf871a0a">
+<link rel="stylesheet" href="/site/site.css?v=cd7721b8">
 <link rel="stylesheet" href="/search/search.css?v=7">
 <noscript><style>/* the conversation cannot work without scripting */
 .asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
@@ -62,71 +62,76 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </div>
 
-  <!-- The site's navigation. There is no menu bar: this list is the map, and
-       every other page links back to it. One row per page, in reading order. -->
-  <section class="explore" id="explore" aria-labelledby="explore-title">
-    <div class="sec-head"><h2 id="explore-title">Explore the site</h2><span class="more">04 pages</span></div>
-    <div class="index-list">
-      <a href="/knowledge/">
-        <span class="n">01</span>
-        <span class="t">Knowledge</span>
-        <span class="d">Talks, slide decks and long-form writing — featuring <em>ML and Data at Colourbox</em></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="/publications.html">
-        <span class="n">02</span>
-        <span class="t">Publications</span>
-        <span class="d">Peer-reviewed robotics and AI work, with abstracts, DOIs and code</span>
-        <span class="arw">→</span>
-      </a>
-      <a href="/cv.html">
-        <span class="n">03</span>
-        <span class="t">CV</span>
-        <span class="d">Roles, education, research stays and supervision</span>
-        <span class="arw">→</span>
-      </a>
-      <a href="/search/">
-        <span class="n">04</span>
-        <span class="t">Search</span>
-        <span class="d">The whole site, retrieved with inference-free SPLADE — with the vectors showing</span>
-        <span class="arw">→</span>
-      </a>
-    </div>
-  </section>
+  <!-- Below the fact bar the page splits: the conversation takes two thirds,
+       the site index one third. The index is the site's navigation — there is
+       no menu bar, this list is the map, and every other page links back here. -->
+  <div class="below">
 
-  <!-- Ask this site: a conversation, not a search box. Retrieval still runs
-       entirely in the browser and is still the whole of the feature; the thread
-       is only what makes it legible. Each question is retrieved and answered on
-       its own, so nothing here implies a memory it does not have, and the
-       scoring behind any answer is one press away in the modal. -->
-  <section class="asksite" id="ask">
-    <div class="ask-inner">
-      <div class="ask-head">
-        <h2 class="ask-title">Ask this site</h2>
-        <p class="ask-eyebrow"><i class="dot" aria-hidden="true"></i>Grounded in the papers,
-          slides and CV</p>
+    <!-- Ask this site: a conversation, not a search box. Retrieval still runs
+         entirely in the browser and is still the whole of the feature; the thread
+         is only what makes it legible. Each question is retrieved and answered on
+         its own, so nothing here implies a memory it does not have, and the
+         scoring behind any answer is one press away in the modal. -->
+    <section class="asksite" id="ask">
+      <div class="ask-inner">
+        <div class="ask-head">
+          <h2 class="ask-title">Ask this site</h2>
+          <p class="ask-eyebrow"><i class="dot" aria-hidden="true"></i>Grounded in the papers,
+            slides and CV</p>
+        </div>
+
+        <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
+
+        <form class="composer" id="hform" autocomplete="off">
+          <label for="hq" class="skip">Ask this site a question</label>
+          <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
+                 placeholder="Ask a question about the work">
+          <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
+          </button>
+        </form>
+
+        <div class="chat-tries" id="htries">
+          <button class="sp-ex" type="button">How do drones divide up a search area?</button>
+          <button class="sp-ex" type="button">What is late interaction?</button>
+          <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
+        </div>
+
+        <noscript><p class="ask-note">Needs JavaScript.</p></noscript>
       </div>
+    </section>
 
-      <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
-
-      <form class="composer" id="hform" autocomplete="off">
-        <label for="hq" class="skip">Ask this site a question</label>
-        <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
-               placeholder="Ask a question about the work">
-        <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
-        </button>
-      </form>
-
-      <div class="chat-tries" id="htries">
-        <button class="sp-ex" type="button">How do drones divide up a search area?</button>
-        <button class="sp-ex" type="button">What is late interaction?</button>
-        <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
+    <section class="explore" id="explore" aria-labelledby="explore-title">
+      <div class="sec-head"><h2 id="explore-title">Explore the site</h2><span class="more">04 pages</span></div>
+      <div class="index-list">
+        <a href="/knowledge/">
+          <span class="n">01</span>
+          <span class="t">Knowledge</span>
+          <span class="d">Talks, decks and writing</span>
+          <span class="arw">→</span>
+        </a>
+        <a href="/publications.html">
+          <span class="n">02</span>
+          <span class="t">Publications</span>
+          <span class="d">Peer-reviewed work</span>
+          <span class="arw">→</span>
+        </a>
+        <a href="/cv.html">
+          <span class="n">03</span>
+          <span class="t">CV</span>
+          <span class="d">Roles, education, research</span>
+          <span class="arw">→</span>
+        </a>
+        <a href="/search/">
+          <span class="n">04</span>
+          <span class="t">Search</span>
+          <span class="d">Inference-free SPLADE</span>
+          <span class="arw">→</span>
+        </a>
       </div>
+    </section>
 
-      <noscript><p class="ask-note">Needs JavaScript.</p></noscript>
-    </div>
-  </section>
+  </div>
 
 </div>
 </main>

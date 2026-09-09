@@ -248,18 +248,32 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
 .factlinks a.cta{background:var(--accent);border-color:var(--accent);color:#fff}
 .factlinks a.cta:hover{color:#fff;filter:brightness(1.08)}
 
-/* the explore index: the page's centre, and the whole of its navigation */
-section.explore{padding:clamp(44px,6vw,72px) 0 clamp(20px,3vw,32px);border-top:0}
-section.explore .sec-head{margin-bottom:10px}
-section.explore .index-list .t{min-width:9ch}
+/* below the fact bar: the conversation on the left (two thirds), the explore
+   index on the right (one third). Both are sections, but they live in a grid,
+   so the section rhythm (padding, hairline) is switched off for them. */
+.below{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:clamp(20px,3vw,36px);
+       align-items:start;margin-top:clamp(28px,4vw,44px);margin-bottom:clamp(56px,8vw,110px)}
+.below > section{padding:0;border-top:0;margin:0}
+/* search.css gives .asksite its own margin-top and padding; the rule above
+   outweighs both, so the padding is restated here and the margin stays off */
+.below > section.asksite{margin:0;padding:clamp(16px,2.4vw,22px) clamp(16px,3vw,26px) clamp(14px,2.2vw,20px)}
+.below > .asksite .ask-inner{width:100%}
 
-/* the ask band sits below the index and closes the page. search.css sets its
-   margin-top too; the element selector here outweighs that without !important */
-section.asksite{margin-top:clamp(40px,6vw,72px);margin-bottom:clamp(56px,8vw,110px)}
+/* the index, in its narrow column: name and arrow on one line, what is there
+   on the next, so nothing has to fit beside a long title */
+section.explore .sec-head{margin-bottom:6px}
+section.explore .index-list{margin-top:0}
+section.explore .index-list a{flex-wrap:wrap;gap:3px 12px;padding:15px 2px 14px}
+section.explore .index-list .n{width:24px;font-size:11px}
+section.explore .index-list .t{font-size:17px;min-width:0}
+section.explore .index-list .d{flex-basis:100%;padding-left:36px;font-size:14.5px;order:1}
 
 @media (max-width:980px){
   .masthead{grid-template-columns:1fr;gap:22px}
   .masthead .bio{padding-top:0;max-width:60ch}
+  /* one column: the index first, since it is the navigation, then the conversation */
+  .below{grid-template-columns:1fr;gap:36px}
+  .below > section.explore{order:-1}
 }
 @media (max-width:560px){
   .factlinks{margin-left:0;width:100%}
