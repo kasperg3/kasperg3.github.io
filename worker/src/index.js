@@ -21,9 +21,10 @@
    Layers, in the order a request meets them:
      L1  shape      — size, method, and a q short enough to be worthless
      L2  origin     — stops a third-party browser UI; stops zero scripts
-     L3  ip budget  — Cache API, salted hash, per day
+     L3  visitor    — Cache API, salted hash: a daily budget and a brief hold
      L4  answer     — Cache API, keyed on the normalised question
-     L5  breaker    — one KV write per incident, never per request
+     L5  breaker    — site-wide, and only for an upstream that is really down:
+                      one KV write per incident, never per request
    ============================================================================ */
 
 import { SYSTEM, buildUser } from './prompt.js';
@@ -42,20 +43,45 @@ const MAX_IDS = 4;
 const MAX_TOKENS = 220;
 const IP_DAILY = 40;     // asks per IP per day
 const GLOBAL_DAILY = 800; // asks site-wide per day, across every IP and colo
-const BREAKER_SECS = 900;
+// Two pauses, because 429 and 402 are not the same incident, and they are not
+// even the same *scope*. A rate limit is one visitor going too fast, so only
+// that visitor waits, and briefly. Credit exhaustion and 5xx are the site's
+// problem and really do last, so there everyone backs off for a quarter hour.
+const RATE_SECS = 30;    // per visitor, in the Cache API — KV's TTL floor is 60
+const BREAKER_SECS = 900; // site-wide, in KV
 
 const CORS = {
   'access-control-allow-origin': ORIGIN,
   'access-control-allow-headers': 'content-type',
   'access-control-max-age': '86400',
+  // Retry-After is the header a 503 is supposed to carry, and a cross-origin
+  // reader cannot see it unless we say so.
+  'access-control-expose-headers': 'retry-after',
   vary: 'Origin',
 };
 
-const fail = (status, msg) =>
-  new Response(JSON.stringify({ error: msg }), {
+/**
+ * Every failure in here is temporary, and the page can say *how* temporary if
+ * it is told. retry is that, in seconds: in the header because that is what
+ * Retry-After is for, and in the body because the body needs no CORS ritual to
+ * be readable and the page has to parse it anyway.
+ */
+const fail = (status, msg, retry) =>
+  new Response(JSON.stringify(retry ? { error: msg, retryAfter: retry } : { error: msg }), {
     status,
-    headers: { ...CORS, 'content-type': 'application/json' },
+    headers: {
+      ...CORS,
+      'content-type': 'application/json',
+      ...(retry ? { 'retry-after': String(retry) } : {}),
+    },
   });
+
+/** The budget counters are keyed on a UTC date, so that is when they reset. */
+const untilUTCMidnight = () => {
+  const d = new Date();
+  const midnight = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) / 1000;
+  return Math.max(1, Math.ceil(midnight - Date.now() / 1000));
+};
 
 async function sha256(s) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
@@ -125,7 +151,9 @@ export default {
 
     /* ---- L5: is the breaker open? One KV read; reads are effectively free. ---- */
     const state = await env.ASK_KV.get('ask:state', 'json').catch(() => null);
-    if (state?.pausedUntil > Date.now() / 1000) return fail(503, 'paused');
+    if (state?.pausedUntil > Date.now() / 1000) {
+      return fail(503, 'paused', Math.max(1, Math.ceil(state.pausedUntil - Date.now() / 1000)));
+    }
 
     /* ---- L4: has this exact question been answered already? ---- */
     const sorted = [...ids].sort();
@@ -140,11 +168,25 @@ export default {
       return new Response(cached.body, { headers: h });
     }
 
-    /* ---- L3: per-IP daily budget, keyed on a salted hash so no IP is stored ---- */
+    /* ---- L3: per-visitor, keyed on a salted hash so no IP is ever stored ---- */
     const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
     const day = new Date().toISOString().slice(0, 10);
-    const ipKey = `ip/${await sha256(`${env.IP_SALT ?? 'ask'}\0${ip}`)}/${day}`;
-    if (await overBudget(cache, ipKey, IP_DAILY, ctx)) return fail(429, 'daily limit');
+    const who = await sha256(`${env.IP_SALT ?? 'ask'}\0${ip}`);
+
+    // The hold from this visitor's own last rate limit. In the Cache API rather
+    // than KV for two reasons: KV's expirationTtl floor is 60s and a 30s hold is
+    // the point, and per-colo is the right shape anyway — a visitor keeps
+    // arriving at the same one. Someone else's pacing never lands here.
+    const holdKey = new Request(`https://ask.internal/hold/${who}`);
+    const held = await cache.match(holdKey);
+    if (held) {
+      const left = Math.ceil((Number(await held.text()) || 0) - Date.now() / 1000);
+      if (left > 0) return fail(503, 'rate limited', left);
+    }
+
+    if (await overBudget(cache, `ip/${who}/${day}`, IP_DAILY, ctx)) {
+      return fail(429, 'ip daily limit', untilUTCMidnight());
+    }
 
     /* ---- resolve the ids against the corpus, bundled snapshot as the fallback ---- */
     let docs;
@@ -155,7 +197,9 @@ export default {
     /* ---- the site-wide ceiling, checked last: nothing above here spends a
            model call, and this is the layer that bounds a distributed caller
            whom the per-IP budget cannot see. ---- */
-    if (await overBudget(cache, `all/${day}`, GLOBAL_DAILY, ctx)) return fail(429, 'daily limit');
+    if (await overBudget(cache, `all/${day}`, GLOBAL_DAILY, ctx)) {
+      return fail(429, 'site daily limit', untilUTCMidnight());
+    }
 
     /* ---- generate ---- */
     let upstream;
@@ -185,14 +229,35 @@ export default {
     // never per request, and never awaited — an exhausted write quota must cost
     // us the accounting, not the feature.
     if (!upstream.ok || !(upstream.headers.get('content-type') || '').includes('text/event-stream')) {
-      console.warn(`mistral ${upstream.status} ${upstream.headers.get('content-type')}`);
-      if (upstream.status === 429 || upstream.status === 402 || upstream.status >= 500) {
+      // Mistral says *which* 429 this is in the body, and a status alone cannot
+      // tell "slow down" from "out of credit" — the difference between waiting
+      // a minute and rotating the key. The body is already lost to the reader
+      // at this point, so read it for the log; capped and flattened because a
+      // stack of upstream HTML is not worth a tail line.
+      let detail = '';
+      try { detail = (await upstream.text()).replace(/\s+/g, ' ').trim().slice(0, 300); } catch {}
+      console.warn(`mistral ${upstream.status} ${upstream.headers.get('content-type')} ${detail}`);
+
+      // 402 and 5xx mean the upstream is gone for everyone, so the site waits.
+      // A 429 means this visitor was too quick, so only this visitor waits —
+      // one impatient reader must not be able to mute the band for the rest.
+      // Any other 4xx is our own bug, and pausing anything would only hide it.
+      const breaker = upstream.status === 402 || upstream.status >= 500 ? BREAKER_SECS : 0;
+      const hold = upstream.status === 429 ? RATE_SECS : 0;
+      if (breaker) {
         ctx.waitUntil(env.ASK_KV
-          .put('ask:state', JSON.stringify({ pausedUntil: Date.now() / 1000 + BREAKER_SECS }),
-               { expirationTtl: BREAKER_SECS })
+          .put('ask:state', JSON.stringify({ pausedUntil: Date.now() / 1000 + breaker }),
+               { expirationTtl: breaker })
           .catch(() => {}));
       }
-      return fail(503, 'upstream error');
+      if (hold) {
+        ctx.waitUntil(cache
+          .put(holdKey, new Response(String(Date.now() / 1000 + hold), {
+            headers: { 'cache-control': `public, max-age=${hold}` },
+          }))
+          .catch(() => {}));
+      }
+      return fail(503, 'upstream error', breaker || hold || undefined);
     }
 
     /* ---- pass the SSE through untouched ----
