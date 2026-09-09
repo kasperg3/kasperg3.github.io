@@ -101,7 +101,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <div class="demo-foot">
       <p class="sp-status" id="status" role="status">Nothing downloaded until you focus the box.</p>
       <p class="demo-note">A result opens its scoring on <a href="/search/">the search page</a>. The
-      third example is deliberate; <a href="#dot">§5</a> explains the silence.</p>
+      third example is deliberate; <a href="#dot">Section 5</a> explains the silence.</p>
     </div>
     <noscript><p class="demo-note">The box needs JavaScript, because the search runs in your
     browser rather than on a server. The post reads fine without it.</p></noscript>
@@ -144,8 +144,8 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     each side to a single point and compares the points, so the compression happens before anyone
     knows what will be asked. Late interaction <a href="#ref-colbert">[8]</a> keeps every token
     vector and lets each query token pick its best match, so a rare local clue survives. SPLADE
-    <a href="#ref-splade">[1]</a> keeps one weight per vocabulary word, which makes the vector
-    readable, and in the inference-free variant the query side needs no model at all. The
+    <a href="#ref-splade">[1]</a> keeps one weight per vocabulary word, so the vector can be
+    read, and in the inference-free variant the query side needs no model at all. The
     orange cells are words the encoder put on the document that the text never contained.</figcaption>
   </figure>
 
@@ -185,7 +185,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   On the BEIR suite the quality is competitive with dense retrieval <a href="#ref-splade2">[2]</a>,
   with the difference that you can read the vector and see why a result matched.</p>
 
-  <h2 id="asymmetry"><span class="num">03</span>The asymmetry, which is the whole trick</h2>
+  <h2 id="asymmetry"><span class="num">03</span>The whole trick is an asymmetry</h2>
 
   <p>Vocabulary bridging only has to happen <em>once</em>, on one side. If the document side is
   expanded aggressively enough at index time, the query side can be almost nothing: tokenize, look
@@ -210,7 +210,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <p>With bag-of-words weights, <em>the</em> and <em>drones</em> would count the same. With these,
   the query side already knows what is worth matching before it has seen a single document. It
-  knows nothing about <em>this</em> corpus, which is the price, and <a href="#limits">§7</a> comes
+  knows nothing about <em>this</em> corpus. That is the price, and <a href="#limits">Section 7</a> comes
   back to it.</p>
 
     <figure class="fig" aria-labelledby="fig2-cap">
@@ -256,7 +256,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <figcaption id="fig2-cap"><b>Figure 2.</b> Inference-free SPLADE moves all of the model to
     index time. The right pan holds everything the browser needs to turn a query into a vector: a
     WordPiece tokenizer, about a hundred lines of JavaScript, and one static weight per vocabulary
-    entry. Timings are from <a href="#plumbing">§6</a>.</figcaption>
+    entry. Timings are from <a href="#plumbing">Section 6</a>.</figcaption>
   </figure>
 
   <h2 id="vector"><span class="num">04</span>A vector you can read</h2>
@@ -325,7 +325,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <figcaption id="fig3-cap"><b>Figure 3.</b> Sixteen of the 160 terms, read straight out of
     <code>search/index.json</code>. The paper never says <em>camping</em>, <em>hunting</em> or
     <em>forest</em>. The model decided a paper about wilderness search and rescue is the kind of
-    document those words retrieve, which is exactly right and slightly eerie. Note the singular
+    document those words retrieve. It is exactly right and slightly eerie. Note the singular
     <em>drone</em> was added even though the plural is in the text: expansion is also
     morphology.</figcaption>
   </figure>
@@ -343,7 +343,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <figure class="fig" aria-labelledby="fig4-cap">
     <svg viewBox="0 0 760 300" role="img" aria-label="A worked scoring ledger. The query 'finding someone lost in the woods' is tokenized into six terms with static weights: finding 5.92, someone 4.75, lost 5.42, in 0.50, the 0.14, woods 7.18. Against the passage 'Modeling Lost Person Locations' the products are: lost 5.42 times 1.00 equals 5.42; someone 4.75 times 0.19 equals 0.90; woods 7.18 times 0.12 equals 0.86; finding 5.92 times 0.12 equals 0.71; in and the contribute 0. Total 7.90.">
       <text x="0" y="16" font-size="13" font-weight="600" fill="var(--ink)">finding someone lost in the woods</text>
-      <text x="0" y="34" font-size="11.5" fill="var(--muted)">scored against the top passage, “Modeling Lost Person Locations” (SAREnv §4)</text>
+      <text x="0" y="34" font-size="11.5" fill="var(--muted)">scored against the top passage, “Modeling Lost Person Locations” (SAREnv, Section 4)</text>
       <!-- header -->
       <g font-size="10.5" font-family="IBM Plex Mono,monospace" fill="var(--faint)">
         <text x="0" y="66">TOKEN</text><text x="230" y="66" text-anchor="end">QUERY w</text>
@@ -417,7 +417,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <svg viewBox="0 0 760 300" role="img" aria-label="Pipeline. A git push triggers GitHub Actions, which runs the 67 million parameter encoder once over 203 passages in about three minutes and commits the index. GitHub Pages serves three static files, 288 kilobytes gzipped, fetched when the search box is focused. The browser tokenizes the query, looks up weights and computes the dot product in 0.7 milliseconds with no model and no server. A dashed optional lane runs only when a reader presses Answer this: the browser sends passage ids to a Cloudflare Worker on the free plan, which holds the API key, applies caps and a cache, and forwards to Mistral’s free tier, which returns two to four sentences with numbered citations. Every box is marked zero euros."><g font-family="var(--sans)"><text x="0" y="16" font-size="13" font-weight="600" fill="var(--ink)">Where the work happens</text><text x="0" y="34" font-size="11.5" fill="var(--muted)">the model runs once, on the left; a reader only ever touches the right</text><rect x="0" y="62" width="96" height="74" rx="10" fill="var(--card)" stroke="var(--hair)" stroke-width="1"/><text x="14" y="84" font-size="12" font-weight="600" fill="var(--ink)">git push</text><text x="14" y="102" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">you edit a</text><text x="14" y="116" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">page or a paper</text><path d="M98 99H120" stroke="var(--faint)" stroke-width="1.4" fill="none"/><path d="M126 99l-7 -4v8z" fill="var(--faint)"/><rect x="128" y="62" width="176" height="74" rx="10" fill="var(--card)" stroke="var(--hair)" stroke-width="1"/><text x="142" y="84" font-size="12" font-weight="600" fill="var(--ink)">GitHub Actions</text><text x="142" y="102" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">67M encoder, once</text><text x="142" y="116" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">203 passages · ~3 min</text><text x="142" y="130" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">commits the index</text><rect x="264" y="72" width="30" height="15" rx="7.5" fill="var(--accent-faint)"/><text x="279" y="83" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--accent)">€0</text><path d="M306 99H328" stroke="var(--faint)" stroke-width="1.4" fill="none"/><path d="M334 99l-7 -4v8z" fill="var(--faint)"/><rect x="336" y="62" width="176" height="74" rx="10" fill="var(--card)" stroke="var(--hair)" stroke-width="1"/><text x="350" y="84" font-size="12" font-weight="600" fill="var(--ink)">GitHub Pages</text><text x="350" y="102" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">3 static files</text><text x="350" y="116" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">288 KB gzipped</text><text x="350" y="130" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">fetched on focus</text><rect x="472" y="72" width="30" height="15" rx="7.5" fill="var(--accent-faint)"/><text x="487" y="83" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--accent)">€0</text><path d="M514 99H536" stroke="var(--faint)" stroke-width="1.4" fill="none"/><path d="M542 99l-7 -4v8z" fill="var(--faint)"/><rect x="544" y="62" width="216" height="74" rx="10" fill="var(--accent-faint)" stroke="var(--accent)" stroke-width="1.3"/><text x="558" y="84" font-size="12" font-weight="600" fill="var(--ink)">Your browser</text><text x="558" y="102" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">tokenize · weight table</text><text x="558" y="116" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">dot product · 0.7 ms</text><text x="558" y="130" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">no model, no server</text><rect x="720" y="72" width="30" height="15" rx="7.5" fill="var(--accent-faint)"/><text x="735" y="83" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--accent)">€0</text><text x="0" y="176" font-size="10.5" fill="var(--accent-2)" font-weight="600">only if a reader presses “Answer this”</text><text x="0" y="191" font-size="10" fill="var(--muted)">the four best passages,</text><text x="0" y="204" font-size="10" fill="var(--muted)">by id, never by text</text><path d="M652 138V158H424V184" stroke="var(--accent-2)" stroke-width="1.3" fill="none" stroke-dasharray="5 4"/><path d="M424 190l-4 -7h8z" fill="var(--accent-2)"/><rect x="336" y="192" width="176" height="74" rx="10" fill="var(--card)" stroke="var(--accent-2)" stroke-width="1.2" stroke-dasharray="5 4"/><text x="350" y="214" font-size="12" font-weight="600" fill="var(--ink)">Cloudflare Worker</text><text x="350" y="232" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">holds the API key</text><text x="350" y="246" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">caps and a 24 h cache</text><text x="350" y="260" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">Workers Free</text><rect x="472" y="202" width="30" height="15" rx="7.5" fill="var(--accent-faint)"/><text x="487" y="213" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--accent)">€0</text><path d="M514 229H536" stroke="var(--accent-2)" stroke-width="1.4" fill="none"/><path d="M542 229l-7 -4v8z" fill="var(--accent-2)"/><rect x="544" y="192" width="216" height="74" rx="10" fill="var(--ink)" stroke="var(--ink)" stroke-width="1"/><text x="558" y="214" font-size="12" font-weight="600" fill="var(--canvas)">Mistral</text><text x="558" y="232" font-size="10" fill="var(--canvas)" font-family="IBM Plex Mono,monospace">2–4 sentences, [n] cites</text><text x="558" y="246" font-size="10" fill="var(--canvas)" font-family="IBM Plex Mono,monospace">free Experiment tier</text><text x="558" y="260" font-size="10" fill="var(--canvas)" font-family="IBM Plex Mono,monospace">429 → the page quotes [1]</text><rect x="720" y="202" width="30" height="15" rx="7.5" fill="rgba(255,255,255,.14)"/><text x="735" y="213" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--canvas)">€0</text><text x="0" y="292" font-size="10.5" fill="var(--faint)">no payment method on any account · every limit fails with an error and never with a bill · sizes measured on the live index</text></g></svg>
     <figcaption id="fig5-cap"><b>Figure 5.</b> The top row is the whole of search. A push that
     touches indexed content runs the encoder on a free runner and commits the result; Pages serves
-    it; the browser fetches 288 KB gzipped on first focus, which is 930× less than the 268 MB
+    it; the browser fetches 288 KB gzipped on first focus, 930× less than the 268 MB
     model, and scores all 31,556 postings by brute force in 0.7 ms. The bottom row exists only
     for the <em>Answer this</em> button and is the one part that talks to a server, because a
     static site cannot hold an API key. The Worker accepts passage ids, never text, so it can only
@@ -431,8 +431,8 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   fails silently, so the same build tokenizes a fixture of awkward strings (<em>grøntved</em>,
   <em>ESP-NOW</em>, <em>café résumé naïve</em>) both ways and fails on any disagreement. And
   <code>torch.set_num_threads(1)</code> makes the encoding deterministic on a given runner image,
-  which is what lets an unchanged index produce no commit. The workflow, the build script and the
-  Worker are linked in <a href="#steal">§8</a>.</p>
+  so an unchanged index produces no commit. The workflow, the build script and the
+  Worker are linked in <a href="#steal">Section 8</a>.</p>
 
   <h2 id="limits"><span class="num">07</span>Where it stops</h2>
 
@@ -452,7 +452,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <p>The download column is the reliable one; the timing assumes the loop stays cache-friendly,
   which it will not. This architecture is right for a corpus you could read in an afternoon and
   wrong for one you could not. Past that, Lucene-based engines do this natively, and OpenSearch
-  ships this exact model for the purpose <a href="#ref-if">[4]</a>, which is the not-free path.</p>
+  ships this exact model for the purpose <a href="#ref-if">[4]</a>. That is the not-free path.</p>
 
   <p>Two limits are about the model rather than the plumbing. The static query weights are a
   learned IDF over MS MARCO-shaped web text: they rate <em>drone</em> far above <em>system</em>,
@@ -501,12 +501,12 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <p><strong>A vocabulary of my own.</strong> <em>Grøntved</em> shreds because the vocabulary was
   cut for English web text in 2018. Yu, Mallia and Petri <a href="#ref-vocab">[11]</a> show that
   a corpus-specific vocabulary improves learned sparse retrieval by up to 12% and, with shorter
-  posting lists, halves latency. It means training the document encoder again, which is the first
+  posting lists, halves latency. It means training the document encoder again, and that is the first
   item here a CPU runner might refuse to do for free.</p>
 
   <p><strong>SPLARE, and the end of readable dimensions.</strong> SPLARE
   <a href="#ref-splare">[12]</a> retrieves over the latent features of a sparse autoencoder
-  trained on an LLM's hidden states rather than over the vocabulary, which buys a multilingual
+  trained on an LLM's hidden states rather than over the vocabulary. That buys a multilingual
   representation that holds up out of domain. The latents no longer have a WordPiece spelling, so
   Figure 3 would need a legend generated by a model, and it is not inference-free: the query goes
   through the LLM too. Whether a static table from tokens to latents can stand in for that, the
