@@ -230,99 +230,51 @@ details.pub .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-siz
 .factlinks a.cta{background:var(--accent);border-color:var(--accent);color:#fff}
 .factlinks a.cta:hover{color:#fff;filter:brightness(1.08)}
 
-/* spotlight — one featured piece, wide, with its illustration. A div, not a
-   link: the title and the button are the links, so the card can also carry
-   the smaller "also" link without nesting anchors. */
-.spotlight{display:grid;grid-template-columns:1fr 292px;margin-top:30px;background:var(--card);
-           border:1px solid var(--hair);border-radius:18px;overflow:hidden;
-           transition:border-color .18s,box-shadow .18s}
-.spotlight:hover{border-color:var(--accent);box-shadow:var(--shadow)}
-/* grid items default to min-width:auto, so a wide child can push the track
-   past its container — that scrolled the page sideways on small phones */
-.spotlight > *{min-width:0}
-.spot-main{padding:28px 32px 28px;display:flex;flex-direction:column;min-width:0}
-.spot-top{display:flex;align-items:baseline;gap:16px;margin-bottom:12px}
-.spot-top b{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-            color:var(--accent)}
-.spot-top .when{margin-left:auto;font:500 12px/1 var(--mono);color:var(--faint)}
-.spotlight .stitle{font:600 clamp(23px,3.1vw,32px)/1.22 var(--serif);color:var(--ink);
-                   letter-spacing:-.012em;text-decoration:none;align-self:flex-start}
-.spotlight .stitle:hover{color:var(--accent)}
-.spotlight .ssub{font-size:15.5px;color:var(--ink-2);margin-top:7px;font-weight:500}
-.spotlight p{color:var(--muted);font-size:15.5px;max-width:56ch;margin-top:11px}
-.spot-foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin-top:22px}
-.spot-go{display:inline-flex;align-items:center;gap:8px;font:500 14px/1 var(--sans);
-         color:#fff;background:var(--accent);border-radius:9px;padding:12px 18px;
-         text-decoration:none}
-.spot-go:hover{color:#fff;filter:brightness(1.08)}
-.spot-also{font:400 13.5px/1.5 var(--sans);color:var(--faint);max-width:36ch}
-.spot-also a{color:var(--ink-2);text-decoration-color:var(--hair)}
-.spot-also a:hover{color:var(--accent)}
+/* below the fact bar: the conversation on the left, the contents on the
+   right. No cards here: it is a contents page, set in type and hairlines.
+   The conversation's own styles live in search/search.css with the feature. */
+.front{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(36px,6vw,88px);
+       align-items:start;margin-top:clamp(44px,6vw,76px);margin-bottom:clamp(64px,9vw,120px)}
+.front > *{min-width:0}
+.front > section{padding:0;border-top:0}
 
-/* the dark decorative panel */
-.spot-art{background:var(--dark);padding:20px 22px;display:flex;flex-direction:column;gap:14px;
-          color:#e9edf2}
-.art-top{display:flex;gap:12px;font:500 9.5px/1 var(--mono);letter-spacing:.16em;
-         text-transform:uppercase;color:#6f7c89}
-.art-top span:last-child{margin-left:auto;color:#3fbeb2}
-.art-grid{display:grid;grid-template-columns:auto repeat(3,1fr);gap:5px;align-items:center}
-.art-grid .hd{font:500 9px/1.3 var(--mono);color:#6f7c89;text-align:center;padding-bottom:2px}
-.art-grid .rw{font:500 10px/1 var(--mono);color:#98a4b0;padding-right:8px}
-.art-grid .cell{height:26px;border-radius:5px;background:rgba(255,255,255,.055);
-                display:flex;align-items:center;justify-content:center;
-                font:500 10.5px/1 var(--mono);color:#6f7c89}
-.art-grid .cell.on{background:rgba(63,190,178,.22);color:#7fd1c6;
-                   box-shadow:inset 0 0 0 1px rgba(63,190,178,.4)}
-.art-cap{font:400 11px/1.45 var(--sans);color:#8b96a2;margin:auto 0 0}
-
-/* lower duo: the conversation card + the index column. The card's own
-   styles live in search/search.css with the rest of the ask feature. */
-.duo{display:grid;grid-template-columns:1fr 384px;gap:24px;margin-top:24px;align-items:start;
-     margin-bottom:clamp(56px,8vw,110px)}
-/* Grid items default to min-width:auto, so a wide child can push the track
-   past the container — which it did below ~420px, scrolling the page
-   sideways. Let them shrink and wrap instead. */
-.duo > *{min-width:0}
-.duo > section{padding:0;border-top:0}
-
-aside.idx{position:sticky;top:24px}
-.idx-head{display:flex;align-items:baseline;gap:14px;margin-bottom:4px}
-.idx-head b{font:600 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-            color:var(--faint)}
-.idx-head .count{margin-left:auto;font:500 11px/1 var(--mono);color:var(--faint)}
-.idx-title{font:600 25px/1.25 var(--serif);color:var(--ink);letter-spacing:-.01em;
-           padding-bottom:14px;border-bottom:1px solid var(--hair-soft);margin-bottom:12px}
-.idx a{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--card);
-       border:1px solid var(--hair-soft);border-radius:14px;text-decoration:none;
-       margin-bottom:9px;transition:border-color .16s,transform .16s,box-shadow .16s}
-.idx a:hover{border-color:var(--accent);transform:translateX(3px);box-shadow:var(--shadow)}
-.idx .n{font:500 10px/1 var(--mono);color:var(--faint);flex:none;width:16px}
-.idx .ico{width:34px;height:34px;border-radius:10px;background:var(--accent-faint);flex:none;
-          display:flex;align-items:center;justify-content:center;color:var(--accent)}
-.idx .ico svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;
-              stroke-linecap:round;stroke-linejoin:round}
-.idx .tx{min-width:0}
-.idx .tx b{font:600 15.5px/1.3 var(--sans);color:var(--ink);display:block}
-.idx a:hover .tx b{color:var(--accent)}
-.idx .tx b,.idx .tx span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.idx .tx span{display:block;font-size:13.5px;line-height:1.45;color:var(--muted)}
-.idx .arw{margin-left:auto;color:var(--faint);flex:none;font-size:15px}
-.idx a:hover .arw{color:var(--accent)}
+/* the table of contents */
+.toc-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+          padding-bottom:12px;border-bottom:1.5px solid var(--ink)}
+.toc-head span{font:500 11px/1 var(--mono);color:var(--faint)}
+.toc ol,.toc ul{list-style:none;margin:0;padding:0}
+.toc > ol > li{border-bottom:1px solid var(--hair-soft);padding:17px 0 15px}
+.toc > ol > li > a{display:flex;align-items:baseline;gap:14px;text-decoration:none}
+.toc .n{font:500 11px/1.6 var(--mono);color:var(--faint);flex:none;width:22px}
+.toc .t{font:600 clamp(20px,2.3vw,23px)/1.25 var(--serif);color:var(--ink);letter-spacing:-.012em;flex:none}
+.toc a:hover .t{color:var(--accent)}
+/* the dotted leader: a bottom border on an empty flex item, lifted to the baseline */
+.toc .lead{flex:1;min-width:24px;border-bottom:2px dotted var(--hair);transform:translateY(-6px)}
+.toc .d{flex:none;max-width:22ch;text-align:right;font:400 14px/1.5 var(--sans);color:var(--muted)}
+.toc .sub{margin:12px 0 2px 36px}
+.toc .sub li + li{margin-top:7px}
+.toc .sub a{display:flex;align-items:baseline;gap:12px;text-decoration:none;
+            font:500 14.5px/1.45 var(--sans);color:var(--ink-2)}
+.toc .sub a:hover{color:var(--accent)}
+.toc .sub .k{flex:none;font:500 10.5px/1.7 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+             color:var(--accent)}
+.toc .sub .arw{margin-left:auto;color:var(--faint);flex:none}
+.toc .sub a:hover .arw{color:var(--accent)}
 
 @media (max-width:980px){
   .masthead{grid-template-columns:1fr;gap:22px}
   .masthead .bio{padding-top:0;max-width:60ch}
-  .spotlight{grid-template-columns:1fr}
-  .spot-art{flex-direction:row;align-items:center;gap:20px}
-  .spot-art .art-grid{max-width:340px}
-  /* one column: the conversation first, then the index */
-  .duo{grid-template-columns:1fr}
-  aside.idx{position:static}
+  /* one column: the conversation first, then the contents */
+  .front{grid-template-columns:1fr;gap:56px}
 }
 @media (max-width:560px){
   .factlinks{margin-left:0;width:100%}
-  .spot-art{flex-direction:column;align-items:stretch}
   header.top .wrap{padding-top:18px}
+  /* the description drops under the title; the leader has nothing to lead to */
+  .toc > ol > li > a{flex-wrap:wrap;gap:4px 14px}
+  .toc .lead{display:none}
+  .toc .d{flex-basis:100%;max-width:none;text-align:left;padding-left:36px}
+  .toc .sub{margin-left:0}
 }
 
 /* ============================================================
@@ -376,7 +328,7 @@ details.pub,.kv > dt[id],.tl > li[id],.card[id]{scroll-margin-top:24px}
     break-after:avoid;page-break-after:avoid
   }
   p,li,dd{orphans:2;widows:2}
-  .kv dt,.kv dd,.card,.featured,details.pub,.spotlight,.idx a{
+  .kv dt,.kv dd,.card,.featured,details.pub,.toc li{
     break-inside:avoid;page-break-inside:avoid
   }
 

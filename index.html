@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css?v=1b29087a">
-<link rel="stylesheet" href="/search/search.css?v=8">
+<link rel="stylesheet" href="/site/site.css?v=eec66012">
+<link rel="stylesheet" href="/search/search.css?v=9">
 <noscript><style>/* the conversation cannot work without scripting */
 .asksite .chat,.asksite .chat-tries,.asksite .composer{display:none}</style></noscript>
 <script type="application/ld+json">
@@ -62,38 +62,12 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     </div>
   </div>
 
-  <!-- Featured: one piece, wide, with the illustration the deck is about. The
-       title and the button are the links; the card is not one element, so it can
-       also carry a second, smaller link without nesting anchors. -->
-  <div class="spotlight">
-    <div class="spot-main">
-      <div class="spot-top"><b>Featured lecture</b><span class="when">Draft · 32 slides</span></div>
-      <a class="stitle" href="/knowledge/ml-and-data-at-colourbox/">ML and Data at Colourbox</a>
-      <span class="ssub">Multimodal search, and why the models run on our own hardware</span>
-      <p>Why cold starts are hard when the open Danish data does not exist yet, what a DAM archive
-      actually contains, and how dense embeddings and late interaction split the work between a stock
-      library and a customer's own assets.</p>
-      <div class="spot-foot">
-        <a class="spot-go" href="/knowledge/ml-and-data-at-colourbox/">Explore the deck →</a>
-        <span class="spot-also">Also: <a href="/blog/inference-free-splade/">Semantic search for the
-          price of a git push</a>, the post behind this site's search</span>
-      </div>
-    </div>
-    <div class="spot-art" aria-hidden="true">
-      <div class="art-top"><span>Local evidence</span><span>MaxSim</span></div>
-      <div class="art-grid">
-        <span class="hd"></span><span class="hd">lokalplan</span><span class="hd">kabel</span><span class="hd">bilag</span>
-        <span class="rw">image</span><span class="cell on">0.94</span><span class="cell"></span><span class="cell"></span>
-        <span class="rw">drawing</span><span class="cell"></span><span class="cell on">0.91</span><span class="cell"></span>
-        <span class="rw">pdf</span><span class="cell"></span><span class="cell"></span><span class="cell on">0.88</span>
-      </div>
-      <p class="art-cap">Know the corpus. Then pick the model.</p>
-    </div>
-  </div>
-
-  <!-- Two columns: the conversation, and the index that is the site's
-       navigation. There is no menu bar; every other page links back to #explore. -->
-  <div class="duo">
+  <!-- Below the fact bar: a contents page. No cards, only type and hairlines.
+       Left, the conversation: one ruled line to write on. Right, the contents
+       of the site, set like a table of contents with dotted leaders; the
+       featured lecture and the latest post are sub-entries under Knowledge.
+       There is no menu bar; every other page links back to #explore. -->
+  <div class="front">
 
     <!-- Ask this site: a conversation, not a search box. Retrieval still runs
          entirely in the browser and is still the whole of the feature; the thread
@@ -101,72 +75,63 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
          its own, so nothing here implies a memory it does not have, and the
          scoring behind any answer is one press away in the modal. -->
     <section class="asksite" id="ask" aria-labelledby="ask-title">
-      <div class="ask-head">
-        <div>
-          <p class="ask-eyebrow"><i class="dot" aria-hidden="true"></i>Grounded in the papers, slides and CV</p>
-          <h2 class="ask-title" id="ask-title">Ask this site</h2>
-        </div>
-        <span class="ask-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 3.5V16A2.5 2.5 0 0 1 4 13.5z"/><path d="M8.5 9h7M8.5 12h4.5"/></svg></span>
-      </div>
+      <h2 class="ask-title" id="ask-title">Ask this site</h2>
+      <p class="ask-lede">Every answer is built from these pages: the papers, the slides and the CV,
+      retrieved in your browser and cited passage by passage.</p>
 
-      <div class="ask-body">
-        <p class="ask-lede">Ask about the research, the search systems, or how the models stay inside
-        Europe. Every answer is built from this site's own pages.</p>
-        <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
-        <div class="chat-tries" id="htries" aria-label="Questions to try">
-          <button class="sp-ex" type="button">How do drones divide up a search area?</button>
-          <button class="sp-ex" type="button">What is late interaction?</button>
-          <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
-          <button class="sp-ex" type="button">What is SAREnv?</button>
-        </div>
-        <noscript><p class="ask-note">The conversation needs JavaScript; the rest of the site does not.</p></noscript>
-      </div>
+      <div class="chat" id="hchat" role="log" aria-live="polite" aria-label="Conversation"></div>
 
       <form class="composer" id="hform" autocomplete="off">
         <label for="hq" class="skip">Ask this site a question</label>
         <input id="hq" type="text" spellcheck="false" enterkeyhint="send" maxlength="200"
-               placeholder="Ask about the research, the search, or the CV">
+               placeholder="What would you like to know?">
         <button id="hsend" class="composer-send" type="submit" aria-label="Send question">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14m0 0l-5.5-5.5M18 12l-5.5 5.5"/></svg>
         </button>
       </form>
+
+      <div class="chat-tries" id="htries" aria-label="Questions to try">
+        <span>Try</span>
+        <button class="sp-ex" type="button">How do drones divide up a search area?</button>
+        <button class="sp-ex" type="button">What is late interaction?</button>
+        <button class="sp-ex" type="button">What keeps the models inside Europe?</button>
+      </div>
+      <noscript><p class="ask-note">The conversation needs JavaScript; the rest of the site does not.</p></noscript>
     </section>
 
-    <aside class="idx" id="explore" aria-labelledby="explore-title">
-      <div class="idx-head"><b>Index</b><span class="count">05 chapters</span></div>
-      <div class="idx-title" id="explore-title">Explore the site</div>
-
-      <a href="/knowledge/">
-        <span class="n">01</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14v10H3zM3 17h14M8 14v3M12 14v3"/></svg></span>
-        <span class="tx"><b>Knowledge</b><span>Talks, slide decks and writing</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="/publications.html">
-        <span class="n">02</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 5C8 3.5 5.5 3.5 3 4v11c2.5-.5 5 -.5 7 1 2-1.5 4.5-1.5 7-1V4c-2.5-.5-5-.5-7 1zM10 5v12"/></svg></span>
-        <span class="tx"><b>Publications</b><span>Peer-reviewed robotics and AI work</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="/cv.html">
-        <span class="n">03</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3h12v14H4zM7 7h6M7 10h6M7 13h4"/></svg></span>
-        <span class="tx"><b>CV</b><span>Roles, education and research stays</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="/search/">
-        <span class="n">04</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l4 4"/></svg></span>
-        <span class="tx"><b>Search</b><span>The whole site, with the vectors showing</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a href="https://www.linkedin.com/in/kaspergrontved/">
-        <span class="n">05</span>
-        <span class="ico"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14v10H3zM3 5l7 5 7-5"/></svg></span>
-        <span class="tx"><b>Get in touch</b><span>LinkedIn, GitHub and Scholar</span></span>
-        <span class="arw">↗</span>
-      </a>
-    </aside>
+    <nav class="toc" id="explore" aria-labelledby="toc-title">
+      <div class="toc-head"><h2 id="toc-title">Contents</h2><span>04 chapters</span></div>
+      <ol>
+        <li>
+          <a href="/knowledge/">
+            <span class="n">01</span><span class="t">Knowledge</span><span class="lead" aria-hidden="true"></span>
+            <span class="d">Talks, decks, writing</span>
+          </a>
+          <ul class="sub">
+            <li><a href="/knowledge/ml-and-data-at-colourbox/"><span class="k">Featured lecture</span>ML and Data at Colourbox<span class="arw">→</span></a></li>
+            <li><a href="/blog/inference-free-splade/"><span class="k">Latest post</span>Semantic search for the price of a git push<span class="arw">→</span></a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="/publications.html">
+            <span class="n">02</span><span class="t">Publications</span><span class="lead" aria-hidden="true"></span>
+            <span class="d">Peer-reviewed work</span>
+          </a>
+        </li>
+        <li>
+          <a href="/cv.html">
+            <span class="n">03</span><span class="t">CV</span><span class="lead" aria-hidden="true"></span>
+            <span class="d">Roles and education</span>
+          </a>
+        </li>
+        <li>
+          <a href="/search/">
+            <span class="n">04</span><span class="t">Search</span><span class="lead" aria-hidden="true"></span>
+            <span class="d">Vectors on screen</span>
+          </a>
+        </li>
+      </ol>
+    </nav>
 
   </div>
 

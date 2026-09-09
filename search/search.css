@@ -212,29 +212,15 @@
              padding:16px 20px;background:var(--card);color:var(--ink-2);font-size:15px}
 
 /* ============================================================
-   the front page card — the conversation, on the site's own tokens.
-   A light card like everything around it: header, body, composer.
+   the front page conversation — no card, no band. A title, a sentence,
+   one ruled line to write on, and the thread above it when there is one.
    ============================================================ */
-.asksite{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--hair-soft);
-         border-radius:18px;overflow:hidden;min-width:0}
-.ask-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
-          padding:24px 28px 18px;border-bottom:1px solid var(--hair-soft)}
-.ask-eyebrow{display:flex;align-items:center;font:600 10.5px/1.4 var(--sans);letter-spacing:.16em;
-             text-transform:uppercase;color:var(--accent);margin:0 0 8px}
-.ask-eyebrow .dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);
-                  margin-right:9px;box-shadow:0 0 0 3px var(--accent-faint)}
+.asksite{min-width:0}
 /* site.css styles a bare h2 as an uppercase eyebrow; this one is a title. */
-.ask-title{margin:0;font:600 clamp(22px,2.6vw,27px)/1.2 var(--serif);color:var(--ink);
-           text-transform:none;letter-spacing:-.012em}
-.ask-ico{flex:none;width:40px;height:40px;border-radius:12px;background:var(--accent-faint);
-         display:grid;place-items:center;color:var(--accent)}
-.ask-ico svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;
-             stroke-linecap:round;stroke-linejoin:round}
-.ask-body{flex:1;padding:22px 28px 6px}
-.ask-lede{margin:0 0 16px;font:400 16px/1.6 var(--sans);color:var(--muted);max-width:46ch}
-/* once there is a conversation, the invitation has done its job */
-.ask-body:has(.chat:not(:empty)) .ask-lede{display:none}
-.ask-note{font:400 13.5px/1.5 var(--sans);color:var(--faint);margin:0 0 16px}
+.ask-title{margin:0;font:600 clamp(30px,3.8vw,42px)/1.08 var(--serif);color:var(--ink);
+           text-transform:none;letter-spacing:-.018em}
+.ask-lede{margin:14px 0 0;font:400 16px/1.6 var(--sans);color:var(--muted);max-width:46ch}
+.ask-note{font:400 13.5px/1.5 var(--sans);color:var(--faint);margin:14px 0 0}
 
 /* ------------------------------------------------------------------
    the conversation
@@ -244,7 +230,7 @@
    second speaker would imply a persona that does not exist. Each turn is
    retrieved and answered on its own, so nothing here suggests memory.
    ------------------------------------------------------------------ */
-.chat{display:flex;flex-direction:column;gap:22px;margin-bottom:16px;
+.chat{display:flex;flex-direction:column;gap:22px;margin:26px 0 0;
       max-height:min(52vh,440px);overflow-y:auto;overscroll-behavior:contain;
       padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--hair) transparent}
 .chat::-webkit-scrollbar{width:7px}
@@ -280,35 +266,30 @@
 .turn-retr:hover{border-color:var(--accent-2);color:var(--accent-2);
                  background:color-mix(in srgb,var(--accent-2) 9%,transparent)}
 
-/* the openers: numbered rows, which stand down once the conversation has started */
-.chat-tries{display:flex;flex-direction:column;margin:0 0 10px;counter-reset:q;
-            border-top:1px solid var(--hair-soft)}
-.chat-tries[hidden]{display:none}
-.asksite .sp-ex{counter-increment:q;display:flex;align-items:center;gap:18px;width:100%;
-                text-align:left;border:0;border-bottom:1px solid var(--hair-soft);border-radius:0;
-                background:transparent;padding:16px 6px;cursor:pointer;
-                font:600 15px/1.4 var(--sans);color:var(--ink);transition:padding-left .16s}
-.asksite .sp-ex::before{content:counter(q,decimal-leading-zero);flex:none;width:22px;
-                        font:500 11px/1 var(--mono);color:var(--faint)}
-.asksite .sp-ex::after{content:"→";margin-left:auto;color:var(--faint);font-weight:400}
-.asksite .sp-ex:hover{color:var(--accent);padding-left:12px}
-.asksite .sp-ex:hover::after{color:var(--accent)}
-
-/* the composer — the card's footer */
-.composer{display:flex;align-items:center;gap:10px;margin:0;padding:16px 20px 20px;
-          border-top:1px solid var(--hair-soft);background:var(--card)}
-.composer input{flex:1;min-width:0;outline:none;background:var(--card);color:var(--ink);
-                border:1px solid var(--hair);border-radius:11px;padding:12px 15px;
-                font:400 15.5px/1.5 var(--sans);text-overflow:ellipsis;
-                transition:border-color .16s,box-shadow .16s}
-.composer input::placeholder{color:var(--faint)}
-.composer input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-faint)}
-.composer-send{flex:none;display:grid;place-items:center;width:46px;height:46px;
-               border:0;border-radius:11px;cursor:pointer;background:var(--accent);color:#fff}
-.composer-send:hover:not(:disabled){filter:brightness(1.08)}
-.composer-send:disabled{opacity:.35;cursor:default}
-.composer-send svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;
+/* the line to write on */
+.composer{display:flex;align-items:center;gap:16px;margin:28px 0 0;padding:0 0 10px;
+          border-bottom:1.5px solid var(--ink);transition:border-color .16s}
+.composer:focus-within{border-color:var(--accent)}
+.composer input{flex:1;min-width:0;border:0;outline:none;background:transparent;color:var(--ink);
+                font:400 clamp(19px,2.2vw,24px)/1.4 var(--serif);padding:6px 0;text-overflow:ellipsis}
+.composer input::placeholder{color:var(--faint);font-style:italic}
+.composer-send{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;
+               border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;
+               transition:background .16s,color .16s,border-color .16s}
+.composer-send:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:#fff}
+.composer-send:disabled{opacity:.3;cursor:default}
+.composer-send svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;
                    stroke-linecap:round;stroke-linejoin:round}
+
+/* the openers: a line of suggestions, which stand down once the conversation has started */
+.chat-tries{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin-top:16px}
+.chat-tries[hidden]{display:none}
+.chat-tries > span{font:500 10.5px/1.7 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+                   color:var(--faint)}
+.asksite .sp-ex{border:0;border-radius:0;padding:0;background:transparent;cursor:pointer;
+                font:400 14px/1.6 var(--sans);color:var(--muted);text-decoration:underline;
+                text-decoration-color:var(--hair);text-decoration-thickness:1px;text-underline-offset:4px}
+.asksite .sp-ex:hover{color:var(--accent);text-decoration-color:var(--accent)}
 
 /* ============================================================
    the retrieval modal — the analysis, kept in full
@@ -372,12 +353,8 @@
 }
 
 @media (max-width:480px){
-  .asksite{border-radius:14px}
-  .ask-head{padding:18px 18px 14px}
-  .ask-body{padding:16px 18px 4px}
-  .composer{padding:12px 14px 14px}
-  .ask-eyebrow{font-size:10px;letter-spacing:.12em}
-  .composer input{font-size:15px}
+  .composer input{font-size:18px}
+  .composer-send{width:40px;height:40px}
   .sp-opt{gap:0 10px;padding:10px}
   .sp-rank{width:23px;height:23px;font-size:11.5px}
   .sp-opt-title{font-size:14.5px}
