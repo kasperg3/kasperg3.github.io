@@ -1,20 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- The mark: a K in the aurora colours over the site's cold light ground.
-       Teal to amber to rose, bottom-left to top-right, like the lights across
-       the top of the front page. A hairline edge keeps it visible on a white
-       tab bar. -->
+  <!-- The mark: a K in muted aurora colours on the page's own ground, with a
+       faint wash of the same colours behind it. Follows the OS theme: the
+       site canvas in light mode, the featured tile's dark in dark mode. -->
+  <style>
+    .ground{fill:#e9eff5}.edge{stroke:#15181d;stroke-opacity:.14}
+    @media (prefers-color-scheme:dark){.ground{fill:#12161b}.edge{stroke:#fff;stroke-opacity:.10}}
+  </style>
   <defs>
-    <linearGradient id="aurora" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#1f8f85"/>
-      <stop offset=".55" stop-color="#e58f3e"/>
-      <stop offset="1" stop-color="#c9527e"/>
+    <linearGradient id="k" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#4f9e97"/>
+      <stop offset=".55" stop-color="#d6a171"/>
+      <stop offset="1" stop-color="#c17f99"/>
     </linearGradient>
-    <radialGradient id="ground" cx=".85" cy=".05" r="1">
-      <stop offset="0" stop-color="#f7f9fb"/>
-      <stop offset="1" stop-color="#e3eaf1"/>
-    </radialGradient>
+    <radialGradient id="w1" cx="0" cy="1" r="1.1"><stop offset="0" stop-color="#3fbeb2" stop-opacity=".22"/><stop offset="1" stop-color="#3fbeb2" stop-opacity="0"/></radialGradient>
+    <radialGradient id="w2" cx="1" cy="0" r="1.1"><stop offset="0" stop-color="#d96b93" stop-opacity=".18"/><stop offset="1" stop-color="#d96b93" stop-opacity="0"/></radialGradient>
+    <radialGradient id="w3" cx=".6" cy=".15" r=".9"><stop offset="0" stop-color="#f0a458" stop-opacity=".14"/><stop offset="1" stop-color="#f0a458" stop-opacity="0"/></radialGradient>
+    <clipPath id="tile"><rect width="32" height="32" rx="7"/></clipPath>
   </defs>
-  <rect x=".5" y=".5" width="31" height="31" rx="7" fill="url(#ground)" stroke="#15181d" stroke-opacity=".16"/>
-  <path d="M10 7v18M10 16.5 22.5 7M10 16.5 22.5 25.5" fill="none" stroke="url(#aurora)"
+  <rect class="ground" width="32" height="32" rx="7"/>
+  <g clip-path="url(#tile)">
+    <rect width="32" height="32" fill="url(#w1)"/>
+    <rect width="32" height="32" fill="url(#w2)"/>
+    <rect width="32" height="32" fill="url(#w3)"/>
+  </g>
+  <path d="M10 7v18M10 16.5 22.5 7M10 16.5 22.5 25.5" fill="none" stroke="url(#k)"
         stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect class="edge" x=".5" y=".5" width="31" height="31" rx="7" fill="none"/>
 </svg>
