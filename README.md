@@ -38,6 +38,8 @@ blog/<slug>/index.html  one post = one HTML file, hand-written; inline SVG for f
 blog/blog.css           article styles (prose, figures, tables, the receipt), on top of site.css
 blog/*/ posts/ hop-database/  redirect stubs for the retired Jekyll blog (see below)
 publications/ cv/         redirect stubs for the old Jekyll nav URLs
+assets/favicon.svg       the tab icon: a white K over a diffuse aurora wash on the page canvas; follows the OS theme
+favicon.ico             the same mark as 16/32/48 px PNGs, for browsers that skip SVG icons (Safari)
 sitemap.xml robots.txt CNAME .nojekyll
 ```
 
