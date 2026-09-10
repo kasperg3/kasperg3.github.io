@@ -1,7 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#15181d"/>
-  <rect x="6"  y="6"  width="8.5" height="8.5" rx="2.2" fill="#1f6f68"/>
-  <rect x="17.5" y="6"  width="8.5" height="8.5" rx="2.2" fill="#4fa39a"/>
-  <rect x="6"  y="17.5" width="8.5" height="8.5" rx="2.2" fill="#4fa39a"/>
-  <rect x="17.5" y="17.5" width="8.5" height="8.5" rx="2.2" fill="#f7f5f1"/>
+  <!-- The mark: a K in the aurora colours over the same dark ground as the
+       featured tile. Teal to amber to rose, bottom-left to top-right, like the
+       lights across the top of the front page. -->
+  <defs>
+    <linearGradient id="aurora" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#3fbeb2"/>
+      <stop offset=".55" stop-color="#f0a458"/>
+      <stop offset="1" stop-color="#d96b93"/>
+    </linearGradient>
+    <radialGradient id="ground" cx=".85" cy=".05" r="1">
+      <stop offset="0" stop-color="#27414f"/>
+      <stop offset="1" stop-color="#12161b"/>
+    </radialGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#ground)"/>
+  <path d="M10 7v18M10 16.5 22.5 7M10 16.5 22.5 25.5" fill="none" stroke="url(#aurora)"
+        stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
