@@ -1,29 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- The mark: a K in muted aurora colours on the page's own ground, with a
-       faint wash of the same colours behind it. Follows the OS theme: the
-       site canvas in light mode, the featured tile's dark in dark mode. -->
+  <!-- The mark: a white K over a diffuse aurora wash on the page's own ground.
+       Follows the OS theme: the site canvas in light mode, where the wash is
+       stronger so white still reads; the featured tile's dark in dark mode. -->
   <style>
-    .ground{fill:#e9eff5}.edge{stroke:#15181d;stroke-opacity:.14}
-    @media (prefers-color-scheme:dark){.ground{fill:#12161b}.edge{stroke:#fff;stroke-opacity:.10}}
+    .ground{fill:#e9eff5}.edge{stroke:#15181d;stroke-opacity:.14}.wash{opacity:1}
+    @media (prefers-color-scheme:dark){.ground{fill:#12161b}.edge{stroke:#fff;stroke-opacity:.10}.wash{opacity:.55}}
   </style>
   <defs>
-    <linearGradient id="k" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#4f9e97"/>
-      <stop offset=".55" stop-color="#d6a171"/>
-      <stop offset="1" stop-color="#c17f99"/>
-    </linearGradient>
-    <radialGradient id="w1" cx="0" cy="1" r="1.1"><stop offset="0" stop-color="#3fbeb2" stop-opacity=".22"/><stop offset="1" stop-color="#3fbeb2" stop-opacity="0"/></radialGradient>
-    <radialGradient id="w2" cx="1" cy="0" r="1.1"><stop offset="0" stop-color="#d96b93" stop-opacity=".18"/><stop offset="1" stop-color="#d96b93" stop-opacity="0"/></radialGradient>
-    <radialGradient id="w3" cx=".6" cy=".15" r=".9"><stop offset="0" stop-color="#f0a458" stop-opacity=".14"/><stop offset="1" stop-color="#f0a458" stop-opacity="0"/></radialGradient>
+    <radialGradient id="w1" cx="0" cy="1" r="1.15"><stop offset="0" stop-color="#3fbeb2" stop-opacity=".7"/><stop offset="1" stop-color="#3fbeb2" stop-opacity="0"/></radialGradient>
+    <radialGradient id="w2" cx="1" cy="0" r="1.15"><stop offset="0" stop-color="#d96b93" stop-opacity=".62"/><stop offset="1" stop-color="#d96b93" stop-opacity="0"/></radialGradient>
+    <radialGradient id="w3" cx=".55" cy=".4" r=".85"><stop offset="0" stop-color="#f0a458" stop-opacity=".55"/><stop offset="1" stop-color="#f0a458" stop-opacity="0"/></radialGradient>
     <clipPath id="tile"><rect width="32" height="32" rx="7"/></clipPath>
   </defs>
   <rect class="ground" width="32" height="32" rx="7"/>
-  <g clip-path="url(#tile)">
+  <g class="wash" clip-path="url(#tile)">
     <rect width="32" height="32" fill="url(#w1)"/>
     <rect width="32" height="32" fill="url(#w2)"/>
     <rect width="32" height="32" fill="url(#w3)"/>
   </g>
-  <path d="M10 7v18M10 16.5 22.5 7M10 16.5 22.5 25.5" fill="none" stroke="url(#k)"
+  <path d="M10 7v18M10 16.5 22.5 7M10 16.5 22.5 25.5" fill="none" stroke="#fff"
         stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
   <rect class="edge" x=".5" y=".5" width="31" height="31" rx="7" fill="none"/>
 </svg>
