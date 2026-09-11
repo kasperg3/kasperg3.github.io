@@ -3,6 +3,8 @@ date: 2026-09-11
 status: posted
 about: blog/inference-free-splade
 link: https://www.grontved.xyz/blog/inference-free-splade/
+image: 2026-09-11-inference-free-splade.png
+card: ../cards/2026-09-11-inference-free-splade.html
 ---
 
 Semantic search does not need a server.
@@ -26,3 +28,7 @@ and the "€0 a month" line both sit above the "see more" fold.
 embeddings ask you to trust them. A sparse one shows its working.") and one opening on the
 failure ("My site's search cannot find 'cardiac arrest'"). The architectural claim, the one
 that sounds impossible, won over the cleverer angles.
+
+**Image.** Figure 1 of the post, the three retrieval architectures side by side, on a
+1200x1200 card with the headline, the claim and the three costs. Lifted from the post's
+own markup rather than redrawn, so the picture in the feed is the picture in the post.

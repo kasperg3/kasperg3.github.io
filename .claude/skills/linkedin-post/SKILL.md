@@ -83,7 +83,34 @@ arguable claim in it. Let the user pick; do not pick for them.
 - [ ] Read it aloud: any sentence you stumble over is too long.
 - [ ] It sits next to the posts in `posts/` without sounding like a different person.
 
-After the user picks one, save it to `posts/`.
+After the user picks one, save it to `posts/`, with its card and PNG if it has one.
+
+## The figure
+
+A post about something visual should carry one image. LinkedIn shows a single square best, so
+the card is 1200x1200, rendered at 2x.
+
+Do not redraw the diagram. Lift the figure straight out of the page it illustrates: copy the
+markup of the `<figure>` into a card under `cards/`, pull in the site's own stylesheets with
+`/site/site.css` and `/blog/blog.css`, and let the site's tokens do the styling. The picture
+in the feed is then the same picture the reader lands on.
+
+The card is a headline, one line of claim, the figure, and a row of three numbers, over the
+site's canvas wash. Render it with:
+
+```
+scripts/render_card.sh cards/<slug>.html posts/<slug>.png
+```
+
+Three things that bite, all handled in that script but worth knowing:
+
+- **Headless Chromium's viewport is shorter than `--window-size`.** Anything pinned to the
+  bottom of the card is silently clipped. The script renders 120px tall and crops back.
+- **`.card`, `.eyebrow`, `.foot` and friends are already taken by `site.css`.** Reusing one of
+  those class names on the card picks up site rules (`.card p{flex:1}` stretches a one-line
+  paragraph to fill the card). Prefix the card's own classes with `.shot`.
+- **Look at the PNG before posting.** A missing footer or a clipped panel is invisible in the
+  HTML and obvious in the image.
 
 ## The corpus
 
