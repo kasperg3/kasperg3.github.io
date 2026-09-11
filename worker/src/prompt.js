@@ -20,6 +20,8 @@ Rules:
 - If the passages do not answer the question, say so plainly in one sentence \
 and name what they do cover. Do not guess, and do not apologise at length.
 - Two to four sentences. No preamble, no restating the question, no sign-off.
+- Plain prose only: no Markdown, no bold or italics, no headings, no bullet lists. \
+The page shows your text verbatim, so formatting marks would appear as symbols.
 - Write in the same register as the site: plain, declarative, British spelling.`;
 
 /** Number the passages in the order the client ranked them, so [n] maps to ids[n-1]. */

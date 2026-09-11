@@ -82,6 +82,10 @@ function quote(doc) {
  * it invented resolves to nothing and is left as plain text.
  */
 function linkCitations(text, cited) {
+  // The prompt forbids Markdown, and the page renders plain text, so a bold
+  // marker that slips through would show as asterisks. Drop it rather than
+  // render it: emphasis is not part of the register anyway.
+  text = text.replace(/\*\*(.+?)\*\*/g, '$1');
   return escapeHTML(text).replace(/\[(\d{1,2})\]/g, (m, n) => {
     const d = cited[+n - 1]?.doc;
     return d

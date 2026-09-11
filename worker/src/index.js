@@ -30,7 +30,12 @@
 import { SYSTEM, buildUser } from './prompt.js';
 import BUNDLED from '../corpus.json';
 
-const MODEL = 'mistral-small-latest';
+// The Experiment tier grants mistral-small and everything above it zero
+// requests per minute (x-ratelimit-limit-req-minute: 0, a 429 on every call);
+// the Ministral family is what it still serves, and 14B is the largest of
+// those. Its 30 requests per minute is well above anything the caps below let
+// through. The answer cache is keyed on this name, so changing it starts cold.
+const MODEL = 'ministral-14b-latest';
 // The ?v= is a cache key, not a path. Cloudflare caches this by URL, so a
 // corpus whose shape changes — a new field the prompt depends on — is not
 // picked up until the old entry expires. Bump this when that happens.
