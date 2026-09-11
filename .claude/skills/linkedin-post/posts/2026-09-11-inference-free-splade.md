@@ -19,6 +19,11 @@ https://www.grontved.xyz/blog/inference-free-splade/
 
 ---
 
+## The comments
+Try it here: https://www.grontved.xyz/
+And for a detailed write up and visualisations of SPLADE: https://www.grontved.xyz/blog/inference-free-splade/
+
+
 **Why this one.** A flat claim, a fragment run of costs, one paragraph of mechanism with the
 numbers, then the thing itself and the link. The limit is folded into the last line rather
 than given a paragraph of its own. First two beats land at about 190 characters, so the claim
