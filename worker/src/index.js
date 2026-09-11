@@ -236,7 +236,14 @@ export default {
       // stack of upstream HTML is not worth a tail line.
       let detail = '';
       try { detail = (await upstream.text()).replace(/\s+/g, ' ').trim().slice(0, 300); } catch {}
-      console.warn(`mistral ${upstream.status} ${upstream.headers.get('content-type')} ${detail}`);
+      // Every 429 carries the same body, code 1300, whether the account is
+      // being paced or has spent its month. The headers are what tell them
+      // apart, so they go in the same tail line.
+      const limits = [...upstream.headers]
+        .filter(([k]) => k.includes('ratelimit'))
+        .map(([k, v]) => `${k}=${v}`)
+        .join(' ');
+      console.warn(`mistral ${upstream.status} ${upstream.headers.get('content-type')} ${detail} ${limits}`);
 
       // 402 and 5xx mean the upstream is gone for everyone, so the site waits.
       // A 429 means this visitor was too quick, so only this visitor waits —
@@ -257,7 +264,9 @@ export default {
           }))
           .catch(() => {}));
       }
-      return fail(503, 'upstream error', breaker || hold || undefined);
+      // Named apart from a 5xx because the page must not promise recovery in
+      // thirty seconds when the account may simply be out of allowance.
+      return fail(503, hold ? 'upstream rate limited' : 'upstream error', breaker || hold || undefined);
     }
 
     /* ---- pass the SSE through untouched ----

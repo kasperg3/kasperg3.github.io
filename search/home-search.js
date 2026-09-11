@@ -157,21 +157,27 @@ function failNote(status, info) {
   switch (info?.error) {
     case 'ip daily limit':
       return when
-        ? `That is every question you get today — your allowance resets ${when}.`
+        ? `That is every question you get today. Your allowance resets ${when}.`
         : 'That is every question you get today.';
     case 'site daily limit':
       return when
-        ? `The site has answered all the questions it will today — it resets ${when}.`
+        ? `The site has answered all the questions it will today. It resets ${when}.`
         : 'The site has answered all the questions it will today.';
     case 'rate limited':
       return when
-        ? `You are asking faster than the model service allows — try again ${when}.`
+        ? `You are asking faster than the model service allows. Try again ${when}.`
         : 'You are asking faster than the model service allows.';
+    case 'upstream rate limited':
+      // The model service refused this call outright. That is either a
+      // moment of shared pacing or an account that has spent its allowance,
+      // and the page cannot tell which, so it names the fact and not a cure.
+      return 'The model service refused to generate an answer just now: its rate limit is in ' +
+        'effect. Retrieval still worked.';
     case 'paused':
     case 'upstream error':
     case 'upstream unreachable':
       return when
-        ? `Generated answers are paused while the model service recovers — try again ${when}.`
+        ? `Generated answers are paused while the model service recovers. Try again ${when}.`
         : 'Generated answers are paused while the model service recovers.';
     default:
       return status === 429
@@ -184,7 +190,7 @@ function failNote(status, info) {
 function fallback(turn, hits, note) {
   const d = hits[0].doc;
   turn.text.innerHTML =
-    `<span class="turn-quiet">${escapeHTML(note)} Closest passage —
+    `<span class="turn-quiet">${escapeHTML(note)} Closest passage,
      ${escapeHTML(KIND_LABEL[d.kind] || d.kind)}, ${escapeHTML(d.title)}:</span><br>
      ${escapeHTML(quote(d))}`;
 }
@@ -221,7 +227,7 @@ async function ask(question) {
   if (!hits.length) {
     turn.text.innerHTML =
       '<span class="turn-quiet">Nothing on this site matches that. The index covers papers, ' +
-      'slides, projects and the CV — try one of those.</span>';
+      'slides, projects and the CV. Try one of those.</span>';
     setBusy(false);
     return;
   }
