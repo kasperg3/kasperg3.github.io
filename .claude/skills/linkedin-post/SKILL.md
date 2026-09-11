@@ -95,10 +95,13 @@ markup of the `<figure>` into a card under `cards/`, pull in the site's own styl
 `/site/site.css` and `/blog/blog.css`, and let the site's tokens do the styling. The picture
 in the feed is then the same picture the reader lands on.
 
-The card is a headline, one line of claim, the figure, and three numbers, over the site's
-canvas wash. Show one idea. A figure that compares several things reads as a survey of a
-field, so cut it down to the part the post argues for and let the notes beside it carry what
-the other panels were doing. Render it with:
+The card is an eyebrow, a headline, the figure, and the site's name. Nothing else: no
+explanatory paragraph, no annotations down the side, no row of statistics. The card's job is
+to make someone want to read the post, and a card that explains the mechanism has already
+given it away. Whatever labels the figure carries in the post are enough.
+
+Show one idea. A figure that compares several things reads as a survey of a field, so cut it
+down to the part the post argues for. Render it with:
 
 ```
 scripts/render_card.sh cards/<slug>.html posts/<slug>.png

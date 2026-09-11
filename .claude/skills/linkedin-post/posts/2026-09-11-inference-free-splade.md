@@ -29,9 +29,9 @@ embeddings ask you to trust them. A sparse one shows its working.") and one open
 failure ("My site's search cannot find 'cardiac arrest'"). The architectural claim, the one
 that sounds impossible, won over the cleverer angles.
 
-**Image.** The SPLADE panel of Figure 1, alone and large, with the query side, the index
-side and the expansion terms called out beside it and the three costs under those. The
-first cut showed all three architectures side by side and read as a comparison of a field;
-dropping the dense and late-interaction panels made it a picture of the one thing the post
-is about. The SVG is lifted from the post rather than redrawn, so the picture in the feed
-is the picture the reader lands on.
+**Image.** The SPLADE panel of Figure 1, alone and large, under a headline and over the site
+name. It went through two cuts. The first showed all three architectures side by side and read
+as a survey of retrieval rather than as the post's argument. The second kept annotations and a
+row of costs beside the diagram, which explained the mechanism well enough that there was no
+reason left to open the post. What survives is the drawing and six words. The SVG is lifted
+from the post rather than redrawn, so the picture in the feed is the picture the reader lands on.
