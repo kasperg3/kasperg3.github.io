@@ -95,10 +95,11 @@ markup of the `<figure>` into a card under `cards/`, pull in the site's own styl
 `/site/site.css` and `/blog/blog.css`, and let the site's tokens do the styling. The picture
 in the feed is then the same picture the reader lands on.
 
-The card is an eyebrow, a headline, the figure, and the site's name. Nothing else: no
-explanatory paragraph, no annotations down the side, no row of statistics. The card's job is
-to make someone want to read the post, and a card that explains the mechanism has already
-given it away. Whatever labels the figure carries in the post are enough.
+The card is an eyebrow, a headline and the figure. Nothing else: no explanatory paragraph, no
+annotations down the side, no row of statistics, and no footer with the site name, since the
+post already carries the link. The card's job is to make someone want to read the post, and a
+card that explains the mechanism has already given it away. Whatever labels the figure carries
+in the post are enough.
 
 Show one idea. A figure that compares several things reads as a survey of a field, so cut it
 down to the part the post argues for. Render it with:
