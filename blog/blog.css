@@ -70,6 +70,49 @@ pre.code .n{color:#c9b3ff}
 .tbl .total td.num{color:var(--accent)}
 .tbl.compare{min-width:640px}.tbl.compare th:first-child{width:22%}
 
+/* the hook: three numbers under the lede, for a reader who only scrolls */
+.hook{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:4px 0 30px}
+.hook .stat{background:var(--card);border:1px solid var(--hair);border-radius:14px;padding:16px 18px;
+            display:grid;gap:8px;align-content:start;box-shadow:var(--shadow)}
+.hook .n{font:700 30px/1 var(--serif);color:var(--ink);letter-spacing:-.01em}
+.hook .n small{font:600 15px/1 var(--sans);color:var(--faint);letter-spacing:0}
+.post .hook p{margin:0;font-size:14px;line-height:1.45;color:var(--muted)}
+@media (max-width:680px){.hook{grid-template-columns:1fr}}
+
+/* key facts: a grid of small labelled numbers */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0}
+.facts div{background:var(--card);border:1px solid var(--hair-soft);border-radius:12px;padding:12px 14px;min-width:0}
+.facts dt{font:600 10.5px/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.facts dd{margin:5px 0 0;font:700 22px/1.1 var(--serif);color:var(--ink)}
+.facts dd small{display:block;margin-top:5px;font:400 13px/1.4 var(--sans);color:var(--muted)}
+@media (max-width:600px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* horizontal bars: label, bar, value. A fill's width is its share of the
+   track; the value sits just past the end of the fill. */
+.hbars{display:grid;gap:6px}
+.post .hbars .t{font:600 14.5px/1.3 var(--sans);color:var(--ink);margin:0 0 6px}
+.hbars .row{display:grid;grid-template-columns:minmax(0,11.5em) minmax(0,1fr);align-items:center;gap:10px}
+.hbars .lab{font-size:13.5px;line-height:1.25;color:var(--muted);text-align:right}
+.hbars .track{position:relative;height:24px;margin-right:4.2em}
+.hbars .fill{position:absolute;left:0;top:6px;height:12px;min-width:2px;border-radius:0 4px 4px 0;background:var(--c)}
+.hbars .fill.hatch{background:repeating-linear-gradient(135deg,var(--c) 0 5px,transparent 5px 9px);
+                   box-shadow:inset 0 0 0 1.5px var(--c)}
+.hbars .v{position:absolute;top:50%;transform:translateY(-50%);padding-left:8px;
+          font:500 12.5px/1 var(--mono);color:var(--ink);white-space:nowrap}
+/* several bar charts in one figure, stacked */
+.hstack{display:grid;gap:22px}
+@media (max-width:600px){.hbars .row{grid-template-columns:minmax(0,8.5em) minmax(0,1fr)}.hbars .track{margin-right:3.6em}}
+
+/* small cards that define something: a test set, a grader */
+.lenses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:24px 0}
+.lenses.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.lens{background:var(--card);border:1px solid var(--hair);border-radius:14px;padding:16px 18px;min-width:0}
+.post .lens h3{font:600 16px/1.3 var(--sans);margin:0 0 10px;color:var(--ink)}
+.lens dl{margin:0;display:grid;gap:6px}
+.lens dt{font:600 10.5px/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+.lens dd{margin:0;font-size:14px;line-height:1.5;color:var(--muted)}
+@media (max-width:760px){.lenses,.lenses.two{grid-template-columns:1fr}}
+
 /* figures */
 figure.fig{margin:30px 0;background:var(--card);border:1px solid var(--hair-soft);border-radius:16px;
            padding:22px 24px 18px;overflow:hidden}
