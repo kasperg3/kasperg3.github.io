@@ -319,6 +319,18 @@ pre.code .n{color:#c9b3ff}
   .mx .mx-track.narrow{display:block}
 }
 
+/* install call to action: one copyable line */
+.install{margin:30px 0;padding:18px 20px 16px;background:var(--card);border:1px solid var(--hair);border-radius:14px;
+         box-shadow:var(--shadow);border-top:3px solid var(--accent)}
+.post .install-k{margin:0 0 10px;font:600 10.5px/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.install-cmd{display:flex;align-items:stretch;background:var(--dark);border-radius:10px;overflow:hidden}
+.post .install-cmd code{flex:1;min-width:0;display:block;padding:12px 14px;background:none;border-radius:0;
+                        font:400 13px/1.6 var(--mono);color:#e9edf2;overflow-wrap:anywhere}
+.install-copy{flex:none;border:0;border-left:1px solid rgba(255,255,255,.14);background:transparent;color:#e9edf2;
+              font:600 12.5px/1 var(--sans);padding:0 16px;cursor:pointer}
+.install-copy:hover,.install-copy:focus-visible{background:rgba(255,255,255,.1)}
+.post .install-note{margin:10px 0 0;font-size:14px;line-height:1.55;color:var(--muted)}
+
 /* figures */
 figure.fig{margin:30px 0;background:var(--card);border:1px solid var(--hair-soft);border-radius:16px;
            padding:22px 24px 18px;overflow:hidden}

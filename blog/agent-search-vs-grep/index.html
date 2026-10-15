@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=766687e4">
-<link rel="stylesheet" href="/blog/blog.css?v=9">
+<link rel="stylesheet" href="/blog/blog.css?v=10">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BlogPosting",
  "headline":"Does a search engine help a deck-building agent?",
@@ -76,6 +76,14 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   everyone already plays. So I started building structure around it: a database of every card's
   official text, tools the agent can call to check its picks, and a search over the text. Then the
   ball started rolling, and this post is where it rolled to.</p>
+
+  <aside class="install" aria-label="Install mtg-search">
+    <p class="install-k">Try it in Claude Code</p>
+    <div class="install-cmd"><code>docker pull ghcr.io/kasperg3/mtg-search &amp;&amp; claude mcp add --scope user mtg-search -- docker run -i --rm ghcr.io/kasperg3/mtg-search</code><button type="button" class="install-copy">Copy</button></div>
+    <p class="install-note">One line: it pulls the server (about 1.8 GB, needs Docker) and adds it to
+    Claude Code. Code, data and setup for other MCP clients:
+    <a href="https://github.com/kasperg3/mtg-search">github.com/kasperg3/mtg-search</a>.</p>
+  </aside>
 
   <h2 id="data"><span class="num">01 · The data</span>Every Magic card's official text: 3.1M tokens, too much to read for every task</h2>
 
@@ -547,6 +555,14 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <hr>
 
+  <aside class="install" aria-label="Install mtg-search">
+    <p class="install-k">Try it in Claude Code</p>
+    <div class="install-cmd"><code>docker pull ghcr.io/kasperg3/mtg-search &amp;&amp; claude mcp add --scope user mtg-search -- docker run -i --rm ghcr.io/kasperg3/mtg-search</code><button type="button" class="install-copy">Copy</button></div>
+    <p class="install-note">One line: it pulls the server (about 1.8 GB, needs Docker) and adds it to
+    Claude Code. Code, data and setup for other MCP clients:
+    <a href="https://github.com/kasperg3/mtg-search">github.com/kasperg3/mtg-search</a>.</p>
+  </aside>
+
   <h2 id="open"><span class="num">Still open</span>What I would check next</h2>
   <ul>
     <li>A grader from another model family, to check that Sonnet does not favour its own picks. It
@@ -555,14 +571,27 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     <li>Repeats: the share of tasks in which the agent searches swings by 20 points between
     identical runs.</li>
   </ul>
-  <p class="small">The server, the benchmarks and the run records are private for now: Scryfall's
-  terms forbid republishing its card data, and the deck data comes from EDHREC with permission for
-  private evaluation only. Sources: <a href="https://scryfall.com/docs/api/bulk-data">Scryfall bulk
-  data</a>, <a href="https://tagger.scryfall.com">Scryfall Tagger</a>,
+  <p class="small">Everything is public: the code and the run records on
+  <a href="https://github.com/kasperg3/mtg-search">GitHub</a>, the server image on
+  <a href="https://github.com/kasperg3/mtg-search/pkgs/container/mtg-search">GitHub Packages</a>, and
+  the card index and benchmarks on <a href="https://huggingface.co/kasper-cbx">Hugging Face</a>.
+  Sources: <a href="https://scryfall.com/docs/api/bulk-data">Scryfall bulk data</a>,
+  <a href="https://tagger.scryfall.com">Scryfall Tagger</a>,
   <a href="https://huggingface.co/lightonai/mLateOn">mLateOn</a>,
   <a href="https://mtgjson.com">MTGJSON</a>, <a href="https://edhrec.com">EDHREC</a>. Card text ©
   Wizards of the Coast, used under the
   <a href="https://company.wizards.com/en/legal/fancontentpolicy">Fan Content Policy</a>.</p>
+
+  <script>
+  document.querySelectorAll('.install-copy').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var code = b.previousElementSibling, t = code.textContent;
+      var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1600); };
+      if (navigator.clipboard) { navigator.clipboard.writeText(t).then(done, function () { select(code); }); } else { select(code); }
+    });
+  });
+  function select(el) { var r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  </script>
 
 </article>
 </div>
