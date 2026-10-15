@@ -8,7 +8,7 @@
 <link rel="canonical" href="https://www.grontved.xyz/blog/agent-search-vs-grep/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Does a search engine help a deck-building agent?">
-<meta property="og:description" content="Same agent, same instructions: search finds 98% relevant cards, grep 86%. Grep only catches up with a prompt tuned to the card file, at twice the tokens.">
+<meta property="og:description" content="Same agent, same instructions: search finds 98% relevant cards, grep 87%. Grep only catches up with a prompt tuned to the card file, at twice the tokens.">
 <meta property="og:url" content="https://www.grontved.xyz/blog/agent-search-vs-grep/">
 <meta property="article:published_time" content="2026-10-15">
 <meta name="twitter:card" content="summary">
@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=766687e4">
-<link rel="stylesheet" href="/blog/blog.css?v=6">
+<link rel="stylesheet" href="/blog/blog.css?v=7">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BlogPosting",
  "headline":"Does a search engine help a deck-building agent?",
@@ -59,7 +59,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   <div class="hook">
     <div class="stat"><div class="n">270×</div><p>fewer tokens per task than reading every card: 10.6k
     vs 2.91M. The card text does not fit in a 1M-token context.</p></div>
-    <div class="stat"><div class="n">98% <small>vs 86%</small></div><p>relevant cards in the top 10,
+    <div class="stat"><div class="n">98% <small>vs 87%</small></div><p>relevant cards in the top 10,
     search vs grep with the same instructions, with 26% fewer tokens.</p></div>
     <div class="stat"><div class="n">0.45 <small>→ 0.65</small></div><p>deck fit of the agent's card
     adds, from memory vs with search, graded blind on 14 test decks.</p></div>
@@ -158,7 +158,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <h2 id="tests"><span class="num">02 · How the test sets are built</span>Three test sets, and two graders</h2>
 
-  <div class="specs">
+  <div class="specs wide" style="--n:3">
     <section class="spec">
       <p class="count"><b>363</b><span>queries</span></p>
       <div class="head">
@@ -228,7 +228,7 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   price data. Hidden random cards are mixed into the batches, to check that the grader does not
   accept everything.</p>
 
-  <div class="specs">
+  <div class="specs wide" style="--n:2">
     <section class="spec grader">
       <div class="head">
         <h3>Relevance grader</h3>
@@ -300,11 +300,11 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <figure class="fig" aria-labelledby="fig-step1-cap">
     <div class="hstack">
-      <div class="hbars" role="img" aria-label="Relevant cards in the top 10 over 80 tasks: search 98.1 percent, grep with the same prompt 86.3 percent, grep with a tuned prompt 96.6 percent.">
+      <div class="hbars" role="img" aria-label="Relevant cards in the top 10 over 80 tasks: search 98.3 percent, grep with the same prompt 86.5 percent, grep with a tuned prompt 96.8 percent.">
       <p class="t">Relevant cards in the top 10</p>
-      <div class="row"><span class="lab">search</span><span class="track"><span class="fill" style="--c:var(--accent);width:98.10%"></span><span class="v" style="left:98.10%">98.1%</span></span></div>
-      <div class="row"><span class="lab">grep, same prompt</span><span class="track"><span class="fill" style="--c:var(--accent-2);width:86.30%"></span><span class="v" style="left:86.30%">86.3%</span></span></div>
-      <div class="row"><span class="lab">grep, tuned prompt</span><span class="track"><span class="fill hatch" style="--c:var(--accent-2);width:96.60%"></span><span class="v" style="left:96.60%">96.6%</span></span></div>
+      <div class="row"><span class="lab">search</span><span class="track"><span class="fill" style="--c:var(--accent);width:98.25%"></span><span class="v" style="left:98.25%">98.3%</span></span></div>
+      <div class="row"><span class="lab">grep, same prompt</span><span class="track"><span class="fill" style="--c:var(--accent-2);width:86.50%"></span><span class="v" style="left:86.50%">86.5%</span></span></div>
+      <div class="row"><span class="lab">grep, tuned prompt</span><span class="track"><span class="fill hatch" style="--c:var(--accent-2);width:96.75%"></span><span class="v" style="left:96.75%">96.8%</span></span></div>
       </div>
       <div class="hbars" role="img" aria-label="Mean tokens per task over 113 tasks: search 10.6 thousand, grep with the same prompt 14.3 thousand, grep with a tuned prompt 20.9 thousand.">
       <p class="t">Tokens per task</p>
@@ -328,23 +328,63 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
       <tr><td>Tool calls</td><td class="num">2.0</td><td class="num">2.5</td><td class="num">2.9</td><td class="num">0</td></tr>
       <tr><td>Seconds</td><td class="num">10.3</td><td class="num">17.0**</td><td class="num">10.9</td><td class="num">53.6</td></tr>
       <tr class="group"><td colspan="5">Relevant in the top 10</td></tr>
-      <tr><td>Deck needs (65)</td><td class="num">97.8%</td><td class="num">95.2%</td><td class="num">97.7%</td><td class="num">–</td></tr>
-      <tr><td>Card attributes (15)</td><td class="num">99.3%</td><td class="num">47.3%</td><td class="num">92.0%</td><td class="num">–</td></tr>
+      <tr><td>Deck needs (65)</td><td class="num">97.8%</td><td class="num">95.4%</td><td class="num">97.7%</td><td class="num">–</td></tr>
+      <tr><td>Card attributes (15)</td><td class="num">100%</td><td class="num">48.0%</td><td class="num">92.7%</td><td class="num">–</td></tr>
       <tr class="group"><td colspan="5">Specific card found</td></tr>
       <tr><td>Find-this-card (33)</td><td class="num">100%</td><td class="num">85%</td><td class="num">94%</td><td class="num">–</td></tr>
     </tbody>
   </table></div>
   <p class="small">*Read everything: the 12-task sample from Section 1. **Two slow tasks (159 s and 322 s);
-  the median is 11.3 s.</p>
+  the median is 11.3 s. Rescored on 15 October 2026 after a fix to card-name matching: a few answers, such as
+  "Lightning Bolt", had been matched to a double-faced card that shares the name. Every change is
+  under a point.</p>
 
   <p>With the same instructions, grep falls behind on card attributes, such as a 1-mana red burn
-  instant. Only 47% of its top 10 is relevant, against 99% for search. A card's mana cost, type
+  instant. Only 48% of its top 10 is relevant, against 100% for search. A card's mana cost, type
   line and rules text sit on separate lines of the file, and without a description of the layout
   grep guessed it wrong: 29% of its calls matched nothing. On deck needs, whose rules-text phrases
   sit on one line, the two stay close (95% vs 98%).</p>
 
+  <figure class="fig gx" aria-labelledby="gx-cap">
+    <div class="gx-panel s">
+      <h3>Search</h3>
+      <div class="gx-in">
+        <div class="gx-left"><ol class="gx-calls"><li><span class="gx-n">1</span><div class="gx-call">
+            <code class="gx-q">“deals damage to any target”</code><div class="gx-fs"><span class="gx-f">colour R</span><span class="gx-f">type instant</span><span class="gx-f">mana value 1</span></div></div>
+            <span class="gx-hits ok">15 cards</span></li><li><span class="gx-n">2</span><div class="gx-call">
+            <code class="gx-q">“red instant 1 mana deals 3 damage to any target”</code><div class="gx-fs"><span class="gx-f">colour identity R</span><span class="gx-f">type instant</span><span class="gx-f">mana value ≤ 1</span></div></div>
+            <span class="gx-hits ok">15 cards</span></li></ol></div>
+        <div class="gx-right"><p class="gx-lab">Top 10 of its 17 answers</p><ol class="gx-top"><li class="hit"><span class="gx-i">1</span><span class="gx-name">Lightning Bolt</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="hit"><span class="gx-i">2</span><span class="gx-name">Shock</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="hit"><span class="gx-i">3</span><span class="gx-name">Play with Fire</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="hit"><span class="gx-i">4</span><span class="gx-name">Tarfire</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="hit"><span class="gx-i">5</span><span class="gx-name">Galvanic Blast</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="hit"><span class="gx-i">6</span><span class="gx-name">Wild Slash</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="hit"><span class="gx-i">7</span><span class="gx-name">Melt Through</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="hit"><span class="gx-i">8</span><span class="gx-name">Spikefield Hazard // Spikefield Cave</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="hit"><span class="gx-i">9</span><span class="gx-name">Collateral Damage</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="hit"><span class="gx-i">10</span><span class="gx-name">Sonic Seizure</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li></ol></div>
+      </div>
+      <p class="gx-foot"><b>2</b> calls · <b>9.5k</b> tokens</p>
+    </div>
+    <div class="gx-panel g">
+      <h3>Grep</h3>
+      <div class="gx-in">
+        <div class="gx-left"><ol class="gx-calls"><li><span class="gx-n">1</span><div class="gx-call">
+            <code class="gx-q">^[^\n]*\{R\}\n?Instant\b[^\n]*deals \d damage to any target</code></div>
+            <span class="gx-hits zero">0 matches</span></li><li><span class="gx-n">2</span><div class="gx-call">
+            <code class="gx-q">(?i)\{R\}.*instant.*deals? (\d|X) damage to (any target|target creature or (player|planeswalker))</code></div>
+            <span class="gx-hits zero">0 matches</span></li><li class="gx-note"><span>Agent:</span> “Format unknown; try simple.”</li><li><span class="gx-n">3</span><div class="gx-call">
+            <code class="gx-q">Lightning Bolt</code></div>
+            <span class="gx-hits">6 matches</span></li><li><span class="gx-n">4</span><div class="gx-call">
+            <code class="gx-q">^[^{\n]*\{R\} — Instant — .*deals? \d damage to any target</code></div>
+            <span class="gx-hits zero">0 matches</span></li><li class="gx-note"><span>Agent:</span> “Name precedes cost; allow name chars.”</li><li><span class="gx-n">5</span><div class="gx-call">
+            <code class="gx-q">^[^{]*\{R\} — Instant — .*damage to any target</code></div>
+            <span class="gx-hits zero">0 matches</span></li></ol></div>
+        <div class="gx-right"><p class="gx-lab">Its whole answer</p><ol class="gx-top"><li class="hit"><span class="gx-i">1</span><span class="gx-name">Lightning Bolt</span><span class="gx-mark" aria-label="on the list of correct cards">✓</span></li><li class="empty"><span class="gx-i">2</span><span class="gx-name">empty</span></li><li class="empty"><span class="gx-i">3</span><span class="gx-name">empty</span></li><li class="empty"><span class="gx-i">4</span><span class="gx-name">empty</span></li><li class="empty"><span class="gx-i">5</span><span class="gx-name">empty</span></li><li class="empty"><span class="gx-i">6</span><span class="gx-name">empty</span></li><li class="empty"><span class="gx-i">7</span><span class="gx-name">empty</span></li><li class="empty"><span class="gx-i">8</span><span class="gx-name">empty</span></li><li class="empty"><span class="gx-i">9</span><span class="gx-name">empty</span></li><li class="empty"><span class="gx-i">10</span><span class="gx-name">empty</span></li></ol></div>
+      </div>
+      <p class="gx-foot"><b>5</b> calls · <b>15.5k</b> tokens</p>
+    </div>
+  
+    <figcaption id="gx-cap">The request “a one-mana red instant that deals damage to any target”, given to Claude Sonnet 5.5 with the same minimal prompt for
+    both tools, one run each. ✓: on the task's list of 23 correct cards; search returned 17 of them,
+    grep 1. Grep's results show each card on one line, and calls 4 and 5 copy that layout. In the file, cost, type
+    line and rules text sit on separate lines, so both match nothing. Over all 15 card-attribute tasks, 100% of search's top 10 was relevant and 48% of grep's.</figcaption>
+  </figure>
+
   <p><strong>Search needed no prompt tuning.</strong> Its first prompt, never tuned, gives the same
-  results as the minimal one: 98.5% vs 98.1% relevant cards in the top 10.</p>
+  results as the minimal one: 98.6% vs 98.3% relevant cards in the top 10.</p>
 
   <div class="aside"><p>With the same instructions, search finds more of the right cards than grep,
   with fewer tokens. Grep catches up only with a prompt tuned to the card file, and then uses twice
@@ -410,6 +450,39 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
     together. "Commonly added" means at least 5% of players' copies of that deck add the card. The
     grader rated 92% of those commonly added cards a reasonable upgrade or better, and 74% of the
     rest.</figcaption>
+  </figure>
+
+  <figure class="fig mx" aria-labelledby="mx-cap">
+    <div class="mx-head">
+      <img class="mx-cmd" src="auntie-ool-cursewretch.jpg" alt="Auntie Ool, Cursewretch card" width="300" height="418">
+      <div>
+        <p class="mx-kicker">Commander · test deck</p>
+        <h3>Auntie Ool, Cursewretch</h3>
+        <p class="mx-meta">Blight Curse, Lorwyn Eclipsed Commander 2026 · black, red, green</p>
+      </div>
+    </div>
+  
+    <div class="mx-cols">
+      <div class="mx-col m">
+        <h4>From memory <span>fit 0.33</span></h4>
+        <p class="mx-how">No tool calls. All 20 adds are legal.</p>
+        <ol class="mx-chips"><li><b class="g1">1</b><span>Bloodtithe Harvester</span></li><li><b class="g1">1</b><span>Vraska, Golgari Queen</span></li><li><b class="g1">1</b><span>Toxic Deluge</span></li><li><b class="g0">0</b><span>Damnation</span></li><li><b class="g0">0</b><span>Blood Artist</span></li><li><b class="g0">0</b><span>Zulaport Cutthroat</span></li><li><b class="g0">0</b><span>Pitiless Plunderer</span></li><li><b class="g2">2</b><span>Overgrown Tomb</span></li><li><b class="g2">2</b><span>Blood Crypt</span></li><li><b class="g1">1</b><span>Stomping Ground</span></li><li><b class="g1">1</b><span>Cultivate</span></li><li><b class="g1">1</b><span>Kodama&#x27;s Reach</span></li><li><b class="g0">0</b><span>Pawn of Ulamog</span></li><li><b class="g1">1</b><span>Deadly Rollick</span></li><li><b class="g0">0</b><span>Bloodghast</span></li><li><b class="g0">0</b><span>Jade Mage</span></li><li><b class="g1">1</b><span>Sheoldred, the Apocalypse</span></li><li><b class="g0">0</b><span>Doubling Season</span></li><li><b class="g1">1</b><span>Vampire Nighthawk</span></li><li><b class="g0">0</b><span>Rhythm of the Wild</span></li></ol>
+      </div>
+      <div class="mx-col s">
+        <h4>With mtg-search <span>fit 0.95</span></h4>
+        <p class="mx-how">One <code>search_cards</code> call, colour identity BRG · legal in Commander:</p>
+        <ul class="mx-q"><li><code>Put a -1/-1 counter on target creature.</code></li><li><code>Whenever you put one or more -1/-1 counters on a creature</code></li><li><code>Proliferate.</code></li><li><code>Put a -1/-1 counter on each creature your opponents control</code></li></ul>
+        <ol class="mx-chips"><li><b class="g2">2</b><span>Obelisk Spider</span></li><li><b class="g2">2</b><span>Spitting Dilophosaurus</span></li><li><b class="g2">2</b><span>Shadow Urchin</span></li><li><b class="g2">2</b><span>Grim Affliction</span></li><li><b class="g1">1</b><span>High Perfect Morcant</span></li><li><b class="g2">2</b><span>Persistent Constrictor</span></li><li><b class="g2">2</b><span>Nightmare Sower</span></li><li><b class="g2">2</b><span>Decimator Beetle</span></li><li><b class="g2">2</b><span>Exemplar of Strength</span></li><li><b class="g2">2</b><span>Blight Rot</span></li><li><b class="g2">2</b><span>Scar</span></li><li><b class="g2">2</b><span>Contagion Engine</span></li><li><b class="g2">2</b><span>Soulstinger</span></li><li><b class="g2">2</b><span>Bile-Vial Boggart</span></li><li><b class="g2">2</b><span>Festering Mummy</span></li><li><b class="g2">2</b><span>Cultbrand Cinder</span></li><li><b class="g2">2</b><span>Instill Infection</span></li><li><b class="g2">2</b><span>Defiant Greatmaw</span></li><li><b class="g2">2</b><span>Blur of Blades</span></li><li><b class="g1">1</b><span>Grief Tyrant</span></li></ol>
+      </div>
+    </div>
+  
+    <div class="mx-legend"><span><b class="g2">2</b>clear upgrade</span><span><b class="g1">1</b>reasonable</span><span><b class="g0">0</b>no reason to be in this deck</span></div>
+  
+    <figcaption id="mx-cap">The 40 adds come from one run per side on one of the 14 test decks, the one with the
+    second-largest gap. From memory: run 3 of 3, deck fit 0.33 (runs: 0.28, 0.33, 0.33).
+    With mtg-search: run 1 of 3, deck fit 0.95 (runs: 0.95, 0.95, 0.50;
+    the 0.50 run made no search call). Median EDHREC rank of the adds, where 1 is the most-played card:
+    224 from memory, 13,816 with search. Card image: Scryfall, © Wizards of the Coast.</figcaption>
   </figure>
 
   <div class="tbl-wrap"><table class="tbl">
