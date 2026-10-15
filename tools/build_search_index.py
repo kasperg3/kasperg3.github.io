@@ -205,7 +205,11 @@ def parse(path: Path) -> Node:
 def normalise(s: str) -> str:
     s = unicodedata.normalize("NFC", s)
     s = s.replace(" ", " ").replace("‑", "-").replace("​", "")
-    return re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"\s+", " ", s).strip()
+    # Text is joined across inline tags with spaces, so "<em>engine</em>?" would
+    # read "engine ?". Close those gaps before punctuation and inside brackets.
+    s = re.sub(r" ([,.;:!?)\]])", r"\1", s)
+    return re.sub(r"([(\[]) ", r"\1", s)
 
 
 def words(s: str) -> int:
@@ -232,6 +236,20 @@ class Doc:
     url: str
     meta: str
     text: str
+    # Where the passage comes from, as separate fields for the answer worker:
+    # the kind of source in words, the document it belongs to, the section,
+    # slide or chapter inside it, a date, and a page where one is known. The
+    # browser does not need them (it shows title and meta), so they go to
+    # corpus.json only and index.json stays the size it was.
+    source: str = ""
+    doc: str = ""
+    section: str = ""
+    date: str = ""
+    page: str = ""
+
+    def provenance(self) -> dict:
+        return {k: v for k, v in (("source", self.source), ("doc", self.doc), ("section", self.section),
+                                  ("date", self.date), ("page", self.page)) if v}
 
     def as_index_entry(self) -> dict:
         return {"id": self.id, "kind": self.kind, "title": self.title,
@@ -261,24 +279,24 @@ def require_anchors(found: list, kind: str) -> None:
 # from — there are no in-page anchors for sections, and inventing some would be
 # a promise the HTML does not keep.
 FULLTEXT = REPO / "content" / "publications"
-SECTION_RE = re.compile(r"^ *(?:[0-9]+(?:\.[0-9]+)*\.?|[IVXL]+\.)\s+([A-Z][^\n]{2,60})$")
+SECTION_RE = re.compile(r"^ *([0-9]+(?:\.[0-9]+)*\.?|[IVXL]+\.)\s+([A-Z][^\n]{2,60})$")
 SECTION_MAX = 1800   # characters; the document encoder truncates near 512 tokens
 SECTION_MIN = 220    # below this a section is a stub — a figure caption or a header
 
 
 def read_sections(path: Path) -> list:
-    """Split a paper into (heading, body) pairs on its numbered headings."""
-    out, head, buf = [], None, []
+    """Split a paper into (number, heading, body) triples on its numbered headings."""
+    out, num, head, buf = [], None, None, []
     for line in path.read_text(encoding="utf-8").splitlines():
         m = SECTION_RE.match(line.rstrip())
         if m:
             if head and buf:
-                out.append((head, "\n".join(buf)))
-            head, buf = m.group(1).strip(), []
+                out.append((num, head, "\n".join(buf)))
+            num, head, buf = m.group(1).rstrip("."), m.group(2).strip(), []
         elif head:
             buf.append(line)
     if head and buf:
-        out.append((head, "\n".join(buf)))
+        out.append((num, head, "\n".join(buf)))
     return out
 
 
@@ -346,13 +364,14 @@ def extract_publications() -> list:
                 url=f"/publications.html#{slug}",
                 meta=normalise(f"{meta_txt} · {year}" if year else meta_txt),
                 text=normalise(f"{title}. {venue}. {body}"),
+                source="Paper, abstract", doc=title, section="Abstract", date=year,
             ))
 
             # …then the body of the paper, where a full text is available.
             source = FULLTEXT / f"{slug}.txt"
             if source.exists():
                 n = 0
-                for head, section in read_sections(source):
+                for num, head, section in read_sections(source):
                     # chunk() splits on blank lines, so it has to see the raw
                     # text — normalise() collapses newlines and would hand it
                     # one unbreakable paragraph.
@@ -367,6 +386,8 @@ def extract_publications() -> list:
                             url=f"/publications.html#{slug}",
                             meta=normalise(f"{title} · {venue}"),
                             text=normalise(f"{head}. {part}"),
+                            source="Paper, full text", doc=title,
+                            section=normalise(f"Section {num}: {head}"), date=year,
                         ))
 
     # -- theses and supervision, as dt/dd pairs -----------------------------
@@ -397,6 +418,8 @@ def extract_publications() -> list:
                     url=f"/publications.html#{slug}",
                     meta=normalise(f"{label} · {when}"),
                     text=normalise(f"{title}. {body}"),
+                    source="Thesis" if kind == "thesis" else "Supervised thesis",
+                    doc=normalise(title), date=normalise(when),
                 ))
                 pending = None
 
@@ -423,6 +446,7 @@ def extract_projects() -> list:
             meta=normalise(" · ".join(x for x in
                                       [tag.text() if tag is not None else "", pills] if x)),
             text=normalise(f"{title}. {body}"),
+            source="Project", doc=normalise(title),
         ))
     require_anchors(ids, "project")
     return docs
@@ -457,6 +481,8 @@ def extract_cv() -> list:
                         label, when.text() if when is not None else "",
                         where.text() if where is not None else ""] if x)),
                     text=normalise(f"{title}. {body}"),
+                    source="CV", doc="CV", section=normalise(label),
+                    date=normalise(when.text()) if when is not None else "",
                 ))
             continue
 
@@ -480,6 +506,7 @@ def extract_cv() -> list:
                 id=slug, kind="cv-facts", title=normalise(label),
                 url=f"/cv.html#{slug}", meta="CV",
                 text=normalise(f"{label}. " + " ".join(rows)),
+                source="CV", doc="CV", section=normalise(label),
             ))
 
     require_anchors(role_ids, "cv-role")
@@ -515,12 +542,108 @@ def extract_decks() -> list:
                 url=f"/knowledge/{slug}/#{i}",
                 meta=f"{deck_title} · slide {i} of {len(slides)}",
                 text=normalise(f"{title}. {body}"),
+                source="Talk slides", doc=deck_title,
+                section=f"Slide {i} of {len(slides)}: {title}",
             ))
     return docs
 
 
+# Blog posts are found, not listed: any blog/<slug>/index.html with an
+# article.post is a post (the old Jekyll redirect stubs have none). A post is
+# split on its numbered h2 sections, each deep-linking to the heading's id, with
+# everything before the first h2 (the lede and the opening paragraphs) as an
+# introduction that links to the post itself.
+POST_SKIP_SECTIONS = {"refs"}            # the reading list: citations, not content
+POST_SKIP_CLASSES = ("demo", "num", "post-meta", "eyebrow", "skip")
+POST_SECTION_MIN = 120                   # characters; a shorter piece joins nothing and is dropped
+
+
+def table_text(table: Node) -> str:
+    """A table read row by row: "Tokens: Search 10.6k, Grep 14.3k." A table's
+    cells joined with spaces is a word soup the answer model cannot follow."""
+    head = table.find("thead")
+    cols = [th.text() for th in head.find_all("th")] if head is not None else []
+    lines = []
+    body = table.find("tbody") or table
+    for tr in body.find_all("tr"):
+        cells = [c for c in tr.children if isinstance(c, Node) and c.tag in ("td", "th")]
+        vals = [c.text() for c in cells]
+        if not vals or not any(vals):
+            continue
+        if len(vals) == 1:                       # a group row names the rows under it
+            lines.append(f"{vals[0]}:")
+            continue
+        pairs = [f"{h} {v}" if h else v for h, v in zip(cols[1:], vals[1:]) if v and v not in ("–", "-")]
+        lines.append(f"{vals[0]}: {', '.join(pairs)}." if pairs else f"{vals[0]}.")
+    return "\n".join(lines)
+
+
+def block_text(node: Node) -> str:
+    if node.tag == "table":
+        return table_text(node)
+    tables = list(node.find_all("table"))
+    if tables:                                   # .tbl-wrap
+        return "\n\n".join(table_text(t) for t in tables)
+    return node.text(skip_classes=POST_SKIP_CLASSES)
+
+
+def extract_posts() -> list:
+    docs = []
+    for path in sorted((REPO / "blog").glob("*/index.html")):
+        root = parse(path)
+        article = root.find("article", "post")
+        if article is None:
+            continue                             # a redirect stub
+        slug = path.parent.name
+        hero = article.find("div", "post-hero")
+        h1 = hero.find("h1") if hero is not None else None
+        post_title = normalise(h1.text()) if h1 is not None else slug
+        published = next((n.attrs.get("content", "") for n in root.find_all("meta")
+                          if n.attrs.get("property") == "article:published_time"), "")
+        meta_spans = [s.text() for s in hero.find("div", "post-meta").find_all("span")] if hero is not None else []
+        when = next((m for m in meta_spans if re.search(r"\b(19|20)\d{2}\b", m)), published)
+
+        sections = [("", "Introduction", "", [])]  # (anchor, heading, number, blocks)
+        lede = hero.find("p", "lede") if hero is not None else None
+        if lede is not None:
+            sections[0][3].append(lede.text())
+        for child in article.children:
+            if not isinstance(child, Node) or child is hero:
+                continue
+            if child.tag == "h2":
+                num = child.find("span", "num")
+                sections.append((child.attrs.get("id", ""), child.text(skip_classes=("num",)),
+                                 num.text() if num is not None else "", []))
+                continue
+            if child.tag == "hr" or (child.classes & set(POST_SKIP_CLASSES)):
+                continue
+            txt = block_text(child)
+            if txt:
+                sections[-1][3].append(txt)
+
+        n = 0
+        for anchor, heading, num, blocks in sections:
+            if anchor in POST_SKIP_SECTIONS or not blocks:
+                continue
+            digits = re.match(r"\d+", num or "")
+            label = f"Section {digits.group(0)}: {heading}" if digits else heading
+            for raw in chunk("\n\n".join(blocks)):
+                part = normalise(raw)
+                if len(part) < POST_SECTION_MIN:
+                    continue
+                n += 1
+                docs.append(Doc(
+                    id=f"post-{slug}-{n:02d}", kind="post-section", title=normalise(heading),
+                    url=f"/blog/{slug}/" + (f"#{anchor}" if anchor else ""),
+                    meta=normalise(f"{post_title} · {label} · {when}"),
+                    text=normalise(f"{heading}. {part}"),
+                    source="Blog post", doc=post_title, section=normalise(label), date=normalise(when),
+                ))
+    return docs
+
+
 def extract_all() -> list:
-    docs = extract_publications() + extract_projects() + extract_cv() + extract_decks()
+    docs = extract_publications() + extract_projects() + extract_cv() + extract_decks() + extract_posts()
     seen = set()
     for d in docs:
         if not d.id:
@@ -563,6 +686,7 @@ def write_corpus(docs: list, out: Path) -> None:
     corpus = {}
     for d in docs:
         entry = {k: v for k, v in d.as_index_entry().items() if k != "id"}
+        entry.update(d.provenance())
         # `snippet` is 240 characters because that is a sensible thing to show.
         # The answer worker needs the passage it was scored on, not its opening
         # sentence, so carry the text as well and let each side take what it

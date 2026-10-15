@@ -6,7 +6,7 @@
    you ask, the page answers, and the answer says which passages it was built
    from.
 
-   What has not changed is where the work happens. All 78 passages are still
+   What has not changed is where the work happens. Every passage is still
    scored in the browser by search/splade.js — no query is sent anywhere to be
    retrieved. Only generation leaves the machine, and only after retrieval has
    already picked the passages it may use.
@@ -111,12 +111,12 @@ function addTurn(question) {
 }
 
 /**
- * What names a source. For a section of a paper it is the paper: two different
- * papers both have an "Introduction", and the heading on its own does not
+ * What names a source. For a section of a paper or a post it is the paper or the
+ * post: two different papers both have an "Introduction", and the heading on its own does not
  * answer "where did this come from".
  */
 function sourceName(doc) {
-  if (doc.kind !== 'paper-section') return doc.title;
+  if (doc.kind !== 'paper-section' && doc.kind !== 'post-section') return doc.title;
   return (doc.meta || '').split('·')[0].trim() || doc.title;
 }
 
@@ -357,7 +357,7 @@ function openModal(id) {
 
   rtTitle.textContent = a.query;
   rtBody.innerHTML = `
-    <p class="retr-lead">${a.total} of 78 passages matched. The top
+    <p class="retr-lead">${a.total} of ${engine ? engine.docs.length : 'the'} passages matched. The top
     ${Math.min(SENT, a.hits.length)} went to the model.
     <a href="/search/?q=${encodeURIComponent(a.query)}">Full analysis →</a></p>
 

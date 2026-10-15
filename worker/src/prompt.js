@@ -22,12 +22,30 @@ and name what they do cover. Do not guess, and do not apologise at length.
 - Two to four sentences. No preamble, no restating the question, no sign-off.
 - Plain prose only: no Markdown, no bold or italics, no headings, no bullet lists. \
 The page shows your text verbatim, so formatting marks would appear as symbols.
+- Each passage opens with where it comes from: the kind of source, the document, \
+its date, and where in it the passage sits (section, slide or page). Use that to say which document a fact \
+comes from when it helps (for example "the SAREnv paper" or "the late interaction \
+primer"), and still cite with the bracketed number.
 - Write in the same register as the site: plain, declarative, British spelling.`;
+
+/**
+ * A passage is headed by its provenance, one fact per line, so the model can tell a
+ * paper's "Introduction" from a post's and say where a fact comes from. Entries from
+ * a corpus built before the provenance fields existed fall back to title and meta.
+ */
+function header(p) {
+  if (!p.source) return `${p.title}${p.meta ? ` (${p.meta})` : ''}`;
+  const lines = [`Source: ${p.source}`, `Document: ${p.doc || p.title}`];
+  if (p.date) lines.push(`Date: ${p.date}`);
+  if (p.section) lines.push(`Where: ${p.section}`);
+  if (p.page) lines.push(`Page: ${p.page}`);
+  return lines.join('\n');
+}
 
 /** Number the passages in the order the client ranked them, so [n] maps to ids[n-1]. */
 export function buildUser(question, passages) {
   const context = passages
-    .map((p, i) => `[${i + 1}] ${p.title}${p.meta ? ` — ${p.meta}` : ''}\n${p.text || p.snippet}`)
+    .map((p, i) => `[${i + 1}]\n${header(p)}\nText: ${p.text || p.snippet}`)
     .join('\n\n');
   return `${context}\n\nQuestion: ${question}`;
 }

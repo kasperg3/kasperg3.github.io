@@ -21,6 +21,7 @@ export const KIND_LABEL = {
   'cv-facts': 'CV',
   thesis: 'Thesis',
   supervision: 'Supervision',
+  'post-section': 'Blog post',
 };
 
 export const fmt = n => n.toFixed(2);

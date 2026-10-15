@@ -251,8 +251,8 @@ screen while it does. It runs on GitHub Pages with no inference server because S
 - **Documents** are encoded by a 67M-parameter masked LM
   ([`opensearch-neural-sparse-encoding-doc-v3-distill`](https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-doc-v3-distill),
   Apache-2.0) into sparse vectors over BERT's 30,522-token vocabulary. That happens here, offline.
-- **Passages** are the abstracts on `publications.html`, the slides, the projects and the CV
-  rows — and, for the papers that may be redistributed, the *body* of the paper too.
+- **Passages** are the abstracts on `publications.html`, the slides, the projects, the CV
+  rows, the sections of every blog post — and, for the papers that may be redistributed, the *body* of the paper too.
   `content/publications/<id>.txt` is split on its numbered headings into passages the size of
   the rest of the corpus, each deep-linking to the paper it came from. The search UI never
   downloads these files — the browser only gets `index.json` — but the repo is uploaded to Pages
@@ -373,8 +373,41 @@ Those ids are listed in `SLUG_MAP` in `tools/build_search_index.py`, and the ext
 build** if the HTML no longer matches, so a renamed section can't silently produce a dead link. Add
 the `id` to the HTML and the slug to `SLUG_MAP` together.
 
-`INCLUDE_CV_FACTS` is off: the CV's skills rows are `·`-separated lists, not passages, and SPLADE
-produces noise from them.
+The CV's Skills, Research output and Contact blocks are indexed one *section* at a time, with the
+`·` separators read as prose: row by row they are fragments SPLADE makes noise of.
+
+Blog posts need nothing either. Any `blog/<slug>/index.html` with an `article.post` is found and split
+on its numbered `h2` sections, each deep-linking to the heading's `id`; everything before the first
+`h2` (the lede and the opening) becomes an *Introduction* passage linking to the post. Tables are read
+row by row ("Tokens: Search 10.6k, Grep 14.3k.") rather than as a soup of cells, figures by their
+`aria-label` and caption, and the reading list (`h2#refs`) is skipped: citations are not content.
+
+### What travels with a passage
+
+`search/index.json` carries what the browser shows: `kind`, `title`, `url`, `meta`, `snippet`.
+`search/corpus.json`, which the answer worker reads, carries the full `text` and five provenance fields
+on top:
+
+| field | example |
+| --- | --- |
+| `source` | `Paper, full text` · `Paper, abstract` · `Talk slides` · `Blog post` · `CV` · `Project` · `Thesis` |
+| `doc` | the paper, deck or post the passage belongs to |
+| `section` | `Section 3: Methods` · `Slide 10 of 12: Late interaction sits in the middle` · `Introduction` |
+| `date` | publication year, post date, or the dates of a CV row |
+| `page` | the page in the source PDF, where known |
+
+`worker/src/prompt.js` heads every passage with them (`Source`, `Document`, `Date`, `Where`, `Page`),
+so the model can tell one paper's *Introduction* from another's and say where a fact comes from,
+while still citing only by number. Entries without the fields fall back to title and meta, so an old
+worker reads a new corpus and the other way round. The worker fetches the corpus as
+`corpus.json?v=3`; bump that query when the corpus shape changes, and redeploy (`npx wrangler deploy`
+from `worker/`) for a prompt change to take effect. `worker/corpus.json` is the bundled fallback;
+copy `search/corpus.json` over it when you rebuild.
+
+**Pages are not known yet.** The full texts in `content/publications/` were extracted without page
+breaks, so `page` is empty for every passage. Re-extracting them with `pdftotext` (which writes a
+form feed between pages by default) and splitting on `\f` before the section split would give every
+paper passage a page, and a `#page=N` link wherever the PDF itself is public.
 
 ## Regenerating the CV PDF
 

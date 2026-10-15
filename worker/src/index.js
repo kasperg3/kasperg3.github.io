@@ -1,7 +1,7 @@
 /* ============================================================================
    index.js — the answer endpoint behind the "Ask this site" band.
 
-   Retrieval already happened in the browser: search/splade.js scored all 78
+   Retrieval already happened in the browser: search/splade.js scored every
    passages locally and the page has already quoted the best one back. This
    worker does only the part a static site cannot — it holds the Mistral key
    and generates a grounded answer from passages the reader has already seen.
@@ -39,7 +39,7 @@ const MODEL = 'ministral-14b-latest';
 // The ?v= is a cache key, not a path. Cloudflare caches this by URL, so a
 // corpus whose shape changes — a new field the prompt depends on — is not
 // picked up until the old entry expires. Bump this when that happens.
-const CORPUS_URL = 'https://www.grontved.xyz/search/corpus.json?v=2';
+const CORPUS_URL = 'https://www.grontved.xyz/search/corpus.json?v=3';
 const ORIGIN = 'https://www.grontved.xyz';
 
 const MAX_BODY = 4096;   // bytes, rejected before parsing
