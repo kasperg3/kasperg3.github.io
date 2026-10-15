@@ -248,6 +248,19 @@ pre.code .n{color:#c9b3ff}
   .gx .gx-in{grid-template-columns:minmax(0,1fr);gap:18px}
 }
 
+/* side by side on wide screens: the figure breaks out of the text column; each
+   panel stacks calls over answer, and subgrid lines the two answers up */
+@media (min-width:1000px){
+  figure.fig.gx{--w:min(1100px,calc(100vw - 64px));width:var(--w);margin-left:calc((100% - var(--w)) / 2);
+                display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px;row-gap:0}
+  .gx .gx-panel{display:grid;grid-row:1 / span 4;grid-template-rows:subgrid;row-gap:16px;align-content:start}
+  .gx .gx-panel+.gx-panel{margin-top:0}
+  .gx .gx-in{display:contents}
+  .post .gx .gx-panel h3{margin:0}
+  .post .gx .gx-foot{margin:0}
+  .gx figcaption{grid-column:1 / -1;grid-row:5;padding-right:max(0px,calc(100% - 72ch))}
+}
+
 /* one deck, two runs: the agent's adds with their deck-fit grades */
 .mx .mx-head{display:grid;grid-template-columns:120px minmax(0,1fr);gap:22px;align-items:center}
 .mx .mx-cmd{width:120px;border-radius:6px;box-shadow:0 10px 26px -14px rgba(21,24,29,.45)}
