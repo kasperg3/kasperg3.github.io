@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Does an agent with grep need a search engine? — Kasper Rømer Grøntved</title>
+<meta name="description" content="I gave an AI agent semantic search over every Magic: The Gathering card for building Commander decks, then tried to show it was unnecessary: the same agent with only grep, and the same agent reading every card. Three test sets, two graders, and what the numbers say.">
+<link rel="canonical" href="https://www.grontved.xyz/blog/agent-search-vs-grep/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Does an agent with grep need a search engine?">
+<meta property="og:description" content="Same instructions, same agent: search finds more of the right cards than grep with fewer tokens. Grep only catches up when its prompt describes the file.">
+<meta property="og:url" content="https://www.grontved.xyz/blog/agent-search-vs-grep/">
+<meta property="article:published_time" content="2026-10-15">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/site.css?v=766687e4">
+<link rel="stylesheet" href="/blog/blog.css?v=3">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting",
+ "headline":"Does an agent with grep need a search engine?",
+ "datePublished":"2026-10-15","inLanguage":"en",
+ "author":{"@type":"Person","name":"Kasper Rømer Grøntved","url":"https://www.grontved.xyz"},
+ "url":"https://www.grontved.xyz/blog/agent-search-vs-grep/",
+ "about":["Agentic retrieval","Late interaction","Model Context Protocol","LLM-as-a-judge","Magic: The Gathering"]}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRNQPVRSVC"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><i></i><i></i></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap narrow">
+    <a class="brand" href="/">Kasper <span>Grøntved</span></a>
+    <a class="explore" href="/">Front page →</a>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap narrow">
+<article class="post">
+
+  <div class="post-hero">
+    <p class="eyebrow">Agentic retrieval · late interaction vs grep · Magic: The Gathering</p>
+    <h1>Does an agent with grep need a <em>search engine</em>?</h1>
+    <p class="lede">I built an MCP server that gives an AI agent semantic search over every Magic:
+    The Gathering card, for building Commander decks. Then I tried to show it was unnecessary: the
+    same agent with nothing but grep, and the same agent reading every card. Given the same
+    instructions, search finds more of the right cards with fewer tokens. Grep only catches up when
+    its prompt describes the file, and then it costs twice as much.</p>
+    <div class="post-meta">
+      <span><b>Kasper Rømer Grøntved</b></span><span>15 October 2026</span><span>≈ 13 min</span>
+      <span>Agent: Claude Sonnet 5.5 in Claude Code</span>
+    </div>
+  </div>
+
+  <p>An agent that knows Magic still picks cards from memory. Ask it for cards for a deck and it
+  answers from what it remembers. That works for famous cards and fails in three predictable
+  ways. It breaks deck rules: without tools, 13% of its suggested adds were outside the commander's
+  colours, not legal, or already in the deck. It reaches for the most-played cards rather than the
+  ones that do the job in this deck. And cards printed or reworded after training are invisible to
+  it. A search tool over the official card data can fix all three, but only if the agent uses it,
+  and only if it beats what the agent can already do with plain text tools. That second condition
+  is the one this post is about.</p>
+
+  <h2 id="data"><span class="num">01</span>Every card, in its official wording</h2>
+
+  <p>Everything here runs on <a href="https://scryfall.com/docs/api/bulk-data">Scryfall's</a>
+  <em>Oracle cards</em> file. Scryfall is the community's card database and publishes a fresh copy
+  every day. The Oracle file has one entry per distinct card, whatever the printing, with the
+  card's current official rules text: the Oracle text Wizards of the Coast keeps up to date. It can
+  differ from the printed card. Older printings of Lightning Bolt say <em>target creature or
+  player</em>; the Oracle text says <em>any target</em>. Each entry also carries the mana cost, type
+  line, colour identity and legality in every format, and Scryfall's
+  <a href="https://tagger.scryfall.com">Tagger</a> project adds community labels for what cards
+  do; the tools show them as roles. This is one card as it sits in the card file that mLateOn
+  reads and grep searches, one line for the name and cost, one for the type, then the rules
+  text:</p>
+
+  <pre class="code">Lightning Bolt {R}
+Instant
+Lightning Bolt deals 3 damage to any target.</pre>
+
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>The snapshot (14 Oct 2026)</th><th class="num">Count</th></tr></thead>
+    <tbody>
+      <tr><td>Cards, one per distinct card (tokens, emblems and art cards dropped)</td><td class="num">34,646</td></tr>
+      <tr><td>Rules text, all cards</td><td class="num">7.5M characters, 3.1M tokens</td></tr>
+      <tr><td>Tagger function tags, such as <code>mana-rock</code> or <code>sweeper</code></td><td class="num">4,577</td></tr>
+      <tr><td>Official rulings</td><td class="num">78,973</td></tr>
+      <tr><td>Prices and popularity data the server ships</td><td class="num">0</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>The simplest design would skip search altogether and give the agent every card to read. I
+  tried that first.</p>
+
+  <figure class="fig" aria-labelledby="fig1-cap">
+    <svg viewBox="0 0 380 122" style="max-width:480px;margin:0 auto" role="img" aria-label="Bar chart on one linear scale: all card text is 3.11 million tokens, a 1 million token context window is a third of that, and the search agent uses 10.6 thousand tokens per task, too small to see."><defs><pattern id="hatch-1" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--card)"/><rect width="3" height="6" fill="var(--faint)"/></pattern></defs><g font-family="var(--sans)"><text x="0" y="12" font-size="12.5" font-weight="600" fill="var(--ink)">Tokens, on one linear scale</text><text x="152" y="37" text-anchor="end" font-size="12" fill="var(--muted)">all card text</text><rect x="160" y="26" width="165.2" height="14" rx="3" fill="var(--faint)"/><text x="333.2" y="37" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">3.11M</text><text x="152" y="67" text-anchor="end" font-size="12" fill="var(--muted)">a 1M-token context</text><rect x="160" y="56" width="53.1" height="14" rx="3" fill="url(#hatch-1)" stroke="var(--faint)" stroke-width="1.2"/><text x="221.1" y="67" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">1M</text><text x="152" y="97" text-anchor="end" font-size="12" fill="var(--muted)">search, per task</text><rect x="160" y="86" width="2.0" height="14" rx="3" fill="var(--accent)"/><text x="170.0" y="97" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">10.6k</text></g></svg>
+    <figcaption id="fig1-cap"><b>Figure 1.</b> The card text does not fit in a 1M-token context. To
+    read everything, the agent went through the cards in five parts of at most 1.8M characters, then
+    made one more call to rank the candidates from all parts. That cost 2.91M tokens and 54 seconds
+    per task, against 10.6k tokens and 10 seconds with search: about 270 times the tokens.</figcaption>
+  </figure>
+
+  <p>Reading everything gave slightly better answers than search on a 12-task sample, not
+  significantly so. The full 113 tasks would have read about 302M tokens, so I stopped there.
+  Reading everything is a ceiling, not a design. The agent needs a way to find cards: a search
+  engine, or at least grep.</p>
+
+  <h2 id="grep"><span class="num">02</span>Search against no search infrastructure</h2>
+
+  <p>The same agent ran 113 card-finding tasks three ways. Each task is a request: a deck need, a
+  card with given attributes (a 1-mana red burn instant), or a specific card described in other
+  words. The agent may make up to five tool calls and returns a ranked list of up to 20 cards.
+  <a href="#tests">Section 4</a> describes how the tasks are built and graded.</p>
+
+  <ul>
+    <li><strong>Search:</strong> the mtg-search <code>search</code> tool, with minimal
+    instructions: the request, the call budget and the answer format, and nothing on how to
+    search.</li>
+    <li><strong>Grep, same prompt:</strong> a regular expression over the plain card text, with no
+    ranking and no filters, and the same minimal instructions as search.</li>
+    <li><strong>Grep, tuned prompt:</strong> the identical grep tool, with a prompt I wrote after a
+    first test run. It shows how a card is laid out in the file, explains how matching works, and
+    adds general search advice and an example pattern. The only difference between the two grep
+    runs is the prompt.</li>
+  </ul>
+
+  <figure class="fig" aria-labelledby="fig2-cap">
+    <svg viewBox="0 0 380 386" style="max-width:480px;margin:0 auto" role="img" aria-label="Three bar charts. Relevant cards in the top 10 over 80 tasks: search 98.1 percent, grep with the same prompt 86.3, grep with a tuned prompt 96.6. Card-attribute tasks only: 99.3, 47.3 and 92.0. Tokens per task: 10.6 thousand, 14.3 thousand and 20.9 thousand."><defs><pattern id="hatch-2" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--card)"/><rect width="3" height="6" fill="var(--accent-2)"/></pattern><pattern id="hatch-3" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--card)"/><rect width="3" height="6" fill="var(--accent-2)"/></pattern><pattern id="hatch-4" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--card)"/><rect width="3" height="6" fill="var(--accent-2)"/></pattern></defs><g font-family="var(--sans)"><text x="0" y="12" font-size="12.5" font-weight="600" fill="var(--ink)">Relevant cards in the top 10 (80 tasks)</text><text x="152" y="37" text-anchor="end" font-size="12" fill="var(--muted)">search</text><rect x="160" y="26" width="166.8" height="14" rx="3" fill="var(--accent)"/><text x="334.8" y="37" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">98.1%</text><text x="152" y="67" text-anchor="end" font-size="12" fill="var(--muted)">grep, same prompt</text><rect x="160" y="56" width="146.7" height="14" rx="3" fill="var(--accent-2)"/><text x="314.7" y="67" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">86.3%</text><text x="152" y="97" text-anchor="end" font-size="12" fill="var(--muted)">grep, tuned prompt</text><rect x="160" y="86" width="164.2" height="14" rx="3" fill="url(#hatch-2)" stroke="var(--accent-2)" stroke-width="1.2"/><text x="332.2" y="97" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">96.6%</text><text x="0" y="144" font-size="12.5" font-weight="600" fill="var(--ink)">Card-attribute tasks only (15)</text><text x="152" y="169" text-anchor="end" font-size="12" fill="var(--muted)">search</text><rect x="160" y="158" width="168.8" height="14" rx="3" fill="var(--accent)"/><text x="336.8" y="169" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">99.3%</text><text x="152" y="199" text-anchor="end" font-size="12" fill="var(--muted)">grep, same prompt</text><rect x="160" y="188" width="80.4" height="14" rx="3" fill="var(--accent-2)"/><text x="248.4" y="199" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">47.3%</text><text x="152" y="229" text-anchor="end" font-size="12" fill="var(--muted)">grep, tuned prompt</text><rect x="160" y="218" width="156.4" height="14" rx="3" fill="url(#hatch-3)" stroke="var(--accent-2)" stroke-width="1.2"/><text x="324.4" y="229" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">92.0%</text><text x="0" y="276" font-size="12.5" font-weight="600" fill="var(--ink)">Tokens per task (113 tasks)</text><text x="152" y="301" text-anchor="end" font-size="12" fill="var(--muted)">search</text><rect x="160" y="290" width="81.9" height="14" rx="3" fill="var(--accent)"/><text x="249.9" y="301" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">10.6k</text><text x="152" y="331" text-anchor="end" font-size="12" fill="var(--muted)">grep, same prompt</text><rect x="160" y="320" width="110.5" height="14" rx="3" fill="var(--accent-2)"/><text x="278.5" y="331" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">14.3k</text><text x="152" y="361" text-anchor="end" font-size="12" fill="var(--muted)">grep, tuned prompt</text><rect x="160" y="350" width="161.5" height="14" rx="3" fill="url(#hatch-4)" stroke="var(--accent-2)" stroke-width="1.2"/><text x="329.5" y="361" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">20.9k</text></g></svg>
+    <figcaption id="fig2-cap"><b>Figure 2.</b> With the same instructions, search finds more of the
+    right cards than grep (98.1% against 86.3% of the top 10, p = 3×10⁻⁵, sign test over tasks)
+    and uses fewer tokens (grep used more on 80 of 113 tasks). The hatched bars are the same grep
+    tool with the tuned prompt: the prompt alone adds 10.4 points of relevance (p = 0.0006) and
+    almost half again in tokens.</figcaption>
+  </figure>
+
+  <div class="tbl-wrap"><table class="tbl compare">
+    <thead><tr><th>Per task, 113 tasks</th><th class="num">Search</th><th class="num">Grep, same prompt</th><th class="num">Grep, tuned prompt</th><th class="num">Read everything</th></tr></thead>
+    <tbody>
+      <tr><td>Tokens</td><td class="num">10.6k</td><td class="num">14.3k</td><td class="num">20.9k</td><td class="num">2.91M</td></tr>
+      <tr><td>Claude Code turns</td><td class="num">4.0</td><td class="num">4.6</td><td class="num">4.9</td><td class="num">5.6</td></tr>
+      <tr><td>Tool calls</td><td class="num">2.0</td><td class="num">2.5</td><td class="num">2.9</td><td class="num">0</td></tr>
+      <tr><td>Seconds</td><td class="num">10.3</td><td class="num">17.0*</td><td class="num">10.9</td><td class="num">53.6</td></tr>
+      <tr><td>Relevant in the top 10, deck needs (65)</td><td class="num">97.8%</td><td class="num">95.2%</td><td class="num">97.7%</td><td class="num">–</td></tr>
+      <tr><td>Relevant in the top 10, card attributes (15)</td><td class="num">99.3%</td><td class="num">47.3%</td><td class="num">92.0%</td><td class="num">–</td></tr>
+      <tr><td>Specific card found (33)</td><td class="num">100%</td><td class="num">85%</td><td class="num">94%</td><td class="num">–</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small">*Two slow tasks, of 159 and 322 seconds; the median is 11.3. Reading everything ran on the 12-task sample only.</p>
+
+  <p>The relevance gap is almost all on card attributes. A card's mana cost, type line and rules text sit on
+  separate lines of the file, and without a description of the layout grep guessed it wrong: it
+  wrote patterns that expect the cost, the card type and the rules text on one line, and 29% of
+  its calls matched nothing. When it gave up, it fell back to listing card names
+  from memory. On deck needs, whose rules-text phrases sit on one line, the two stay close. Search
+  does not have this problem because it has filters for colour, type and mana value, and because it
+  ranks: a vague query still returns the ten best cards rather than nothing.</p>
+
+  <div class="aside"><p><strong>Search needed no prompt tuning.</strong> Its first prompt, never
+  tuned, gives the same results as the minimal one: 98.5% against 98.1% relevant cards in the top
+  10. Grep needed a prompt that is, in effect, documentation of the file, and it still paid for it
+  in tokens.</p></div>
+
+  <h2 id="engine"><span class="num">03</span>Choosing the engine</h2>
+
+  <p>Before any agent ran, I compared search engines directly on a benchmark of 363 queries with
+  known answers, no agent and no prompt involved. The score is nDCG@10 on a 0 to 100 scale, where
+  100 means the correct cards fill the top 10, best first. The winner was
+  <a href="https://huggingface.co/lightonai/mLateOn">mLateOn</a>, a late-interaction model: it
+  keeps one vector per token and matches each word of the query to the closest word in each card
+  (the <a href="/knowledge/late-interaction-primer/">late interaction primer</a> on this site draws
+  the mechanism).</p>
+
+  <figure class="fig" aria-labelledby="fig3-cap">
+    <svg viewBox="0 0 380 254" style="max-width:480px;margin:0 auto" role="img" aria-label="Two bar charts. On 46 rules-text queries, nDCG at 10: mLateOn 70.7, BM25 61.1, inference-free SPLADE 47.3, dense 36.7. On 252 requests in players&#x27; words, mLateOn scores 13.0 as written and 75.5 when each is rewritten as rules text."><g font-family="var(--sans)"><text x="0" y="12" font-size="12.5" font-weight="600" fill="var(--ink)">46 rules-text queries, nDCG@10 × 100</text><text x="152" y="37" text-anchor="end" font-size="12" fill="var(--muted)">mLateOn</text><rect x="160" y="26" width="120.2" height="14" rx="3" fill="var(--accent)"/><text x="288.2" y="37" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">70.7</text><text x="152" y="67" text-anchor="end" font-size="12" fill="var(--muted)">BM25</text><rect x="160" y="56" width="103.9" height="14" rx="3" fill="var(--faint)"/><text x="271.9" y="67" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">61.1</text><text x="152" y="97" text-anchor="end" font-size="12" fill="var(--muted)">inference-free SPLADE</text><rect x="160" y="86" width="80.4" height="14" rx="3" fill="var(--faint)"/><text x="248.4" y="97" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">47.3</text><text x="152" y="127" text-anchor="end" font-size="12" fill="var(--muted)">dense embedding</text><rect x="160" y="116" width="62.4" height="14" rx="3" fill="var(--faint)"/><text x="230.4" y="127" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">36.7</text><text x="0" y="174" font-size="12.5" font-weight="600" fill="var(--ink)">252 requests in players&#x27; words (mLateOn)</text><text x="152" y="199" text-anchor="end" font-size="12" fill="var(--muted)">as the player wrote it</text><rect x="160" y="188" width="22.1" height="14" rx="3" fill="var(--faint)"/><text x="190.1" y="199" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">13.0</text><text x="152" y="229" text-anchor="end" font-size="12" fill="var(--muted)">rewritten as rules text</text><rect x="160" y="218" width="128.3" height="14" rx="3" fill="var(--accent)"/><text x="296.4" y="229" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">75.5</text></g></svg>
+    <figcaption id="fig3-cap"><b>Figure 3.</b> mLateOn reads rules text best: 34 points ahead of the
+    dense embedding on wording-sensitive queries (+34.0 [+25.4, +42.9]). The inference-free SPLADE
+    model is a sibling of the one behind <a href="/blog/inference-free-splade/">this site's
+    search</a>. The second panel is the finding that shaped the tool: the same 252 vague requests
+    score 13.0 as a player writes them and 75.5 when each is rewritten as rules text, so
+    <em>I keep losing to fliers</em> becomes <em>Destroy target creature with flying</em>.</figcaption>
+  </figure>
+
+  <p>So the server runs mLateOn, and its tool description tells the agent to write queries the way
+  card text is worded. It searches all 34,646 cards exactly, one matrix product per query, because
+  at this size an approximate index buys nothing. The Docker image returns exactly the same top 10
+  as the benchmark reference on every query, in 130 to 340 ms. It has three read-only tools,
+  <code>search_cards</code>, <code>get_card</code> and <code>find_similar</code>, with five filters.</p>
+
+  <p>One lesson cost more runs than the engine did. The agent searches only when it is told when
+  to. Offered the tools with no cue, Sonnet made zero tool calls in 42 deck tasks and answered from
+  memory. Each tool description now opens with <em>Before recommending cards for a deck, call this to
+  find candidates instead of listing them from memory</em>. With that sentence the agent searched in
+  25 of 30 tasks on the tuning decks; without it, in 10 of 30.</p>
+
+  <h2 id="tests"><span class="num">04</span>Three test sets and two graders</h2>
+
+  <div class="tbl-wrap"><table class="tbl compare">
+    <thead><tr><th></th><th>Search benchmark</th><th>Agent search tasks</th><th>Precon decks</th></tr></thead>
+    <tbody>
+      <tr><td>Asks</td><td>Which engine ranks the right cards first?</td><td>Does an agent with search find more relevant cards than one with only grep?</td><td>Does the agent add, cut and swap better cards in real Commander decks?</td></tr>
+      <tr><td>Built from</td><td>65 Tagger tags phrased as a player would ask, 46 handwritten rules-text queries, 222 rewordings with no rules-text words, 30 open-ended deck needs</td><td>113 requests from the benchmark: 65 deck needs, 15 card attributes, 33 specific cards</td><td>183 preconstructed decks from <a href="https://mtgjson.com">MTGJSON</a>, 175 matched to <a href="https://edhrec.com">EDHREC</a>. 14 decks released after 1 November 2025 are the test decks; 15 others are for tuning</td></tr>
+      <tr><td>Scored by</td><td>Cards carrying the tag, or matching a rules-text pattern checked against Scryfall's search</td><td>The same lists, completed by the relevance grader</td><td>Player add rates from EDHREC, and the deck-fit grader</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Automatic lists of correct cards are incomplete, so both agent benchmarks also use a
+  grader: a separate Claude model that grades cards blind, 15 per call, in random order. It never
+  sees which agent proposed a card and never sees any popularity data. Hidden random cards are mixed
+  into every run to check that it does not accept everything. The two graders look for different
+  things:</p>
+
+  <ul>
+    <li><strong>The relevance grader</strong> sees the request with its constraints and each card's
+    rules text. 2 = does what was asked and meets every constraint; 1 = a weaker or narrower version a
+    player might still consider; 0 = does not do it, or breaks a constraint. It accepted 1 of 160
+    hidden random cards and graded 98.9% of the cards already on the lists relevant.</li>
+    <li><strong>The deck-fit grader</strong> sees the deck (the commander's rules text with its name
+    hidden, plus the other 99 card names) and each proposed add. 2 = a clear upgrade: it supports the
+    commander or the deck's plan, or fills a role the deck is short of (ramp, card draw, removal,
+    interaction), and beats the deck's weakest cards; 1 = a reasonable but low-priority upgrade; 0 =
+    no specific reason to be in this deck. It is told not to reward a card for being widely played.
+    On the test decks it accepted 10 of 84 hidden random legal cards and none of 42 cards already in
+    the deck.</li>
+  </ul>
+
+  <h2 id="scoring"><span class="num">05</span>One answer key is not enough</h2>
+
+  <p>Every automatic answer key has a blind spot. The tag and pattern lists miss cards that do the
+  job in other words: 22 to 23% of each agent's top-10 cards were graded relevant but were missing
+  from the lists. The patterns also reward exactly the wording grep can rebuild. Player add rates
+  have a different blind spot. They reward what many players add, and that means popular cards. A deck
+  can also be improved in many different ways.</p>
+
+  <figure class="fig" aria-labelledby="fig4-cap">
+    <svg viewBox="0 0 380 194" style="max-width:480px;margin:0 auto" role="img" aria-label="Two bar charts. Of 1,051 proposed adds, 16.5 percent are common player adds and 77.2 percent were graded an upgrade. Deck-fit score of the 20 adds: 0.45 from memory, 0.65 with mtg-search."><g font-family="var(--sans)"><text x="0" y="12" font-size="12.5" font-weight="600" fill="var(--ink)">1,051 different cards the agent proposed</text><text x="152" y="37" text-anchor="end" font-size="12" fill="var(--muted)">common player add</text><rect x="160" y="26" width="28.1" height="14" rx="3" fill="var(--faint)"/><text x="196.1" y="37" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">16.5%</text><text x="152" y="67" text-anchor="end" font-size="12" fill="var(--muted)">graded an upgrade</text><rect x="160" y="56" width="131.2" height="14" rx="3" fill="var(--accent)"/><text x="299.2" y="67" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">77.2%</text><text x="0" y="114" font-size="12.5" font-weight="600" fill="var(--ink)">Deck-fit score of the 20 adds, 0 to 1</text><text x="152" y="139" text-anchor="end" font-size="12" fill="var(--muted)">from memory</text><rect x="160" y="128" width="76.0" height="14" rx="3" fill="var(--faint)"/><text x="244.0" y="139" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">0.45</text><text x="152" y="169" text-anchor="end" font-size="12" fill="var(--muted)">with mtg-search</text><rect x="160" y="158" width="110.7" height="14" rx="3" fill="var(--accent)"/><text x="278.7" y="169" font-family="IBM Plex Mono,monospace" font-size="12" fill="var(--ink)">0.65</text></g></svg>
+    <figcaption id="fig4-cap"><b>Figure 4.</b> Of the 1,051 different cards the agent proposed adding
+    to the 14 test decks, 16% are cards at least 5% of players add to that deck. The deck-fit grader
+    rated 77% a reasonable upgrade or better: 92% of the commonly added ones, and 74% of the rest.
+    Below, the agent's 20 adds per deck, from memory and with mtg-search, 3 repeats each.</figcaption>
+  </figure>
+
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>Add task, 14 test decks</th><th class="num">From memory</th><th class="num">With mtg-search</th><th class="num">Sign test</th></tr></thead>
+    <tbody>
+      <tr><td>Tasks in which the agent searched</td><td class="num">0%</td><td class="num">40%</td><td class="num">p = 2×10⁻⁶</td></tr>
+      <tr><td>Adds that break a deck rule</td><td class="num">13.2%</td><td class="num">3.0%</td><td class="num">p = 0.002</td></tr>
+      <tr><td>Deck-fit score (0 to 1)</td><td class="num">0.45</td><td class="num">0.65</td><td class="num">p = 0.002</td></tr>
+      <tr><td>Match with player add rates (nDCG@10)</td><td class="num">0.174</td><td class="num">0.262</td><td class="num">p = 0.057</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>On the same adds, the two ways of scoring disagree. The deck-fit score shows a clear gain,
+  better on 13 of 14 decks, and it holds on rule-abiding adds alone (0.52 against 0.67). The match
+  with player add rates is not significant. The reason is popularity. With mtg-search the agent's
+  typical add is around the 1,000th most-played card on EDHREC, against the 300th from memory, and
+  player add rates favour the most-played cards. The deck-fit grader shows no such pull: if
+  anything, its top grades went to less popular cards. In the swap task the deck-fit gain was
+  smaller and not significant.</p>
+
+  <p>So every test set is scored two ways, by an automatic list and by a grader with hidden random
+  cards. Where the two disagree, the disagreement is the finding.</p>
+
+  <h2 id="limits"><span class="num">06</span>Where it stops</h2>
+
+  <p>34,646 cards and 3.1M tokens of text is a small corpus. A grep over it takes a fraction of a
+  second, and a strong agent can page through the matches. Grep also had a second advantage:
+  Sonnet knows Magic's rules-text templating by heart, so it writes patterns that hit. Even so, grep
+  matched search's relevance only with a prompt that describes the card file, and then it used twice
+  the tokens, because its matches come unranked, in file order.</p>
+
+  <p>That cost scales with the corpus. More documents mean more matches per pattern to page
+  through, while ranked search still returns the best ten. In a larger collection, or one whose
+  wording the model has not memorised, I expect the token gap to widen and the quality gap with it.
+  I have not measured that. Read the grep result as the best case for having no search
+  infrastructure: a small corpus, a model that knows its wording, and a prompt tuned to the file.
+  Search needed none of that here.</p>
+
+  <p>The limits I know of. Every agent result is one run per task, and the share of tasks in which
+  the agent chooses to search swings by 20 points between identical runs. The graders are the same
+  model family as the agent, so a grader from another family is the check I would add next; it
+  needs API budget this hobby project does not have. The deck-fit criteria went through three
+  versions on the tuning decks before any test deck was graded, and shown an anonymised deck, the
+  grader still named 12 of 15 of them. The 14 test decks have been used for more comparisons than
+  I would like, and fresh ones become usable when players' data on them matures.</p>
+
+  <h2 id="data-access"><span class="num">07</span>The data</h2>
+
+  <p>The server, the benchmarks and every run record are in private repositories for now, and
+  the reason is licensing rather than modesty. The card data is Scryfall's, and their terms forbid
+  republishing it. The deck labels come from EDHREC, collected with permission for private
+  evaluation only. The three datasets are versioned on Hugging Face so the numbers above can be
+  traced to a fixed revision:</p>
+
+  <ul>
+    <li><strong>mtg-search-index</strong>, revision <code>scryfall-20261014090155</code>: the
+    34,646 cards, tags, rulings and the mLateOn embeddings the server searches.</li>
+    <li><strong>mtg-search-bench</strong>, <code>v1.0</code>: the 363 benchmark queries, the 113
+    agent tasks, 2,799 relevance grades and the final relevance labels. The step-two numbers in
+    Figure 2 recompute exactly from it.</li>
+    <li><strong>mtg-precon-bench</strong>, <code>v1.0</code>: the precon decklists, the EDHREC add
+    and cut rates, and 2,385 deck-fit grades.</li>
+  </ul>
+
+  <p>The search benchmark holds only my own queries, tasks and grades, keyed by card id, so it is
+  the one that could be released.</p>
+
+  <hr>
+
+  <h2 id="refs"><span class="num">Sources</span>Reading list</h2>
+  <ol class="refs">
+    <li id="ref-scryfall">Scryfall. <a href="https://scryfall.com/docs/api/bulk-data"><em>Bulk Data</em></a>,
+    the Oracle cards, Oracle tags and rulings files. Card text © Wizards of the Coast, used under the
+    <a href="https://company.wizards.com/en/legal/fancontentpolicy">Fan Content Policy</a>.</li>
+    <li id="ref-mlateon">LightOn. <a href="https://huggingface.co/lightonai/mLateOn"><em>mLateOn</em></a>,
+    model card. The document embeddings and the query encoder.</li>
+    <li id="ref-colbert">O. Khattab, M. Zaharia. <em>ColBERT: Efficient and Effective Passage Search
+    via Contextualized Late Interaction over BERT.</em> SIGIR 2020.
+    <a href="https://arxiv.org/abs/2004.12832">arXiv:2004.12832</a></li>
+    <li id="ref-bm25">S. Robertson, H. Zaragoza. <em>The Probabilistic Relevance Framework: BM25 and
+    Beyond.</em> Foundations and Trends in Information Retrieval, 2009.</li>
+    <li id="ref-judge">P. Thomas, S. Spielman, N. Craswell, B. Mitra. <em>Large language models can
+    accurately predict searcher preferences.</em> SIGIR 2024.
+    <a href="https://arxiv.org/abs/2309.10621">arXiv:2309.10621</a></li>
+    <li id="ref-mcp"><a href="https://modelcontextprotocol.io"><em>Model Context Protocol</em></a>,
+    the interface the server exposes its three tools through.</li>
+    <li id="ref-sources">Decklists from <a href="https://mtgjson.com">MTGJSON</a> (MIT); add and cut
+    rates from <a href="https://edhrec.com">EDHREC</a>, with permission, aggregate figures only.</li>
+  </ol>
+
+</article>
+</div>
+</main>
+</body>
+</html>
