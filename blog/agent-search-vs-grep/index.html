@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/site.css?v=766687e4">
-<link rel="stylesheet" href="/blog/blog.css?v=5">
+<link rel="stylesheet" href="/blog/blog.css?v=6">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BlogPosting",
  "headline":"Does a search engine help a deck-building agent?",
@@ -90,19 +90,48 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
   format. Scryfall's <a href="https://tagger.scryfall.com">Tagger</a> project adds community
   labels for what cards do; the tools show them as roles.</p>
 
-  <dl class="facts">
+  <dl class="facts two">
     <div><dt>Cards</dt><dd>34,646<small>one per distinct card; tokens, emblems and art cards dropped</small></dd></div>
     <div><dt>Rules text</dt><dd>3.1M tokens<small>about 7.5M characters across all cards</small></dd></div>
     <div><dt>Function tags</dt><dd>4,577<small>Tagger labels such as <code>mana-rock</code> and <code>sweeper</code></small></dd></div>
     <div><dt>Rulings</dt><dd>78,973<small>official clarifications, shown by <code>get_card</code></small></dd></div>
-    <div><dt>Updated</dt><dd>Daily<small>by Scryfall; this snapshot: 14 Oct 2026</small></dd></div>
-    <div><dt>Never shipped</dt><dd>0 prices<small>and no popularity data; those are used only to evaluate</small></dd></div>
   </dl>
 
-  <pre class="code">Lightning Bolt {R}
-Instant
-Lightning Bolt deals 3 damage to any target.</pre>
-  <p class="small">One card as it sits in the card file: name and cost, type line, rules text.</p>
+  <figure class="anatomy" aria-labelledby="fig-card-cap">
+    <div class="anat-card">
+      <img src="lightning-bolt.jpg" width="600" height="836"
+        alt="Lightning Bolt from Double Masters 2022, with coloured boxes around its name, mana cost, type line, set symbol and rules text, and dashed boxes around the art and the flavour text.">
+      <span aria-hidden="true" class="box off" style="left:6.4%;top:10.6%;width:87.2%;height:45.6%"></span>
+      <span aria-hidden="true" class="box off" style="left:6.6%;top:74.2%;width:86.6%;height:16.4%"></span>
+      <span aria-hidden="true" class="box" style="--c:var(--k1);left:5.6%;top:4.6%;width:38.4%;height:5.8%"><i>1</i></span>
+      <span aria-hidden="true" class="box" style="--c:var(--k2);left:86%;top:4.6%;width:8.8%;height:5.8%"><i>2</i></span>
+      <span aria-hidden="true" class="box" style="--c:var(--k3);left:5.6%;top:56.6%;width:19.4%;height:5.2%"><i>3</i></span>
+      <span aria-hidden="true" class="box" style="--c:var(--k4);left:82.6%;top:56.4%;width:12%;height:5.4%"><i>4</i></span>
+      <span aria-hidden="true" class="box" style="--c:var(--k5);left:5.6%;top:64.2%;width:80.6%;height:9.2%"><i>5</i></span>
+    </div>
+    <div class="anat-view">
+      <p class="t">What <code>search_cards</code> returns for it</p>
+      <div class="out">
+        <span class="ln head"><span class="x">1.</span> <span class="k1">Lightning Bolt</span> <span class="x">·</span> <span class="k2">{R} (MV 1) · Red</span> <span class="x">·</span> <span class="k3">Instant</span> <span class="x">·</span> <span class="k4">uncommon</span></span>
+        <span class="ln"><span class="k5">Lightning Bolt deals 3 damage to any target.</span></span>
+        <span class="ln x">roles: burn-any</span>
+        <span class="ln x">legal: commander ✓</span>
+      </div>
+      <ul class="key">
+        <li><b aria-hidden="true" style="--c:var(--k1)">1</b>name</li>
+        <li><b aria-hidden="true" style="--c:var(--k2)">2</b>mana cost, and the colour and mana value it gives</li>
+        <li><b aria-hidden="true" style="--c:var(--k3)">3</b>type line</li>
+        <li><b aria-hidden="true" style="--c:var(--k4)">4</b>rarity, from the set symbol's colour</li>
+        <li><b aria-hidden="true" style="--c:var(--k5)">5</b>rules text, as the current Oracle wording</li>
+        <li><b aria-hidden="true" class="dash"></b>art and flavour text: never sent</li>
+        <li><b aria-hidden="true" class="grey"></b>not on the card: search rank, Tagger roles, format legality</li>
+      </ul>
+    </div>
+    <figcaption id="fig-card-cap">Lightning Bolt as printed in Double Masters 2022, and the search
+    result the agent gets for it. The agent reads text only. Card image:
+    <a href="https://scryfall.com/card/2x2/117/lightning-bolt">Scryfall</a>, © Wizards of the
+    Coast.</figcaption>
+  </figure>
 
   <p>The simplest design would skip search entirely and give the agent every card to read. I
   tried that.</p>
@@ -127,11 +156,136 @@ Lightning Bolt deals 3 damage to any target.</pre>
   <div class="aside"><p>Reading everything is a ceiling, not a design. The agent needs a way to
   find cards: a search engine, or at least grep over the text.</p></div>
 
-  <h2 id="grep"><span class="num">02 · Search vs no search infrastructure</span>With the same instructions, search finds more of the right cards, with fewer tokens</h2>
+  <h2 id="tests"><span class="num">02 · How the test sets are built</span>Three test sets, and two graders</h2>
 
-  <p>The same agent ran the 113 agent search tasks three ways. Each task is a request such as a
-  deck need, a card with given attributes, or a specific card to find; how the tasks are built and
-  graded is described in <a href="#tests">Section 4</a>.</p>
+  <div class="specs">
+    <section class="spec">
+      <p class="count"><b>363</b><span>queries</span></p>
+      <div class="head">
+        <h3>Search benchmark</h3>
+        <p class="ask">Which engine ranks the right cards first?</p>
+      </div>
+      <dl>
+        <dt>Built from</dt>
+        <dd><ul class="mix">
+          <li><b>65</b>Tagger function tags phrased as a player would ask</li>
+          <li><b>46</b>handwritten rules-text queries</li>
+          <li><b>222</b>rewordings with no rules-text words</li>
+          <li><b>30</b>open-ended deck needs</li>
+        </ul></dd>
+        <dt>Correct cards</dt>
+        <dd>The cards carrying the tag, or matching a rules-text pattern that was checked against
+        Scryfall's own search. The top answers to each deck need were reviewed by hand.</dd>
+      </dl>
+    </section>
+    <section class="spec">
+      <p class="count"><b>113</b><span>agent tasks</span></p>
+      <div class="head">
+        <h3>Agent search tasks</h3>
+        <p class="ask">Does an agent with search find more relevant cards than one with only grep?</p>
+      </div>
+      <dl>
+        <dt>Built from</dt>
+        <dd>Requests from the benchmark:
+        <ul class="mix">
+          <li><b>65</b>deck needs</li>
+          <li><b>15</b>card attributes, such as a 1-mana red burn instant</li>
+          <li><b>33</b>specific cards to find</li>
+        </ul></dd>
+        <dt>Protocol</dt>
+        <dd>Up to 5 tool calls, then a ranked list of up to 20 cards.</dd>
+        <dt>Scored by</dt>
+        <dd>Share of the top 10 that is relevant: on the benchmark's list of correct cards, or graded
+        relevant by the relevance grader.</dd>
+      </dl>
+    </section>
+    <section class="spec">
+      <p class="count"><b>183</b><span>precon decks</span></p>
+      <div class="head">
+        <h3>Precon decks</h3>
+        <p class="ask">Does the agent add, cut and swap better cards in real Commander decks?</p>
+      </div>
+      <dl>
+        <dt>Built from</dt>
+        <dd>Preconstructed decks, the ready-made Commander decks Wizards sells (decklists from
+        <a href="https://mtgjson.com">MTGJSON</a>):
+        <ul class="mix">
+          <li><b>14</b>test decks, released after 1 Nov 2025</li>
+          <li><b>15</b>tuning decks, released earlier</li>
+        </ul></dd>
+        <dt>Protocol</dt>
+        <dd>The agent sees all 100 cards and proposes 20 adds, 10 cuts or 10 swaps.</dd>
+        <dt>Scored by</dt>
+        <dd>Player add rates from <a href="https://edhrec.com">EDHREC</a>, which pools thousands of
+        players' decklists: the share of players' copies of each deck that add or cut each card. And
+        the deck-fit grader, for adds.</dd>
+      </dl>
+    </section>
+  </div>
+
+  <p>Each grader is a separate Claude model that grades cards one batch at a time, 15 cards per
+  call, in random order. It never sees which agent proposed a card, and it gets no popularity or
+  price data. Hidden random cards are mixed into the batches, to check that the grader does not
+  accept everything.</p>
+
+  <div class="specs">
+    <section class="spec grader">
+      <div class="head">
+        <h3>Relevance grader</h3>
+        <p class="for">for the agent search tasks</p>
+      </div>
+      <dl>
+        <dt>Sees</dt>
+        <dd>The request with its constraints (colour, card type, mana value, format), and each card's
+        rules text</dd>
+        <dt>Grades</dt>
+        <dd><ol class="grades">
+          <li><b class="g2">2</b>does what was asked and meets every constraint</li>
+          <li><b class="g1">1</b>a weaker, narrower or indirect version a player might still consider</li>
+          <li><b class="g0">0</b>does not do it, or breaks a constraint</li>
+        </ol></dd>
+        <dt>Relevant</dt>
+        <dd>Grade 1 or 2</dd>
+        <dt>Check</dt>
+        <dd>It accepted <b class="stat">0.6%</b> of hidden random cards that met the constraints</dd>
+      </dl>
+    </section>
+    <section class="spec grader">
+      <div class="head">
+        <h3>Deck-fit grader</h3>
+        <p class="for">for the precon decks</p>
+      </div>
+      <dl>
+        <dt>Sees</dt>
+        <dd>The deck (the commander's rules text with its name hidden, plus the other 99 card names)
+        and each proposed add's rules text</dd>
+        <dt>Grades</dt>
+        <dd><ol class="grades">
+          <li><b class="g2">2</b>a clear upgrade: supports the commander or the deck's plan, or fills
+          a role the deck is short of (ramp, card draw, removal, interaction), and beats the deck's
+          weakest cards</li>
+          <li><b class="g1">1</b>a reasonable but low-priority upgrade</li>
+          <li><b class="g0">0</b>no specific reason to be in this deck, or breaks a deck rule</li>
+        </ol>
+        It is told not to reward a card for being widely played.</dd>
+        <dt>Deck-fit score</dt>
+        <dd>Mean grade of the 20 adds, scaled 0 to 1; adds that break a deck rule count 0</dd>
+        <dt>Check</dt>
+        <dd>It accepted <b class="stat">12%</b> of hidden random legal cards and none of the cards
+        already in the deck</dd>
+      </dl>
+    </section>
+  </div>
+
+  <p class="small">Agents and graders are Claude Sonnet 5.5 in Claude Code, with no web, file or
+  shell access: only the tools under test. No list of correct cards and no popularity or price data
+  ever reaches an agent. The deck-fit criteria were settled on the tuning decks before any test deck
+  was graded.</p>
+
+  <h2 id="grep"><span class="num">03 · Search vs no search infrastructure</span>With the same instructions, search finds more of the right cards, with fewer tokens</h2>
+
+  <p>The same agent ran the 113 agent search tasks from <a href="#tests">Section 2</a> three
+  ways.</p>
 
   <ul>
     <li><strong>Search:</strong> the mtg-search <code>search</code> tool, with minimal instructions:
@@ -180,7 +334,7 @@ Lightning Bolt deals 3 damage to any target.</pre>
       <tr><td>Find-this-card (33)</td><td class="num">100%</td><td class="num">85%</td><td class="num">94%</td><td class="num">–</td></tr>
     </tbody>
   </table></div>
-  <p class="small">*Read everything: the 12-task sample above. **Two slow tasks (159 s and 322 s);
+  <p class="small">*Read everything: the 12-task sample from Section 1. **Two slow tasks (159 s and 322 s);
   the median is 11.3 s.</p>
 
   <p>With the same instructions, grep falls behind on card attributes, such as a 1-mana red burn
@@ -196,7 +350,7 @@ Lightning Bolt deals 3 damage to any target.</pre>
   with fewer tokens. Grep catches up only with a prompt tuned to the card file, and then uses twice
   the tokens.</p></div>
 
-  <h2 id="engine"><span class="num">03 · Choosing the engine</span>mLateOn reads rules text best, and the wording of the query matters most</h2>
+  <h2 id="engine"><span class="num">04 · Choosing the engine</span>mLateOn reads rules text best, and the wording of the query matters most</h2>
 
   <p>I compared search engines on the search benchmark: 363 queries, each with a list of the cards
   that answer it. The score is nDCG@10 on a 0 to 100 scale; 100 means the correct cards fill the
@@ -235,88 +389,6 @@ Lightning Bolt deals 3 damage to any target.</pre>
   cards for a deck, call this to find candidates instead of listing them from memory.”</em> With
   that sentence the agent searched in 25 of 30 tasks on the tuning decks; without it, in 10 of
   30.</p>
-
-  <h2 id="tests"><span class="num">04 · How the test sets are built</span>Three test sets, and two graders</h2>
-
-  <div class="lenses">
-    <div class="lens">
-      <h3>Search benchmark</h3>
-      <dl>
-        <dt>Asks</dt><dd>Which engine ranks the right cards first?</dd>
-        <dt>Built from</dt><dd>65 Tagger function tags phrased as a player would ask; 46 handwritten
-        rules-text queries; 222 rewordings with no rules-text words; 30 open-ended deck needs. 363
-        queries.</dd>
-        <dt>Correct cards</dt><dd>The cards carrying the tag, or matching a rules-text pattern that
-        was checked against Scryfall's own search. The top answers to each deck need were reviewed by
-        hand.</dd>
-      </dl>
-    </div>
-    <div class="lens">
-      <h3>Agent search tasks</h3>
-      <dl>
-        <dt>Asks</dt><dd>Does an agent with search find more relevant cards than one with only grep?</dd>
-        <dt>Built from</dt><dd>113 requests from the benchmark: 65 deck needs, 15 card attributes
-        (such as a 1-mana red burn instant), 33 specific cards to find. Up to 5 tool calls, then a
-        ranked list of up to 20 cards.</dd>
-        <dt>Scored by</dt><dd>Share of the top 10 that is relevant: on the benchmark's list of correct
-        cards, or graded relevant by the relevance grader.</dd>
-      </dl>
-    </div>
-    <div class="lens">
-      <h3>Precon decks</h3>
-      <dl>
-        <dt>Asks</dt><dd>Does the agent add, cut and swap better cards in real Commander decks?</dd>
-        <dt>Built from</dt><dd>183 preconstructed decks, the ready-made Commander decks Wizards sells
-        (decklists from <a href="https://mtgjson.com">MTGJSON</a>). The agent sees all 100 cards and
-        proposes 20 adds, 10 cuts or 10 swaps. 14 decks released after 1 Nov 2025 are the test decks;
-        15 others are tuning decks.</dd>
-        <dt>Scored by</dt><dd>Player add rates from <a href="https://edhrec.com">EDHREC</a>, which
-        pools thousands of players' decklists: the share of players' copies of each deck that add or
-        cut each card. And the deck-fit grader, for adds.</dd>
-      </dl>
-    </div>
-  </div>
-
-  <p>Each grader is a separate Claude model that grades cards one batch at a time, 15 cards per
-  call, in random order. It never sees which agent proposed a card, and it gets no popularity or
-  price data. Hidden random cards are mixed into the batches, to check that the grader does not
-  accept everything.</p>
-
-  <div class="lenses two">
-    <div class="lens">
-      <h3>Relevance grader · agent search tasks</h3>
-      <dl>
-        <dt>Sees</dt><dd>The request with its constraints (colour, card type, mana value, format), and
-        each card's rules text</dd>
-        <dt>Grades</dt><dd>2 = does what was asked and meets every constraint · 1 = a weaker, narrower
-        or indirect version a player might still consider · 0 = does not do it, or breaks a
-        constraint</dd>
-        <dt>Relevant</dt><dd>Grade 1 or 2</dd>
-        <dt>Check</dt><dd>It accepted 0.6% of hidden random cards that met the constraints</dd>
-      </dl>
-    </div>
-    <div class="lens">
-      <h3>Deck-fit grader · precon decks</h3>
-      <dl>
-        <dt>Sees</dt><dd>The deck (the commander's rules text with its name hidden, plus the other 99
-        card names) and each proposed add's rules text</dd>
-        <dt>Grades</dt><dd>2 = a clear upgrade: supports the commander or the deck's plan, or fills a
-        role the deck is short of (ramp, card draw, removal, interaction), and beats the deck's
-        weakest cards · 1 = a reasonable but low-priority upgrade · 0 = no specific reason to be in
-        this deck, or breaks a deck rule. It is told not to reward a card for being widely
-        played.</dd>
-        <dt>Deck-fit score</dt><dd>Mean grade of the 20 adds, scaled 0 to 1; adds that break a deck
-        rule count 0</dd>
-        <dt>Check</dt><dd>It accepted 12% of hidden random legal cards and none of the cards already
-        in the deck</dd>
-      </dl>
-    </div>
-  </div>
-
-  <p class="small">Agents and graders are Claude Sonnet 5.5 in Claude Code, with no web, file or
-  shell access: only the tools under test. No list of correct cards and no popularity or price data
-  ever reaches an agent. The deck-fit criteria were settled on the tuning decks before any test deck
-  was graded.</p>
 
   <h2 id="scoring"><span class="num">05 · Why one way of scoring is not enough</span>Player add rates favour popular cards, and miss a real gain in deck fit</h2>
 

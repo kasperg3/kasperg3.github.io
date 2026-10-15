@@ -159,6 +159,10 @@ class Node:
                 continue
             if c.tag in skip_tags or (c.classes & skip_classes):
                 continue
+            # Hidden from screen readers means decoration (a figure's badge
+            # numbers, an icon): not text a reader would search for.
+            if c.attrs.get("aria-hidden") == "true":
+                continue
             # A diagram labelled for screen readers carries a better description
             # than its own markup does — take the label, skip the subtree.
             if c.attrs.get("role") == "img" and c.attrs.get("aria-label"):
