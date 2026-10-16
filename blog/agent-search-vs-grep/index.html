@@ -79,10 +79,10 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <aside class="install" aria-label="Install mtg-search">
     <p class="install-k">Try it in Claude Code</p>
-    <div class="install-cmd"><code>docker pull ghcr.io/kasperg3/mtg-search &amp;&amp; claude mcp add --scope user mtg-search -- docker run -i --rm ghcr.io/kasperg3/mtg-search</code><button type="button" class="install-copy">Copy</button></div>
-    <p class="install-note">One line: it pulls the server (about 1.8 GB, needs Docker) and adds it to
-    Claude Code. Code, data and setup for other MCP clients:
-    <a href="https://github.com/kasperg3/mtg-search">github.com/kasperg3/mtg-search</a>.</p>
+    <div class="install-cmd"><code>uvx mtg-search-mcp --download &amp;&amp; claude mcp add --scope user mtg-search -- uvx mtg-search-mcp</code><button type="button" class="install-copy">Copy</button></div>
+    <p class="install-note">One line, with <a href="https://docs.astral.sh/uv/">uv</a> installed: it downloads
+    the card index once (about 1.9 GB) and adds the server to Claude Code. Docker, other MCP clients and the
+    code: <a href="https://github.com/kasperg3/mtg-search">github.com/kasperg3/mtg-search</a>.</p>
   </aside>
 
   <h2 id="data"><span class="num">01 · The data</span>Every Magic card's official text: 3.1M tokens, too much to read for every task</h2>
@@ -557,10 +557,10 @@ gtag('js',new Date());gtag('config','G-HRNQPVRSVC');</script>
 
   <aside class="install" aria-label="Install mtg-search">
     <p class="install-k">Try it in Claude Code</p>
-    <div class="install-cmd"><code>docker pull ghcr.io/kasperg3/mtg-search &amp;&amp; claude mcp add --scope user mtg-search -- docker run -i --rm ghcr.io/kasperg3/mtg-search</code><button type="button" class="install-copy">Copy</button></div>
-    <p class="install-note">One line: it pulls the server (about 1.8 GB, needs Docker) and adds it to
-    Claude Code. Code, data and setup for other MCP clients:
-    <a href="https://github.com/kasperg3/mtg-search">github.com/kasperg3/mtg-search</a>.</p>
+    <div class="install-cmd"><code>uvx mtg-search-mcp --download &amp;&amp; claude mcp add --scope user mtg-search -- uvx mtg-search-mcp</code><button type="button" class="install-copy">Copy</button></div>
+    <p class="install-note">One line, with <a href="https://docs.astral.sh/uv/">uv</a> installed: it downloads
+    the card index once (about 1.9 GB) and adds the server to Claude Code. Docker, other MCP clients and the
+    code: <a href="https://github.com/kasperg3/mtg-search">github.com/kasperg3/mtg-search</a>.</p>
   </aside>
 
   <h2 id="open"><span class="num">Still open</span>What I would check next</h2>
